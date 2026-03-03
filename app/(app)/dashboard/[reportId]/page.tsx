@@ -14,6 +14,7 @@ interface Report {
   score_competition: number | null
   score_demand: number | null
   score_profitability: number | null
+  score_cost: number | null
   recommendation: string | null
   competitor_analysis: string | null
   rent_analysis: string | null
