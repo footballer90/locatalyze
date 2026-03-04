@@ -87,10 +87,7 @@ export default function OnboardingPage() {
     timeoutRef.current = setTimeout(() => setTimedOut(true), WEBHOOK_TIMEOUT_MS)
 
     try {
-      const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
-      if (!webhookUrl) throw new Error('Webhook URL not configured — check NEXT_PUBLIC_N8N_WEBHOOK_URL in .env.local')
-
-      const res = await fetch(webhookUrl, {
+     const res = await fetch('/api/analyse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
