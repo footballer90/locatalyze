@@ -364,10 +364,13 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <Card title="SWOT Analysis" icon="🎯">
               {report.swot_analysis ? (
                 <div className="space-y-3">
-                  {['STRENGTHS', 'WEAKNESSES', 'OPPORTUNITIES', 'THREATS'].map(section => {
-                    const regex = new RegExp(`${section}:\\s*([^.]+(?:\\.[^.]+)*)`, 'i')
+                  {['STRENGTHS', 'WEAKNESSES', 'OPPORTUNITIES', 'THREATS'].map((section, idx, arr) => {
+                    const nextSection = arr[idx + 1]
+                    const pattern = nextSection ? `${section}:\\s*(.*?)(?=${nextSection}:)` : `${section}:\\s*(.*?)$`
+                    const regex = new RegExp(pattern, 'is')
                     const match = report.swot_analysis!.match(regex)
-                    const items = match ? match[1].split(',').map(s => s.replace(/^[\s.]+|[\s.]+$/g, '')) : []
+                    const raw = match ? match[1].trim() : ''
+                    const items = raw.split(/[,.]/).map((s: string) => s.trim()).filter((s: string) => s.length > 5)
                     const cfg = {
                       STRENGTHS:    { emoji: '💪', color: 'text-emerald-400' },
                       WEAKNESSES:   { emoji: '⚠️', color: 'text-amber-400'  },

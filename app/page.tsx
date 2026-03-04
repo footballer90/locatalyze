@@ -1,254 +1,276 @@
-'use client';
-import React from 'react';
+'use client'
 
-/* ─── ALL STYLES AS JS OBJECTS — zero Tailwind classes used ─── */
-const S: Record<string, React.CSSProperties> = {
-  page:        { fontFamily: "'DM Sans', sans-serif", background: '#f5f4f0', color: '#1a1a1a', minHeight: '100vh' },
-  nav:         { position: 'sticky', top: 0, zIndex: 100, background: 'rgba(245,244,240,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e2e0d8', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 },
-  navLogo:     { fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 20, color: '#1a1a1a', textDecoration: 'none', letterSpacing: '-0.5px' },
-  navLinks:    { display: 'flex', alignItems: 'center', gap: 32 },
-  navLink:     { fontSize: 14, color: '#555', textDecoration: 'none', fontWeight: 500 },
-  navCta:      { background: '#c84b31', color: '#fff', padding: '10px 22px', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none' },
-  heroWrap:    { maxWidth: 1100, margin: '0 auto', padding: '88px 40px 64px' },
-  eyebrow:     { display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', border: '1px solid #e2e0d8', borderRadius: 100, padding: '6px 16px', fontSize: 12, fontWeight: 700, color: '#c84b31', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: 28 },
-  eyebrowDot:  { width: 6, height: 6, borderRadius: '50%', background: '#c84b31', display: 'inline-block' },
-  h1:          { fontFamily: "'Syne', sans-serif", fontSize: 'clamp(36px,6vw,72px)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', color: '#1a1a1a', maxWidth: 820, marginBottom: 28, margin: '0 0 28px' },
-  h1Red:       { color: '#c84b31' },
-  heroSub:     { fontSize: 18, color: '#555', lineHeight: 1.7, maxWidth: 560, marginBottom: 40 },
-  heroActions: { display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 20 },
-  btnPrimary:  { background: '#c84b31', color: '#fff', padding: '16px 32px', borderRadius: 10, fontSize: 16, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 },
-  btnSecond:   { background: '#fff', color: '#1a1a1a', padding: '16px 32px', borderRadius: 10, fontSize: 16, fontWeight: 600, textDecoration: 'none', border: '1px solid #e2e0d8', display: 'inline-flex', alignItems: 'center', gap: 8 },
-  heroNote:    { fontSize: 13, color: '#999' },
-  strip:       { borderTop: '1px solid #e2e0d8', borderBottom: '1px solid #e2e0d8', background: '#fff', padding: '22px 40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 56, flexWrap: 'wrap' },
-  stripItem:   { display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#777', fontWeight: 500 },
-  stripNum:    { fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, color: '#1a1a1a' },
-  mockWrap:    { maxWidth: 1100, margin: '0 auto', padding: '72px 40px' },
-  mockCard:    { background: '#fff', border: '1px solid #e2e0d8', borderRadius: 20, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.08)' },
-  mockBar:     { background: '#1a1a1a', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 8 },
-  mockInner:   { padding: '28px 32px' },
-  mockMetrics: { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 28 },
-  mockMetric:  { background: '#f5f4f0', borderRadius: 12, padding: '20px 22px' },
-  mockLabel:   { fontSize: 11, color: '#888', fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: 6 },
-  mockVal:     { fontFamily: "'Syne', sans-serif", fontSize: 34, fontWeight: 900, color: '#1a1a1a', marginBottom: 2 },
-  mockSub:     { fontSize: 12, color: '#aaa' },
-  scoreGrid:   { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 },
-  scoreRow:    { display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#444', marginBottom: 5 },
-  scoreTrack:  { height: 6, background: '#ede9e1', borderRadius: 100, overflow: 'hidden' },
-  featureWrap: { maxWidth: 1100, margin: '0 auto', padding: '80px 40px' },
-  secEye:      { fontSize: 12, fontWeight: 700, color: '#c84b31', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 16 },
-  secTitle:    { fontFamily: "'Syne', sans-serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 800, letterSpacing: '-1px', color: '#1a1a1a', lineHeight: 1.15, marginBottom: 56 },
-  featGrid:    { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 },
-  featCard:    { background: '#fff', border: '1px solid #e2e0d8', borderRadius: 16, padding: 28 },
-  featIcon:    { fontSize: 28, marginBottom: 14 },
-  featTitle:   { fontFamily: "'Syne', sans-serif", fontSize: 17, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 },
-  featDesc:    { fontSize: 14, color: '#666', lineHeight: 1.65 },
-  howWrap:     { background: '#1a1a1a', padding: '80px 40px' },
-  howInner:    { maxWidth: 1100, margin: '0 auto' },
-  howGrid:     { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 40, marginTop: 56 },
-  howStep:     { borderTop: '2px solid #2a2a2a', paddingTop: 28 },
-  howNum:      { fontFamily: "'Syne', sans-serif", fontSize: 52, fontWeight: 900, color: '#2d2d2d', marginBottom: 16 },
-  howTitle:    { fontFamily: "'Syne', sans-serif", fontSize: 21, fontWeight: 700, color: '#f5f4f0', marginBottom: 10 },
-  howDesc:     { fontSize: 14, color: '#777', lineHeight: 1.7 },
-  pricWrap:    { maxWidth: 1100, margin: '0 auto', padding: '80px 40px' },
-  pricGrid:    { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24, marginTop: 56 },
-  ctaWrap:     { background: '#c84b31', padding: '88px 40px', textAlign: 'center' },
-  ctaTitle:    { fontFamily: "'Syne', sans-serif", fontSize: 'clamp(28px,4vw,56px)', fontWeight: 900, color: '#fff', letterSpacing: '-1.5px', lineHeight: 1.05, marginBottom: 20 },
-  ctaSub:      { fontSize: 18, color: 'rgba(255,255,255,0.78)', marginBottom: 36, maxWidth: 480, margin: '0 auto 36px' },
-  ctaBtn:      { display: 'inline-block', background: '#fff', color: '#c84b31', padding: '18px 44px', borderRadius: 10, fontWeight: 800, fontSize: 17, textDecoration: 'none', letterSpacing: '-0.3px' },
-  footer:      { background: '#111', padding: '48px 40px' },
-  footerIn:    { maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 },
-  footerLogo:  { fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 18, color: '#fff' },
-  footerNote:  { fontSize: 13, color: '#444' },
-};
+import Link from 'next/link'
+import { useState } from 'react'
 
-const verdictStyle = (v: string): React.CSSProperties => ({
-  display: 'inline-block',
-  background: v === 'GO' ? '#dcfce7' : v === 'CAUTION' ? '#fef9c3' : '#fee2e2',
-  color: v === 'GO' ? '#16a34a' : v === 'CAUTION' ? '#ca8a04' : '#dc2626',
-  fontWeight: 800, fontSize: 13, padding: '5px 14px', borderRadius: 100,
-});
+const SAMPLE_REPORT = {
+  business: 'Cafe',
+  location: 'Surry Hills, Sydney NSW 2010',
+  score: 74,
+  verdict: 'CAUTION',
+  revenue: '$64,800',
+  profit: '$27,851',
+  breakeven: '37 customers/day',
+  payback: '7 months',
+  scores: [
+    { label: 'Rent Affordability', score: 70, weight: '30%' },
+    { label: 'Profitability', score: 90, weight: '25%' },
+    { label: 'Competition', score: 40, weight: '25%' },
+    { label: 'Demographics', score: 97, weight: '20%' },
+  ],
+}
 
-const scoreFill = (pct: number): React.CSSProperties => ({
-  height: '100%', width: `${pct}%`,
-  background: 'linear-gradient(90deg, #c84b31, #e8734a)', borderRadius: 100,
-});
+function VerdictBadge({ verdict }: { verdict: string }) {
+  const styles: Record<string, string> = {
+    GO:      'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    CAUTION: 'bg-amber-50 text-amber-700 border border-amber-200',
+    NO:      'bg-red-50 text-red-700 border border-red-200',
+  }
+  const icons: Record<string, string> = { GO: '✓', CAUTION: '⚠', NO: '✕' }
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${styles[verdict] || styles.CAUTION}`}>
+      <span>{icons[verdict]}</span> {verdict}
+    </span>
+  )
+}
 
-const pricingCard = (featured: boolean): React.CSSProperties => ({
-  background: featured ? '#1a1a1a' : '#fff',
-  border: featured ? 'none' : '1px solid #e2e0d8',
-  borderRadius: 20, padding: 36, position: 'relative',
-});
+const STEPS = [
+  { icon: '📝', title: 'Enter your details', desc: 'Business type, address, rent budget, setup cost, and average order value. Takes under 2 minutes.' },
+  { icon: '🤖', title: 'AI analyses the location', desc: 'We check demographics, competition density, foot traffic patterns, and run your full financial model.' },
+  { icon: '📊', title: 'Get your verdict', desc: 'A clear GO / CAUTION / NO score with full financials, risk scenarios, and plain-English reasoning.' },
+]
 
-const features = [
-  { icon: '📍', title: 'Location Score 0–100', desc: 'Every site gets a score across competition, rent value, demand, cost, and profitability. No guesswork.' },
-  { icon: '💸', title: 'Break-Even in Plain Numbers', desc: 'How many customers per day do you need to cover costs? We calculate it from your actual rent and ticket size.' },
-  { icon: '🤖', title: 'AI-Written Report', desc: 'GPT-4 writes a full analysis explaining why this location is a GO, CAUTION, or NO — in plain English.' },
-  { icon: '📊', title: '3-Year Revenue Projection', desc: 'Year 1, 2, and 3 forecasts based on your business type, targets, and real market conditions.' },
-  { icon: '⚔️', title: 'Competitor Intelligence', desc: 'Understand who is already nearby, how saturated the market is, and whether there\'s room for you.' },
-  { icon: '📋', title: 'SWOT Analysis', desc: 'Strengths, weaknesses, opportunities, threats — specific to your location, not recycled advice.' },
-];
-
-const steps = [
-  { num: '01', title: 'Tell us about your business', desc: 'Answer 10 questions about your type, location, budget, and goals. Under 3 minutes.' },
-  { num: '02', title: 'AI analyses your location', desc: 'We run competitor analysis, market research, and financial projections in under 60 seconds.' },
-  { num: '03', title: 'Get your verdict', desc: 'A full report with GO, CAUTION, or NO — and the exact numbers behind the decision.' },
-];
-
-const plans = [
-  { plan: 'Starter', price: '$0', per: '1 report, no credit card', featured: false, badge: '', items: ['1 location analysis', 'Overall score + verdict', 'Basic break-even calc', 'Competitor overview'] },
-  { plan: 'Professional', price: '$49', per: 'per month', featured: true, badge: 'Most Popular', items: ['Unlimited analyses', 'Full AI report + SWOT', '3-year revenue projections', 'Sensitivity analysis', 'PDF export', 'Priority support'] },
-  { plan: 'Team', price: '$149', per: 'per month', featured: false, badge: '', items: ['Everything in Pro', 'Up to 5 team members', 'Compare locations side-by-side', 'Custom templates', 'Dedicated onboarding'] },
-];
+const FAQS = [
+  { q: 'Where does the data come from?', a: 'We combine OpenStreetMap geocoding, demographic data from national census sources, competition density estimates, and GPT-4o to synthesise your financial projections. All financial modelling is based on your actual inputs.' },
+  { q: 'How accurate is the analysis?', a: 'The financial model is deterministic — it uses your exact rent, setup cost, and ticket size. Market data (competition, demographics) is estimated and clearly labelled. Think of it as a smart financial advisor, not a crystal ball.' },
+  { q: 'Is my business data private?', a: 'Yes. Your data is used solely to generate your report and is never sold, shared with real estate agents, or used for advertising. You can delete your account and data at any time.' },
+  { q: 'What businesses does this work for?', a: 'Any retail or hospitality business with a physical lease: cafes, restaurants, gyms, salons, pharmacies, fashion retailers, specialty stores, and more.' },
+]
 
 export default function LandingPage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+
   return (
-    <div style={S.page}>
-      {/* NAV */}
-      <nav style={S.nav}>
-        <a href="/" style={S.navLogo}>Locata<span style={{ color: '#c84b31' }}>lyze</span></a>
-        <div style={S.navLinks}>
-          <a href="#features" style={S.navLink}>Features</a>
-          <a href="#how" style={S.navLink}>How it works</a>
-          <a href="#pricing" style={S.navLink}>Pricing</a>
-          <a href="/onboarding" style={S.navCta}>Get free report →</a>
+    <div className="min-h-screen bg-[#FAFAF8] text-[#1C1917]" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+
+      {/* ── Nav ── */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white text-sm font-bold">L</div>
+            <span className="font-bold text-lg text-stone-900">Locatalyze</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/auth/login" className="text-sm text-stone-500 hover:text-stone-800 transition-colors px-3 py-2">
+              Sign in
+            </Link>
+            <Link href="/auth/signup" className="text-sm bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+              Get started free
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {/* HERO */}
-      <div style={S.heroWrap}>
-        <div style={S.eyebrow}><span style={S.eyebrowDot} />&nbsp;AI Location Intelligence</div>
-        <h1 style={S.h1}>
-          Know If This Location Will{' '}
-          <span style={S.h1Red}>Make You Money</span>{' '}
-          Before You Sign the Lease.
+      {/* ── Hero ── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-12 text-center">
+        <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-700 border border-teal-100 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
+          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse" />
+          AI-powered location analysis
+        </div>
+
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-stone-900 leading-tight mb-6 max-w-4xl mx-auto">
+          Know if this location will
+          <span className="text-teal-600"> make you money</span>
+          <br />before you sign the lease
         </h1>
-        <p style={S.heroSub}>
-          You&apos;re about to commit 3–5 years of your life and your savings to a location. 
-          Locatalyze gives you a data-backed GO or NO verdict in under 60 seconds — so you don&apos;t find out the hard way.
+
+        <p className="text-lg sm:text-xl text-stone-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Enter your business details and get a complete financial feasibility report in under 30 seconds.
+          Break-even analysis, 3-year projections, competitor density, and a clear GO / CAUTION / NO verdict.
         </p>
-        <div style={S.heroActions}>
-          <a href="/onboarding" style={S.btnPrimary}>Analyse my location →</a>
-          <a href="#how" style={S.btnSecond}>See how it works</a>
-        </div>
-        <p style={S.heroNote}>Free for your first location. No credit card required.</p>
-      </div>
 
-      {/* STRIP */}
-      <div style={S.strip}>
-        {[['60s', 'Average report time'], ['5', 'Dimensions analysed'], ['GO / NO', 'Clear verdict always'], ['GPT-4o', 'AI engine']].map(([num, label], i) => (
-          <div key={i} style={S.stripItem}><span style={S.stripNum}>{num}</span><span>{label}</span></div>
-        ))}
-      </div>
-
-      {/* MOCK DASHBOARD */}
-      <div style={S.mockWrap}>
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={S.secEye}>Live example</div>
-          <div style={{ ...S.secTitle, maxWidth: '100%', textAlign: 'center', marginBottom: 0 }}>What your report looks like</div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
+          <Link href="/auth/signup" className="w-full sm:w-auto px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-all text-base shadow-sm shadow-teal-200">
+            Analyse your first location free →
+          </Link>
+          <a href="#sample" className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-stone-50 text-stone-700 font-medium rounded-xl border border-stone-200 transition-all text-base">
+            See a sample report
+          </a>
         </div>
-        <div style={S.mockCard}>
-          <div style={S.mockBar}>
-            {['#ff5f57','#ffbd2e','#28c940'].map((c,i) => <div key={i} style={{ width:12, height:12, borderRadius:'50%', background:c }} />)}
-            <span style={{ color: '#444', fontSize: 12, marginLeft: 12, fontFamily: 'monospace' }}>locatalyze.com/dashboard/abc-123</span>
-          </div>
-          <div style={S.mockInner}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:24 }}>
+        <p className="text-sm text-stone-400">Free for your first location · No credit card required</p>
+      </section>
+
+      {/* ── Sample Report ── */}
+      <section id="sample" className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 mb-3">Here's what you get</h2>
+          <p className="text-stone-500">A real sample report — Cafe at Surry Hills, Sydney</p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden max-w-3xl mx-auto">
+          {/* Report header */}
+          <div className="p-6 border-b border-stone-100">
+            <div className="flex items-start justify-between flex-wrap gap-4">
               <div>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontSize:22, fontWeight:800, marginBottom:4 }}>Fitzroy, Melbourne VIC</div>
-                <div style={{ fontSize:14, color:'#888' }}>Café / Coffee Shop · Free tier analysis</div>
+                <p className="text-sm text-stone-400 mb-1">📍 {SAMPLE_REPORT.location}</p>
+                <h3 className="text-xl font-bold text-stone-900">{SAMPLE_REPORT.business}</h3>
               </div>
-              <div style={verdictStyle('GO')}>✓ GO</div>
+              <div className="flex items-center gap-3">
+                <VerdictBadge verdict={SAMPLE_REPORT.verdict} />
+                <div className="text-right">
+                  <p className="text-3xl font-black text-amber-600">{SAMPLE_REPORT.score}</p>
+                  <p className="text-xs text-stone-400">/ 100</p>
+                </div>
+              </div>
             </div>
-            <div style={S.mockMetrics}>
-              {[['Location Score','82','out of 100'],['Break-Even Daily','47','customers/day'],['Payback Period','14mo','estimated']].map(([l,v,s],i)=>(
-                <div key={i} style={S.mockMetric}>
-                  <div style={S.mockLabel}>{l}</div>
-                  <div style={S.mockVal}>{v}</div>
-                  <div style={S.mockSub}>{s}</div>
+            <p className="text-sm text-stone-500 mt-3">
+              This location scores {SAMPLE_REPORT.score}/100 — CAUTION. Rent at 13.1% of revenue leaves a limited buffer.
+              High competition density (7 within 500m) suppresses demand.
+            </p>
+          </div>
+
+          {/* Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-stone-100 border-b border-stone-100">
+            {[
+              { label: 'Monthly Revenue', value: SAMPLE_REPORT.revenue },
+              { label: 'Monthly Profit', value: SAMPLE_REPORT.profit },
+              { label: 'Break-even', value: SAMPLE_REPORT.breakeven },
+              { label: 'Payback Period', value: SAMPLE_REPORT.payback },
+            ].map(m => (
+              <div key={m.label} className="p-4 text-center">
+                <p className="text-xs text-stone-400 mb-1">{m.label}</p>
+                <p className="text-base font-bold text-stone-800">{m.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Score bars */}
+          <div className="p-6">
+            <p className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Score Breakdown</p>
+            <div className="space-y-3">
+              {SAMPLE_REPORT.scores.map(s => (
+                <div key={s.label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-stone-600">{s.label} <span className="text-stone-400 text-xs">{s.weight}</span></span>
+                    <span className="font-semibold text-stone-800">{s.score}</span>
+                  </div>
+                  <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${s.score >= 70 ? 'bg-emerald-400' : s.score >= 45 ? 'bg-amber-400' : 'bg-red-400'}`}
+                      style={{ width: `${s.score}%` }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
-            <div style={S.scoreGrid}>
-              {[['Competition',70],['Rent Value',85],['Market Demand',78],['Profitability',80]].map(([l,s],i)=>(
-                <div key={i}>
-                  <div style={S.scoreRow}><span>{l}</span><span style={{ fontWeight:700 }}>{s}</span></div>
-                  <div style={S.scoreTrack}><div style={scoreFill(s as number)} /></div>
-                </div>
-              ))}
-            </div>
+            <p className="text-xs text-stone-400 mt-4 text-center">
+              Full reports include financial projections, SWOT analysis, risk scenarios, and AI commentary
+            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FEATURES */}
-      <div id="features" style={S.featureWrap}>
-        <div style={S.secEye}>What you get</div>
-        <div style={S.secTitle}>Everything you need to make the call</div>
-        <div style={S.featGrid}>
-          {features.map((f,i)=>(
-            <div key={i} style={S.featCard}>
-              <div style={S.featIcon}>{f.icon}</div>
-              <div style={S.featTitle}>{f.title}</div>
-              <div style={S.featDesc}>{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* HOW IT WORKS */}
-      <div id="how" style={S.howWrap}>
-        <div style={S.howInner}>
-          <div style={{ ...S.secEye, color:'#555' }}>How it works</div>
-          <div style={{ ...S.secTitle, color:'#f5f4f0', marginBottom:0 }}>From idea to verdict in 3 minutes</div>
-          <div style={S.howGrid}>
-            {steps.map((s,i)=>(
-              <div key={i} style={S.howStep}>
-                <div style={S.howNum}>{s.num}</div>
-                <div style={S.howTitle}>{s.title}</div>
-                <div style={S.howDesc}>{s.desc}</div>
+      {/* ── How it works ── */}
+      <section className="bg-white border-y border-stone-100 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 mb-3">How it works</h2>
+            <p className="text-stone-500">From address to verdict in under 30 seconds</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {STEPS.map((step, i) => (
+              <div key={i} className="relative p-6 rounded-2xl bg-stone-50 border border-stone-100">
+                <div className="w-8 h-8 rounded-full bg-teal-600 text-white text-sm font-bold flex items-center justify-center mb-4">
+                  {i + 1}
+                </div>
+                <div className="text-2xl mb-3">{step.icon}</div>
+                <h3 className="font-semibold text-stone-900 mb-2">{step.title}</h3>
+                <p className="text-sm text-stone-500 leading-relaxed">{step.desc}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* PRICING */}
-      <div id="pricing" style={S.pricWrap}>
-        <div style={S.secEye}>Pricing</div>
-        <div style={S.secTitle}>Start free. Pay when it saves you money.</div>
-        <div style={S.pricGrid}>
-          {plans.map((p,i)=>(
-            <div key={i} style={pricingCard(p.featured)}>
-              {p.badge && <div style={{ position:'absolute', top:-14, left:'50%', transform:'translateX(-50%)', background:'#c84b31', color:'#fff', fontSize:11, fontWeight:700, padding:'5px 16px', borderRadius:100, whiteSpace:'nowrap' }}>{p.badge}</div>}
-              <div style={{ fontSize:11, fontWeight:700, color:'#777', letterSpacing:'1px', textTransform:'uppercase', marginBottom:12 }}>{p.plan}</div>
-              <div style={{ fontFamily:"'Syne',sans-serif", fontSize:48, fontWeight:900, color: p.featured?'#fff':'#1a1a1a', letterSpacing:'-1px', marginBottom:4 }}>{p.price}</div>
-              <div style={{ fontSize:13, color:'#777', marginBottom:28 }}>{p.per}</div>
-              {p.items.map((feat,j)=>(
-                <div key={j} style={{ display:'flex', alignItems:'center', gap:10, fontSize:14, color: p.featured?'#ccc':'#444', marginBottom:12 }}>
-                  <div style={{ width:18, height:18, borderRadius:'50%', background: p.featured?'#c84b31':'#f0ede6', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, flexShrink:0, color: p.featured?'#fff':'#c84b31', fontWeight:700 }}>✓</div>
-                  {feat}
-                </div>
-              ))}
-              <a href="/onboarding" style={{ display:'block', textAlign:'center', marginTop:28, padding:'14px 24px', borderRadius:10, fontWeight:700, fontSize:15, textDecoration:'none', background: p.featured?'#c84b31':'#f5f4f0', color: p.featured?'#fff':'#1a1a1a' }}>Get started →</a>
+      {/* ── Data sources ── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 mb-3">Where the data comes from</h2>
+          <p className="text-stone-500 max-w-xl mx-auto">We're transparent about our sources — not a black box</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { icon: '🗺️', title: 'OpenStreetMap', desc: 'Geocoding & address resolution' },
+            { icon: '👥', title: 'Census Data', desc: 'Median income by postcode' },
+            { icon: '🏪', title: 'Business Density', desc: 'Competitor estimates by type' },
+            { icon: '🤖', title: 'GPT-4o', desc: 'AI synthesis & plain-English analysis' },
+          ].map(d => (
+            <div key={d.title} className="bg-white border border-stone-200 rounded-xl p-4 text-center">
+              <div className="text-2xl mb-2">{d.icon}</div>
+              <p className="text-sm font-semibold text-stone-800 mb-1">{d.title}</p>
+              <p className="text-xs text-stone-400">{d.desc}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* CTA */}
-      <div style={S.ctaWrap}>
-        <div style={S.ctaTitle}>Stop guessing.<br/>Get the verdict.</div>
-        <p style={S.ctaSub}>Your first location analysis is completely free. Takes 3 minutes.</p>
-        <a href="/onboarding" style={S.ctaBtn}>Analyse my location — it&apos;s free</a>
-      </div>
+      {/* ── FAQ ── */}
+      <section className="bg-white border-y border-stone-100 py-16">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 text-center mb-10">Common questions</h2>
+          <div className="space-y-3">
+            {FAQS.map((faq, i) => (
+              <div key={i} className="border border-stone-200 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                >
+                  <span className="font-medium text-stone-800 text-sm">{faq.q}</span>
+                  <span className={`text-stone-400 transition-transform ${openFaq === i ? 'rotate-45' : ''}`}>+</span>
+                </button>
+                {openFaq === i && (
+                  <div className="px-5 pb-4 text-sm text-stone-500 leading-relaxed border-t border-stone-100 pt-3">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* FOOTER */}
-      <footer style={S.footer}>
-        <div style={S.footerIn}>
-          <div style={S.footerLogo}>Locatalyze</div>
-          <div style={S.footerNote}>© 2026 Locatalyze. Built for business owners who don&apos;t want to gamble their savings.</div>
+      {/* ── CTA ── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <div className="bg-teal-600 rounded-3xl p-10 sm:p-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Ready to analyse your location?
+          </h2>
+          <p className="text-teal-100 text-lg mb-8 max-w-lg mx-auto">
+            Your first report is completely free. No credit card needed.
+          </p>
+          <Link href="/auth/signup" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-teal-700 font-semibold rounded-xl hover:bg-teal-50 transition-colors text-base">
+            Get your free report →
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-stone-100 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center text-white text-xs font-bold">L</div>
+            <span className="text-sm font-medium text-stone-600">Locatalyze</span>
+          </div>
+          <div className="flex items-center gap-6 text-sm text-stone-400">
+            <span>AI-powered location intelligence for SMBs</span>
+          </div>
+          <div className="flex items-center gap-4 text-sm text-stone-400">
+            <Link href="/auth/login" className="hover:text-stone-600 transition-colors">Sign in</Link>
+            <Link href="/auth/signup" className="hover:text-stone-600 transition-colors">Sign up</Link>
+          </div>
         </div>
       </footer>
+
     </div>
-  );
+  )
 }
