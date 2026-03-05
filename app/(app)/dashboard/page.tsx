@@ -1,31 +1,31 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
-interface ReportSummary {
-  id: string
-  report_id: string | null
-  verdict: string | null
-  overall_score: number | null
-  location_name: string | null
-  business_type: string | null
-  monthly_rent: number | null
-  breakeven_months: number | null
-  created_at: string
+const S = {
+  font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
+  brand: '#0F766E', brandLight: '#14B8A6',
+  n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4',
+  n400: '#A8A29E', n500: '#78716C', n700: '#44403C', n800: '#292524', n900: '#1C1917',
+  white: '#FFFFFF',
+  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBorder: '#A7F3D0',
+  amber: '#D97706', amberBg: '#FFFBEB', amberBorder: '#FDE68A',
+  red: '#DC2626', redBg: '#FEF2F2', redBorder: '#FECACA',
 }
+
+const card = (extra = {}) => ({
+  background: S.white, borderRadius: 18,
+  border: `1px solid ${S.n200}`,
+  boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04)',
+  overflow: 'hidden', ...extra,
+})
 
 function verdictStyle(v: string | null) {
-  if (v === 'GO')      return { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-500' }
-  if (v === 'CAUTION') return { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',   dot: 'bg-amber-500'   }
-  return                      { bg: 'bg-red-50',     text: 'text-red-700',     border: 'border-red-200',     dot: 'bg-red-500'     }
-}
-
-function fmt(n: number | null) {
-  if (!n) return '—'
-  return '$' + n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
+  if (v === 'GO')      return { bg: S.emeraldBg, text: S.emerald,  border: S.emeraldBorder, dot: S.emerald  }
+  if (v === 'CAUTION') return { bg: S.amberBg,   text: S.amber,    border: S.amberBorder,   dot: S.amber    }
+  return                      { bg: S.redBg,     text: S.red,      border: S.redBorder,     dot: S.red      }
 }
 
 function timeAgo(d: string) {
@@ -36,253 +36,155 @@ function timeAgo(d: string) {
   if (mins < 1) return 'just now'
   if (mins < 60) return `${mins}m ago`
   if (hours < 24) return `${hours}h ago`
-  if (days < 7) return `${days}d ago`
-  return new Date(d).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
+  return `${days}d ago`
 }
 
-function Navbar({ userName }: { userName?: string }) {
-  const router = useRouter()
-  const [signingOut, setSigningOut] = useState(false)
-
-  async function handleSignOut() {
-    setSigningOut(true)
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/auth/login')
-  }
-
-  return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-stone-100">
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white text-xs font-bold">L</div>
-          <span className="font-bold text-stone-900 text-sm">Locatalyze</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="hidden sm:block text-xs text-stone-400 bg-stone-100 px-2 py-1 rounded-full">FREE</span>
-          <Link href="/onboarding" className="text-xs bg-teal-600 hover:bg-teal-700 text-white font-medium px-3 py-1.5 rounded-lg transition-colors">
-            + New analysis
-          </Link>
-          <button
-            onClick={handleSignOut}
-            disabled={signingOut}
-            className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
-      </div>
-    </header>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="text-center py-20 px-4">
-      <div className="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center text-3xl mx-auto mb-5">
-        📍
-      </div>
-      <h2 className="text-xl font-bold text-stone-900 mb-2">No analyses yet</h2>
-      <p className="text-stone-400 text-sm max-w-sm mx-auto mb-6">
-        Run your first location analysis to find out if a site will make you money before you sign the lease.
-      </p>
-      <Link
-        href="/onboarding"
-        className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors"
-      >
-        Analyse your first location →
-      </Link>
-    </div>
-  )
+interface Report {
+  id: string
+  report_id: string | null
+  verdict: string | null
+  overall_score: number | null
+  location_name: string | null
+  business_type: string | null
+  monthly_rent: number | null
+  created_at: string
 }
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [reports, setReports] = useState<ReportSummary[]>([])
+  const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
-  const [userEmail, setUserEmail] = useState('')
+  const [userName, setUserName] = useState('there')
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/auth/login'); return }
-
-      setUserEmail(user.email?.split('@')[0] || 'there')
-
+      setUserName(user.email?.split('@')[0] || 'there')
       const { data } = await supabase
         .from('reports')
-        .select('id, report_id, verdict, overall_score, location_name, business_type, monthly_rent, breakeven_months, created_at')
+        .select('id,report_id,verdict,overall_score,location_name,business_type,monthly_rent,created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-
-      if (data) setReports(data as ReportSummary[])
+      if (data) setReports(data as Report[])
       setLoading(false)
     }
     load()
   }, [router])
 
-  function goToReport(r: ReportSummary) {
-    router.push(`/dashboard/${r.report_id || r.id}`)
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/auth/login')
   }
 
-  const goCount      = reports.filter(r => r.verdict === 'GO').length
-  const cautionCount = reports.filter(r => r.verdict === 'CAUTION').length
-  const noCount      = reports.filter(r => r.verdict === 'NO').length
-
   if (loading) return (
-    <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-stone-400">Loading your reports...</p>
+    <div style={{ minHeight: '100vh', background: S.n50, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: S.font }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ width: 36, height: 36, border: `3px solid ${S.n100}`, borderTopColor: S.brand, borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+        <p style={{ fontSize: 13, color: S.n400 }}>Loading your reports...</p>
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 
-  return (
-    <div className="min-h-screen bg-[#FAFAF8]" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
-      <Navbar userName={userEmail} />
+  const goCount = reports.filter(r => r.verdict === 'GO').length
+  const cautionCount = reports.filter(r => r.verdict === 'CAUTION').length
+  const noCount = reports.filter(r => r.verdict === 'NO').length
 
-      <div className="max-w-5xl mx-auto px-4 py-6 pb-24">
+  return (
+    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0;} @keyframes spin{to{transform:rotate(360deg)}} a{text-decoration:none;color:inherit;} button{font-family:inherit;cursor:pointer;}`}</style>
+
+      {/* Nav */}
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(16px)', borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(135deg, ${S.brand}, ${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 14 }}>L</div>
+          <span style={{ fontWeight: 800, fontSize: 16, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 11, color: S.n400, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 100, padding: '3px 10px', fontWeight: 600 }}>FREE</span>
+          <Link href="/onboarding" style={{ fontSize: 13, background: S.brand, color: S.white, borderRadius: 9, padding: '7px 16px', fontWeight: 700 }}>+ New Analysis</Link>
+          <button onClick={handleSignOut} style={{ fontSize: 12, color: S.n400, background: 'none', border: 'none' }}>Sign out</button>
+        </div>
+      </nav>
+
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 20px 80px' }}>
 
         {/* Welcome card */}
-        <div className="bg-teal-600 rounded-2xl p-6 mb-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-8 translate-x-8" />
-          <div className="absolute bottom-0 right-12 w-20 h-20 bg-white/5 rounded-full translate-y-6" />
-          <p className="text-teal-100 text-sm mb-1">Welcome back, {userEmail} 👋</p>
-          <h1 className="text-white font-bold text-xl mb-4">Ready to analyse your next location?</h1>
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 bg-white text-teal-700 font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-teal-50 transition-colors"
-          >
-            New Analysis →
-          </Link>
+        <div style={{ background: `linear-gradient(135deg, ${S.brand} 0%, #0891B2 100%)`, borderRadius: 22, padding: '26px 28px', marginBottom: 18, position: 'relative', overflow: 'hidden', boxShadow: '0 8px 32px rgba(15,118,110,0.2)' }}>
+          <div style={{ position: 'absolute', top: -30, right: -20, width: 100, height: 100, background: 'rgba(255,255,255,0.07)', borderRadius: '50%' }} />
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 4 }}>Welcome back, {userName} 👋</p>
+          <h1 style={{ color: S.white, fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 18 }}>Ready to analyse your next location?</h1>
+          <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: S.brand, borderRadius: 10, padding: '9px 20px', fontWeight: 700, fontSize: 13 }}>New Analysis →</Link>
         </div>
 
         {/* Stats */}
-        {reports.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            {[
-              { label: 'Total reports', value: reports.length, color: 'text-stone-800' },
-              { label: 'GO verdicts', value: goCount, color: 'text-emerald-600' },
-              { label: 'CAUTION', value: cautionCount, color: 'text-amber-600' },
-              { label: 'NO verdicts', value: noCount, color: 'text-red-500' },
-            ].map(s => (
-              <div key={s.label} className="bg-white rounded-2xl border border-stone-100 p-4 shadow-sm">
-                <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-                <p className="text-xs text-stone-400 mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Reports section */}
-        {reports.length === 0 ? <EmptyState /> : (
-          <>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-stone-700 text-sm">Active Reports</h2>
-              <span className="text-xs text-stone-400">{reports.length} location{reports.length !== 1 ? 's' : ''}</span>
-            </div>
-
-            {/* Mobile cards */}
-            <div className="sm:hidden space-y-3">
-              {reports.map(r => {
-                const vs = verdictStyle(r.verdict)
-                return (
-                  <div
-                    key={r.id}
-                    onClick={() => goToReport(r)}
-                    className="bg-white rounded-2xl border border-stone-100 shadow-sm p-4 cursor-pointer active:scale-[0.98] transition-transform"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-stone-900 text-sm truncate">{r.business_type || 'Report'}</p>
-                        <p className="text-xs text-stone-400 truncate mt-0.5">{r.location_name || '—'}</p>
-                      </div>
-                      <span className={`flex-shrink-0 ml-2 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${vs.bg} ${vs.text} ${vs.border}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${vs.dot}`} />
-                        {r.verdict}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-xs text-stone-500">
-                        <span>Score: <strong className="text-stone-800">{r.overall_score ?? '—'}</strong></span>
-                        <span>Rent: <strong className="text-stone-800">{fmt(r.monthly_rent)}/mo</strong></span>
-                      </div>
-                      <span className="text-xs text-stone-300">{timeAgo(r.created_at)}</span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Desktop table */}
-            <div className="hidden sm:block bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-stone-100">
-                    <th className="text-left text-xs font-semibold text-stone-400 uppercase tracking-wide px-5 py-3">Location</th>
-                    <th className="text-left text-xs font-semibold text-stone-400 uppercase tracking-wide px-4 py-3">Business</th>
-                    <th className="text-center text-xs font-semibold text-stone-400 uppercase tracking-wide px-4 py-3">Verdict</th>
-                    <th className="text-center text-xs font-semibold text-stone-400 uppercase tracking-wide px-4 py-3">Score</th>
-                    <th className="text-right text-xs font-semibold text-stone-400 uppercase tracking-wide px-4 py-3">Rent/mo</th>
-                    <th className="text-right text-xs font-semibold text-stone-400 uppercase tracking-wide px-5 py-3">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reports.map((r, i) => {
-                    const vs = verdictStyle(r.verdict)
-                    return (
-                      <tr
-                        key={r.id}
-                        onClick={() => goToReport(r)}
-                        className={`cursor-pointer hover:bg-stone-50 transition-colors ${i < reports.length - 1 ? 'border-b border-stone-50' : ''}`}
-                      >
-                        <td className="px-5 py-3.5">
-                          <p className="text-sm text-stone-700 font-medium truncate max-w-[200px]">{r.location_name || '—'}</p>
-                        </td>
-                        <td className="px-4 py-3.5">
-                          <p className="text-sm text-stone-500">{r.business_type || '—'}</p>
-                        </td>
-                        <td className="px-4 py-3.5 text-center">
-                          <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${vs.bg} ${vs.text} ${vs.border}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${vs.dot}`} />
-                            {r.verdict || '—'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3.5 text-center">
-                          <span className={`text-sm font-bold ${vs.text}`}>{r.overall_score ?? '—'}</span>
-                        </td>
-                        <td className="px-4 py-3.5 text-right">
-                          <span className="text-sm text-stone-500">{fmt(r.monthly_rent)}</span>
-                        </td>
-                        <td className="px-5 py-3.5 text-right">
-                          <span className="text-xs text-stone-400">{timeAgo(r.created_at)}</span>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Mobile bottom nav */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-100 px-4 pb-safe">
-        <div className="flex items-center justify-around h-16">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
           {[
-            { icon: '🏠', label: 'Home', href: '/dashboard', active: true },
-            { icon: '📋', label: 'Reports', href: '/dashboard', active: false },
-            { icon: '➕', label: 'Analyse', href: '/onboarding', active: false },
-          ].map(item => (
-            <Link key={item.label} href={item.href} className={`flex flex-col items-center gap-1 ${item.active ? 'text-teal-600' : 'text-stone-400'}`}>
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-xs font-medium">{item.label}</span>
-            </Link>
+            { label: 'Total', value: reports.length, color: S.n800 },
+            { label: 'GO', value: goCount, color: S.emerald },
+            { label: 'CAUTION', value: cautionCount, color: S.amber },
+            { label: 'NO', value: noCount, color: S.red },
+          ].map(s => (
+            <div key={s.label} style={card({ padding: '16px 14px' })}>
+              <p style={{ fontSize: 26, fontWeight: 900, color: s.color, letterSpacing: '-0.03em' }}>{s.value}</p>
+              <p style={{ fontSize: 11, color: S.n400, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginTop: 3 }}>{s.label}</p>
+            </div>
           ))}
         </div>
+
+        {/* Reports */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <h2 style={{ fontSize: 12, fontWeight: 700, color: S.n500, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Active Reports</h2>
+          <span style={{ fontSize: 11, color: S.n400 }}>{reports.length} location{reports.length !== 1 ? 's' : ''}</span>
+        </div>
+
+        {reports.length === 0 ? (
+          <div style={card({ padding: '48px 24px', textAlign: 'center' })}>
+            <div style={{ fontSize: 36, marginBottom: 14 }}>📍</div>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: S.n900, marginBottom: 8, letterSpacing: '-0.02em' }}>No analyses yet</h3>
+            <p style={{ fontSize: 13, color: S.n400, marginBottom: 20, lineHeight: 1.6 }}>Run your first location analysis to find out if a site will make you money before you sign the lease.</p>
+            <Link href="/onboarding" style={{ display: 'inline-block', background: S.brand, color: S.white, borderRadius: 12, padding: '12px 24px', fontWeight: 700, fontSize: 14 }}>Analyse your first location →</Link>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {reports.map(r => {
+              const vs = verdictStyle(r.verdict)
+              return (
+                <div key={r.id} onClick={() => router.push(`/dashboard/${r.report_id || r.id}`)}
+                  style={card({ padding: '16px 20px', cursor: 'pointer' })}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5 }}>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: S.n900, letterSpacing: '-0.01em' }}>{r.business_type || 'Report'}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: vs.bg, color: vs.text, border: `1.5px solid ${vs.border}`, borderRadius: 100, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: vs.dot }} />
+                          {r.verdict || '—'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 12, color: S.n400 }}>📍 {r.location_name || '—'}</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <p style={{ fontSize: 20, fontWeight: 900, color: vs.text, letterSpacing: '-0.02em', lineHeight: 1 }}>{r.overall_score ?? '—'}</p>
+                        <p style={{ fontSize: 10, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.05em', fontWeight: 600 }}>Score</p>
+                      </div>
+                      {r.monthly_rent && (
+                        <div style={{ textAlign: 'center' }}>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: S.n700 }}>${r.monthly_rent.toLocaleString()}</p>
+                          <p style={{ fontSize: 10, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.05em', fontWeight: 600 }}>Rent/mo</p>
+                        </div>
+                      )}
+                      <p style={{ fontSize: 11, color: S.n400 }}>{timeAgo(r.created_at)}</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
