@@ -1,62 +1,76 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import crypto from 'crypto'
 
-export async function createClient() {
-  const cookieStore = await cookies()
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value, ...options })
-          } catch {
-            // Called from a Server Component — safe to ignore
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: '', ...options })
-          } catch {
-            // Called from a Server Component — safe to ignore
-          }
-        },
-      },
-    }
-  )
+function secureHeaders(res: NextResponse) {
+  res.headers.set('X-Content-Type-Options', 'nosniff')
+  return res
 }
 
-export async function createAdminClient() {
-  const cookieStore = await cookies()
+// POST /api/reports/[reportId]/share
+// Body: { action: 'enable' | 'disable' }
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ reportId: string }> }
+) {
+  try {
+    const { reportId } = await params
+    const supabase = await createClient()
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value, ...options })
-          } catch {
-            // Called from a Server Component — safe to ignore
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: '', ...options })
-          } catch {
-            // Called from a Server Component — safe to ignore
-          }
-        },
-      },
+    // Auth check
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return secureHeaders(NextResponse.json({ error: 'Unauthorised' }, { status: 401 }))
     }
-  )
+
+    const { action } = await request.json()
+    if (!['enable', 'disable'].includes(action)) {
+      return secureHeaders(NextResponse.json({ error: 'Invalid action' }, { status: 400 }))
+    }
+
+    // Verify ownership
+    const { data: report, error: fetchError } = await supabase
+      .from('reports')
+      .select('id, report_id, user_id, is_public, public_token')
+      .eq('report_id', reportId)
+      .single()
+
+    if (fetchError || !report) {
+      return secureHeaders(NextResponse.json({ error: 'Report not found' }, { status: 404 }))
+    }
+
+    if (report.user_id !== user.id) {
+      return secureHeaders(NextResponse.json({ error: 'Forbidden' }, { status: 403 }))
+    }
+
+    if (action === 'enable') {
+      const token = report.public_token || crypto.randomBytes(16).toString('hex')
+
+      const { error: updateError } = await supabase
+        .from('reports')
+        .update({ is_public: true, public_token: token })
+        .eq('report_id', reportId)
+
+      if (updateError) throw updateError
+
+      return secureHeaders(NextResponse.json({
+        success: true,
+        is_public: true,
+        public_token: token,
+        share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.vercel.app'}/r/${token}`,
+      }))
+    } else {
+      const { error: updateError } = await supabase
+        .from('reports')
+        .update({ is_public: false })
+        .eq('report_id', reportId)
+
+      if (updateError) throw updateError
+
+      return secureHeaders(NextResponse.json({ success: true, is_public: false }))
+    }
+  } catch (err: any) {
+    console.error('[Share API]', err)
+    return secureHeaders(NextResponse.json({ error: 'Internal server error' }, { status: 500 }))
+  }
 }

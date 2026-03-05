@@ -7,18 +7,14 @@ function secureHeaders(res: NextResponse) {
   return res
 }
 
-// POST /api/reports/[reportId]/share
-// Body: { action: 'enable' | 'disable' }
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ reportId: string }> }
 ) {
   try {
     const { reportId } = await params
+    const supabase = await createClient()
 
-   const supabase = createClient()
-
-    // Auth check
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return secureHeaders(NextResponse.json({ error: 'Unauthorised' }, { status: 401 }))
@@ -29,7 +25,6 @@ export async function POST(
       return secureHeaders(NextResponse.json({ error: 'Invalid action' }, { status: 400 }))
     }
 
-    // Verify ownership
     const { data: report, error: fetchError } = await supabase
       .from('reports')
       .select('id, report_id, user_id, is_public, public_token')
@@ -45,16 +40,12 @@ export async function POST(
     }
 
     if (action === 'enable') {
-      // Generate a token if one doesn't exist
       const token = report.public_token || crypto.randomBytes(16).toString('hex')
-
       const { error: updateError } = await supabase
         .from('reports')
         .update({ is_public: true, public_token: token })
         .eq('report_id', reportId)
-
       if (updateError) throw updateError
-
       return secureHeaders(NextResponse.json({
         success: true,
         is_public: true,
@@ -62,14 +53,11 @@ export async function POST(
         share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.vercel.app'}/r/${token}`,
       }))
     } else {
-      // Disable sharing — keep the token so the same URL can be re-enabled later
       const { error: updateError } = await supabase
         .from('reports')
         .update({ is_public: false })
         .eq('report_id', reportId)
-
       if (updateError) throw updateError
-
       return secureHeaders(NextResponse.json({ success: true, is_public: false }))
     }
   } catch (err: any) {
