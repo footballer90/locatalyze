@@ -12,9 +12,11 @@ function secureHeaders(res: NextResponse) {
 // Body: { action: 'enable' | 'disable' }
 export async function POST(
   request: NextRequest,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }> }
 ) {
   try {
+    const { reportId } = await params
+
     const cookieStore = cookies()
     const supabase = createClient(cookieStore)
 
@@ -33,7 +35,7 @@ export async function POST(
     const { data: report, error: fetchError } = await supabase
       .from('reports')
       .select('id, report_id, user_id, is_public, public_token')
-      .eq('report_id', params.reportId)
+      .eq('report_id', reportId)
       .single()
 
     if (fetchError || !report) {
@@ -51,7 +53,7 @@ export async function POST(
       const { error: updateError } = await supabase
         .from('reports')
         .update({ is_public: true, public_token: token })
-        .eq('report_id', params.reportId)
+        .eq('report_id', reportId)
 
       if (updateError) throw updateError
 
@@ -66,7 +68,7 @@ export async function POST(
       const { error: updateError } = await supabase
         .from('reports')
         .update({ is_public: false })
-        .eq('report_id', params.reportId)
+        .eq('report_id', reportId)
 
       if (updateError) throw updateError
 
