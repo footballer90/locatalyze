@@ -286,7 +286,7 @@ export default function LandingPage() {
                 {p.features.map(f => (
                   <div key={f} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                     <span style={{ color: S.emerald, fontSize: 13, flexShrink: 0 }}>✓</span>
-                    <span style={{ fontSize: 12, color:  }}>{f}</span>
+                    <span style={{ fontSize: 12, color: S.n500 }}>{f}</span>
                   </div>
                 ))}
               </div>
