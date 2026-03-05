@@ -1,5 +1,5 @@
 'use client'
-
+import ShareButton from '@/components/ShareButton'
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -34,6 +34,8 @@ interface Report {
   full_report_markdown: string | null
   result_data: any | null
   created_at: string
+  is_public?: boolean | null
+  public_token?: string | null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -289,9 +291,18 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     <span className="text-slate-500 text-xs">/ 100</span>
                   </div>
                 </div>
-                <p className="text-slate-400 text-xs mt-2">Location Score</p>
+               <p className="text-slate-400 text-xs mt-2">Location Score</p>
               </div>
             </div>
+
+            <div className="mt-4 flex justify-end">
+              <ShareButton
+                reportId={report.report_id ?? report.id}
+                initialIsPublic={report.is_public ?? false}
+                initialToken={report.public_token ?? null}
+              />
+            </div>
+
           </div>
         </div>
 
