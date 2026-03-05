@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -48,8 +47,7 @@ function fmtCurrency(n: number | null) {
 }
 
 export default async function PublicReportPage({ params }: { params: { token: string } }) {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+const supabase = await createClient()
 
   const { data: report, error } = await supabase
     .from('reports')
