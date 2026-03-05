@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
 function secureHeaders(res: NextResponse) {
@@ -17,8 +16,7 @@ export async function POST(
   try {
     const { reportId } = await params
 
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+   const supabase = createClient()
 
     // Auth check
     const { data: { user } } = await supabase.auth.getUser()
