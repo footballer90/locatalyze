@@ -1,106 +1,153 @@
 'use client'
-
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
-export default function SignupPage() {
+const S = {
+  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
+  n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4', n400: '#A8A29E',
+  n500: '#78716C', n700: '#44403C', n800: '#292524', n900: '#1C1917',
+  white: '#FFFFFF', red: '#DC2626', redBg: '#FEF2F2', redBorder: '#FECACA',
+  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBorder: '#A7F3D0',
+}
+
+export default function SignUpPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
 
-  async function handleSignup() {
-    setLoading(true)
-    setError('')
+  async function handleSubmit() {
+    if (!email || !password) { setError('Please enter your email and password'); return }
+    if (password.length < 6) { setError('Password must be at least 6 characters'); return }
+    setLoading(true); setError(null)
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { emailRedirectTo: window.location.origin + '/auth/callback' },
+    const { error: err } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     })
-    if (error) { setError(error.message); setLoading(false) }
-    else setSent(true)
+    setLoading(false)
+    if (err) { setError(err.message); return }
+    setDone(true)
   }
 
-  if (sent) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
-        <div className="w-full max-w-md text-center">
-          <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <span className="text-2xl">📬</span>
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Check your inbox</h2>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Confirmation link sent to <span className="text-white font-medium">{email}</span>
-          </p>
-          <p className="text-slate-500 text-xs mt-4">Click the link then sign in to continue.</p>
-        </div>
-      </div>
-    )
+  const inputStyle = {
+    width: '100%', background: S.n50, border: `1.5px solid ${S.n200}`,
+    borderRadius: 10, padding: '12px 14px', fontSize: 15, color: S.n800,
+    outline: 'none', boxSizing: 'border-box' as const,
+    fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif",
+    transition: 'border-color 0.15s',
+  }
+  const labelStyle = {
+    fontSize: 11, fontWeight: 700 as const, color: S.n700,
+    display: 'block' as const, marginBottom: 7,
+    textTransform: 'uppercase' as const, letterSpacing: '0.05em',
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">L</span>
+    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", display: 'flex', flexDirection: 'column' }}>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0;} a{text-decoration:none;color:inherit;} button{font-family:inherit;cursor:pointer;} input{font-family:inherit;} @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');`}</style>
+
+      {/* Nav */}
+      <nav style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}>L</div>
+          <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
+        </Link>
+      </nav>
+
+      {/* Main */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 20px' }}>
+        <div style={{ width: '100%', maxWidth: 420 }}>
+
+          {done ? (
+            /* Success state */
+            <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.06)', padding: 32, textAlign: 'center' }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: S.emeraldBg, border: `2px solid ${S.emeraldBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24 }}>✓</div>
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 10 }}>Check your email</h2>
+              <p style={{ fontSize: 14, color: S.n500, lineHeight: 1.65, marginBottom: 24 }}>
+                We sent a confirmation link to <strong style={{ color: S.n800 }}>{email}</strong>.<br />
+                Click the link to activate your account.
+              </p>
+              <p style={{ fontSize: 12, color: S.n400 }}>Didn't get it? Check your spam folder.</p>
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">Locatalyze</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Start for free</h1>
-          <p className="text-slate-400 text-sm">Analyse your first location in under 60 seconds</p>
-        </div>
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {[
-            { icon: '📍', label: 'Real competitor data' },
-            { icon: '📊', label: 'Break-even calculator' },
-            { icon: '🎯', label: 'GO / CAUTION / NO score' },
-          ].map(({ icon, label }) => (
-            <div key={label} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-center">
-              <div className="text-lg mb-1">{icon}</div>
-              <div className="text-slate-400 text-xs leading-tight">{label}</div>
-            </div>
-          ))}
-        </div>
-        <div className="bg-slate-800/60 backdrop-blur border border-slate-700/60 rounded-2xl p-8">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Email address</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSignup()}
-                placeholder="you@example.com"
-                className="w-full bg-slate-900/80 border border-slate-600/60 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">Password</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSignup()}
-                placeholder="Min 6 characters"
-                className="w-full bg-slate-900/80 border border-slate-600/60 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all" />
-            </div>
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-                <p className="text-red-400 text-xs">{error}</p>
+          ) : (
+            <>
+              {/* Header */}
+              <div style={{ textAlign: 'center', marginBottom: 28 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 20, margin: '0 auto 16px', boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}>L</div>
+                <h1 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 6 }}>Start for free</h1>
+                <p style={{ fontSize: 14, color: S.n500 }}>Analyse your first location in under 60 seconds</p>
               </div>
-            )}
-            <button onClick={handleSignup} disabled={loading || !email || !password}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 disabled:text-slate-500 text-white disabled:cursor-not-allowed rounded-xl py-3 text-sm font-semibold transition-all mt-2">
-              {loading ? 'Creating account...' : 'Create free account →'}
-            </button>
-          </div>
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-slate-700/60" />
-            <span className="text-slate-500 text-xs">Already have an account?</span>
-            <div className="flex-1 h-px bg-slate-700/60" />
-          </div>
-          <Link href="/auth/login" className="block w-full text-center border border-slate-600/60 hover:border-slate-500 text-slate-300 hover:text-white rounded-xl py-3 text-sm font-medium transition-all">
-            Sign in
-          </Link>
+
+              {/* Benefits */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 28, flexWrap: 'wrap' }}>
+                {['📍 Real competitor data', '📊 Break-even calculator', '🎯 GO / CAUTION / NO score'].map(b => (
+                  <span key={b} style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>{b}</span>
+                ))}
+              </div>
+
+              {/* Card */}
+              <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.06)', padding: 28 }}>
+
+                {error && (
+                  <div style={{ marginBottom: 18, padding: '12px 14px', background: S.redBg, border: `1px solid ${S.redBorder}`, borderRadius: 10 }}>
+                    <p style={{ fontSize: 13, color: S.red }}>{error}</p>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <label style={labelStyle}>Email address</label>
+                    <input
+                      type="email" value={email} onChange={e => setEmail(e.target.value)}
+                      placeholder="you@example.com" style={inputStyle}
+                      onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Password</label>
+                    <input
+                      type="password" value={password} onChange={e => setPassword(e.target.value)}
+                      placeholder="At least 6 characters" style={inputStyle}
+                      onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    style={{
+                      width: '100%', padding: '13px', borderRadius: 10, border: 'none',
+                      background: loading ? S.n200 : S.brand,
+                      color: loading ? S.n400 : S.white,
+                      fontWeight: 700, fontSize: 15, marginTop: 4,
+                      boxShadow: loading ? 'none' : '0 2px 8px rgba(15,118,110,0.25)',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {loading ? 'Creating account...' : 'Create free account →'}
+                  </button>
+                </div>
+
+                <div style={{ marginTop: 20, paddingTop: 18, borderTop: `1px solid ${S.n100}`, textAlign: 'center' }}>
+                  <p style={{ fontSize: 13, color: S.n500 }}>
+                    Already have an account?{' '}
+                    <Link href="/auth/login" style={{ color: S.brand, fontWeight: 700 }}>Sign in</Link>
+                  </p>
+                </div>
+              </div>
+
+              <p style={{ textAlign: 'center', fontSize: 12, color: S.n400, marginTop: 16 }}>
+                No credit card required · Free plan includes 1 full report
+              </p>
+            </>
+          )}
         </div>
-        <p className="text-center text-slate-600 text-xs mt-6">No credit card required · Free plan includes 1 full report</p>
       </div>
     </div>
   )
