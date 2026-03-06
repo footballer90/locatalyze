@@ -677,6 +677,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold rounded-xl transition-all"
     >
       ➕ Analyse another location
-    </button>
-  </div>
-</div>
+   </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
