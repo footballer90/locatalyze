@@ -497,7 +497,7 @@ export default function DashboardPage() {
                     {/* Checkbox in compare mode */}
                     {compareMode && (
                       <div style={{
-                        width: 20, height: 20, borderRadius: 6, border: `2px solid ${isSelected ? S.brand : S.n300 as any}`,
+                        width: 20, height: 20, borderRadius: 6, border: `2px solid ${isSelected ? S.brand : S.n200 as any}`,
                         background: isSelected ? S.brand : S.white, flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
