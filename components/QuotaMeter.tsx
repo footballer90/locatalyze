@@ -47,7 +47,7 @@ export default function QuotaMeter({ used, variant, onUpgrade }: QuotaMeterProps
             Upgrade
           </button>
         ) : (
-          <button onClick={onUpgrade} style={{ fontSize: 11, fontWeight: 600, background: 'none', color: S.brand, border: `1px solid ${S.brandBorder}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit', background: S.brandFaded } as any}>
+          <button onClick={onUpgrade} style={{ fontSize: 11, fontWeight: 600, background: S.brandFaded, color: S.brand, border: `1px solid ${S.brandBorder}`, borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit' } as any}>
             Upgrade
           </button>
         )}
