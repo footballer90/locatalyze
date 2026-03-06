@@ -1,4 +1,5 @@
 'use client'
+import QuotaMeter, { FREE_LIMIT } from '@/components/QuotaMeter'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -18,6 +19,7 @@ const MSGS = ['Resolving address coordinates...','Analysing competition density.
 export default function OnboardingPage() {
   const router = useRouter()
   const [userId, setUserId] = useState<string | null>(null)
+  const [reportsUsed, setReportsUsed] = useState(0)
   const [step, setStep] = useState(1)
   const [biz, setBiz] = useState('')
   const [addr, setAddr] = useState('')
@@ -32,17 +34,28 @@ export default function OnboardingPage() {
   const timers = useRef<any[]>([])
 
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => {
-      if (!data.user) router.push('/auth/login?redirectTo=/onboarding')
-      else setUserId(data.user.id)
-    })
+    async function load() {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      if (!data.user) { router.push('/auth/login?redirectTo=/onboarding'); return }
+      setUserId(data.user.id)
+      // Count how many reports this user has
+      const { count } = await supabase
+        .from('reports')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', data.user.id)
+      setReportsUsed(count || 0)
+    }
+    load()
     return () => timers.current.forEach(clearTimeout)
   }, [router])
 
+  const atLimit = reportsUsed >= FREE_LIMIT
   const step1Valid = biz.trim() && addr.trim()
   const step2Valid = parseFloat(rent) > 0 && parseFloat(setup) > 0 && parseFloat(ticket) > 0
 
   async function handleSubmit() {
+    if (atLimit) return
     setLoading(true); setError(null); setProgress(0); setTimedOut(false)
     setMsg(MSGS[0])
     let i = 0
@@ -99,6 +112,7 @@ export default function OnboardingPage() {
     }
   }
 
+  // ── Loading screen ────────────────────────────────────────────────────────
   if (loading) return (
     <div style={{ minHeight: '100vh', background: S.n50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: S.font }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0;} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -127,97 +141,128 @@ export default function OnboardingPage() {
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0;} a{text-decoration:none;color:inherit;} button{font-family:inherit;cursor:pointer;} input,select{font-family:inherit;}`}</style>
 
-      <header style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center' }}>
+      <header style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}>L</div>
           <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
         </div>
+        {/* Quota in nav on onboarding page too */}
+        <QuotaMeter used={reportsUsed} variant="nav" onUpgrade={() => alert('Stripe coming soon!')} />
       </header>
 
       <div style={{ maxWidth: 460, margin: '0 auto', padding: '32px 20px' }}>
-        {/* Step indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28 }}>
-          {[{ n: 1, label: 'Business details' }, { n: 2, label: 'Financials' }].map((s, i) => (
-            <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 30, height: 30, borderRadius: '50%', border: `2px solid ${step >= s.n ? S.brand : S.n200}`, background: step > s.n ? S.brand : S.white, color: step > s.n ? S.white : step === s.n ? S.brand : S.n400, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, transition: 'all 0.2s' }}>
-                {step > s.n ? '✓' : s.n}
-              </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: step === s.n ? S.n700 : S.n400 }}>{s.label}</span>
-              {i < 1 && <div style={{ width: 36, height: 2, background: step > 1 ? S.brand : S.n200, margin: '0 4px', transition: 'background 0.3s' }} />}
-            </div>
-          ))}
+
+        {/* ── Quota meter — shows above form ── */}
+        <div style={{ marginBottom: 20 }}>
+          <QuotaMeter
+            used={reportsUsed}
+            variant="onboarding"
+            onUpgrade={() => alert('Stripe coming soon!')}
+          />
         </div>
 
-        <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04)', padding: 28 }}>
-          {error && (
-            <div style={{ marginBottom: 20, padding: '14px 16px', background: S.redBg, border: `1px solid ${S.redBorder}`, borderRadius: 12 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: S.red, marginBottom: 4 }}>⚠️ Analysis failed</p>
-              <p style={{ fontSize: 13, color: S.red }}>{error}</p>
-            </div>
-          )}
-
-          {step === 1 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              <div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 4 }}>About your business</h2>
-                <p style={{ fontSize: 13, color: S.n400 }}>What are you opening and where?</p>
-              </div>
-              <div>
-                <label style={labelStyle}>Business type</label>
-                <select value={biz} onChange={e => setBiz(e.target.value)} style={inputStyle}>
-                  <option value="">Select a type...</option>
-                  {BIZ_TYPES.map(t => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Location address</label>
-                <input value={addr} onChange={e => setAddr(e.target.value)} placeholder="e.g. 45 King St, Newtown NSW 2042" style={inputStyle} />
-                <p style={{ fontSize: 11, color: S.n400, marginTop: 5 }}>Include suburb and postcode for best results</p>
-              </div>
-              <button onClick={() => setStep(2)} disabled={!step1Valid}
-                style={{ background: step1Valid ? S.brand : S.n100, color: step1Valid ? S.white : S.n400, border: 'none', borderRadius: 10, padding: '13px', fontWeight: 700, fontSize: 14, width: '100%', opacity: step1Valid ? 1 : 0.7 }}>
-                Continue →
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 4 }}>Financial details</h2>
-                <p style={{ fontSize: 13, color: S.n400 }}>Used to calculate break-even and profitability</p>
-              </div>
-              <div style={{ background: S.n50, border: `1.5px solid ${S.n200}`, borderRadius: 12, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: S.n800 }}>{biz}</p>
-                  <p style={{ fontSize: 12, color: S.n400 }}>{addr}</p>
-                </div>
-                <button onClick={() => setStep(1)} style={{ fontSize: 12, color: S.brand, background: 'none', border: 'none', fontWeight: 700 }}>Edit</button>
-              </div>
-              {[
-                { label: 'Monthly rent', val: rent, set: setRent, ph: '3,500', hint: 'Monthly cost of the space' },
-                { label: 'Setup / fit-out cost', val: setup, set: setSetup, ph: '60,000', hint: 'Total upfront investment' },
-                { label: 'Average order value', val: ticket, set: setTicket, ph: '12', hint: 'Average spend per customer visit' },
-              ].map(f => (
-                <div key={f.label}>
-                  <label style={labelStyle}>{f.label}</label>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: S.n400, fontSize: 14 }}>$</span>
-                    <input type="number" value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph} min="1"
-                      style={{ ...inputStyle, paddingLeft: 28 }} />
+        {/* ── If at limit, don't show the form ── */}
+        {atLimit ? (
+          <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, padding: '32px 28px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <p style={{ fontSize: 36, marginBottom: 12 }}>🔒</p>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Free plan limit reached</h2>
+            <p style={{ fontSize: 13, color: S.n500, marginBottom: 20, lineHeight: 1.7 }}>
+              You've used all {FREE_LIMIT} free reports. Upgrade to Pro for unlimited location analyses.
+            </p>
+            <button
+              onClick={() => router.push('/dashboard')}
+              style={{ background: 'none', border: `1.5px solid ${S.n200}`, borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 600, color: S.n700, marginRight: 10 }}
+            >
+              ← Back to dashboard
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Step indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28 }}>
+              {[{ n: 1, label: 'Business details' }, { n: 2, label: 'Financials' }].map((s, i) => (
+                <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 30, height: 30, borderRadius: '50%', border: `2px solid ${step >= s.n ? S.brand : S.n200}`, background: step > s.n ? S.brand : S.white, color: step > s.n ? S.white : step === s.n ? S.brand : S.n400, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, transition: 'all 0.2s' }}>
+                    {step > s.n ? '✓' : s.n}
                   </div>
-                  <p style={{ fontSize: 11, color: S.n400, marginTop: 5 }}>{f.hint}</p>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: step === s.n ? S.n700 : S.n400 }}>{s.label}</span>
+                  {i < 1 && <div style={{ width: 36, height: 2, background: step > 1 ? S.brand : S.n200, margin: '0 4px', transition: 'background 0.3s' }} />}
                 </div>
               ))}
-              <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-                <button onClick={() => setStep(1)} style={{ padding: '12px 18px', background: S.white, border: `1.5px solid ${S.n200}`, borderRadius: 10, fontSize: 13, fontWeight: 600, color: S.n700 }}>← Back</button>
-                <button onClick={handleSubmit} disabled={!step2Valid}
-                  style={{ flex: 1, background: step2Valid ? S.brand : S.n100, color: step2Valid ? S.white : S.n400, border: 'none', borderRadius: 10, padding: '13px', fontWeight: 700, fontSize: 14 }}>
-                  Run Analysis →
-                </button>
-              </div>
             </div>
-          )}
-        </div>
-        <p style={{ textAlign: 'center', fontSize: 12, color: S.n400, marginTop: 16 }}>🔒 Your data is used solely to generate this report and is never shared</p>
+
+            <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04)', padding: 28 }}>
+              {error && (
+                <div style={{ marginBottom: 20, padding: '14px 16px', background: S.redBg, border: `1px solid ${S.redBorder}`, borderRadius: 12 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: S.red, marginBottom: 4 }}>⚠️ Analysis failed</p>
+                  <p style={{ fontSize: 13, color: S.red }}>{error}</p>
+                </div>
+              )}
+
+              {step === 1 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div>
+                    <h2 style={{ fontSize: 18, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 4 }}>About your business</h2>
+                    <p style={{ fontSize: 13, color: S.n400 }}>What are you opening and where?</p>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Business type</label>
+                    <select value={biz} onChange={e => setBiz(e.target.value)} style={inputStyle}>
+                      <option value="">Select a type...</option>
+                      {BIZ_TYPES.map(t => <option key={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Location address</label>
+                    <input value={addr} onChange={e => setAddr(e.target.value)} placeholder="e.g. 45 King St, Newtown NSW 2042" style={inputStyle} />
+                    <p style={{ fontSize: 11, color: S.n400, marginTop: 5 }}>Include suburb and postcode for best results</p>
+                  </div>
+                  <button onClick={() => setStep(2)} disabled={!step1Valid}
+                    style={{ background: step1Valid ? S.brand : S.n100, color: step1Valid ? S.white : S.n400, border: 'none', borderRadius: 10, padding: '13px', fontWeight: 700, fontSize: 14, width: '100%', opacity: step1Valid ? 1 : 0.7 }}>
+                    Continue →
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <h2 style={{ fontSize: 18, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 4 }}>Financial details</h2>
+                    <p style={{ fontSize: 13, color: S.n400 }}>Used to calculate break-even and profitability</p>
+                  </div>
+                  <div style={{ background: S.n50, border: `1.5px solid ${S.n200}`, borderRadius: 12, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: S.n800 }}>{biz}</p>
+                      <p style={{ fontSize: 12, color: S.n400 }}>{addr}</p>
+                    </div>
+                    <button onClick={() => setStep(1)} style={{ fontSize: 12, color: S.brand, background: 'none', border: 'none', fontWeight: 700 }}>Edit</button>
+                  </div>
+                  {[
+                    { label: 'Monthly rent', val: rent, set: setRent, ph: '3,500', hint: 'Monthly cost of the space' },
+                    { label: 'Setup / fit-out cost', val: setup, set: setSetup, ph: '60,000', hint: 'Total upfront investment' },
+                    { label: 'Average order value', val: ticket, set: setTicket, ph: '12', hint: 'Average spend per customer visit' },
+                  ].map(f => (
+                    <div key={f.label}>
+                      <label style={labelStyle}>{f.label}</label>
+                      <div style={{ position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: S.n400, fontSize: 14 }}>$</span>
+                        <input type="number" value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph} min="1"
+                          style={{ ...inputStyle, paddingLeft: 28 }} />
+                      </div>
+                      <p style={{ fontSize: 11, color: S.n400, marginTop: 5 }}>{f.hint}</p>
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                    <button onClick={() => setStep(1)} style={{ padding: '12px 18px', background: S.white, border: `1.5px solid ${S.n200}`, borderRadius: 10, fontSize: 13, fontWeight: 600, color: S.n700 }}>← Back</button>
+                    <button onClick={handleSubmit} disabled={!step2Valid}
+                      style={{ flex: 1, background: step2Valid ? S.brand : S.n100, color: step2Valid ? S.white : S.n400, border: 'none', borderRadius: 10, padding: '13px', fontWeight: 700, fontSize: 14 }}>
+                      Run Analysis →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <p style={{ textAlign: 'center', fontSize: 12, color: S.n400, marginTop: 16 }}>🔒 Your data is used solely to generate this report and is never shared</p>
+          </>
+        )}
       </div>
     </div>
   )
