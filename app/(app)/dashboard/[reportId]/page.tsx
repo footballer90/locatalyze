@@ -272,7 +272,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <div style={{ width: 28, height: 28, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}>L</div>
             <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
           </button>
-          <span style={{ color: S.n300 as any }}>›</span>
+          <span style={{ color: S.n400 as any }}>›</span>
           <span style={{ fontSize: 13, color: S.n500, fontWeight: 500 }}>{report.business_type}</span>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
