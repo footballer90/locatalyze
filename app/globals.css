@@ -583,3 +583,26 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .eta-dot.done    { background: var(--accent3); }
 
 .eta-time { margin-left: auto; color: var(--text-dim); font-size: 12px; }
+/* PRINT STYLES */
+
+@media print {
+
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+}
+
+@page {
+  size: A4;
+  margin: 20mm;
+}

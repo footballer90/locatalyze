@@ -1,5 +1,7 @@
 'use client'
+import PrintButton from '@/components/PrintButton'
 import ShareButton from '@/components/ShareButton'
+import ExportPDFButton from '@/components/ExportPDFButton'
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -659,18 +661,22 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         )}
 
         {/* ── Footer ── */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-800">
-          <div className="text-slate-600 text-xs">
-            Report ID: {report.id} · Generated {new Date(report.created_at).toLocaleString('en-AU')}
-          </div>
-          <button
-            onClick={() => router.push('/onboarding')}
-            className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold rounded-xl transition-all"
-          >
-            ➕ Analyse another location
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+     <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-800">
+  <div className="text-slate-600 text-xs">
+    Report ID: {report.id} · Generated {new Date(report.created_at).toLocaleString('en-AU')}
+  </div>
+  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <ExportPDFButton report={report} />
+    <ShareButton
+      reportId={report.report_id ?? report.id}
+      initialIsPublic={report.is_public ?? false}
+      initialToken={report.public_token ?? null}
+    />
+    <button
+      onClick={() => router.push('/onboarding')}
+      className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold rounded-xl transition-all"
+    >
+      ➕ Analyse another location
+    </button>
+  </div>
+</div>
