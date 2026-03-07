@@ -506,6 +506,7 @@ export default function LandingPage() {
           </div>
           <p style={{ fontSize: 12, color: S.n500 }}>© 2026 Locatalyze. Built for Australian business owners.</p>
           <div style={{ display: 'flex', gap: 20 }}>
+            <Link href="/methodology" style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>How it works</Link>
             <Link href="/auth/signup" style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>Sign up</Link>
             <Link href="/auth/login"  style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>Sign in</Link>
           </div>
