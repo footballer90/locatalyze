@@ -54,6 +54,7 @@ interface Report {
   breakeven_daily: number | null
   created_at: string
   result_data: any
+  label?: string | null
 }
 
 function verdictCfg(v: string | null) {
@@ -87,6 +88,54 @@ function scoreColor(s: number) {
 function MiniBar({ score }: { score: number | null }) {
   const s = score ?? 0
   const color = scoreColor(s)
+  // ── Delete report ──────────────────────────────────────────────────────────
+  async function deleteReport(reportId: string) {
+    setDeletingId(reportId)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
+      if (error) throw error
+      setReports(prev => prev.filter(r => (r.report_id || r.id) !== reportId))
+    } catch (err: any) {
+      console.error('Delete failed:', err.message)
+      alert('Could not delete report. Please try again.')
+    } finally {
+      setDeletingId(null)
+      setDeleteConfirmId(null)
+      setMenuOpenId(null)
+    }
+  }
+
+  // ── Rename report (stores label in result_data.label locally) ─────────────
+  async function renameReport(reportId: string, newLabel: string) {
+    try {
+      const supabase = createClient()
+      // Store label in result_data jsonb column
+      const report = reports.find(r => (r.report_id || r.id) === reportId)
+      if (!report) return
+      const updatedResultData = { ...(report.result_data || {}), label: newLabel.trim() }
+      const { error } = await supabase
+        .from('reports')
+        .update({ result_data: updatedResultData })
+        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
+      if (error) throw error
+      setReports(prev => prev.map(r =>
+        (r.report_id || r.id) === reportId
+          ? { ...r, result_data: updatedResultData, label: newLabel.trim() }
+          : r
+      ))
+    } catch (err: any) {
+      console.error('Rename failed:', err.message)
+    } finally {
+      setRenamingId(null)
+      setRenameValue('')
+      setMenuOpenId(null)
+    }
+  }
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 5, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
@@ -373,6 +422,11 @@ export default function DashboardPage() {
   const [selected, setSelected] = useState<string[]>([])
   const [comparing, setComparing] = useState(false)
   const [compareMode, setCompareMode] = useState(false)
+  const [menuOpenId, setMenuOpenId]               = useState<string | null>(null)
+  const [deletingId, setDeletingId]               = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId]     = useState<string | null>(null)
+  const [renamingId, setRenamingId]               = useState<string | null>(null)
+  const [renameValue, setRenameValue]             = useState('')
 
   useEffect(() => {
     async function load() {
@@ -409,13 +463,62 @@ export default function DashboardPage() {
   const hour = goingDate.getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
+  // ── Delete report ──────────────────────────────────────────────────────────
+  async function deleteReport(reportId: string) {
+    setDeletingId(reportId)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
+      if (error) throw error
+      setReports(prev => prev.filter(r => (r.report_id || r.id) !== reportId))
+    } catch (err: any) {
+      console.error('Delete failed:', err.message)
+      alert('Could not delete report. Please try again.')
+    } finally {
+      setDeletingId(null)
+      setDeleteConfirmId(null)
+      setMenuOpenId(null)
+    }
+  }
+
+  // ── Rename report (stores label in result_data.label locally) ─────────────
+  async function renameReport(reportId: string, newLabel: string) {
+    try {
+      const supabase = createClient()
+      // Store label in result_data jsonb column
+      const report = reports.find(r => (r.report_id || r.id) === reportId)
+      if (!report) return
+      const updatedResultData = { ...(report.result_data || {}), label: newLabel.trim() }
+      const { error } = await supabase
+        .from('reports')
+        .update({ result_data: updatedResultData })
+        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
+      if (error) throw error
+      setReports(prev => prev.map(r =>
+        (r.report_id || r.id) === reportId
+          ? { ...r, result_data: updatedResultData, label: newLabel.trim() }
+          : r
+      ))
+    } catch (err: any) {
+      console.error('Rename failed:', err.message)
+    } finally {
+      setRenamingId(null)
+      setRenameValue('')
+      setMenuOpenId(null)
+    }
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" />
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; }
         button { font-family: inherit; cursor: pointer; }
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
         @keyframes spin { to { transform: rotate(360deg) } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
       `}</style>
@@ -545,68 +648,155 @@ export default function DashboardPage() {
                       const isSelected = selected.includes(r.id)
                       const fin = r.result_data?.financials || {}
                       const scoreCol = scoreColor(r.overall_score || 0)
+                      const rId = r.report_id || r.id
+                      const label = r.result_data?.label || null
+                      const isMenuOpen = menuOpenId === rId
+                      const isDeleting = deletingId === rId
+                      const isConfirmingDelete = deleteConfirmId === rId
+                      const isRenaming = renamingId === rId
+
                       return (
-                        <div
-                          key={r.id}
-                          onClick={() => compareMode ? toggleSelect(r.id) : router.push(`/dashboard/${r.report_id || r.id}`)}
-                          style={{
-                            background: S.white,
-                            borderRadius: 16,
-                            border: `1.5px solid ${isSelected ? S.brand : S.n200}`,
-                            boxShadow: isSelected ? `0 0 0 3px ${S.brandFaded}` : '0 1px 4px rgba(0,0,0,0.04)',
-                            padding: '18px 22px',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s',
-                            display: 'grid',
-                            gridTemplateColumns: 'auto 1fr auto',
-                            gap: 16,
-                            alignItems: 'center',
-                          }}
-                        >
-                          {/* Checkbox or verdict icon */}
-                          {compareMode ? (
-                            <div style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${isSelected ? S.brand : S.n200}`, background: isSelected ? S.brand : S.white, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              {isSelected && <span style={{ color: S.white, fontSize: 12, fontWeight: 900 }}>✓</span>}
-                            </div>
-                          ) : (
-                            <div style={{ width: 44, height: 44, borderRadius: 14, background: vc.bg, border: `1px solid ${vc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
-                              {vc.icon}
+                        <div key={r.id} style={{ position: 'relative' }}>
+                          {/* ── Delete confirm overlay ── */}
+                          {isConfirmingDelete && (
+                            <div style={{ position: 'absolute', inset: 0, zIndex: 20, borderRadius: 16, background: S.redBg, border: `1.5px solid ${S.redBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px' }}>
+                              <div>
+                                <p style={{ fontSize: 14, fontWeight: 700, color: S.red, marginBottom: 2 }}>Delete this report?</p>
+                                <p style={{ fontSize: 12, color: S.n500 }}>This cannot be undone.</p>
+                              </div>
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(null) }} style={{ background: S.white, border: `1px solid ${S.n200}`, color: S.n700, borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                                <button onClick={(e) => { e.stopPropagation(); deleteReport(rId) }} disabled={isDeleting} style={{ background: S.red, border: 'none', color: S.white, borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: isDeleting ? 0.6 : 1 }}>
+                                  {isDeleting ? 'Deleting…' : 'Yes, delete'}
+                                </button>
+                              </div>
                             </div>
                           )}
 
-                          {/* Info */}
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                              <p style={{ fontSize: 15, fontWeight: 700, color: S.n900 }}>{r.business_type}</p>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: vc.bg, color: vc.text, border: `1px solid ${vc.border}`, borderRadius: 100, padding: '2px 9px', fontSize: 10, fontWeight: 700 }}>
-                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: vc.dot, display: 'inline-block' }} />
-                                {vc.label}
-                              </span>
-                            </div>
-                            <p style={{ fontSize: 12, color: S.n400, marginBottom: 10 }}>📍 {r.location_name}</p>
-                            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-                              {fin.monthlyRevenue && <span style={{ fontSize: 12, color: S.n500 }}>💰 {fmt(fin.monthlyRevenue)}/mo est.</span>}
-                              {fin.monthlyNetProfit != null && <span style={{ fontSize: 12, color: fin.monthlyNetProfit >= 0 ? S.emerald : S.red }}>📈 {fmt(fin.monthlyNetProfit)} profit</span>}
-                              {r.breakeven_months && r.breakeven_months !== 999 && <span style={{ fontSize: 12, color: S.n500 }}>⏱ {r.breakeven_months}mo payback</span>}
-                              <span style={{ fontSize: 12, color: S.n400 }}>{timeAgo(r.created_at)}</span>
-                            </div>
-                          </div>
-
-                          {/* Score ring */}
-                          <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                            <div style={{ position: 'relative', width: 52, height: 52 }}>
-                              <svg width="52" height="52" style={{ transform: 'rotate(-90deg)' }}>
-                                <circle cx="26" cy="26" r="20" fill="none" stroke={S.n100} strokeWidth="5" />
-                                <circle cx="26" cy="26" r="20" fill="none" stroke={scoreCol} strokeWidth="5" strokeLinecap="round"
-                                  strokeDasharray={`${2 * Math.PI * 20}`}
-                                  strokeDashoffset={`${2 * Math.PI * 20 * (1 - (r.overall_score || 0) / 100)}`}
-                                />
-                              </svg>
-                              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ fontSize: 13, fontWeight: 900, color: scoreCol, lineHeight: 1 }}>{r.overall_score ?? '—'}</span>
+                          <div
+                            onClick={() => {
+                              if (isConfirmingDelete || isRenaming) return
+                              if (isMenuOpen) { setMenuOpenId(null); return }
+                              compareMode ? toggleSelect(r.id) : router.push(`/dashboard/${rId}`)
+                            }}
+                            style={{
+                              background: S.white,
+                              borderRadius: 16,
+                              border: `1.5px solid ${isSelected ? S.brand : isConfirmingDelete ? S.redBdr : S.n200}`,
+                              boxShadow: isSelected ? `0 0 0 3px ${S.brandFaded}` : '0 1px 4px rgba(0,0,0,0.04)',
+                              padding: '18px 22px',
+                              cursor: isConfirmingDelete ? 'default' : 'pointer',
+                              transition: 'all 0.15s',
+                              display: 'grid',
+                              gridTemplateColumns: 'auto 1fr auto',
+                              gap: 16,
+                              alignItems: 'center',
+                              opacity: isDeleting ? 0.4 : 1,
+                            }}
+                          >
+                            {/* Checkbox or verdict icon */}
+                            {compareMode ? (
+                              <div style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${isSelected ? S.brand : S.n200}`, background: isSelected ? S.brand : S.white, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                {isSelected && <span style={{ color: S.white, fontSize: 12, fontWeight: 900 }}>✓</span>}
                               </div>
+                            ) : (
+                              <div style={{ width: 44, height: 44, borderRadius: 14, background: vc.bg, border: `1px solid ${vc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
+                                {vc.icon}
+                              </div>
+                            )}
+
+                            {/* Info */}
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                                {/* Inline rename input */}
+                                {isRenaming ? (
+                                  <input
+                                    autoFocus
+                                    value={renameValue}
+                                    onChange={e => setRenameValue(e.target.value)}
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter') renameReport(rId, renameValue)
+                                      if (e.key === 'Escape') { setRenamingId(null); setRenameValue('') }
+                                    }}
+                                    onClick={e => e.stopPropagation()}
+                                    placeholder={label || r.business_type || 'Label this location…'}
+                                    style={{ fontSize: 15, fontWeight: 700, color: S.n900, border: `1.5px solid ${S.brand}`, borderRadius: 7, padding: '3px 8px', outline: 'none', width: '100%', maxWidth: 240, fontFamily: S.font }}
+                                  />
+                                ) : (
+                                  <p style={{ fontSize: 15, fontWeight: 700, color: S.n900 }}>
+                                    {label || r.business_type}
+                                    {label && <span style={{ fontSize: 11, fontWeight: 400, color: S.n400, marginLeft: 6 }}>{r.business_type}</span>}
+                                  </p>
+                                )}
+                                {!isRenaming && (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: vc.bg, color: vc.text, border: `1px solid ${vc.border}`, borderRadius: 100, padding: '2px 9px', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
+                                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: vc.dot, display: 'inline-block' }} />
+                                    {vc.label}
+                                  </span>
+                                )}
+                              </div>
+                              <p style={{ fontSize: 12, color: S.n400, marginBottom: 8 }}>📍 {r.location_name}</p>
+                              {isRenaming ? (
+                                <div style={{ display: 'flex', gap: 8 }} onClick={e => e.stopPropagation()}>
+                                  <button onClick={() => renameReport(rId, renameValue)} style={{ background: S.brand, border: 'none', color: S.white, borderRadius: 7, padding: '5px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Save</button>
+                                  <button onClick={() => { setRenamingId(null); setRenameValue('') }} style={{ background: S.n100, border: 'none', color: S.n700, borderRadius: 7, padding: '5px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                                </div>
+                              ) : (
+                                <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                                  {fin.monthlyRevenue && <span style={{ fontSize: 12, color: S.n500 }}>💰 {fmt(fin.monthlyRevenue)}/mo est.</span>}
+                                  {fin.monthlyNetProfit != null && <span style={{ fontSize: 12, color: fin.monthlyNetProfit >= 0 ? S.emerald : S.red }}>📈 {fmt(fin.monthlyNetProfit)} profit</span>}
+                                  {r.breakeven_months && r.breakeven_months !== 999 && <span style={{ fontSize: 12, color: S.n500 }}>⏱ {r.breakeven_months}mo payback</span>}
+                                  <span style={{ fontSize: 12, color: S.n400 }}>{timeAgo(r.created_at)}</span>
+                                </div>
+                              )}
                             </div>
-                            <p style={{ fontSize: 9, color: S.n400, marginTop: 3 }}>score</p>
+
+                            {/* Right side: score ring + menu button */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                              <div style={{ textAlign: 'center' }}>
+                                <div style={{ position: 'relative', width: 52, height: 52 }}>
+                                  <svg width="52" height="52" style={{ transform: 'rotate(-90deg)' }}>
+                                    <circle cx="26" cy="26" r="20" fill="none" stroke={S.n100} strokeWidth="5" />
+                                    <circle cx="26" cy="26" r="20" fill="none" stroke={scoreCol} strokeWidth="5" strokeLinecap="round"
+                                      strokeDasharray={`${2 * Math.PI * 20}`}
+                                      strokeDashoffset={`${2 * Math.PI * 20 * (1 - (r.overall_score || 0) / 100)}`}
+                                    />
+                                  </svg>
+                                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                    <span style={{ fontSize: 13, fontWeight: 900, color: scoreCol, lineHeight: 1 }}>{r.overall_score ?? '—'}</span>
+                                  </div>
+                                </div>
+                                <p style={{ fontSize: 9, color: S.n400, marginTop: 3 }}>score</p>
+                              </div>
+
+                              {/* ⋯ menu button */}
+                              {!compareMode && (
+                                <div style={{ position: 'relative' }}>
+                                  <button
+                                    onClick={e => { e.stopPropagation(); setMenuOpenId(isMenuOpen ? null : rId); setDeleteConfirmId(null) }}
+                                    style={{ background: isMenuOpen ? S.n100 : 'transparent', border: `1px solid ${isMenuOpen ? S.n200 : 'transparent'}`, borderRadius: 7, width: 30, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: S.n400, transition: 'all 0.1s' }}
+                                  >⋯</button>
+
+                                  {isMenuOpen && (
+                                    <div
+                                      onClick={e => e.stopPropagation()}
+                                      style={{ position: 'absolute', right: 0, top: 30, zIndex: 30, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 160, overflow: 'hidden' }}
+                                    >
+                                      <button onClick={() => { router.push(`/dashboard/${rId}`); setMenuOpenId(null) }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', padding: '10px 14px', fontSize: 13, color: S.n800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        👁 View report
+                                      </button>
+                                      <button onClick={() => { setRenamingId(rId); setRenameValue(label || ''); setMenuOpenId(null) }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', padding: '10px 14px', fontSize: 13, color: S.n800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        ✏️ Rename
+                                      </button>
+                                      <div style={{ height: 1, background: S.n200, margin: '2px 0' }} />
+                                      <button onClick={() => { setDeleteConfirmId(rId); setMenuOpenId(null) }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', padding: '10px 14px', fontSize: 13, color: S.red, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        🗑 Delete report
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       )
