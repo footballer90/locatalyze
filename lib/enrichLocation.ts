@@ -412,7 +412,7 @@ export async function enrichLocation(
   const demographics = lookupDemographics(suburbName, stateName, businessType)
 
   // Competitor search — only if we have coordinates
-  let competitors = { count: 5, names: [] as string[], intensityLabel: 'MEDIUM' as const, intensityScore: 70 }
+  let competitors: { count: number; names: string[]; intensityLabel: 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY HIGH'; intensityScore: number } = { count: 5, names: [] as string[], intensityLabel: 'MEDIUM', intensityScore: 70 }
   if (geo) {
     competitors = await fetchCompetitors(geo.lat, geo.lng, businessType)
   }
