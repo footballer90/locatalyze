@@ -27,8 +27,9 @@ const S = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Report {
-  id: string
-  report_id?: string | null
+  id: string                        // text PK (may hold req_... ID)
+  report_id?: string | null         // text col — n8n stores req_... here
+  submission_id?: string | null
   verdict: string | null
   overall_score: number | null
   score_rent: number | null
@@ -52,11 +53,16 @@ interface Report {
   location_name: string | null
   business_type: string | null
   monthly_rent: number | null
+  address?: string | null
   full_report_markdown: string | null
   result_data: any | null
+  input_data?: any | null
+  status?: string | null
   created_at: string
+  user_id?: string | null
   is_public?: boolean | null
-  public_token?: string | null
+  public_token?: string | null      // mapped from share_token
+  share_token?: string | null       // actual DB column name
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -458,12 +464,14 @@ function useReport(reportId: string) {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
+    // Check sessionStorage first (set by onboarding page after analysis)
     try {
       const cached = sessionStorage.getItem(`report_${reportId}`)
       if (cached) {
         const raw = JSON.parse(cached)
         setReport({
-          id: raw.reportId, report_id: raw.reportId,
+          id: raw.reportId || reportId,
+          report_id: raw.reportId || reportId,
           verdict: raw.verdict, overall_score: raw.overall_score,
           score_rent: raw.score_rent, score_competition: raw.score_competition,
           score_demand: raw.score_demand, score_profitability: raw.score_profitability,
@@ -471,7 +479,8 @@ function useReport(reportId: string) {
           competitor_analysis: raw.competitor_analysis, rent_analysis: raw.rent_analysis,
           market_demand: raw.market_demand, cost_analysis: raw.cost_analysis,
           profitability: raw.profitability, pl_summary: raw.pl_summary,
-          three_year_projection: raw.three_year_projection, sensitivity_analysis: raw.sensitivity_analysis,
+          three_year_projection: raw.three_year_projection,
+          sensitivity_analysis: raw.sensitivity_analysis,
           swot_analysis: raw.swot_analysis, breakeven_monthly: raw.breakeven_monthly,
           breakeven_daily: raw.breakeven_daily, breakeven_months: raw.breakeven_months,
           location_name: raw.location?.formattedAddress || null,
@@ -479,6 +488,7 @@ function useReport(reportId: string) {
           monthly_rent: raw.financials?.rent?.submitted || null,
           full_report_markdown: null, result_data: raw,
           created_at: raw.generatedAt || new Date().toISOString(),
+          is_public: false, public_token: null,
         })
         setLoading(false)
         return
@@ -487,41 +497,60 @@ function useReport(reportId: string) {
 
     const supabase = createClient()
     let attempts = 0
-    const MAX = 20
+    const MAX = 25
 
     async function poll() {
-      // Try report_id column first, fall back to primary key id
-      let data: any = null
+      // Single query — report_id OR id match (handles both column naming conventions)
+      // Using .or() avoids two round trips and works even if one column doesn't have the value
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-      const r1 = await supabase.from('reports').select('*').eq('report_id', reportId).maybeSingle()
-      if (!r1.error && r1.data) {
-        data = r1.data
-      } else {
-        // report_id col may not exist — try id column
-        const r2 = await supabase.from('reports').select('*').eq('id', reportId).maybeSingle()
-        if (!r2.error && r2.data) {
-          data = r2.data
-        } else if (r2.error) {
+      if (error) {
+        console.error('[Report] Supabase error:', error.code, error.message)
+        // Don't give up immediately on auth errors — session may not be ready
+        if (error.code === 'PGRST301' || error.message?.includes('JWT')) {
+          // Auth not ready yet — keep trying
           attempts++
           if (attempts >= MAX) { setLoading(false); setNotFound(true) }
           return
         }
-      }
-
-      if (!data) {
+        // On other errors keep retrying for a bit
         attempts++
         if (attempts >= MAX) { setLoading(false); setNotFound(true) }
         return
       }
+
+      if (!data) {
+        // Row not in DB yet — n8n may still be processing
+        attempts++
+        if (attempts >= MAX) { setLoading(false); setNotFound(true) }
+        return
+      }
+
       setReport(data as Report)
       setLoading(false)
       if (data.verdict) clearInterval(timer)
       else { attempts++; if (attempts >= MAX) clearInterval(timer) }
     }
 
-    poll()
-    const timer = setInterval(poll, 3000)
-    return () => clearInterval(timer)
+    // Small delay to let Supabase auth session hydrate
+    const startDelay = setTimeout(() => {
+      poll()
+      const timer = setInterval(poll, 3000)
+      // Store timer ref for cleanup
+      ;(startDelay as any).__timer = timer
+    }, 400)
+
+    return () => {
+      clearTimeout(startDelay)
+      const t = (startDelay as any).__timer
+      if (t) clearInterval(t)
+    }
   }, [reportId])
 
   return { report, loading, notFound }
@@ -608,12 +637,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
         button { font-family: inherit; cursor: pointer; }
       `}</style>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
       {/* ── Dark header bar ── */}
       <div style={{ background: S.headerBg, borderBottom: `1px solid ${S.headerBorder}` }}>
