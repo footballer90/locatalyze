@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import QuotaMeter, { FREE_LIMIT } from '@/components/QuotaMeter'
 
 const S = {
   font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -31,6 +30,11 @@ const S = {
   blue:        '#2563EB',
   blueBg:      '#EFF6FF',
   blueBdr:     '#BFDBFE',
+  // Sidebar specific
+  sidebarBg:   '#0C1F1C',
+  sidebarBorder: 'rgba(255,255,255,0.07)',
+  sidebarText:   'rgba(255,255,255,0.55)',
+  sidebarActive: 'rgba(255,255,255,0.08)',
 }
 
 interface Report {
@@ -43,7 +47,6 @@ interface Report {
   score_demand: number | null
   score_profitability: number | null
   recommendation: string | null
-  competitor_analysis: string | null
   location_name: string | null
   business_type: string | null
   monthly_rent: number | null
@@ -54,9 +57,9 @@ interface Report {
 }
 
 function verdictCfg(v: string | null) {
-  if (v === 'GO')      return { label: 'GO',      icon: '✅', bg: S.emeraldBg, text: S.emerald, border: S.emeraldBdr }
-  if (v === 'CAUTION') return { label: 'CAUTION', icon: '⚠️', bg: S.amberBg,   text: S.amber,   border: S.amberBdr   }
-  return                      { label: 'NO',      icon: '🚫', bg: S.redBg,     text: S.red,     border: S.redBdr     }
+  if (v === 'GO')      return { label: 'GO',      icon: '✅', bg: S.emeraldBg, text: S.emerald, border: S.emeraldBdr, dot: '#059669' }
+  if (v === 'CAUTION') return { label: 'CAUTION', icon: '⚠️', bg: S.amberBg,   text: S.amber,   border: S.amberBdr,   dot: '#D97706' }
+  return                      { label: 'NO',      icon: '🚫', bg: S.redBg,     text: S.red,     border: S.redBdr,     dot: '#DC2626' }
 }
 
 function fmt(n: number | null | undefined, prefix = '$') {
@@ -98,142 +101,278 @@ function pickWinner(reports: Report[]) {
   if (reports.length < 2) return null
   const scored = reports.map(r => {
     const fin = r.result_data?.financials || {}
-    const profitScore  = Math.min((fin.monthlyNetProfit || 0) / 1000, 40)
-    const scoreScore   = (r.overall_score || 0) * 0.4
-    const paybackScore = r.breakeven_months ? Math.max(0, 20 - r.breakeven_months) : 0
-    return { report: r, total: profitScore + scoreScore + paybackScore }
+    return {
+      report: r,
+      total: Math.min((fin.monthlyNetProfit || 0) / 1000, 40) + (r.overall_score || 0) * 0.4 + (r.breakeven_months ? Math.max(0, 20 - r.breakeven_months) : 0)
+    }
   })
   scored.sort((a, b) => b.total - a.total)
   const winner = scored[0].report
-  const fin = winner.result_data?.financials || {}
   const reasons: string[] = []
   if ((winner.overall_score || 0) === Math.max(...reports.map(r => r.overall_score || 0))) reasons.push('Highest overall location score')
-  if ((fin.monthlyNetProfit || 0) === Math.max(...reports.map(r => r.result_data?.financials?.monthlyNetProfit || 0))) reasons.push('Strongest profit potential')
+  if ((winner.result_data?.financials?.monthlyNetProfit || 0) === Math.max(...reports.map(r => r.result_data?.financials?.monthlyNetProfit || 0))) reasons.push('Strongest profit potential')
   if ((winner.score_demand || 0) === Math.max(...reports.map(r => r.score_demand || 0))) reasons.push('Best demand & demographics')
   if ((winner.breakeven_months || 999) === Math.min(...reports.map(r => r.breakeven_months || 999))) reasons.push('Fastest payback period')
   if (reasons.length === 0) reasons.push('Best combined score across all metrics')
   return { report: winner, reasons: reasons.slice(0, 3) }
 }
 
+// ── Comparison View ────────────────────────────────────────────────────────────
 function ComparisonView({ reports, onClose }: { reports: Report[]; onClose: () => void }) {
   const winner = pickWinner(reports)
   const colWidth = `${Math.floor(70 / reports.length)}%`
-
-  const scoreRows = [
-    { label: 'Demand & Demographics', key: 'score_demand'        },
-    { label: 'Competition',           key: 'score_competition'   },
-    { label: 'Rent Affordability',    key: 'score_rent'          },
-    { label: 'Profitability',         key: 'score_profitability' },
-  ]
-  const finRows = [
-    { label: 'Est. Monthly Revenue', fn: (r: Report) => fmt(r.result_data?.financials?.monthlyRevenue) },
-    { label: 'Est. Monthly Profit',  fn: (r: Report) => fmt(r.result_data?.financials?.monthlyNetProfit) },
-    { label: 'Break-even Period',    fn: (r: Report) => r.breakeven_months && r.breakeven_months !== 999 ? `${r.breakeven_months} months` : 'Not viable' },
-    { label: 'Break-even / Day',     fn: (r: Report) => r.breakeven_daily ? `${r.breakeven_daily} customers` : '—' },
-  ]
-
+  const rows = {
+    scores: [
+      { label: 'Demand & Demographics', key: 'score_demand'        },
+      { label: 'Competition',           key: 'score_competition'   },
+      { label: 'Rent Affordability',    key: 'score_rent'          },
+      { label: 'Profitability',         key: 'score_profitability' },
+    ],
+    financials: [
+      { label: 'Est. Monthly Revenue', fn: (r: Report) => fmt(r.result_data?.financials?.monthlyRevenue) },
+      { label: 'Est. Monthly Profit',  fn: (r: Report) => fmt(r.result_data?.financials?.monthlyNetProfit) },
+      { label: 'Break-even Period',    fn: (r: Report) => r.breakeven_months && r.breakeven_months !== 999 ? `${r.breakeven_months} mo` : 'Not viable' },
+      { label: 'Break-even / Day',     fn: (r: Report) => r.breakeven_daily ? `${r.breakeven_daily} customers` : '—' },
+    ],
+  }
   return (
     <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', overflow: 'hidden', marginBottom: 24 }}>
-      <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, padding: '20px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 900, color: S.white, letterSpacing: '-0.02em' }}>Location Comparison</h2>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{reports.length} locations compared</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{reports.length} locations side by side</p>
         </div>
-        <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: S.white, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>✕ Close</button>
+        <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: S.white, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 700 }}>✕ Close</button>
       </div>
-
-      <div style={{ padding: '0 24px 24px' }}>
+      <div style={{ padding: '0 28px 28px' }}>
         {winner && (
           <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 14, padding: '16px 20px', margin: '20px 0' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
               <span style={{ fontSize: 28 }}>🏆</span>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: S.amber, marginBottom: 4 }}>BEST OPPORTUNITY</p>
-                <p style={{ fontSize: 18, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', marginBottom: 8 }}>{winner.report.location_name}</p>
+                <p style={{ fontSize: 11, fontWeight: 800, color: S.amber, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Best Opportunity</p>
+                <p style={{ fontSize: 18, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', marginBottom: 6 }}>{winner.report.location_name}</p>
                 {winner.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: S.n700 }}>· {r}</p>)}
               </div>
             </div>
           </div>
         )}
-
-        {/* Verdict */}
-        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, marginTop: 4 }}>Overall Verdict</p>
-        <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+        {[
+          { title: 'Overall Verdict', content: (
+            <div style={{ display: 'flex', borderBottom: `1px solid ${S.n100}`, background: S.n50 }}>
+              <div style={{ width: '30%', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n400 }}>Location</div>
+              {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 12, fontWeight: 700, color: winner?.report.id === r.id ? S.brand : S.n800, borderLeft: `1px solid ${S.n200}` }}>{winner?.report.id === r.id && '🏆 '}{r.location_name?.split(',')[0] || r.business_type}</div>)}
+            </div>
+          )},
+        ]}
+        <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, overflow: 'hidden', marginBottom: 20, marginTop: 4 }}>
           <div style={{ display: 'flex', background: S.n50, borderBottom: `1px solid ${S.n200}` }}>
             <div style={{ width: '30%', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n400 }}>Location</div>
-            {reports.map(r => (
-              <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 12, fontWeight: 700, color: winner?.report.id === r.id ? S.brand : S.n800, borderLeft: `1px solid ${S.n200}` }}>
-                {winner?.report.id === r.id && '🏆 '}{r.location_name?.split(',')[0] || r.business_type}
-              </div>
-            ))}
+            {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 12, fontWeight: 700, color: winner?.report.id === r.id ? S.brand : S.n800, borderLeft: `1px solid ${S.n200}` }}>{winner?.report.id === r.id && '🏆 '}{r.location_name?.split(',')[0] || r.business_type}</div>)}
           </div>
-          {[
-            { label: 'Verdict', render: (r: Report) => { const vc = verdictCfg(r.verdict); return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: vc.bg, color: vc.text, border: `1px solid ${vc.border}`, borderRadius: 100, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>{vc.icon} {vc.label}</span> } },
-            { label: 'Score',   render: (r: Report) => <><span style={{ fontSize: 22, fontWeight: 900, color: scoreColor(r.overall_score || 0) }}>{r.overall_score}</span><span style={{ fontSize: 11, color: S.n400 }}>/100</span></> },
-          ].map((row, idx) => (
-            <div key={row.label} style={{ display: 'flex', borderBottom: idx === 0 ? `1px solid ${S.n100}` : 'none' }}>
-              <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n500 }}>{row.label}</div>
-              {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '12px 14px', borderLeft: `1px solid ${S.n100}` }}>{row.render(r)}</div>)}
-            </div>
-          ))}
+          <div style={{ display: 'flex', borderBottom: `1px solid ${S.n100}` }}>
+            <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n500 }}>Verdict</div>
+            {reports.map(r => { const vc = verdictCfg(r.verdict); return <div key={r.id} style={{ width: colWidth, padding: '12px 14px', borderLeft: `1px solid ${S.n100}` }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: vc.bg, color: vc.text, border: `1px solid ${vc.border}`, borderRadius: 100, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>{vc.label}</span></div> })}
+          </div>
+          <div style={{ display: 'flex' }}>
+            <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n500 }}>Score</div>
+            {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '12px 14px', borderLeft: `1px solid ${S.n100}` }}><span style={{ fontSize: 22, fontWeight: 900, color: scoreColor(r.overall_score || 0) }}>{r.overall_score}</span><span style={{ fontSize: 11, color: S.n400 }}>/100</span></div>)}
+          </div>
         </div>
-
-        {/* Scores */}
-        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Score Breakdown</p>
+        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Score Breakdown</p>
         <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
           <div style={{ display: 'flex', background: S.n50, borderBottom: `1px solid ${S.n200}` }}>
             <div style={{ width: '30%', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n400 }}>Metric</div>
-            {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n500, borderLeft: `1px solid ${S.n200}` }}>{r.location_name?.split(',')[0]}</div>)}
+            {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n500, borderLeft: `1px solid ${S.n200}` }}>{r.location_name?.split(',')[0] || r.business_type}</div>)}
           </div>
-          {scoreRows.map((row, idx) => (
-            <div key={row.key} style={{ display: 'flex', borderBottom: idx < scoreRows.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
-              <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n700, fontWeight: 500 }}>{row.label}</div>
+          {rows.scores.map((row, idx) => (
+            <div key={row.key} style={{ display: 'flex', borderBottom: idx < rows.scores.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
+              <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n700 }}>{row.label}</div>
               {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '12px 14px', borderLeft: `1px solid ${S.n100}` }}><MiniBar score={r[row.key as keyof Report] as number} /></div>)}
             </div>
           ))}
         </div>
-
-        {/* Financials */}
-        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Financial Metrics</p>
-        <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Financial Metrics</p>
+        <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, overflow: 'hidden' }}>
           <div style={{ display: 'flex', background: S.n50, borderBottom: `1px solid ${S.n200}` }}>
             <div style={{ width: '30%', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n400 }}>Metric</div>
-            {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n500, borderLeft: `1px solid ${S.n200}` }}>{r.location_name?.split(',')[0]}</div>)}
+            {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n500, borderLeft: `1px solid ${S.n200}` }}>{r.location_name?.split(',')[0] || r.business_type}</div>)}
           </div>
-          {finRows.map((row, idx) => (
-            <div key={row.label} style={{ display: 'flex', borderBottom: idx < finRows.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
-              <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n700, fontWeight: 500 }}>{row.label}</div>
+          {rows.financials.map((row, idx) => (
+            <div key={row.label} style={{ display: 'flex', borderBottom: idx < rows.financials.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
+              <div style={{ width: '30%', padding: '12px 14px', fontSize: 12, color: S.n700 }}>{row.label}</div>
               {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '12px 14px', fontSize: 13, fontWeight: 700, color: S.n800, borderLeft: `1px solid ${S.n100}` }}>{row.fn(r)}</div>)}
             </div>
           ))}
-        </div>
-
-        {/* Risk */}
-        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Risk Summary</p>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${reports.length}, 1fr)`, gap: 10 }}>
-          {reports.map(r => {
-            const vc = verdictCfg(r.verdict)
-            const fin = r.result_data?.financials || {}
-            const risks: string[] = []
-            if ((r.score_rent || 0) < 50) risks.push('High rent burden')
-            if ((r.score_competition || 0) < 50) risks.push('High competitor density')
-            if ((r.score_demand || 0) < 50) risks.push('Low demand signal')
-            if ((fin.rent?.toRevenuePercent || 0) > 20) risks.push(`Rent is ${fin.rent?.toRevenuePercent}% of revenue`)
-            if (r.breakeven_months && r.breakeven_months > 18) risks.push('Long payback period')
-            if (risks.length === 0) risks.push('No major risk flags')
-            return (
-              <div key={r.id} style={{ background: vc.bg, border: `1px solid ${vc.border}`, borderRadius: 12, padding: '14px 16px' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: vc.text, marginBottom: 10 }}>{vc.icon} {r.location_name?.split(',')[0] || r.business_type}</p>
-                {risks.map((risk, i) => <p key={i} style={{ fontSize: 11, color: vc.text, opacity: 0.85, marginBottom: 4 }}>· {risk}</p>)}
-              </div>
-            )
-          })}
         </div>
       </div>
     </div>
   )
 }
 
+// ── Sidebar ────────────────────────────────────────────────────────────────────
+function Sidebar({ user, stats, reports, onNewAnalysis, onSignOut }: {
+  user: any; stats: any; reports: Report[]; onNewAnalysis: () => void; onSignOut: () => void
+}) {
+  const FREE_LIMIT = 3
+  const used = Math.min(reports.length, FREE_LIMIT)
+  const pct = (used / FREE_LIMIT) * 100
+  const quotaColor = used >= FREE_LIMIT ? S.red : used >= 2 ? S.amber : S.emerald
+
+  const bestScore = reports.length > 0 ? Math.max(...reports.map(r => r.overall_score || 0)) : null
+  const avgScore  = reports.length > 0 ? Math.round(reports.reduce((a, r) => a + (r.overall_score || 0), 0) / reports.length) : null
+
+  return (
+    <aside style={{
+      width: 260, flexShrink: 0, background: S.sidebarBg,
+      display: 'flex', flexDirection: 'column',
+      height: '100vh', position: 'sticky', top: 0,
+      borderRight: `1px solid ${S.sidebarBorder}`,
+    }}>
+
+      {/* ── Logo ── */}
+      <div style={{ padding: '20px 20px 0', marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 900, fontSize: 16, flexShrink: 0 }}>L</div>
+          <div>
+            <p style={{ fontWeight: 800, fontSize: 16, color: S.white, letterSpacing: '-0.02em', lineHeight: 1 }}>Locatalyze</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>Location Intelligence</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Divider ── */}
+      <div style={{ height: 1, background: S.sidebarBorder, margin: '12px 20px' }} />
+
+      {/* ── Nav ── */}
+      <nav style={{ padding: '0 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+        {/* Dashboard - active */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 10, background: S.sidebarActive, cursor: 'default' }}>
+          <span style={{ fontSize: 15 }}>📊</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: S.white }}>Dashboard</span>
+        </div>
+
+        {/* New analysis CTA */}
+        <button
+          onClick={onNewAnalysis}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+            borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left',
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = S.sidebarActive)}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          <span style={{ fontSize: 15 }}>➕</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: S.sidebarText }}>New Analysis</span>
+        </button>
+
+        {/* Methodology */}
+        <a
+          href="/methodology"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+            borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = S.sidebarActive)}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+        >
+          <span style={{ fontSize: 15 }}>🔬</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: S.sidebarText }}>Data & Methodology</span>
+        </a>
+
+        {/* Location guides */}
+        <a
+          href="/analyse"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+            borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = S.sidebarActive)}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+        >
+          <span style={{ fontSize: 15 }}>🗺️</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: S.sidebarText }}>Location Guides</span>
+        </a>
+
+        <div style={{ height: 1, background: S.sidebarBorder, margin: '8px 0' }} />
+
+        {/* ── Mini stats ── */}
+        {reports.length > 0 && (
+          <div style={{ padding: '4px 0' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, padding: '0 12px' }}>Your Stats</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: '0 4px' }}>
+              {[
+                { label: 'Reports',    value: stats.total,             color: S.white       },
+                { label: 'Best Score', value: bestScore ?? '—',         color: S.brandLight  },
+                { label: 'GO',         value: stats.go,                color: '#6EE7B7'     },
+                { label: 'Avg Score',  value: avgScore ?? '—',          color: S.sidebarText },
+              ].map(s => (
+                <div key={s.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '10px 10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{s.label}</p>
+                  <p style={{ fontSize: 20, fontWeight: 900, color: s.color as string, lineHeight: 1 }}>{s.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Quota meter ── */}
+        <div style={{ margin: '8px 0 0', padding: '12px', background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>Free quota</p>
+            <p style={{ fontSize: 11, fontWeight: 800, color: used >= FREE_LIMIT ? '#FCA5A5' : S.brandLight }}>{used}/{FREE_LIMIT}</p>
+          </div>
+          <div style={{ height: 5, background: 'rgba(255,255,255,0.08)', borderRadius: 100, overflow: 'hidden', marginBottom: 8 }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: quotaColor, borderRadius: 100, transition: 'width 0.6s ease' }} />
+          </div>
+          {used >= FREE_LIMIT ? (
+            <p style={{ fontSize: 10, color: '#FCA5A5' }}>Quota reached — upgrade for unlimited</p>
+          ) : (
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{FREE_LIMIT - used} free report{FREE_LIMIT - used !== 1 ? 's' : ''} remaining</p>
+          )}
+        </div>
+
+        {/* ── Upgrade nudge ── */}
+        {used >= 2 && (
+          <div style={{ margin: '8px 0 0', padding: '14px 12px', background: `linear-gradient(135deg,${S.brand}30,${S.brandLight}15)`, borderRadius: 12, border: `1px solid ${S.brand}40` }}>
+            <p style={{ fontSize: 12, fontWeight: 800, color: S.brandLight, marginBottom: 4 }}>⚡ Go unlimited</p>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 10, lineHeight: 1.5 }}>Unlimited reports + PDF + comparison</p>
+            <button
+              onClick={() => window.location.href = '/upgrade'}
+              style={{ width: '100%', padding: '8px', background: S.brand, color: S.white, border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            >
+              Upgrade — $19/mo →
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* ── User footer ── */}
+      <div style={{ padding: '12px', borderTop: `1px solid ${S.sidebarBorder}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)' }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13, flexShrink: 0 }}>
+            {user?.email?.[0]?.toUpperCase() || 'U'}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: S.white, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email?.split('@')[0]}</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Free plan</p>
+          </div>
+          <button
+            onClick={onSignOut}
+            title="Sign out"
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 14, cursor: 'pointer', padding: '4px', borderRadius: 6, lineHeight: 1 }}
+          >
+            ↩
+          </button>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+// ── Main Dashboard ─────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const router = useRouter()
   const [reports, setReports] = useState<Report[]>([])
@@ -261,180 +400,243 @@ export default function DashboardPage() {
   }
 
   const selectedReports = reports.filter(r => selected.includes(r.id))
-  const reportsUsed = reports.length
-  const atLimit = reportsUsed >= FREE_LIMIT
-
   const stats = {
-    total: reports.length,
-    go: reports.filter(r => r.verdict === 'GO').length,
+    total:   reports.length,
+    go:      reports.filter(r => r.verdict === 'GO').length,
     caution: reports.filter(r => r.verdict === 'CAUTION').length,
-    no: reports.filter(r => r.verdict === 'NO').length,
+    no:      reports.filter(r => r.verdict === 'NO').length,
   }
 
-  function handleUpgrade() {
-    // TODO: wire to Stripe — for now show alert
-    alert('Stripe payments coming soon! This will open the upgrade flow.')
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/auth/login')
   }
+
+  const goingDate = new Date()
+  const hour = goingDate.getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
-      <style>{`*{box-sizing:border-box;margin:0;padding:0;} button{font-family:inherit;cursor:pointer;} @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');`}</style>
+    <div style={{ display: 'flex', minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+        button { font-family: inherit; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
+        @keyframes spin { to { transform: rotate(360deg) } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+      `}</style>
 
-      {/* ── Nav ── */}
-      <nav style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)', borderBottom: `1px solid ${S.n100}`, padding: '0 20px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}>L</div>
-          <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
-        </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {/* Quota in nav */}
-          <QuotaMeter used={reportsUsed} variant="nav" onUpgrade={handleUpgrade} />
+      {/* ── Left Sidebar ── */}
+      <Sidebar
+        user={user}
+        stats={stats}
+        reports={reports}
+        onNewAnalysis={() => router.push('/onboarding')}
+        onSignOut={handleSignOut}
+      />
 
-          {compareMode && selected.length >= 2 && (
-            <button onClick={() => setComparing(true)} style={{ background: S.amber, color: S.white, border: 'none', borderRadius: 9, padding: '7px 14px', fontSize: 12, fontWeight: 700 }}>
-              ⚖️ Compare {selected.length}
-            </button>
-          )}
-          {reports.length >= 2 && (
-            <button onClick={() => { setCompareMode(!compareMode); setSelected([]); setComparing(false) }}
-              style={{ background: compareMode ? S.n100 : S.white, color: compareMode ? S.brand : S.n700, border: `1.5px solid ${compareMode ? S.brandBorder : S.n200}`, borderRadius: 9, padding: '7px 12px', fontSize: 12, fontWeight: 600 }}>
-              {compareMode ? '✕ Exit' : '⚖️ Compare'}
-            </button>
-          )}
-          {!atLimit && (
-            <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 9, padding: '7px 14px', fontSize: 12, fontWeight: 700, boxShadow: '0 2px 6px rgba(15,118,110,0.2)' }}>
-              + New Analysis
-            </button>
-          )}
-          <button onClick={async () => { const s = createClient(); await s.auth.signOut(); router.push('/auth/login') }}
-            style={{ background: 'none', border: 'none', fontSize: 12, color: S.n400, fontWeight: 500 }}>
-            Sign out
-          </button>
-        </div>
-      </nav>
+      {/* ── Main content ── */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', overflow: 'auto' }}>
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '28px 20px 60px' }}>
-
-        {/* Compare mode banner */}
-        {compareMode && !comparing && (
-          <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 14, padding: '14px 18px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: S.amber }}>⚖️ Compare Mode</p>
-              <p style={{ fontSize: 12, color: S.n700, marginTop: 2 }}>
-                {selected.length === 0 && 'Select 2–3 locations below'}
-                {selected.length === 1 && 'Select 1 or 2 more locations'}
-                {selected.length >= 2 && `${selected.length} selected — ready to compare`}
-              </p>
-            </div>
-            {selected.length >= 2 && (
-              <button onClick={() => setComparing(true)} style={{ background: S.amber, color: S.white, border: 'none', borderRadius: 9, padding: '9px 18px', fontSize: 13, fontWeight: 700 }}>
-                Compare →
+        {/* ── Top bar ── */}
+        <header style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 32px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 700, color: S.n800 }}>{greeting}, {user?.email?.split('@')[0] || 'there'} 👋</p>
+            <p style={{ fontSize: 11, color: S.n400 }}>{new Date().toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {compareMode && selected.length >= 2 && (
+              <button
+                onClick={() => setComparing(true)}
+                style={{ background: S.amber, color: S.white, border: 'none', borderRadius: 9, padding: '8px 16px', fontSize: 13, fontWeight: 700, boxShadow: '0 2px 8px rgba(217,119,6,0.25)' }}
+              >
+                ⚖️ Compare {selected.length} locations
               </button>
             )}
-          </div>
-        )}
-
-        {/* Comparison view */}
-        {comparing && selectedReports.length >= 2 && (
-          <ComparisonView reports={selectedReports} onClose={() => { setComparing(false); setSelected([]); setCompareMode(false) }} />
-        )}
-
-        {/* Welcome card */}
-        {!comparing && (
-          <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 20, padding: '24px 28px', marginBottom: 16, boxShadow: '0 4px 20px rgba(15,118,110,0.2)' }}>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>Welcome back 👋</p>
-            <h1 style={{ fontSize: 22, fontWeight: 900, color: S.white, letterSpacing: '-0.02em', marginBottom: 16 }}>
-              {user?.email?.split('@')[0] || 'Your'} Dashboard
-            </h1>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
-              {[
-                { l: 'Total',   v: stats.total,   c: S.white    },
-                { l: 'GO',      v: stats.go,      c: '#6EE7B7'  },
-                { l: 'CAUTION', v: stats.caution, c: '#FCD34D'  },
-                { l: 'NO',      v: stats.no,      c: '#FCA5A5'  },
-              ].map(s => (
-                <div key={s.l} style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: '12px 14px' }}>
-                  <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>{s.l}</p>
-                  <p style={{ fontSize: 24, fontWeight: 900, color: s.c }}>{s.v}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Quota meter card ── */}
-        <QuotaMeter used={reportsUsed} variant="dashboard" onUpgrade={handleUpgrade} />
-
-        {/* Report list */}
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', border: `3px solid ${S.n200}`, borderTopColor: S.brand, margin: '0 auto 12px', animation: 'spin 0.8s linear infinite' }} />
-            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-            <p style={{ fontSize: 13, color: S.n400 }}>Loading reports…</p>
-          </div>
-        ) : reports.length === 0 ? (
-          <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, padding: '48px 32px', textAlign: 'center' }}>
-            <p style={{ fontSize: 36, marginBottom: 12 }}>📍</p>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: S.n900, marginBottom: 8 }}>No analyses yet</h2>
-            <p style={{ fontSize: 14, color: S.n500, marginBottom: 24 }}>Run your first location analysis to get started.</p>
-            <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '12px 24px', fontWeight: 700, fontSize: 14 }}>
-              + Analyse a location
+            {reports.length >= 2 && (
+              <button
+                onClick={() => { setCompareMode(!compareMode); setSelected([]); setComparing(false) }}
+                style={{ background: compareMode ? S.brandFaded : S.white, color: compareMode ? S.brand : S.n700, border: `1.5px solid ${compareMode ? S.brandBorder : S.n200}`, borderRadius: 9, padding: '8px 14px', fontSize: 13, fontWeight: 600 }}
+              >
+                {compareMode ? '✕ Exit Compare' : '⚖️ Compare'}
+              </button>
+            )}
+            <button
+              onClick={() => router.push('/onboarding')}
+              style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, boxShadow: '0 2px 8px rgba(15,118,110,0.2)', display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              ➕ New Analysis
             </button>
           </div>
-        ) : (
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
-              {reports.length} Report{reports.length !== 1 ? 's' : ''}
-              {compareMode && selected.length > 0 && <span style={{ color: S.amber, marginLeft: 8 }}>{selected.length}/3 selected</span>}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {reports.map(r => {
-                const vc = verdictCfg(r.verdict)
-                const isSelected = selected.includes(r.id)
-                const fin = r.result_data?.financials || {}
-                return (
-                  <div key={r.id}
-                    onClick={() => compareMode ? toggleSelect(r.id) : router.push(`/dashboard/${r.report_id || r.id}`)}
-                    style={{
-                      background: S.white, borderRadius: 16,
-                      border: `1.5px solid ${isSelected ? S.brand : S.n200}`,
-                      boxShadow: isSelected ? `0 0 0 3px ${S.brandFaded}` : '0 1px 3px rgba(0,0,0,0.04)',
-                      padding: '16px 20px', cursor: 'pointer', transition: 'all 0.15s',
-                      display: 'flex', alignItems: 'center', gap: 14,
-                    }}
-                  >
-                    {compareMode && (
-                      <div style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${isSelected ? S.brand : S.n200}`, background: isSelected ? S.brand : S.white, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {isSelected && <span style={{ color: S.white, fontSize: 11, fontWeight: 800 }}>✓</span>}
-                      </div>
-                    )}
-                    <div style={{ width: 40, height: 40, borderRadius: 12, background: vc.bg, border: `1px solid ${vc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-                      {vc.icon}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: S.n900, marginBottom: 2 }}>{r.business_type}</p>
-                          <p style={{ fontSize: 12, color: S.n400 }}>📍 {r.location_name}</p>
-                        </div>
-                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <p style={{ fontSize: 22, fontWeight: 900, color: vc.text, lineHeight: 1 }}>{r.overall_score}</p>
-                          <p style={{ fontSize: 10, color: S.n400 }}>score</p>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
-                        <span style={{ fontSize: 11, color: S.n500 }}>💰 {fmt(fin.monthlyRevenue)}/mo</span>
-                        <span style={{ fontSize: 11, color: S.n500 }}>📈 {fmt(fin.monthlyNetProfit)} profit</span>
-                        <span style={{ fontSize: 11, color: S.n400, marginLeft: 'auto' }}>{timeAgo(r.created_at)}</span>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
+        </header>
+
+        {/* ── Content area ── */}
+        <div style={{ flex: 1, padding: '28px 32px 60px', animation: 'fadeIn 0.3s ease' }}>
+
+          {/* ── Compare mode banner ── */}
+          {compareMode && !comparing && (
+            <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 14, padding: '14px 20px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: S.amber }}>⚖️ Compare Mode</p>
+                <p style={{ fontSize: 12, color: S.n700, marginTop: 2 }}>
+                  {selected.length === 0 && 'Select 2–3 locations using the checkboxes'}
+                  {selected.length === 1 && 'Select 1 or 2 more to compare'}
+                  {selected.length >= 2 && `${selected.length} selected — ready to compare`}
+                </p>
+              </div>
+              {selected.length >= 2 && (
+                <button onClick={() => setComparing(true)} style={{ background: S.amber, color: S.white, border: 'none', borderRadius: 9, padding: '9px 18px', fontSize: 13, fontWeight: 700 }}>Compare →</button>
+              )}
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {/* ── Comparison view ── */}
+          {comparing && selectedReports.length >= 2 && (
+            <ComparisonView reports={selectedReports} onClose={() => { setComparing(false); setSelected([]); setCompareMode(false) }} />
+          )}
+
+          {!comparing && (
+            <>
+              {/* ── Stats cards ── */}
+              {reports.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
+                  {[
+                    { icon: '📊', label: 'Total Reports',  value: stats.total,   sub: 'analyses run',   color: S.brand   },
+                    { icon: '✅', label: 'GO Verdicts',    value: stats.go,      sub: 'strong locations', color: S.emerald },
+                    { icon: '⚠️', label: 'Caution',        value: stats.caution, sub: 'proceed carefully', color: S.amber   },
+                    { icon: '🚫', label: 'NO Verdicts',    value: stats.no,      sub: 'avoid these',    color: S.red     },
+                  ].map(s => (
+                    <div key={s.label} style={{ background: S.white, borderRadius: 16, border: `1px solid ${S.n200}`, padding: '18px 20px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                        <span style={{ fontSize: 22 }}>{s.icon}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: s.color, background: `${s.color}15`, borderRadius: 100, padding: '2px 8px' }}>{s.label}</span>
+                      </div>
+                      <p style={{ fontSize: 32, fontWeight: 900, color: s.color, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 4 }}>{s.value}</p>
+                      <p style={{ fontSize: 11, color: S.n400 }}>{s.sub}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* ── Report list ── */}
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', border: `3px solid ${S.n200}`, borderTopColor: S.brand, margin: '0 auto 12px', animation: 'spin 0.8s linear infinite' }} />
+                  <p style={{ fontSize: 13, color: S.n400 }}>Loading reports…</p>
+                </div>
+              ) : reports.length === 0 ? (
+                <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, padding: '64px 32px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <div style={{ width: 64, height: 64, borderRadius: 20, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 20px' }}>📍</div>
+                  <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginBottom: 8 }}>No analyses yet</h2>
+                  <p style={{ fontSize: 14, color: S.n500, marginBottom: 28, maxWidth: 360, margin: '0 auto 28px' }}>Run your first location analysis to see a full GO / CAUTION / NO verdict with financial model.</p>
+                  <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 12, padding: '13px 28px', fontWeight: 700, fontSize: 14, boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}>
+                    ➕ Analyse a location
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                    <div>
+                      <h2 style={{ fontSize: 16, fontWeight: 800, color: S.n900, marginBottom: 2 }}>Your Reports</h2>
+                      <p style={{ fontSize: 12, color: S.n400 }}>{reports.length} location{reports.length !== 1 ? 's' : ''} analysed</p>
+                    </div>
+                    {compareMode && selected.length > 0 && (
+                      <p style={{ fontSize: 12, color: S.amber, fontWeight: 600 }}>{selected.length}/3 selected</p>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {reports.map(r => {
+                      const vc = verdictCfg(r.verdict)
+                      const isSelected = selected.includes(r.id)
+                      const fin = r.result_data?.financials || {}
+                      const scoreCol = scoreColor(r.overall_score || 0)
+                      return (
+                        <div
+                          key={r.id}
+                          onClick={() => compareMode ? toggleSelect(r.id) : router.push(`/dashboard/${r.report_id || r.id}`)}
+                          style={{
+                            background: S.white,
+                            borderRadius: 16,
+                            border: `1.5px solid ${isSelected ? S.brand : S.n200}`,
+                            boxShadow: isSelected ? `0 0 0 3px ${S.brandFaded}` : '0 1px 4px rgba(0,0,0,0.04)',
+                            padding: '18px 22px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                            display: 'grid',
+                            gridTemplateColumns: 'auto 1fr auto',
+                            gap: 16,
+                            alignItems: 'center',
+                          }}
+                        >
+                          {/* Checkbox or verdict icon */}
+                          {compareMode ? (
+                            <div style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${isSelected ? S.brand : S.n200}`, background: isSelected ? S.brand : S.white, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              {isSelected && <span style={{ color: S.white, fontSize: 12, fontWeight: 900 }}>✓</span>}
+                            </div>
+                          ) : (
+                            <div style={{ width: 44, height: 44, borderRadius: 14, background: vc.bg, border: `1px solid ${vc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
+                              {vc.icon}
+                            </div>
+                          )}
+
+                          {/* Info */}
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                              <p style={{ fontSize: 15, fontWeight: 700, color: S.n900 }}>{r.business_type}</p>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: vc.bg, color: vc.text, border: `1px solid ${vc.border}`, borderRadius: 100, padding: '2px 9px', fontSize: 10, fontWeight: 700 }}>
+                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: vc.dot, display: 'inline-block' }} />
+                                {vc.label}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: 12, color: S.n400, marginBottom: 10 }}>📍 {r.location_name}</p>
+                            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                              {fin.monthlyRevenue && <span style={{ fontSize: 12, color: S.n500 }}>💰 {fmt(fin.monthlyRevenue)}/mo est.</span>}
+                              {fin.monthlyNetProfit != null && <span style={{ fontSize: 12, color: fin.monthlyNetProfit >= 0 ? S.emerald : S.red }}>📈 {fmt(fin.monthlyNetProfit)} profit</span>}
+                              {r.breakeven_months && r.breakeven_months !== 999 && <span style={{ fontSize: 12, color: S.n500 }}>⏱ {r.breakeven_months}mo payback</span>}
+                              <span style={{ fontSize: 12, color: S.n400 }}>{timeAgo(r.created_at)}</span>
+                            </div>
+                          </div>
+
+                          {/* Score ring */}
+                          <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                            <div style={{ position: 'relative', width: 52, height: 52 }}>
+                              <svg width="52" height="52" style={{ transform: 'rotate(-90deg)' }}>
+                                <circle cx="26" cy="26" r="20" fill="none" stroke={S.n100} strokeWidth="5" />
+                                <circle cx="26" cy="26" r="20" fill="none" stroke={scoreCol} strokeWidth="5" strokeLinecap="round"
+                                  strokeDasharray={`${2 * Math.PI * 20}`}
+                                  strokeDashoffset={`${2 * Math.PI * 20 * (1 - (r.overall_score || 0) / 100)}`}
+                                />
+                              </svg>
+                              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ fontSize: 13, fontWeight: 900, color: scoreCol, lineHeight: 1 }}>{r.overall_score ?? '—'}</span>
+                              </div>
+                            </div>
+                            <p style={{ fontSize: 9, color: S.n400, marginTop: 3 }}>score</p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* ── Bottom CTA ── */}
+                  <div style={{ marginTop: 20, padding: '20px 24px', background: `linear-gradient(135deg,${S.brandFaded},${S.white})`, borderRadius: 16, border: `1px solid ${S.brandBorder}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: S.brand, marginBottom: 3 }}>Ready to analyse another location?</p>
+                      <p style={{ fontSize: 12, color: S.n500 }}>Compare suburbs, test your backup options or validate a shortlist.</p>
+                    </div>
+                    <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 20px', fontWeight: 700, fontSize: 13, flexShrink: 0, boxShadow: '0 2px 8px rgba(15,118,110,0.2)' }}>
+                      ➕ New analysis
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </main>
     </div>
   )
 }
