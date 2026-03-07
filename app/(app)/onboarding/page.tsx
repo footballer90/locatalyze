@@ -495,7 +495,7 @@ export default function OnboardingPage() {
                 </button>
 
                 {showAdvanced && (
-                  <div style={{ padding: '0 18px 18px', background: S.n50, animation: 'fadeIn 0.2s ease', borderTop: `1px solid ${S.n100}' }}>
+                  <div style={{ padding: '0 18px 18px', background: S.n50, animation: 'fadeIn 0.2s ease', borderTop: `1px solid ${S.n100}` }}>
 
                     {/* Financial overrides */}
                     <div style={{ paddingTop: 16, marginBottom: 16 }}>
