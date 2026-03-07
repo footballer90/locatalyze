@@ -11,6 +11,12 @@ const S = {
   white: '#FFFFFF', red: '#DC2626', redBg: '#FEF2F2', redBorder: '#FECACA',
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBorder: '#A7F3D0',
 }
+// Send welcome email
+fetch('/api/email', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ type: 'welcome', to: email }),
+}).catch(() => {})
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -33,6 +39,12 @@ export default function SignUpPage() {
     setLoading(false)
     if (err) { setError(err.message); return }
     setDone(true)
+    fetch('/api/email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'welcome', to: email }) }).catch(() => {})
+```
+
+**Step 5 — Add Resend API key to Vercel** (Settings → Environment Variables):
+```
+RESEND_API_KEY=re_NcESKWom_P3Wf5STPtpdji429NoZuLfD5
   }
 
   const inputStyle = {
