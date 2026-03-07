@@ -136,6 +136,186 @@ function MetricCard({ label, value, sub, highlight }: { label: string; value: st
   )
 }
 
+// ─── Chart: Radar (pentagon) ──────────────────────────────────────────────────
+function RadarChart({ scores, color }: { scores: { label: string; value: number }[]; color: string }) {
+  const cx = 110, cy = 110, r = 80
+  const n = scores.length
+  const points = scores.map((s, i) => {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2
+    const val = (s.value ?? 0) / 100
+    return { x: cx + r * val * Math.cos(angle), y: cy + r * val * Math.sin(angle), lx: cx + (r + 24) * Math.cos(angle), ly: cy + (r + 24) * Math.sin(angle) }
+  })
+  const gridLevels = [0.25, 0.5, 0.75, 1]
+  return (
+    <svg width="220" height="220" style={{ display: 'block', margin: '0 auto' }}>
+      {/* Grid */}
+      {gridLevels.map(level => {
+        const gpts = scores.map((_, i) => {
+          const angle = (i / n) * 2 * Math.PI - Math.PI / 2
+          return `${cx + r * level * Math.cos(angle)},${cy + r * level * Math.sin(angle)}`
+        }).join(' ')
+        return <polygon key={level} points={gpts} fill="none" stroke={S.n200} strokeWidth="1" />
+      })}
+      {/* Axes */}
+      {scores.map((_, i) => {
+        const angle = (i / n) * 2 * Math.PI - Math.PI / 2
+        return <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(angle)} y2={cy + r * Math.sin(angle)} stroke={S.n200} strokeWidth="1" />
+      })}
+      {/* Data polygon */}
+      <polygon points={points.map(p => `${p.x},${p.y}`).join(' ')} fill={color} fillOpacity="0.15" stroke={color} strokeWidth="2.5" strokeLinejoin="round" />
+      {/* Data dots */}
+      {points.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="4" fill={color} />)}
+      {/* Labels */}
+      {scores.map((s, i) => {
+        const p = points[i]
+        const anchor = p.lx < cx - 5 ? 'end' : p.lx > cx + 5 ? 'start' : 'middle'
+        return (
+          <g key={i}>
+            <text x={p.lx} y={p.ly - 6} textAnchor={anchor} fontSize="9" fontWeight="700" fill={S.n400} fontFamily="DM Sans,sans-serif" style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              {s.label.split(' ')[0]}
+            </text>
+            <text x={p.lx} y={p.ly + 6} textAnchor={anchor} fontSize="11" fontWeight="800" fill={color} fontFamily="DM Sans,sans-serif">
+              {s.value ?? 0}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+// ─── Chart: 3-year grouped bar chart ─────────────────────────────────────────
+function ProjectionBars({ projections }: { projections: any }) {
+  if (!projections?.year1) return null
+  const years = ['year1', 'year2', 'year3']
+  const labels = ['Year 1', 'Year 2', 'Year 3']
+  const maxVal = Math.max(...years.map(y => projections[y]?.revenue ?? 0), 1)
+  const W = 340, H = 140, barW = 28, gap = 10, groupW = barW * 2 + gap, groupGap = 32
+  const totalW = years.length * groupW + (years.length - 1) * groupGap
+  const startX = (W - totalW) / 2
+
+  return (
+    <svg width={W} height={H + 40} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+      {/* Y gridlines */}
+      {[0.25, 0.5, 0.75, 1].map(level => (
+        <line key={level} x1={startX - 8} y1={H - H * level} x2={startX + totalW + 8} y2={H - H * level} stroke={S.n100} strokeWidth="1" strokeDasharray="4,4" />
+      ))}
+      {years.map((y, i) => {
+        const d = projections[y] || {}
+        const revH  = ((d.revenue  ?? 0) / maxVal) * H
+        const profH = Math.max(0, ((d.netProfit ?? 0) / maxVal) * H)
+        const x = startX + i * (groupW + groupGap)
+        return (
+          <g key={y}>
+            {/* Revenue bar */}
+            <rect x={x} y={H - revH} width={barW} height={revH} rx="4" fill={S.brand} fillOpacity="0.85" />
+            {/* Profit bar */}
+            <rect x={x + barW + gap} y={H - profH} width={barW} height={profH} rx="4" fill={S.emerald} fillOpacity="0.85" />
+            {/* Year label */}
+            <text x={x + groupW / 2} y={H + 16} textAnchor="middle" fontSize="11" fontWeight="700" fill={S.n400} fontFamily="DM Sans,sans-serif">{labels[i]}</text>
+            {/* Value labels */}
+            <text x={x + barW / 2} y={H - revH - 6} textAnchor="middle" fontSize="9" fontWeight="700" fill={S.brand} fontFamily="DM Sans,sans-serif">
+              {d.revenue ? '$' + (d.revenue / 1000).toFixed(0) + 'k' : ''}
+            </text>
+            <text x={x + barW + gap + barW / 2} y={H - profH - 6} textAnchor="middle" fontSize="9" fontWeight="700" fill={S.emerald} fontFamily="DM Sans,sans-serif">
+              {d.netProfit ? '$' + (d.netProfit / 1000).toFixed(0) + 'k' : ''}
+            </text>
+          </g>
+        )
+      })}
+      {/* Legend */}
+      <rect x={startX} y={H + 28} width={10} height={10} rx="2" fill={S.brand} fillOpacity="0.85" />
+      <text x={startX + 14} y={H + 37} fontSize="10" fill={S.n500} fontFamily="DM Sans,sans-serif">Revenue</text>
+      <rect x={startX + 80} y={H + 28} width={10} height={10} rx="2" fill={S.emerald} fillOpacity="0.85" />
+      <text x={startX + 94} y={H + 37} fontSize="10" fill={S.n500} fontFamily="DM Sans,sans-serif">Net Profit</text>
+    </svg>
+  )
+}
+
+// ─── Chart: P&L Waterfall ─────────────────────────────────────────────────────
+function PLWaterfall({ fin }: { fin: any }) {
+  const revenue   = fin.monthlyRevenue    ?? 0
+  const rent      = fin.rent?.amount      ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.35 : 0)
+  const cogs      = fin.cogs              ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.3 : 0)
+  const labour    = fin.labour            ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.25 : 0)
+  const other     = Math.max(0, (fin.totalMonthlyCosts ?? 0) - rent - cogs - labour)
+  const profit    = fin.monthlyNetProfit  ?? 0
+  if (!revenue) return null
+
+  const bars = [
+    { label: 'Revenue',   value: revenue, color: S.brand,   isNeg: false },
+    { label: 'Rent',      value: rent,    color: S.red,     isNeg: true  },
+    { label: 'COGS',      value: cogs,    color: '#F97316', isNeg: true  },
+    { label: 'Labour',    value: labour,  color: S.amber,   isNeg: true  },
+    { label: 'Other',     value: other,   color: S.n400,    isNeg: true  },
+    { label: 'Profit',    value: Math.abs(profit), color: profit >= 0 ? S.emerald : S.red, isNeg: false },
+  ].filter(b => b.value > 0)
+
+  const maxH = 100
+  const W = 340, barW = Math.min(36, (W - 20) / bars.length - 8)
+
+  return (
+    <svg width={W} height={maxH + 52} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+      {bars.map((b, i) => {
+        const h = (b.value / revenue) * maxH
+        const x = 10 + i * ((W - 20) / bars.length)
+        return (
+          <g key={b.label}>
+            <rect x={x} y={maxH - h} width={barW} height={h} rx="4" fill={b.color} fillOpacity="0.85" />
+            <text x={x + barW / 2} y={maxH - h - 6} textAnchor="middle" fontSize="9" fontWeight="700" fill={b.color} fontFamily="DM Sans,sans-serif">
+              ${(b.value / 1000).toFixed(0)}k
+            </text>
+            <text x={x + barW / 2} y={maxH + 14} textAnchor="middle" fontSize="9" fontWeight="600" fill={S.n500} fontFamily="DM Sans,sans-serif">{b.label}</text>
+          </g>
+        )
+      })}
+      <line x1="10" y1={maxH} x2={W - 10} y2={maxH} stroke={S.n200} strokeWidth="1.5" />
+    </svg>
+  )
+}
+
+// ─── Chart: Break-even gauge ──────────────────────────────────────────────────
+function BreakevenGauge({ daily, breakeven }: { daily: number | null; breakeven: number | null }) {
+  if (!daily || !breakeven) return null
+  const maxCustomers = Math.max(daily * 2, breakeven * 1.5)
+  const pct = Math.min((daily / maxCustomers), 1)
+  const bePct = Math.min((breakeven / maxCustomers), 1)
+  const cx = 110, cy = 90, r = 70
+  // Semi-circle from 180deg to 0deg
+  const toXY = (pct: number) => {
+    const angle = Math.PI - pct * Math.PI
+    return { x: cx + r * Math.cos(angle), y: cy - r * Math.sin(angle) }
+  }
+  const current = toXY(pct)
+  const be = toXY(bePct)
+  const arcPath = (from: number, to: number, stroke: string, sw: number) => {
+    const s = toXY(from), e = toXY(to)
+    return <path d={`M${s.x},${s.y} A${r},${r} 0 0,1 ${e.x},${e.y}`} fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" />
+  }
+  const isViable = daily >= breakeven
+  return (
+    <svg width="220" height="130" style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+      {/* Track */}
+      {arcPath(0, 1, S.n100, 12)}
+      {/* Break-even zone */}
+      {arcPath(bePct, 1, S.emeraldBg, 12)}
+      {/* Current */}
+      {arcPath(0, pct, isViable ? S.emerald : S.red, 12)}
+      {/* Break-even marker */}
+      <circle cx={be.x} cy={be.y} r="5" fill={S.white} stroke={S.amber} strokeWidth="2.5" />
+      {/* Labels */}
+      <text x={cx} y={cy + 16} textAnchor="middle" fontSize="28" fontWeight="900" fill={isViable ? S.emerald : S.red} fontFamily="DM Sans,sans-serif">{daily}</text>
+      <text x={cx} y={cy + 30} textAnchor="middle" fontSize="10" fill={S.n400} fontFamily="DM Sans,sans-serif">customers/day</text>
+      <text x={14} y={cy + 10} textAnchor="start" fontSize="9" fill={S.n400} fontFamily="DM Sans,sans-serif">0</text>
+      <text x={cx} y={22} textAnchor="middle" fontSize="9" fill={S.n400} fontFamily="DM Sans,sans-serif">{Math.round(maxCustomers / 2)}</text>
+      <text x={cx + r + 10} y={cy + 10} textAnchor="end" fontSize="9" fill={S.n400} fontFamily="DM Sans,sans-serif">{Math.round(maxCustomers)}</text>
+      {/* Break-even label */}
+      <text x={be.x} y={be.y - 12} textAnchor="middle" fontSize="9" fontWeight="700" fill={S.amber} fontFamily="DM Sans,sans-serif">break-even</text>
+      <text x={be.x} y={be.y - 2} textAnchor="middle" fontSize="9" fill={S.amber} fontFamily="DM Sans,sans-serif">{breakeven}</text>
+    </svg>
+  )
+}
+
 // ─── Polling hook ─────────────────────────────────────────────────────────────
 function useReport(reportId: string) {
   const [report, setReport] = useState<Report | null>(null)
@@ -244,7 +424,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     const idx = arr.indexOf(key)
     const next = arr[idx + 1]
     const pattern = next ? `${key}:\\s*(.*?)(?=${next}:)` : `${key}:\\s*(.*?)$`
-   const match = report?.swot_analysis?.match(new RegExp(pattern, 'is'))
+    const match = report.swot_analysis?.match(new RegExp(pattern, 'is'))
     if (!match) return []
     return match[1].split(/[,.]/).map(s => s.trim()).filter(s => s.length > 5).slice(0, 3)
   }
@@ -272,7 +452,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <div style={{ width: 28, height: 28, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}>L</div>
             <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
           </button>
-          <span style={{ color: S.n400 as any }}>›</span>
+          <span style={{ color: S.n400 }}>›</span>
           <span style={{ fontSize: 13, color: S.n500, fontWeight: 500 }}>{report.business_type}</span>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -365,13 +545,27 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         {/* ══════════ OVERVIEW ══════════ */}
         {activeTab === 'overview' && (
           <>
-            {/* Score breakdown */}
+            {/* Score breakdown + Radar */}
             <div style={card({ padding: '20px 22px' })}>
               <SectionLabel>Score Breakdown</SectionLabel>
-              <ScoreBar label="Rent Affordability"  score={report.score_rent}          weight="30%" />
-              <ScoreBar label="Profitability"        score={report.score_profitability}  weight="25%" />
-              <ScoreBar label="Competition"          score={report.score_competition}    weight="25%" />
-              <ScoreBar label="Area Demographics"    score={report.score_demand}         weight="20%" />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', gap: 20, alignItems: 'center' }}>
+                <div>
+                  <ScoreBar label="Rent Affordability"  score={report.score_rent}          weight="30%" />
+                  <ScoreBar label="Profitability"        score={report.score_profitability}  weight="25%" />
+                  <ScoreBar label="Competition"          score={report.score_competition}    weight="25%" />
+                  <ScoreBar label="Area Demographics"    score={report.score_demand}         weight="20%" />
+                </div>
+                <RadarChart
+                  color={vc.text}
+                  scores={[
+                    { label: 'Rent',          value: report.score_rent          ?? 0 },
+                    { label: 'Profitability', value: report.score_profitability  ?? 0 },
+                    { label: 'Competition',   value: report.score_competition    ?? 0 },
+                    { label: 'Demand',        value: report.score_demand         ?? 0 },
+                    { label: 'Cost',          value: report.score_cost           ?? 0 },
+                  ]}
+                />
+              </div>
               {scoring.riskFlags?.length > 0 && (
                 <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {scoring.riskFlags.map((flag: string, i: number) => (
@@ -454,12 +648,19 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* P&L */}
             <div style={card({ padding: '20px 22px' })}>
               <SectionLabel>Monthly P&L</SectionLabel>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
                 <MetricCard label="Revenue"     value={fmt(fin.monthlyRevenue)}    />
                 <MetricCard label="Total Costs" value={fmt(fin.totalMonthlyCosts)} highlight={S.red} />
                 <MetricCard label="Gross Profit" value={fmt(fin.monthlyGrossProfit)} highlight={S.blue} />
                 <MetricCard label="Net Profit"   value={fmt(fin.monthlyNetProfit)}  highlight={(fin.monthlyNetProfit ?? 0) >= 0 ? S.emerald : S.red} />
               </div>
+              {/* Waterfall chart */}
+              {fin.monthlyRevenue && (
+                <div style={{ marginBottom: 16 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, textAlign: 'center' }}>Monthly Cost Breakdown</p>
+                  <PLWaterfall fin={fin} />
+                </div>
+              )}
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.7 }}>{report.profitability}</p>
             </div>
 
@@ -477,10 +678,16 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* Break-even */}
             <div style={card({ padding: '20px 22px' })}>
               <SectionLabel>Break-even Analysis</SectionLabel>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 16 }}>
-                <MetricCard label="Customers / Day"   value={String(report.breakeven_daily ?? '—')} />
-                <MetricCard label="Revenue / Month"   value={fmt(report.breakeven_monthly)} />
-                <MetricCard label="Surplus Customers" value={(fin.breakEven?.surplusCustomers != null ? (fin.breakEven.surplusCustomers >= 0 ? '+' : '') + fin.breakEven.surplusCustomers : '—') as string} highlight={fin.breakEven?.isAboveBreakEven ? S.emerald : S.red} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', gap: 20, alignItems: 'center', marginBottom: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+                  <MetricCard label="Customers / Day"   value={String(report.breakeven_daily ?? '—')} />
+                  <MetricCard label="Revenue / Month"   value={fmt(report.breakeven_monthly)} />
+                  <MetricCard label="Surplus Customers" value={(fin.breakEven?.surplusCustomers != null ? (fin.breakEven.surplusCustomers >= 0 ? '+' : '') + fin.breakEven.surplusCustomers : '—') as string} highlight={fin.breakEven?.isAboveBreakEven ? S.emerald : S.red} />
+                </div>
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, textAlign: 'center' }}>Customers vs Break-even</p>
+                  <BreakevenGauge daily={report.breakeven_daily} breakeven={fin.breakEven?.dailyCustomers ?? report.breakeven_daily} />
+                </div>
               </div>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.7 }}>{report.cost_analysis}</p>
             </div>
@@ -561,6 +768,11 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {projections.year1 && (
               <div style={card({ padding: '20px 22px' })}>
                 <SectionLabel>3-Year Financial Projections</SectionLabel>
+                {/* Bar chart */}
+                <div style={{ marginBottom: 24 }}>
+                  <ProjectionBars projections={projections} />
+                </div>
+                {/* Table */}
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ borderBottom: `2px solid ${S.n100}` }}>
