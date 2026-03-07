@@ -490,10 +490,31 @@ function useReport(reportId: string) {
     const MAX = 20
 
     async function poll() {
-      const { data, error } = await supabase.from('reports').select('*').eq('report_id', reportId).maybeSingle()
-      if (error) { setLoading(false); setNotFound(true); return }
-      if (!data) { attempts++; if (attempts >= MAX) { setLoading(false); setNotFound(true) }; return }
-      setReport(data as Report); setLoading(false)
+      // Try report_id column first, fall back to primary key id
+      let data: any = null
+
+      const r1 = await supabase.from('reports').select('*').eq('report_id', reportId).maybeSingle()
+      if (!r1.error && r1.data) {
+        data = r1.data
+      } else {
+        // report_id col may not exist — try id column
+        const r2 = await supabase.from('reports').select('*').eq('id', reportId).maybeSingle()
+        if (!r2.error && r2.data) {
+          data = r2.data
+        } else if (r2.error) {
+          attempts++
+          if (attempts >= MAX) { setLoading(false); setNotFound(true) }
+          return
+        }
+      }
+
+      if (!data) {
+        attempts++
+        if (attempts >= MAX) { setLoading(false); setNotFound(true) }
+        return
+      }
+      setReport(data as Report)
+      setLoading(false)
       if (data.verdict) clearInterval(timer)
       else { attempts++; if (attempts >= MAX) clearInterval(timer) }
     }
