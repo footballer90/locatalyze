@@ -163,7 +163,7 @@ function ProductDemo() {
             ].map(b => (
               <div key={b.l} style={{ marginBottom: 7 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <span style={{ fontSize: 11, color: S.n600 as any }}>{b.l}</span>
+                  <span style={{ fontSize: 11, color: S.n500 }}>{b.l}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.s}</span>
                 </div>
                 <div style={{ height: 4, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
