@@ -397,7 +397,7 @@ export default function LandingPage() {
                   background: activeTab === v ? (v === 'go' ? S.emerald : v === 'caution' ? S.amber : S.red) : S.white,
                   color: activeTab === v ? S.white : S.n500,
                   boxShadow: activeTab === v ? '0 4px 16px rgba(0,0,0,0.15)' : '0 1px 3px rgba(0,0,0,0.06)',
-                  border: `1.5px solid ${activeTab === v ? 'transparent' : S.n200}`,
+                  outline: activeTab === v ? 'none' : `1.5px solid ${S.n200}`,
                   transition: 'all 0.15s',
                 }}
               >
