@@ -157,14 +157,6 @@ function ComparisonView({ reports, onClose }: { reports: Report[]; onClose: () =
             </div>
           </div>
         )}
-        {[
-          { title: 'Overall Verdict', content: (
-            <div style={{ display: 'flex', borderBottom: `1px solid ${S.n100}`, background: S.n50 }}>
-              <div style={{ width: '30%', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n400 }}>Location</div>
-              {reports.map(r => <div key={r.id} style={{ width: colWidth, padding: '10px 14px', fontSize: 12, fontWeight: 700, color: winner?.report.id === r.id ? S.brand : S.n800, borderLeft: `1px solid ${S.n200}` }}>{winner?.report.id === r.id && '🏆 '}{r.location_name?.split(',')[0] || r.business_type}</div>)}
-            </div>
-          )},
-        ]}
         <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, overflow: 'hidden', marginBottom: 20, marginTop: 4 }}>
           <div style={{ display: 'flex', background: S.n50, borderBottom: `1px solid ${S.n200}` }}>
             <div style={{ width: '30%', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: S.n400 }}>Location</div>
