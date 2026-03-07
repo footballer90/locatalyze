@@ -123,6 +123,57 @@ export async function POST(request: NextRequest) {
       return errorResponse('Analysis server returned unexpected response', 502)
     }
 
+    // ── Save report to Supabase (Node 16 in n8n is disabled, so we do it here) ──
+    const rpt = result?.report
+    if (rpt?.reportId) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const fin = rpt.financials || {}
+        const row = {
+          report_id:           rpt.reportId,
+          submission_id:       rpt.submissionId || null,
+          user_id:             data.userId || null,
+          verdict:             rpt.verdict,
+          overall_score:       rpt.overall_score,
+          score_competition:   rpt.score_competition,
+          score_rent:          rpt.score_rent,
+          score_demand:        rpt.score_demand,
+          score_cost:          rpt.score_cost,
+          score_profitability: rpt.score_profitability,
+          recommendation:      rpt.recommendation        || '',
+          competitor_analysis: rpt.competitor_analysis   || '',
+          rent_analysis:       rpt.rent_analysis         || '',
+          market_demand:       rpt.market_demand         || '',
+          cost_analysis:       rpt.cost_analysis         || '',
+          profitability:       rpt.profitability         || '',
+          pl_summary:          rpt.pl_summary            || '',
+          three_year_projection: rpt.three_year_projection || '',
+          sensitivity_analysis:  rpt.sensitivity_analysis  || '',
+          swot_analysis:       rpt.swot_analysis         || '',
+          breakeven_monthly:   rpt.breakeven_monthly,
+          breakeven_daily:     rpt.breakeven_daily,
+          breakeven_months:    rpt.breakeven_months,
+          full_report_markdown: JSON.stringify(fin),
+          location_name:       rpt.location?.formattedAddress || data.address,
+          business_type:       data.businessType,
+          monthly_rent:        data.monthlyRent,
+          address:             data.address,
+          result_data:         rpt,
+          status:              'complete',
+        }
+        const { error: dbErr } = await supabase.from('reports').upsert(row, { onConflict: 'report_id' })
+        if (dbErr) console.error('[Analyse] Supabase save failed:', dbErr.message)
+        else console.log('[Analyse] Report saved to Supabase:', rpt.reportId)
+      } catch (dbEx: any) {
+        // Non-fatal — report still returned to client
+        console.error('[Analyse] Supabase save exception:', dbEx.message)
+      }
+    }
+
     return secureHeaders(NextResponse.json(result))
   } catch (err: any) {
     const isTimeout = err.name === 'AbortError' || err.message?.includes('timeout')

@@ -499,7 +499,7 @@ function useReport(reportId: string) {
     let attempts = 0
     const MAX = 25
 
-    async function poll() {
+    async function poll(timerRef: { id: ReturnType<typeof setInterval> | null }) {
       // Single query — report_id OR id match (handles both column naming conventions)
       // Using .or() avoids two round trips and works even if one column doesn't have the value
       const { data, error } = await supabase
@@ -534,22 +534,22 @@ function useReport(reportId: string) {
 
       setReport(data as Report)
       setLoading(false)
-      if (data.verdict) clearInterval(timer)
-      else { attempts++; if (attempts >= MAX) clearInterval(timer) }
+      if (data.verdict) { if (timerRef.id) clearInterval(timerRef.id) }
+      else { attempts++; if (attempts >= MAX && timerRef.id) clearInterval(timerRef.id) }
     }
+
+    // Use a ref object so poll() can access the timer before it's assigned
+    const timerRef: { id: ReturnType<typeof setInterval> | null } = { id: null }
 
     // Small delay to let Supabase auth session hydrate
     const startDelay = setTimeout(() => {
-      poll()
-      const timer = setInterval(poll, 3000)
-      // Store timer ref for cleanup
-      ;(startDelay as any).__timer = timer
+      poll(timerRef)
+      timerRef.id = setInterval(() => poll(timerRef), 3000)
     }, 400)
 
     return () => {
       clearTimeout(startDelay)
-      const t = (startDelay as any).__timer
-      if (t) clearInterval(t)
+      if (timerRef.id) clearInterval(timerRef.id)
     }
   }, [reportId])
 
