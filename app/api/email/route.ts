@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY || '')
+}
+```
+
+Then find every place in the file that uses `resend.emails.send` and replace `resend.emails.send` with `getResend().emails.send` — there are two of them.
+
+**Cmd+S → close.**
+
+Then also add the API key to Vercel right now — go to **Vercel → Settings → Environment Variables** and add:
+```
+RESEND_API_KEY=re_your_new_key_here
 const FROM = 'Locatalyze <reports@locatalyze.com>'
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.vercel.app'
 
