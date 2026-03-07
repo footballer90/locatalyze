@@ -424,7 +424,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     const idx = arr.indexOf(key)
     const next = arr[idx + 1]
     const pattern = next ? `${key}:\\s*(.*?)(?=${next}:)` : `${key}:\\s*(.*?)$`
-    const match = report.swot_analysis?.match(new RegExp(pattern, 'is'))
+    const match = report?.swot_analysis?.match(new RegExp(pattern, 'is'))
     if (!match) return []
     return match[1].split(/[,.]/).map(s => s.trim()).filter(s => s.length > 5).slice(0, 3)
   }
