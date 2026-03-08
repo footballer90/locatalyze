@@ -669,7 +669,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         </nav>
 
         {/* Verdict hero */}
-        <div style={{ padding: '28px 24px', maxWidth: 720, margin: '0 auto' }}>
+        <div style={{ padding: '28px 32px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start' }}>
             {/* Left: address + verdict + recommendation */}
             <div>
@@ -732,7 +732,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       </div>
 
       {/* ── Body ── */}
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '20px 20px 60px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 32px 60px' }}>
+        {/* Two-column layout: main content + right sidebar */}
+        <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 10, padding: 4, marginBottom: 14, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
@@ -1082,6 +1085,76 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             Analyse another location →
           </button>
         </div>
+
+        </div>{/* end left column */}
+
+        {/* ── RIGHT SIDEBAR ─────────────────────────────────────────── */}
+        <div style={{ width: 256, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 24 }}>
+
+          {/* Verdict summary */}
+          <div style={{ background: verdict === 'GO' ? S.emeraldBg : verdict === 'CAUTION' ? S.amberBg : S.redBg, border: `1.5px solid ${verdict === 'GO' ? S.emeraldBdr : verdict === 'CAUTION' ? S.amberBdr : S.redBdr}`, borderRadius: 16, padding: '16px 18px' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Verdict</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <span style={{ fontSize: 28, fontWeight: 900, color: verdict === 'GO' ? S.emerald : verdict === 'CAUTION' ? S.amber : S.red, lineHeight: 1 }}>{report.overall_score}</span>
+              <div>
+                <p style={{ fontSize: 16, fontWeight: 800, color: verdict === 'GO' ? S.emerald : verdict === 'CAUTION' ? S.amber : S.red }}>{verdict}</p>
+                <p style={{ fontSize: 11, color: S.n500 }}>out of 100</p>
+              </div>
+            </div>
+            <p style={{ fontSize: 11, color: S.n700, lineHeight: 1.5 }}>{report.recommendation?.slice(0, 120)}{(report.recommendation?.length || 0) > 120 ? '…' : ''}</p>
+          </div>
+
+          {/* Key numbers */}
+          <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '16px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
+            {[
+              { label: 'Monthly Revenue',   value: fmt(fin.monthlyRevenue),   color: S.n900 },
+              { label: 'Net Profit / Mo',   value: fmt(fin.monthlyNetProfit), color: (fin.monthlyNetProfit || 0) >= 0 ? S.emerald : S.red },
+              { label: 'Rent-to-Revenue',   value: fin.rent?.toRevenuePercent != null ? fin.rent.toRevenuePercent + '%' : '—', color: (fin.rent?.toRevenuePercent || 0) <= 12 ? S.emerald : (fin.rent?.toRevenuePercent || 0) <= 20 ? S.amber : S.red },
+              { label: 'Break-even / Day',  value: report.breakeven_daily ? report.breakeven_daily + ' cust.' : '—', color: S.n900 },
+              { label: 'Payback Period',    value: report.breakeven_months && report.breakeven_months !== 999 ? report.breakeven_months + ' months' : 'Not viable', color: S.n900 },
+            ].map(item => (
+              <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
+                <span style={{ fontSize: 12, color: S.n500 }}>{item.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Score pills */}
+          <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '16px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Score Components</p>
+            {[
+              { label: 'Rent',          score: report.score_rent },
+              { label: 'Competition',   score: report.score_competition },
+              { label: 'Demographics',  score: report.score_demand },
+              { label: 'Profitability', score: report.score_profitability },
+            ].map(item => (
+              <div key={item.label} style={{ marginBottom: 9 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <span style={{ fontSize: 12, color: S.n700 }}>{item.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: item.score != null ? (item.score >= 70 ? S.emerald : item.score >= 45 ? S.amber : S.red) : S.n400 }}>{item.score ?? '—'}</span>
+                </div>
+                <div style={{ height: 5, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${item.score || 0}%`, background: item.score != null ? (item.score >= 70 ? S.emerald : item.score >= 45 ? S.amber : S.red) : S.n200, borderRadius: 100 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button onClick={() => router.push('/dashboard')} style={{ background: S.white, color: S.n700, border: `1.5px solid ${S.n200}`, borderRadius: 11, padding: '10px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: S.font }}>
+              ← Back to dashboard
+            </button>
+            <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 11, padding: '10px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 8px rgba(15,118,110,0.2)', fontFamily: S.font }}>
+              ➕ Analyse new location
+            </button>
+          </div>
+
+        </div>{/* end right sidebar */}
+
+        </div>{/* end two-column */}
       </div>
     </div>
   )

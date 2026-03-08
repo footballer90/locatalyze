@@ -379,6 +379,7 @@ export default function DashboardPage() {
   const [deleteConfirmId, setDeleteConfirmId]     = useState<string | null>(null)
   const [renamingId, setRenamingId]               = useState<string | null>(null)
   const [renameValue, setRenameValue]             = useState('')
+  const [panelOpen, setPanelOpen]                 = useState(true)
 
   useEffect(() => {
     async function load() {
@@ -766,7 +767,31 @@ export default function DashboardPage() {
 
               {/* ── RIGHT: Insight panel ── */}
               {reports.length > 0 && (
-                <div style={{ width: 268, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 0, width: panelOpen ? 268 : 44, transition: 'width 0.25s ease' }}>
+
+                  {/* Toggle button */}
+                  <button
+                    onClick={() => setPanelOpen(p => !p)}
+                    title={panelOpen ? 'Collapse panel' : 'Expand insights'}
+                    style={{
+                      alignSelf: 'flex-end',
+                      marginBottom: 12,
+                      width: 32, height: 32,
+                      borderRadius: 9,
+                      border: `1px solid ${S.n200}`,
+                      background: S.white,
+                      color: S.n500,
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                      transition: 'all 0.15s',
+                      flexShrink: 0,
+                    }}
+                  >{panelOpen ? '›' : '‹'}</button>
+
+                  {/* Panel content — hidden when collapsed */}
+                  {panelOpen && <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
                   {/* Best location card */}
                   {(() => {
@@ -869,6 +894,8 @@ export default function DashboardPage() {
                   <button onClick={() => router.push('/onboarding')} style={{ width: '100%', background: S.brand, color: S.white, border: 'none', borderRadius: 14, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}>
                     ➕ Analyse new location
                   </button>
+
+                  </div>}{/* end panelOpen content */}
 
                 </div>
               )}
