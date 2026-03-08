@@ -1,4 +1,7 @@
+'use client'
 import Link from 'next/link'
+// ... rest of file stays exactly the same
+// import Link from 'next/link'
 
 // ── Inline SVG logo (dark variant — white text + teal accent) ──
 function Logo() {
