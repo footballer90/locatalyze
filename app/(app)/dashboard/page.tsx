@@ -289,6 +289,20 @@ function Sidebar({ user, stats, reports, onNewAnalysis, onSignOut }: {
           <span style={{ fontSize: 13, fontWeight: 600, color: S.sidebarText }}>Location Guides</span>
         </a>
 
+        {/* Profile */}
+        <a
+          href="/profile"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+            borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = S.sidebarActive)}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+        >
+          <span style={{ fontSize: 15 }}>👤</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: S.sidebarText }}>Profile</span>
+        </a>
+
         <div style={{ height: 1, background: S.sidebarBorder, margin: '8px 0' }} />
 
         {/* ── Mini stats ── */}
