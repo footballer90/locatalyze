@@ -1,7 +1,7 @@
 'use client'
 import ShareButton from '@/components/ShareButton'
 import ExportPDFButton from '@/components/ExportPDFButton'
-import { use, useEffect, useState, useRef } from 'react'
+import { use, useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -563,6 +563,12 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const { report, loading, notFound } = useReport(reportId)
   const [activeTab, setActiveTab] = useState('overview')
 
+  // ── Live recalculation sliders ────────────────────────────────────────────
+  const [sliderOpen, setSliderOpen] = useState(false)
+  const [adjRent,     setAdjRent]     = useState<number | null>(null)
+  const [adjTicket,   setAdjTicket]   = useState<number | null>(null)
+  const [adjCustomers,setAdjCustomers]= useState<number | null>(null)
+
   // ── Loading screen ──
   if (loading || (report && !report.verdict)) {
     const steps = ['Resolving coordinates', 'Scanning competitors (500m)', 'Querying ABS demographics', 'Modelling financials', 'Writing report']
@@ -611,6 +617,48 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const demographics = report.result_data?.demographics || null
   const competitorDataQuality = report.result_data?.competitors?.dataQuality || null
   const demographicsDataQuality = report.result_data?.demographics?.dataQuality || null
+
+  // ── Live recalculation engine (mirrors Node 12 logic exactly) ────────────
+  const GROSS_MARGIN = 0.62
+  const COST_MULTIPLIER = 1.45
+  const TRADING_DAYS = 30
+
+  const baseRent      = report.monthly_rent ?? fin.rent?.submitted ?? 0
+  const baseTicket    = fin.rent != null ? Math.round((fin.monthlyRevenue || 0) / ((fin.baselineCustomers || 1) * TRADING_DAYS)) : 0
+  const baseCustomers = fin.baselineCustomers ?? 0
+
+  const adjCalc = useMemo(() => {
+    const rent      = adjRent      ?? baseRent
+    const ticket    = adjTicket    ?? baseTicket
+    const customers = adjCustomers ?? baseCustomers
+
+    const monthlyRevenue     = Math.round(customers * ticket * TRADING_DAYS)
+    const totalMonthlyCosts  = Math.round(rent * COST_MULTIPLIER)
+    const monthlyGrossProfit = Math.round(monthlyRevenue * GROSS_MARGIN)
+    const monthlyNetProfit   = Math.round(monthlyGrossProfit - totalMonthlyCosts)
+    const profitMargin       = parseFloat(((monthlyNetProfit / Math.max(monthlyRevenue, 1)) * 100).toFixed(1))
+    const rentToRevRatio     = parseFloat((rent / Math.max(monthlyRevenue, 1)).toFixed(3))
+    const rentPct            = parseFloat((rentToRevRatio * 100).toFixed(1))
+    const breakEvenMonthly   = Math.round(totalMonthlyCosts / GROSS_MARGIN)
+    const breakEvenDaily     = Math.ceil(breakEvenMonthly / (Math.max(ticket, 1) * TRADING_DAYS))
+
+    // Score (same weights as Node 12)
+    const scoreRent = rentPct <= 12 ? 90 : rentPct <= 20 ? 70 : rentPct <= 30 ? 40 : 10
+    const scoreProfitability = monthlyNetProfit > 2000 ? 90 : monthlyNetProfit >= 1000 ? 70 : monthlyNetProfit > 0 ? 50 : 10
+    const scoreComp = report.score_competition ?? 50
+    const scoreDem  = report.score_demand ?? 50
+    const overall = Math.round(scoreRent * 0.30 + scoreProfitability * 0.25 + scoreComp * 0.25 + scoreDem * 0.20)
+    const verdict = overall >= 70 ? 'GO' : overall >= 45 ? 'CAUTION' : 'NO'
+
+    const changed = (adjRent != null && adjRent !== baseRent)
+      || (adjTicket != null && adjTicket !== baseTicket)
+      || (adjCustomers != null && adjCustomers !== baseCustomers)
+
+    return { rent, ticket, customers, monthlyRevenue, totalMonthlyCosts, monthlyGrossProfit, monthlyNetProfit, profitMargin, rentToRevRatio, rentPct, breakEvenMonthly, breakEvenDaily, scoreRent, scoreProfitability, overall, verdict, changed }
+  }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, report.score_competition, report.score_demand])
+
+  const adjVc = verdictCfg(adjCalc.verdict)
+  const isChanged = adjCalc.changed
 
   const tabs = [
     { id: 'overview',    label: 'Overview'    },
@@ -750,6 +798,181 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               }}
             >{t.label}</button>
           ))}
+        </div>
+
+        {/* ═══════ RECALCULATION PANEL ═══════ */}
+        <div style={{ marginBottom: 16 }}>
+          {/* Toggle button */}
+          <button
+            onClick={() => setSliderOpen(o => !o)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: isChanged ? S.brand : S.white,
+              color: isChanged ? S.white : S.n700,
+              border: `1.5px solid ${isChanged ? S.brand : S.n200}`,
+              borderRadius: 10, padding: '8px 16px',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              fontFamily: S.font, boxShadow: isChanged ? '0 2px 10px rgba(15,118,110,0.25)' : 'none',
+              transition: 'all 0.2s',
+            }}
+          >
+            <span style={{ fontSize: 15 }}>🎚</span>
+            {isChanged ? `Adjusted: ${adjCalc.verdict} (${adjCalc.overall}/100)` : 'Adjust assumptions'}
+            {isChanged && (
+              <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.8, marginLeft: 4 }}>
+                {adjCalc.overall > (report.overall_score ?? 0) ? `▲ +${adjCalc.overall - (report.overall_score ?? 0)}` : `▼ ${adjCalc.overall - (report.overall_score ?? 0)}`}
+              </span>
+            )}
+            <span style={{ marginLeft: 'auto', fontSize: 11 }}>{sliderOpen ? '▲' : '▼'}</span>
+          </button>
+
+          {sliderOpen && (
+            <div style={{
+              marginTop: 10, background: S.white,
+              border: `1.5px solid ${S.brandBorder}`,
+              borderRadius: 16, padding: '20px 24px',
+              boxShadow: '0 4px 20px rgba(15,118,110,0.08)',
+              animation: 'fadeIn 0.2s ease',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>What-if calculator</p>
+                  <p style={{ fontSize: 12, color: S.n500, marginTop: 2 }}>Drag to see how changes affect your verdict in real time</p>
+                </div>
+                {isChanged && (
+                  <button
+                    onClick={() => { setAdjRent(null); setAdjTicket(null); setAdjCustomers(null) }}
+                    style={{ background: S.n100, border: 'none', color: S.n500, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: S.font }}
+                  >Reset</button>
+                )}
+              </div>
+
+              {/* Three sliders */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+                {/* Monthly Rent */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: S.n700 }}>Monthly Rent</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>${(adjRent ?? baseRent).toLocaleString()}</span>
+                  </div>
+                  <input type="range"
+                    min={Math.max(500, Math.round(baseRent * 0.4))}
+                    max={Math.round(baseRent * 2.5)}
+                    step={100}
+                    value={adjRent ?? baseRent}
+                    onChange={e => setAdjRent(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: S.brand, cursor: 'pointer' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: S.n400 }}>${Math.round(baseRent * 0.4).toLocaleString()}</span>
+                    <span style={{ fontSize: 10, color: S.n400 }}>${Math.round(baseRent * 2.5).toLocaleString()}</span>
+                  </div>
+                  {adjRent != null && adjRent !== baseRent && (
+                    <p style={{ fontSize: 11, color: adjRent < baseRent ? S.emerald : S.red, marginTop: 4, fontWeight: 600 }}>
+                      {adjRent < baseRent ? '▼' : '▲'} {Math.abs(Math.round(((adjRent - baseRent) / baseRent) * 100))}% vs original
+                    </p>
+                  )}
+                </div>
+
+                {/* Avg Ticket Size */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: S.n700 }}>Avg Ticket Size</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>${adjTicket ?? baseTicket}</span>
+                  </div>
+                  <input type="range"
+                    min={Math.max(1, Math.round(baseTicket * 0.4))}
+                    max={Math.round(baseTicket * 2.5)}
+                    step={1}
+                    value={adjTicket ?? baseTicket}
+                    onChange={e => setAdjTicket(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: S.brand, cursor: 'pointer' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: S.n400 }}>${Math.round(baseTicket * 0.4)}</span>
+                    <span style={{ fontSize: 10, color: S.n400 }}>${Math.round(baseTicket * 2.5)}</span>
+                  </div>
+                  {adjTicket != null && adjTicket !== baseTicket && (
+                    <p style={{ fontSize: 11, color: adjTicket > baseTicket ? S.emerald : S.red, marginTop: 4, fontWeight: 600 }}>
+                      {adjTicket > baseTicket ? '▲' : '▼'} {Math.abs(Math.round(((adjTicket - baseTicket) / Math.max(baseTicket,1)) * 100))}% vs original
+                    </p>
+                  )}
+                </div>
+
+                {/* Daily Customers */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: S.n700 }}>Daily Customers</span>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{adjCustomers ?? baseCustomers}</span>
+                  </div>
+                  <input type="range"
+                    min={Math.max(5, Math.round(baseCustomers * 0.3))}
+                    max={Math.round(baseCustomers * 3)}
+                    step={1}
+                    value={adjCustomers ?? baseCustomers}
+                    onChange={e => setAdjCustomers(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: S.brand, cursor: 'pointer' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: S.n400 }}>{Math.round(baseCustomers * 0.3)}/day</span>
+                    <span style={{ fontSize: 10, color: S.n400 }}>{Math.round(baseCustomers * 3)}/day</span>
+                  </div>
+                  {adjCustomers != null && adjCustomers !== baseCustomers && (
+                    <p style={{ fontSize: 11, color: adjCustomers > baseCustomers ? S.emerald : S.red, marginTop: 4, fontWeight: 600 }}>
+                      {adjCustomers > baseCustomers ? '▲' : '▼'} {Math.abs(Math.round(((adjCustomers - baseCustomers) / Math.max(baseCustomers,1)) * 100))}% vs original
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Live results strip */}
+              {isChanged && (
+                <div style={{
+                  marginTop: 20, padding: '14px 18px',
+                  background: adjVc.bg, border: `1.5px solid ${adjVc.border}`,
+                  borderRadius: 12, display: 'grid',
+                  gridTemplateColumns: 'auto repeat(4,1fr)',
+                  gap: 16, alignItems: 'center',
+                }}>
+                  {/* New verdict */}
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: adjVc.text, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>New Verdict</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 22, fontWeight: 900, color: adjVc.text }}>{adjCalc.overall}</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: adjVc.text }}>{adjVc.label}</span>
+                    </div>
+                    <p style={{ fontSize: 10, color: adjVc.text, opacity: 0.7, marginTop: 2 }}>
+                      was {report.overall_score} {vc.label}
+                    </p>
+                  </div>
+                  {[
+                    { label: 'Monthly Revenue', orig: fin.monthlyRevenue, adj: adjCalc.monthlyRevenue, format: (v: number) => '$' + (v/1000).toFixed(1) + 'k' },
+                    { label: 'Net Profit/Mo',   orig: fin.monthlyNetProfit, adj: adjCalc.monthlyNetProfit, format: (v: number) => '$' + (v/1000).toFixed(1) + 'k' },
+                    { label: 'Rent %',          orig: fin.rent?.toRevenuePercent, adj: adjCalc.rentPct, format: (v: number) => v.toFixed(1) + '%' },
+                    { label: 'Break-even/Day',  orig: report.breakeven_daily, adj: adjCalc.breakEvenDaily, format: (v: number) => v + ' cust.' },
+                  ].map(m => {
+                    const delta = (m.adj ?? 0) - (m.orig ?? 0)
+                    const better = m.label === 'Rent %' || m.label === 'Break-even/Day' ? delta < 0 : delta > 0
+                    return (
+                      <div key={m.label} style={{ textAlign: 'center' }}>
+                        <p style={{ fontSize: 10, color: adjVc.text, opacity: 0.65, marginBottom: 4 }}>{m.label}</p>
+                        <p style={{ fontSize: 14, fontWeight: 900, color: adjVc.text, fontFamily: S.mono }}>{m.adj != null ? m.format(m.adj) : '—'}</p>
+                        {delta !== 0 && m.orig != null && (
+                          <p style={{ fontSize: 10, color: better ? S.emerald : S.red, fontWeight: 700, marginTop: 2 }}>
+                            {better ? '▲' : '▼'} {m.format(Math.abs(delta))}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              <p style={{ fontSize: 11, color: S.n400, marginTop: 12, textAlign: 'center' }}>
+                These are estimates based on the original model assumptions. Recalculation runs in your browser — no data is sent.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ═══════ OVERVIEW ═══════ */}
