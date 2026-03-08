@@ -7,11 +7,10 @@ const S = {
   font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
   brand:       '#0F766E',
   brandLight:  '#14B8A6',
-  n50:  '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4',
-  n400: '#A8A29E', n500: '#78716C', n700: '#44403C',
-  n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
+  n200: '#E7E5E4', n400: '#A8A29E', n500: '#78716C',
+  n700: '#44403C', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
+  emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   headerBg: '#111827',
 }
 
@@ -23,14 +22,10 @@ export default function ResetPasswordPage() {
   const [done, setDone]           = useState(false)
   const [error, setError]         = useState<string | null>(null)
   const [showPw, setShowPw]       = useState(false)
-  const [validSession, setValidSession] = useState(false)
 
   useEffect(() => {
-    // Supabase puts the token in the URL hash — it auto-hydrates the session
     const supabase = createClient()
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setValidSession(true)
-    })
+    supabase.auth.getSession()
   }, [])
 
   async function handleReset() {
@@ -60,7 +55,6 @@ export default function ResetPasswordPage() {
       </div>
 
       <div style={{ width: '100%', maxWidth: 400, background: S.white, borderRadius: 16, padding: '36px 32px', boxShadow: '0 24px 60px rgba(0,0,0,0.35)', animation: 'fadeIn 0.3s ease' }}>
-
         {done ? (
           <div style={{ textAlign: 'center' }}>
             <div style={{ width: 52, height: 52, borderRadius: '50%', background: S.emeraldBg, border: `2px solid ${S.emeraldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22 }}>✅</div>
@@ -118,12 +112,7 @@ export default function ResetPasswordPage() {
             <button
               onClick={handleReset}
               disabled={loading}
-              style={{
-                width: '100%', padding: '12px', background: loading ? S.brandLight : S.brand,
-                color: S.white, border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700,
-                cursor: loading ? 'not-allowed' : 'pointer', fontFamily: S.font,
-                boxShadow: '0 2px 8px rgba(15,118,110,0.25)',
-              }}
+              style={{ width: '100%', padding: '12px', background: loading ? S.brandLight : S.brand, color: S.white, border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: S.font, boxShadow: '0 2px 8px rgba(15,118,110,0.25)' }}
             >
               {loading ? 'Updating…' : 'Update password'}
             </button>

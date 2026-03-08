@@ -44,17 +44,14 @@ export default function ForgotPasswordPage() {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-      {/* Logo */}
       <div style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => router.push('/')}>
         <div style={{ width: 32, height: 32, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 900, fontSize: 16 }}>L</div>
         <span style={{ fontWeight: 800, fontSize: 18, color: S.white, letterSpacing: '-0.03em' }}>Locatalyze</span>
       </div>
 
-      {/* Card */}
       <div style={{ width: '100%', maxWidth: 400, background: S.white, borderRadius: 16, padding: '36px 32px', boxShadow: '0 24px 60px rgba(0,0,0,0.35)', animation: 'fadeIn 0.3s ease' }}>
 
         {sent ? (
-          /* ── Success state ── */
           <div style={{ textAlign: 'center' }}>
             <div style={{ width: 52, height: 52, borderRadius: '50%', background: S.emeraldBg, border: `2px solid ${S.emeraldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22 }}>✉️</div>
             <h1 style={{ fontSize: 20, fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 10 }}>Check your email</h1>
@@ -62,21 +59,14 @@ export default function ForgotPasswordPage() {
               We sent a password reset link to <strong style={{ color: S.n800 }}>{email}</strong>. Click the link in the email to reset your password.
             </p>
             <p style={{ fontSize: 12, color: S.n400, marginBottom: 20 }}>Didn't receive it? Check your spam folder or try again.</p>
-            <button
-              onClick={() => setSent(false)}
-              style={{ background: 'none', border: `1.5px solid ${S.n200}`, borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 600, color: S.n700, cursor: 'pointer', fontFamily: S.font, width: '100%' }}
-            >
+            <button onClick={() => setSent(false)} style={{ background: 'none', border: `1.5px solid ${S.n200}`, borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 600, color: S.n700, cursor: 'pointer', fontFamily: S.font, width: '100%' }}>
               Try a different email
             </button>
-            <button
-              onClick={() => router.push('/auth/login')}
-              style={{ background: S.brand, border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 700, color: S.white, cursor: 'pointer', fontFamily: S.font, width: '100%', marginTop: 10 }}
-            >
+            <button onClick={() => router.push('/auth/login')} style={{ background: S.brand, border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 13, fontWeight: 700, color: S.white, cursor: 'pointer', fontFamily: S.font, width: '100%', marginTop: 10 }}>
               Back to sign in
             </button>
           </div>
         ) : (
-          /* ── Form state ── */
           <>
             <div style={{ marginBottom: 28 }}>
               <h1 style={{ fontSize: 22, fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 8 }}>Reset your password</h1>
@@ -98,12 +88,7 @@ export default function ForgotPasswordPage() {
                 onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 placeholder="you@example.com"
                 autoFocus
-                style={{
-                  width: '100%', padding: '11px 14px', fontSize: 14, fontFamily: S.font,
-                  border: `1.5px solid ${S.n200}`, borderRadius: 10, outline: 'none',
-                  color: S.n900, background: S.white,
-                  transition: 'border-color 0.15s',
-                }}
+                style={{ width: '100%', padding: '11px 14px', fontSize: 14, fontFamily: S.font, border: `1.5px solid ${S.n200}`, borderRadius: 10, outline: 'none', color: S.n900, background: S.white, transition: 'border-color 0.15s' }}
                 onFocus={e => e.target.style.borderColor = S.brand}
                 onBlur={e => e.target.style.borderColor = S.n200}
               />
@@ -112,12 +97,7 @@ export default function ForgotPasswordPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              style={{
-                width: '100%', padding: '12px', background: loading ? S.brandLight : S.brand,
-                color: S.white, border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700,
-                cursor: loading ? 'not-allowed' : 'pointer', fontFamily: S.font,
-                boxShadow: '0 2px 8px rgba(15,118,110,0.25)', transition: 'all 0.15s',
-              }}
+              style={{ width: '100%', padding: '12px', background: loading ? S.brandLight : S.brand, color: S.white, border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: S.font, boxShadow: '0 2px 8px rgba(15,118,110,0.25)' }}
             >
               {loading ? 'Sending…' : 'Send reset link'}
             </button>

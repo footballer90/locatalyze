@@ -98,6 +98,9 @@ export default function LoginPage() {
                   placeholder="••••••••" style={inputStyle}
                   onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 />
+                <a href="/auth/forgot-password" style={{ display: 'block', textAlign: 'right', fontSize: 12, color: '#0F766E', textDecoration: 'none', marginTop: 6 }}>
+                  Forgot password?
+                </a>
               </div>
 
               <button
