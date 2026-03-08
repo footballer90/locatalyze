@@ -851,7 +851,7 @@ export default function DashboardPage() {
                       const worstRent = [...reports].sort((a, b) => (a.score_rent || 0) - (b.score_rent || 0))[0]
 
                       if (goCount === 0) tips.push('None of your locations scored GO yet. Try suburbs with lower commercial rent.')
-                      else if (goCount === reports.length) tips.push('All locations score GO — you're in a strong position to shortlist.')
+                      else if (goCount === reports.length) tips.push("All locations score GO — you're in a strong position to shortlist.")
                       if (avgRent < 50) tips.push(`Rent is your biggest drag (avg score ${Math.round(avgRent)}). Negotiate hard or look at cheaper suburbs.`)
                       if (avgComp > 70) tips.push('Low competition across your locations is a strong demand signal.')
                       if (avgComp < 40) tips.push('High competition detected. Focus on differentiation — format, price point, or experience.')
