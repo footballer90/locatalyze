@@ -699,22 +699,6 @@ export default function LandingPage() {
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', marginTop: 16 }}>No credit card · 3 free reports · 30 seconds</p>
         </div>
       </section>
-
-      {/* ── Footer ── */}
-      <footer style={{ background: S.n900, borderTop: '1px solid rgba(255,255,255,0.05)', padding: '36px 40px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}>L</div>
-            <span style={{ fontWeight: 800, fontSize: 15, color: S.white, letterSpacing: '-0.02em' }}>Locatalyze</span>
-          </div>
-          <p style={{ fontSize: 13, color: S.n500 }}>© 2026 Locatalyze. Built for Australian business owners.</p>
-          <div style={{ display: 'flex', gap: 24 }}>
-            <Link href="/methodology" style={{ fontSize: 13, color: S.n500, fontWeight: 500 }}>How it works</Link>
-            <Link href="/analyse"     style={{ fontSize: 13, color: S.n500, fontWeight: 500 }}>Location guides</Link>
-            <Link href="/auth/signup" style={{ fontSize: 13, color: S.brand,  fontWeight: 700 }}>Try free →</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
