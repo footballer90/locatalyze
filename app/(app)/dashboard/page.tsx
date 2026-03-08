@@ -88,54 +88,6 @@ function scoreColor(s: number) {
 function MiniBar({ score }: { score: number | null }) {
   const s = score ?? 0
   const color = scoreColor(s)
-  // ── Delete report ──────────────────────────────────────────────────────────
-  async function deleteReport(reportId: string) {
-    setDeletingId(reportId)
-    try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('reports')
-        .delete()
-        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
-      if (error) throw error
-      setReports(prev => prev.filter(r => (r.report_id || r.id) !== reportId))
-    } catch (err: any) {
-      console.error('Delete failed:', err.message)
-      alert('Could not delete report. Please try again.')
-    } finally {
-      setDeletingId(null)
-      setDeleteConfirmId(null)
-      setMenuOpenId(null)
-    }
-  }
-
-  // ── Rename report (stores label in result_data.label locally) ─────────────
-  async function renameReport(reportId: string, newLabel: string) {
-    try {
-      const supabase = createClient()
-      // Store label in result_data jsonb column
-      const report = reports.find(r => (r.report_id || r.id) === reportId)
-      if (!report) return
-      const updatedResultData = { ...(report.result_data || {}), label: newLabel.trim() }
-      const { error } = await supabase
-        .from('reports')
-        .update({ result_data: updatedResultData })
-        .or(`report_id.eq.${reportId},id.eq.${reportId}`)
-      if (error) throw error
-      setReports(prev => prev.map(r =>
-        (r.report_id || r.id) === reportId
-          ? { ...r, result_data: updatedResultData, label: newLabel.trim() }
-          : r
-      ))
-    } catch (err: any) {
-      console.error('Rename failed:', err.message)
-    } finally {
-      setRenamingId(null)
-      setRenameValue('')
-      setMenuOpenId(null)
-    }
-  }
-
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div style={{ flex: 1, height: 5, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
