@@ -172,9 +172,19 @@ export default function OnboardingPage() {
     return () => { if (geocodeTimer.current) clearTimeout(geocodeTimer.current) }
   }, [form.address])
 
-  const mapSrc = coords
-    ? `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.012},${coords.lat - 0.012},${coords.lng + 0.012},${coords.lat + 0.012}&layer=mapnik&marker=${coords.lat},${coords.lng}`
-    : null
+  // Build Leaflet srcDoc map (same approach as report page — never blocked by browser)
+  const mapHtml = coords ? `<!DOCTYPE html><html><head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>html,body,#map{margin:0;padding:0;width:100%;height:100%;}</style>
+  </head><body><div id="map"></div><script>
+    var map = L.map('map',{zoomControl:true,scrollWheelZoom:false}).setView([${coords.lat},${coords.lng}],15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+    var icon = L.divIcon({html:'<div style="width:16px;height:16px;background:#0F766E;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.35)"></div>',iconSize:[16,16],iconAnchor:[8,8],className:''});
+    L.marker([${coords.lat},${coords.lng}],{icon:icon}).addTo(map);
+    L.circle([${coords.lat},${coords.lng}],{radius:500,color:'#0F766E',fillColor:'#0F766E',fillOpacity:0.06,weight:1.5,dashArray:'6,4'}).addTo(map);
+  </script></body></html>` : null
 
   // Step validation
   const canProceed = useMemo(() => {
@@ -596,8 +606,8 @@ export default function OnboardingPage() {
 
           {/* Map */}
           <div style={{ flex: '0 0 55%', position: 'relative', background: S.n100, overflow: 'hidden' }}>
-            {mapSrc ? (
-              <iframe ref={mapRef} src={mapSrc} title="Location map" style={{ width: '100%', height: '100%', border: 'none' }} />
+            {mapHtml ? (
+              <iframe ref={mapRef} srcDoc={mapHtml} title="Location map" style={{ width: '100%', height: '100%', border: 'none' }} sandbox="allow-scripts" />
             ) : (
               <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${S.brandFaded} 0%, ${S.n100} 100%)` }}>
                 <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>🗺</div>

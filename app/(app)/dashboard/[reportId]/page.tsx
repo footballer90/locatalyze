@@ -286,12 +286,16 @@ function ProjectionBars({ projections }: { projections: any }) {
 }
 
 // ─── P&L waterfall ────────────────────────────────────────────────────────────
-function PLWaterfall({ fin }: { fin: any }) {
+function PLWaterfall({ fin, submittedRent }: { fin: any; submittedRent?: number | null }) {
   const revenue = fin.monthlyRevenue    ?? 0
-  const rent    = fin.rent?.amount      ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.35 : 0)
-  const cogs    = fin.cogs              ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.3 : 0)
-  const labour  = fin.labour            ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.25 : 0)
-  const other   = Math.max(0, (fin.totalMonthlyCosts ?? 0) - rent - cogs - labour)
+  // Always prefer the user's submitted rent (report.monthly_rent) over the computed fin.rent.amount
+  // which may be null or miscalculated. Fall back to totalMonthlyCosts*0.35 only as last resort.
+  const rent    = submittedRent ?? fin.rent?.amount ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.35 : 0)
+  // COGS and labour: derive from totalMonthlyCosts minus rent if direct fields absent
+  const opBase  = fin.totalMonthlyCosts ?? (rent * 1.45)
+  const cogs    = fin.cogs    ?? (opBase > rent ? (opBase - rent) * 0.52 : 0)
+  const labour  = fin.labour  ?? (opBase > rent ? (opBase - rent) * 0.35 : 0)
+  const other   = Math.max(0, (opBase ?? 0) - rent - cogs - labour)
   const profit  = fin.monthlyNetProfit  ?? 0
   if (!revenue) return null
   const bars = [
@@ -326,7 +330,16 @@ function PLWaterfall({ fin }: { fin: any }) {
 
 // ─── Break-even gauge ─────────────────────────────────────────────────────────
 function BreakevenGauge({ daily, breakeven }: { daily: number | null; breakeven: number | null }) {
-  if (!daily || !breakeven) return null
+  // If we don't have BOTH the actual customer count AND the break-even threshold
+  // as distinct values, the gauge is meaningless — show N/A instead.
+  if (!daily || !breakeven || daily === breakeven) {
+    return (
+      <div style={{ textAlign: 'center', padding: '20px 0' }}>
+        <p style={{ fontSize: 13, color: S.n400, fontWeight: 600 }}>Break-even data unavailable</p>
+        <p style={{ fontSize: 11, color: S.n400, marginTop: 4 }}>Re-run analysis to generate gauge</p>
+      </div>
+    )
+  }
   const maxCustomers = Math.max(daily * 2, breakeven * 1.5)
   const pct = Math.min((daily / maxCustomers), 1)
   const bePct = Math.min((breakeven / maxCustomers), 1)
@@ -1152,6 +1165,12 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     </div>
                   </div>
                 )}
+                {(competitorDataQuality === 'estimated_fallback' || competitors?.count === 0) && (
+                  <div style={{ display: 'flex', gap: 8, padding: '8px 12px', background: S.amberBg, borderRadius: 8, border: `1px solid ${S.amberBdr}`, marginBottom: 10 }}>
+                    <span style={{ fontSize: 12 }}>⚠️</span>
+                    <span style={{ fontSize: 11, color: S.amber, lineHeight: 1.5 }}>Live competitor data unavailable for this location. Count may be underestimated — manual check recommended before committing.</span>
+                  </div>
+                )}
                 <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>{report.competitor_analysis}</p>
                 <SourceRow>
                   <SourceBadge icon="📡" source="OpenStreetMap" detail="500m radius" />
@@ -1174,6 +1193,12 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                 )}
                 <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>{report.market_demand}</p>
+                {demographicsDataQuality && demographicsDataQuality.includes('abs_state_default') && (
+                  <div style={{ display: 'flex', gap: 8, padding: '8px 12px', background: S.amberBg, borderRadius: 8, border: `1px solid ${S.amberBdr}`, marginTop: 10 }}>
+                    <span style={{ fontSize: 12 }}>⚠️</span>
+                    <span style={{ fontSize: 11, color: S.amber, lineHeight: 1.5 }}>Local ABS data unavailable — demand estimate uses national baseline and may be conservative for this suburb.</span>
+                  </div>
+                )}
                 <SourceRow>
                   <SourceBadge icon="📊" source="ABS 2021 Census" detail="SA2 region" />
                   {demographicsDataQuality && <SourceBadge icon="✓" source={demographicsDataQuality} />}
@@ -1221,15 +1246,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <div style={card({ padding: '20px 22px' })}>
               <SectionHeading>Monthly P&L</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 20 }}>
-                <Tile label="Revenue"      value={fmt(fin.monthlyRevenue)}    mono />
-                <Tile label="Total Costs"  value={fmt(fin.totalMonthlyCosts)} color={S.red} mono />
-                <Tile label="Gross Profit" value={fmt(fin.monthlyGrossProfit)} color={S.blue} mono />
-                <Tile label="Net Profit"   value={fmt(fin.monthlyNetProfit)}  color={(fin.monthlyNetProfit ?? 0) >= 0 ? S.emerald : S.red} mono />
+                <Tile label="Revenue"          value={fmt(fin.monthlyRevenue)}    mono />
+                <Tile label="Operating Costs"  value={fmt(fin.totalMonthlyCosts)} color={S.red} mono sub="rent + labour + overhead" />
+                <Tile label="Gross Profit"     value={fmt(fin.monthlyGrossProfit)} color={S.blue} mono sub="revenue − COGS only" />
+                <Tile label="Net Profit"       value={fmt(fin.monthlyNetProfit)}  color={(fin.monthlyNetProfit ?? 0) >= 0 ? S.emerald : S.red} mono />
               </div>
               {fin.monthlyRevenue && (
                 <div style={{ marginBottom: 16 }}>
                   <p style={{ fontSize: 9, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, textAlign: 'center' }}>Monthly Cost Structure</p>
-                  <PLWaterfall fin={fin} />
+                  <PLWaterfall fin={fin} submittedRent={report.monthly_rent} />
                 </div>
               )}
               <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>{report.profitability}</p>
@@ -1257,7 +1282,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 </div>
                 <div>
                   <p style={{ fontSize: 9, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, textAlign: 'center' }}>Current vs Break-even</p>
-                  <BreakevenGauge daily={report.breakeven_daily} breakeven={fin.breakEven?.dailyCustomers ?? report.breakeven_daily} />
+                  <BreakevenGauge daily={report.breakeven_daily} breakeven={fin.breakEven?.dailyCustomers ?? null} />
                 </div>
               </div>
               <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>{report.cost_analysis}</p>

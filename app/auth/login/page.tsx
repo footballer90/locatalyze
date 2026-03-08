@@ -120,6 +120,9 @@ export default function LoginPage() {
               <p style={{ fontSize: 13, color: S.n500 }}>
                 No account?{' '}
                 <Link href="/auth/signup" style={{ color: S.brand, fontWeight: 700 }}>Sign up free</Link>
+                <button onClick={() => router.push('/auth/forgot-password')}>
+  Forgot password?
+</button>
               </p>
             </div>
           </div>
