@@ -1,2 +1,3 @@
-import { UseCasePage } from '@/app/(marketing)/use-cases/page'
+'use client'
+import { UseCasePage } from '../page'
 export default function Page() { return <UseCasePage type="restaurants" /> }
