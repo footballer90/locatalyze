@@ -187,7 +187,7 @@ function renderSection(section: Section, idx: number) {
     case 'h2':
       return <h2 key={idx} style={{ fontSize: 'clamp(20px, 3vw, 24px)', fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 14, marginTop: 40, lineHeight: 1.3 }}>{section.text}</h2>
     case 'p':
-      return <p key={idx} style={{ fontSize: 16, color: S.n600 || '#57534E', lineHeight: 1.85, marginBottom: 18 }}>{section.text}</p>
+      return <p key={idx} style={{ fontSize: 16, color: '#57534E', lineHeight: 1.85, marginBottom: 18 }}>{section.text}</p>
     case 'img':
       return (
         <div key={idx} style={{ margin: '32px 0' }}>
