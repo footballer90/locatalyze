@@ -79,7 +79,7 @@ export default function LocationInsightsPage() {
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {city.suburbs.map(s => (
-                      <Link key={s} href={`/analyse/${city.name.toLowerCase()}-${s.toLowerCase().replace(/\s+/g, '-')}`}
+                      <Link key={s} href="/auth/signup"
                         style={{ fontSize: 12, color: S.brand, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 20, padding: '3px 10px', textDecoration: 'none', fontWeight: 600 }}>
                         {s}
                       </Link>
