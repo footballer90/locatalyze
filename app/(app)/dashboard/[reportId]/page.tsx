@@ -356,49 +356,144 @@ function BreakevenGauge({ daily, breakeven }: { daily: number | null; breakeven:
 }
 
 // ─── Map panel ────────────────────────────────────────────────────────────────
-function MapPanel({ address }: { address: string | null }) {
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
-  const [loading, setLoading] = useState(false)
+function MapPanel({ address, lat, lng, businessType, competitorNames, competitorCount }: {
+  address: string | null
+  lat?: number | null
+  lng?: number | null
+  businessType?: string | null
+  competitorNames?: string[]
+  competitorCount?: number
+}) {
+  const [mapHtml, setMapHtml] = useState<string | null>(null)
+  const [resolvedCoords, setResolvedCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [geoLoading, setGeoLoading] = useState(false)
+  const [competitors, setCompetitors] = useState<Array<{ lat: number; lng: number; name: string }>>([])
 
+  // Use coords from report if available, otherwise geocode
   useEffect(() => {
+    if (lat && lng && lat !== 0 && lng !== 0) {
+      setResolvedCoords({ lat, lng })
+      return
+    }
     if (!address) return
-    setLoading(true)
-    const query = encodeURIComponent(address)
-    fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&countrycodes=au`, {
+    setGeoLoading(true)
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=au`, {
       headers: { 'User-Agent': 'Locatalyze/1.0' },
     })
       .then(r => r.json())
+      .then(data => { if (data?.[0]) setResolvedCoords({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }) })
+      .catch(() => {})
+      .finally(() => setGeoLoading(false))
+  }, [address, lat, lng])
+
+  // Fetch competitor locations from Geoapify once we have coords
+  useEffect(() => {
+    if (!resolvedCoords) return
+    const GEOAPIFY_KEY = '41f9188296dd47dfb5741e6e20d98807'
+    const CATEGORY_MAP: Record<string, string> = {
+      cafe: 'catering.cafe,catering.coffee', coffee: 'catering.cafe,catering.coffee',
+      restaurant: 'catering.restaurant,catering.fast_food', bar: 'catering.bar,catering.pub',
+      pub: 'catering.bar,catering.pub', gym: 'sport.fitness,sport.gym',
+      fitness: 'sport.fitness,sport.gym', bakery: 'catering.bakery,catering.cafe',
+      salon: 'service.beauty,healthcare.beauty', retail: 'commercial.clothing,commercial.shopping_mall',
+      pharmacy: 'healthcare.pharmacy', takeaway: 'catering.fast_food',
+    }
+    const bt = (businessType || '').toLowerCase()
+    const categories = Object.entries(CATEGORY_MAP).find(([k]) => bt.includes(k))?.[1] || 'catering,commercial'
+    const { lat: clat, lng: clng } = resolvedCoords
+    fetch(`https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${clng},${clat},500&limit=20&apiKey=${GEOAPIFY_KEY}`)
+      .then(r => r.json())
       .then(data => {
-        if (data?.[0]) setCoords({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) })
+        const features = data?.features || []
+        setCompetitors(features.slice(0, 15).map((f: any) => ({
+          lat: f.geometry?.coordinates?.[1],
+          lng: f.geometry?.coordinates?.[0],
+          name: f.properties?.name || 'Competitor',
+        })).filter((c: any) => c.lat && c.lng))
       })
       .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [address])
+  }, [resolvedCoords, businessType])
 
-  const mapSrc = coords
-    ? `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.015},${coords.lat - 0.012},${coords.lng + 0.015},${coords.lat + 0.012}&layer=mapnik&marker=${coords.lat},${coords.lng}`
-    : null
+  // Build Leaflet HTML once we have coords + competitors
+  useEffect(() => {
+    if (!resolvedCoords) return
+    const { lat: clat, lng: clng } = resolvedCoords
+    const compMarkers = competitors.map(c =>
+      `L.circleMarker([${c.lat},${c.lng}],{radius:7,color:'#DC2626',fillColor:'#FCA5A5',fillOpacity:0.85,weight:2})
+        .bindPopup('<b style="font-size:12px">${c.name.replace(/'/g, "\\'")}</b><br><span style="font-size:11px;color:#666">Competitor · 500m radius</span>').addTo(map);`
+    ).join('\n')
+
+    const html = `<!DOCTYPE html><html><head>
+      <meta charset="utf-8"/>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <style>html,body,#map{margin:0;padding:0;width:100%;height:100%;} .leaflet-popup-content-wrapper{border-radius:8px;font-family:sans-serif;}</style>
+    </head><body>
+      <div id="map"></div>
+      <script>
+        var map = L.map('map', {zoomControl:true, scrollWheelZoom:false}).setView([${clat},${clng}],15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+          attribution:'© OpenStreetMap contributors', maxZoom:19
+        }).addTo(map);
+
+        // Main location pin
+        var mainIcon = L.divIcon({
+          html: '<div style="width:18px;height:18px;background:#0F766E;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.35)"></div>',
+          iconSize:[18,18], iconAnchor:[9,9], className:''
+        });
+        L.marker([${clat},${clng}], {icon: mainIcon, zIndexOffset:1000})
+          .bindPopup('<b style="font-size:12px">📍 Your location</b><br><span style="font-size:11px;color:#555">${(address || '').replace(/'/g, "\\'").slice(0, 60)}</span>')
+          .addTo(map).openPopup();
+
+        // 500m radius circle
+        L.circle([${clat},${clng}],{radius:500,color:'#0F766E',fillColor:'#0F766E',fillOpacity:0.06,weight:1.5,dashArray:'6,4'}).addTo(map);
+
+        // Competitor markers
+        ${compMarkers}
+      </script>
+    </body></html>`
+
+    setMapHtml(html)
+  }, [resolvedCoords, competitors, address])
+
+  const loading = geoLoading && !resolvedCoords
 
   return (
-    <div style={{ position: 'relative', height: 200, background: S.n100, borderRadius: 10, overflow: 'hidden', border: `1px solid ${S.n200}` }}>
-      {mapSrc ? (
-        <iframe
-          src={mapSrc}
-          title="Location map"
-          style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-          loading="lazy"
-        />
-      ) : (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
-          {loading
-            ? <><div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${S.n200}`, borderTopColor: S.brand, animation: 'spin 0.8s linear infinite' }} /><span style={{ fontSize: 11, color: S.n400 }}>Locating address…</span></>
-            : <><span style={{ fontSize: 24, opacity: 0.3 }}>📍</span><span style={{ fontSize: 11, color: S.n400 }}>Map unavailable</span></>
-          }
+    <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: `1px solid ${S.n200}` }}>
+      {/* Legend strip */}
+      <div style={{ background: S.n900, padding: '7px 14px', display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: S.brand, border: '2px solid #fff' }} />
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>Your location</span>
         </div>
-      )}
-      {/* Attribution overlay */}
-      <div style={{ position: 'absolute', bottom: 0, right: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)', padding: '3px 8px', borderTopLeftRadius: 6 }}>
-        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.75)' }}>© OpenStreetMap contributors</span>
+        {competitors.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FCA5A5', border: '2px solid #DC2626' }} />
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{competitors.length} competitor{competitors.length !== 1 ? 's' : ''} within 500m</span>
+          </div>
+        )}
+        {competitorCount != null && competitorCount > competitors.length && (
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginLeft: 'auto' }}>+{competitorCount - competitors.length} estimated</span>
+        )}
+      </div>
+
+      {/* Map */}
+      <div style={{ height: 260, background: S.n100 }}>
+        {mapHtml ? (
+          <iframe
+            srcDoc={mapHtml}
+            title="Location map with competitors"
+            style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+            sandbox="allow-scripts"
+          />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+            {loading
+              ? <><div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${S.n200}`, borderTopColor: S.brand, animation: 'spin 0.8s linear infinite' }} /><span style={{ fontSize: 11, color: S.n400 }}>Loading map…</span></>
+              : <><span style={{ fontSize: 24, opacity: 0.3 }}>🗺</span><span style={{ fontSize: 11, color: S.n400 }}>Map unavailable</span></>
+            }
+          </div>
+        )}
       </div>
     </div>
   )
@@ -985,7 +1080,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
               <div style={card({ padding: '16px', marginBottom: 0 })}>
                 <SectionHeading>Location Map</SectionHeading>
-                <MapPanel address={report.location_name} />
+                <MapPanel
+                  address={report.location_name}
+                  lat={report.result_data?.location?.lat}
+                  lng={report.result_data?.location?.lng}
+                  businessType={report.business_type}
+                  competitorNames={competitors?.names || []}
+                  competitorCount={competitors?.count}
+                />
                 <SourceRow>
                   <SourceBadge icon="🗺" source="OpenStreetMap" detail="Nominatim geocoding" />
                 </SourceRow>
