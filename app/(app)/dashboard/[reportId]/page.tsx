@@ -1092,12 +1092,12 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         <div style={{ width: 256, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 24 }}>
 
           {/* Verdict summary */}
-          <div style={{ background: verdict === 'GO' ? S.emeraldBg : verdict === 'CAUTION' ? S.amberBg : S.redBg, border: `1.5px solid ${verdict === 'GO' ? S.emeraldBdr : verdict === 'CAUTION' ? S.amberBdr : S.redBdr}`, borderRadius: 16, padding: '16px 18px' }}>
+          <div style={{ background: vc.bg, border: `1.5px solid ${vc.border}`, borderRadius: 16, padding: '16px 18px' }}>
             <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Verdict</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <span style={{ fontSize: 28, fontWeight: 900, color: verdict === 'GO' ? S.emerald : verdict === 'CAUTION' ? S.amber : S.red, lineHeight: 1 }}>{report.overall_score}</span>
+              <span style={{ fontSize: 28, fontWeight: 900, color: vc.text, lineHeight: 1 }}>{report.overall_score}</span>
               <div>
-                <p style={{ fontSize: 16, fontWeight: 800, color: verdict === 'GO' ? S.emerald : verdict === 'CAUTION' ? S.amber : S.red }}>{verdict}</p>
+                <p style={{ fontSize: 16, fontWeight: 800, color: vc.text }}>{vc.label}</p>
                 <p style={{ fontSize: 11, color: S.n500 }}>out of 100</p>
               </div>
             </div>
