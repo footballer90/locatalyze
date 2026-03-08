@@ -277,12 +277,12 @@ export default function Footer() {
     {
       title: 'Use Cases',
       links: [
-        { label: 'Cafes & Coffee',    href: '/analyse/cafe' },
-        { label: 'Restaurants',       href: '/analyse/restaurant' },
-        { label: 'Retail Stores',     href: '/analyse/retail' },
-        { label: 'Gyms & Fitness',    href: '/analyse/gym' },
-        { label: 'Takeaway',          href: '/analyse/takeaway' },
-        { label: 'All business types',href: '/analyse' },
+       { label: 'Cafes & Coffee',    href: '/use-case/cafes' },
+{ label: 'Restaurants',       href: '/use-case/restaurants' },
+{ label: 'Retail Stores',     href: '/use-case/retail' },
+{ label: 'Gyms & Fitness',    href: '/use-case/gyms' },
+{ label: 'Takeaway',          href: '/use-case/takeaway' },
+{ label: 'All business types',href: '/use-case/all' },
       ],
     },
     {
