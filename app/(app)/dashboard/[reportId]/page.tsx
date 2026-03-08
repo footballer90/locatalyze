@@ -569,6 +569,50 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const [adjTicket,   setAdjTicket]   = useState<number | null>(null)
   const [adjCustomers,setAdjCustomers]= useState<number | null>(null)
 
+  // ── Recalc engine — must be BEFORE early returns (Rules of Hooks) ─────────
+  const GROSS_MARGIN   = 0.62
+  const COST_MULTIPLIER = 1.45
+  const TRADING_DAYS   = 30
+
+  // Safe base values — fall back to 0 when report not yet loaded
+  const _fin         = report?.result_data?.financials || {}
+  const baseRent     = report?.monthly_rent ?? _fin?.rent?.submitted ?? 0
+  const baseTicket   = _fin?.baselineCustomers
+    ? Math.round((_fin.monthlyRevenue || 0) / ((_fin.baselineCustomers || 1) * TRADING_DAYS))
+    : 0
+  const baseCustomers = _fin?.baselineCustomers ?? 0
+  const _scoreComp   = report?.score_competition ?? 50
+  const _scoreDem    = report?.score_demand ?? 50
+
+  const adjCalc = useMemo(() => {
+    const rent      = adjRent      ?? baseRent
+    const ticket    = adjTicket    ?? baseTicket
+    const customers = adjCustomers ?? baseCustomers
+
+    const monthlyRevenue     = Math.round(customers * ticket * TRADING_DAYS)
+    const totalMonthlyCosts  = Math.round(rent * COST_MULTIPLIER)
+    const monthlyGrossProfit = Math.round(monthlyRevenue * GROSS_MARGIN)
+    const monthlyNetProfit   = Math.round(monthlyGrossProfit - totalMonthlyCosts)
+    const profitMargin       = parseFloat(((monthlyNetProfit / Math.max(monthlyRevenue, 1)) * 100).toFixed(1))
+    const rentToRevRatio     = parseFloat((rent / Math.max(monthlyRevenue, 1)).toFixed(3))
+    const rentPct            = parseFloat((rentToRevRatio * 100).toFixed(1))
+    const breakEvenMonthly   = Math.round(totalMonthlyCosts / GROSS_MARGIN)
+    const breakEvenDaily     = Math.ceil(breakEvenMonthly / (Math.max(ticket, 1) * TRADING_DAYS))
+
+    const scoreRent          = rentPct <= 12 ? 90 : rentPct <= 20 ? 70 : rentPct <= 30 ? 40 : 10
+    const scoreProfitability = monthlyNetProfit > 2000 ? 90 : monthlyNetProfit >= 1000 ? 70 : monthlyNetProfit > 0 ? 50 : 10
+    const overall = Math.round(scoreRent * 0.30 + scoreProfitability * 0.25 + _scoreComp * 0.25 + _scoreDem * 0.20)
+    const verdict = overall >= 70 ? 'GO' : overall >= 45 ? 'CAUTION' : 'NO'
+    const changed = (adjRent != null && adjRent !== baseRent)
+      || (adjTicket != null && adjTicket !== baseTicket)
+      || (adjCustomers != null && adjCustomers !== baseCustomers)
+
+    return { rent, ticket, customers, monthlyRevenue, totalMonthlyCosts, monthlyGrossProfit, monthlyNetProfit, profitMargin, rentToRevRatio, rentPct, breakEvenMonthly, breakEvenDaily, scoreRent, scoreProfitability, overall, verdict, changed }
+  }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, _scoreComp, _scoreDem])
+
+  const adjVc = verdictCfg(adjCalc.verdict)
+  const isChanged = adjCalc.changed
+
   // ── Loading screen ──
   if (loading || (report && !report.verdict)) {
     const steps = ['Resolving coordinates', 'Scanning competitors (500m)', 'Querying ABS demographics', 'Modelling financials', 'Writing report']
@@ -617,48 +661,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const demographics = report.result_data?.demographics || null
   const competitorDataQuality = report.result_data?.competitors?.dataQuality || null
   const demographicsDataQuality = report.result_data?.demographics?.dataQuality || null
-
-  // ── Live recalculation engine (mirrors Node 12 logic exactly) ────────────
-  const GROSS_MARGIN = 0.62
-  const COST_MULTIPLIER = 1.45
-  const TRADING_DAYS = 30
-
-  const baseRent      = report.monthly_rent ?? fin.rent?.submitted ?? 0
-  const baseTicket    = fin.rent != null ? Math.round((fin.monthlyRevenue || 0) / ((fin.baselineCustomers || 1) * TRADING_DAYS)) : 0
-  const baseCustomers = fin.baselineCustomers ?? 0
-
-  const adjCalc = useMemo(() => {
-    const rent      = adjRent      ?? baseRent
-    const ticket    = adjTicket    ?? baseTicket
-    const customers = adjCustomers ?? baseCustomers
-
-    const monthlyRevenue     = Math.round(customers * ticket * TRADING_DAYS)
-    const totalMonthlyCosts  = Math.round(rent * COST_MULTIPLIER)
-    const monthlyGrossProfit = Math.round(monthlyRevenue * GROSS_MARGIN)
-    const monthlyNetProfit   = Math.round(monthlyGrossProfit - totalMonthlyCosts)
-    const profitMargin       = parseFloat(((monthlyNetProfit / Math.max(monthlyRevenue, 1)) * 100).toFixed(1))
-    const rentToRevRatio     = parseFloat((rent / Math.max(monthlyRevenue, 1)).toFixed(3))
-    const rentPct            = parseFloat((rentToRevRatio * 100).toFixed(1))
-    const breakEvenMonthly   = Math.round(totalMonthlyCosts / GROSS_MARGIN)
-    const breakEvenDaily     = Math.ceil(breakEvenMonthly / (Math.max(ticket, 1) * TRADING_DAYS))
-
-    // Score (same weights as Node 12)
-    const scoreRent = rentPct <= 12 ? 90 : rentPct <= 20 ? 70 : rentPct <= 30 ? 40 : 10
-    const scoreProfitability = monthlyNetProfit > 2000 ? 90 : monthlyNetProfit >= 1000 ? 70 : monthlyNetProfit > 0 ? 50 : 10
-    const scoreComp = report.score_competition ?? 50
-    const scoreDem  = report.score_demand ?? 50
-    const overall = Math.round(scoreRent * 0.30 + scoreProfitability * 0.25 + scoreComp * 0.25 + scoreDem * 0.20)
-    const verdict = overall >= 70 ? 'GO' : overall >= 45 ? 'CAUTION' : 'NO'
-
-    const changed = (adjRent != null && adjRent !== baseRent)
-      || (adjTicket != null && adjTicket !== baseTicket)
-      || (adjCustomers != null && adjCustomers !== baseCustomers)
-
-    return { rent, ticket, customers, monthlyRevenue, totalMonthlyCosts, monthlyGrossProfit, monthlyNetProfit, profitMargin, rentToRevRatio, rentPct, breakEvenMonthly, breakEvenDaily, scoreRent, scoreProfitability, overall, verdict, changed }
-  }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, report.score_competition, report.score_demand])
-
-  const adjVc = verdictCfg(adjCalc.verdict)
-  const isChanged = adjCalc.changed
 
   const tabs = [
     { id: 'overview',    label: 'Overview'    },
