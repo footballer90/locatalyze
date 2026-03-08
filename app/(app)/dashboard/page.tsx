@@ -546,6 +546,10 @@ export default function DashboardPage() {
 
           {!comparing && (
             <>
+              {/* ── Two-column layout: reports (left) + insight panel (right) ── */}
+              <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+              {/* ── LEFT: main content ── */}
+              <div style={{ flex: 1, minWidth: 0 }}>
               {/* ── Stats cards ── */}
               {reports.length > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
@@ -755,18 +759,120 @@ export default function DashboardPage() {
                     })}
                   </div>
 
-                  {/* ── Bottom CTA ── */}
-                  <div style={{ marginTop: 20, padding: '20px 24px', background: `linear-gradient(135deg,${S.brandFaded},${S.white})`, borderRadius: 16, border: `1px solid ${S.brandBorder}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: S.brand, marginBottom: 3 }}>Ready to analyse another location?</p>
-                      <p style={{ fontSize: 12, color: S.n500 }}>Compare suburbs, test your backup options or validate a shortlist.</p>
-                    </div>
-                    <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 20px', fontWeight: 700, fontSize: 13, flexShrink: 0, boxShadow: '0 2px 8px rgba(15,118,110,0.2)' }}>
-                      ➕ New analysis
-                    </button>
-                  </div>
+
                 </div>
               )}
+              </div>{/* end left column */}
+
+              {/* ── RIGHT: Insight panel ── */}
+              {reports.length > 0 && (
+                <div style={{ width: 268, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                  {/* Best location card */}
+                  {(() => {
+                    const best = [...reports].sort((a, b) => (b.overall_score || 0) - (a.overall_score || 0))[0]
+                    if (!best) return null
+                    const vc = verdictCfg(best.verdict)
+                    const fin = best.result_data?.financials || {}
+                    const rId = best.report_id || best.id
+                    const label = best.result_data?.label || best.business_type
+                    return (
+                      <div style={{ background: S.white, borderRadius: 18, border: `1px solid ${S.n200}`, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                        <div style={{ background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, padding: '14px 18px' }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>⭐ Top Location</p>
+                          <p style={{ fontSize: 14, fontWeight: 800, color: S.white, marginBottom: 2 }}>{label}</p>
+                          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📍 {best.location_name}</p>
+                        </div>
+                        <div style={{ padding: '14px 18px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                            <div>
+                              <p style={{ fontSize: 32, fontWeight: 900, color: scoreColor(best.overall_score || 0), lineHeight: 1 }}>{best.overall_score}</p>
+                              <p style={{ fontSize: 10, color: S.n400 }}>out of 100</p>
+                            </div>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: vc.bg, color: vc.text, border: `1px solid ${vc.border}`, borderRadius: 100, padding: '4px 12px', fontSize: 11, fontWeight: 700 }}>
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: vc.dot, display: 'inline-block' }} />
+                              {vc.label}
+                            </span>
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+                            {[
+                              { label: 'Est. Revenue', value: fin.monthlyRevenue ? '$' + (fin.monthlyRevenue/1000).toFixed(0) + 'k/mo' : '—' },
+                              { label: 'Net Profit', value: fin.monthlyNetProfit != null ? '$' + (fin.monthlyNetProfit/1000).toFixed(1) + 'k/mo' : '—', color: fin.monthlyNetProfit >= 0 ? S.emerald : S.red },
+                              { label: 'Rent Ratio', value: fin.rent?.toRevenuePercent != null ? fin.rent.toRevenuePercent + '%' : '—' },
+                              { label: 'Payback', value: best.breakeven_months && best.breakeven_months !== 999 ? best.breakeven_months + ' mo' : 'N/A' },
+                            ].map(m => (
+                              <div key={m.label} style={{ background: S.n50, borderRadius: 10, padding: '8px 10px' }}>
+                                <p style={{ fontSize: 10, color: S.n400, marginBottom: 2 }}>{m.label}</p>
+                                <p style={{ fontSize: 13, fontWeight: 800, color: (m as any).color || S.n900 }}>{m.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <button onClick={() => router.push(`/dashboard/${rId}`)} style={{ width: '100%', background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '9px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                            View full report →
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })()}
+
+                  {/* Score breakdown across all reports */}
+                  <div style={{ background: S.white, borderRadius: 18, border: `1px solid ${S.n200}`, padding: '16px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: S.n500, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 14 }}>Score Breakdown</p>
+                    {[
+                      { label: 'Rent Affordability', key: 'score_rent' },
+                      { label: 'Competition',        key: 'score_competition' },
+                      { label: 'Demographics',       key: 'score_demand' },
+                      { label: 'Profitability',      key: 'score_profitability' },
+                    ].map(({ label, key }) => {
+                      const vals = reports.map(r => (r as any)[key] || 0).filter(Boolean)
+                      const avg = vals.length ? Math.round(vals.reduce((a: number, b: number) => a + b, 0) / vals.length) : 0
+                      return (
+                        <div key={key} style={{ marginBottom: 10 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                            <span style={{ fontSize: 12, color: S.n700 }}>{label}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: scoreColor(avg) }}>{avg}</span>
+                          </div>
+                          <div style={{ height: 6, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${avg}%`, background: scoreColor(avg), borderRadius: 100, transition: 'width 0.6s ease' }} />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Tips panel */}
+                  <div style={{ background: `linear-gradient(135deg,${S.brandFaded},${S.white})`, borderRadius: 18, border: `1px solid ${S.brandBorder}`, padding: '16px 18px' }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>💡 Insights</p>
+                    {(() => {
+                      const tips: string[] = []
+                      const avgRent = reports.reduce((a, r) => a + (r.score_rent || 0), 0) / reports.length
+                      const avgComp = reports.reduce((a, r) => a + (r.score_competition || 0), 0) / reports.length
+                      const goCount = reports.filter(r => r.verdict === 'GO').length
+                      const worstRent = [...reports].sort((a, b) => (a.score_rent || 0) - (b.score_rent || 0))[0]
+
+                      if (goCount === 0) tips.push('None of your locations scored GO yet. Try suburbs with lower commercial rent.')
+                      else if (goCount === reports.length) tips.push('All locations score GO — you're in a strong position to shortlist.')
+                      if (avgRent < 50) tips.push(`Rent is your biggest drag (avg score ${Math.round(avgRent)}). Negotiate hard or look at cheaper suburbs.`)
+                      if (avgComp > 70) tips.push('Low competition across your locations is a strong demand signal.')
+                      if (avgComp < 40) tips.push('High competition detected. Focus on differentiation — format, price point, or experience.')
+                      if (reports.length === 1) tips.push('Test at least 2–3 locations before deciding. Comparison is where Locatalyze shines.')
+                      if (tips.length === 0) tips.push('Your locations show a healthy spread of scores. Use Compare mode to see the trade-offs.')
+                      return tips.slice(0, 2).map((tip, i) => (
+                        <p key={i} style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: i < 1 ? 8 : 0, paddingBottom: i < 1 ? 8 : 0, borderBottom: i < 1 ? `1px solid ${S.brandBorder}` : 'none' }}>
+                          {tip}
+                        </p>
+                      ))
+                    })()}
+                  </div>
+
+                  {/* New analysis CTA */}
+                  <button onClick={() => router.push('/onboarding')} style={{ width: '100%', background: S.brand, color: S.white, border: 'none', borderRadius: 14, padding: '13px', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}>
+                    ➕ Analyse new location
+                  </button>
+
+                </div>
+              )}
+              </div>{/* end two-column */}
             </>
           )}
         </div>
