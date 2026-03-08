@@ -1,4 +1,5 @@
 'use client'
+import Footer from '@/components/Footer'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
@@ -699,6 +700,9 @@ export default function LandingPage() {
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', marginTop: 16 }}>No credit card · 3 free reports · 30 seconds</p>
         </div>
       </section>
+
+      <Footer />
+
     </div>
   )
 }
