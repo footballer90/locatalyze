@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 
 const S = {
@@ -10,19 +11,13 @@ const S = {
   headerBg: '#0C1F1C', font: "'DM Sans', sans-serif",
 }
 
-type UseCaseConfig = {
-  icon: string
-  title: string
-  subtitle: string
-  description: string
+type Config = {
+  icon: string; title: string; subtitle: string; description: string
   keyFactors: { icon: string; title: string; desc: string }[]
-  whatToLookFor: string[]
-  redFlags: string[]
-  tipTitle: string
-  tip: string
+  whatToLookFor: string[]; redFlags: string[]; tipTitle: string; tip: string
 }
 
-const CONFIGS: Record<string, UseCaseConfig> = {
+const CONFIGS: Record<string, Config> = {
   cafes: {
     icon: '☕', title: 'Cafes & Coffee', subtitle: 'Location analysis for café owners',
     description: 'Choosing the right location is the single biggest decision a café owner makes. The wrong street can mean years of struggle. The right one can mean a queue out the door from day one.',
@@ -86,7 +81,7 @@ const CONFIGS: Record<string, UseCaseConfig> = {
       { icon: '🚶', title: 'Lunchtime foot traffic', desc: 'Takeaway peaks at lunch and dinner. Office workers within 500m are the core lunch customer. Residential density drives dinner delivery volume.' },
       { icon: '📱', title: 'Delivery platform reach', desc: 'UberEats, DoorDash and Menulog delivery zones mean your physical catchment can extend 3–5km. A slightly lower foot traffic location can be offset by strong delivery demand.' },
       { icon: '🏎️', title: 'Speed of service access', desc: 'Easy access for delivery riders matters. A location on a main road with no parking is frustrating for riders. Side streets with easy pull-in are better.' },
-      { icon: '🥡', title: 'Category competition', desc: 'Takeaway categories vary in competition. Sushi and poke are highly competitive. A well-executed underserved category nearby can be an opportunity.' },
+      { icon: '🥡', title: 'Category competition', desc: 'Takeaway categories vary in competition. A well-executed underserved category nearby can be a strong opportunity.' },
     ],
     whatToLookFor: ['Office workers within 500m for lunch trade', 'High-density residential within 2km for delivery', 'Delivery rider access and parking', 'Underserved cuisine category in the area', 'High app-based ordering culture in the suburb'],
     redFlags: ['No offices and low residential density', 'Category already dominated by 3+ operators within 500m', 'Difficult rider access or no loading zone', 'Suburb with low app-based ordering behaviour'],
@@ -94,12 +89,12 @@ const CONFIGS: Record<string, UseCaseConfig> = {
     tip: 'Before signing a lease, map your 3km delivery radius on UberEats or DoorDash. Count residential density in that zone. If there are fewer than 3,000 households within 3km, delivery revenue alone will not sustain you.',
   },
   all: {
-    icon: '🏪', title: 'All Business Types', subtitle: 'Location analysis for any retail or service business',
+    icon: '🏪', title: 'All Business Types', subtitle: 'Location analysis for any business',
     description: 'Locatalyze works for any business that depends on a physical location. Whether you are opening a bookshop, a dog groomer, a nail salon or a co-working space — the same location fundamentals apply.',
     keyFactors: [
       { icon: '👥', title: 'Target customer proximity', desc: 'The most important question: where are your customers? Map their likely home or work location against your prospective site.' },
       { icon: '🏢', title: 'Competitor awareness', desc: 'For any business type, knowing who is nearby — and how they are performing — tells you whether the market is saturated or has room for you.' },
-      { icon: '💰', title: 'Rent affordability', desc: 'The fundamental test: can you generate enough revenue at this location to make the rent viable? Our model calculates this for your specific business type.' },
+      { icon: '💰', title: 'Rent affordability', desc: 'The fundamental test: can you generate enough revenue at this location to make the rent viable? Our model calculates this for your specific inputs.' },
       { icon: '📊', title: 'Feasibility scoring', desc: 'Locatalyze scores demand, competition, rent and profitability on a 0–100 scale and delivers a single GO / CAUTION / NO verdict.' },
     ],
     whatToLookFor: ['Target demographic concentration nearby', 'Manageable competition within your category', 'Rent below 15% of projected revenue', 'Good visibility and access', 'Complementary businesses nearby'],
@@ -116,7 +111,6 @@ export function UseCasePage({ type }: { type: string }) {
     <>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
-
         <div style={{ background: S.headerBg, padding: '60px 24px 48px', textAlign: 'center' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 32 }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 13 }}>L</div>
@@ -129,10 +123,8 @@ export function UseCasePage({ type }: { type: string }) {
         </div>
 
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '48px 24px 80px' }}>
-
-          {/* Key factors */}
           <div style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: S.n900, marginBottom: 20 }}>Key location factors for {config.title.toLowerCase()}</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: S.n900, marginBottom: 20 }}>Key location factors</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
               {config.keyFactors.map(f => (
                 <div key={f.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '20px' }}>
@@ -148,7 +140,6 @@ export function UseCasePage({ type }: { type: string }) {
             </div>
           </div>
 
-          {/* What to look for + red flags */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 48 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 14, padding: '24px' }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: S.emerald, marginBottom: 14 }}>✅ What to look for</h3>
@@ -164,30 +155,20 @@ export function UseCasePage({ type }: { type: string }) {
             </div>
           </div>
 
-          {/* Pro tip */}
           <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 14, padding: '24px', marginBottom: 48 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: S.amber, marginBottom: 8 }}>💡 {config.tipTitle}</p>
             <p style={{ fontSize: 14, color: '#92400E', lineHeight: 1.75 }}>{config.tip}</p>
           </div>
 
-          {/* CTA */}
           <div style={{ background: `linear-gradient(135deg,${S.brand},#0891B2)`, borderRadius: 20, padding: '40px', textAlign: 'center' }}>
-            <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: 10 }}>Analyse your {config.title.toLowerCase()} location</h3>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>Paste any Australian address and get a full feasibility report with GO/CAUTION/NO verdict in 30 seconds. Free to start.</p>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', color: S.brand, borderRadius: 10, padding: '12px 24px', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
-                Run my free analysis →
-              </Link>
-              <Link href="/analyse" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, padding: '12px 20px', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
-                Browse other business types
-              </Link>
-            </div>
+            <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: 10 }}>Analyse your location now</h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>Paste any Australian address and get a full feasibility report in 30 seconds. Free to start.</p>
+            <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', color: S.brand, borderRadius: 10, padding: '12px 24px', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+              Run my free analysis →
+            </Link>
           </div>
         </div>
       </div>
     </>
   )
 }
-
-// Individual page exports
-export default function AllUseCasesPage() { return <UseCasePage type="all" /> }
