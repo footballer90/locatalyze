@@ -92,6 +92,10 @@ export async function POST(request: NextRequest) {
       const { data: profile } = await sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
       const plan = profile?.plan || 'free'
       const used = profile?.total_analyses_used ?? 0
+      // Skip quota check for admin
+      if (profile?.plan === 'admin') {
+        // allow through
+      }
       if (plan === 'free' && used >= FREE_LIMIT) {
         return errorResponse(`You've used all ${FREE_LIMIT} free analyses. Upgrade to Pro for unlimited reports.`, 402)
       }
