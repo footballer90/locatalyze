@@ -1495,7 +1495,7 @@ export default function LandingPage() {
 
               {/* Stats */}
               <div style={{ display: 'flex', gap: isMobile ? 20 : 28, marginTop: 28, paddingTop: 24, borderTop: `1px solid ${L.border}`, flexWrap: 'wrap' }}>
-                {[{value:'1,200+',label:'founders analysed'},{value:'4,800+',label:'locations scored'},{value:'94%',label:'accuracy rating'}].map(s => (
+                {[{value:'180+',label:'founders analysed'},{value:'620+',label:'locations scored'},{value:'94%',label:'accuracy rating'}].map(s => (
                   <div key={s.label}>
                     <p style={{ fontSize: isMobile ? 18 : 22, fontWeight: 900, color: L.emerald, letterSpacing: '-.03em', lineHeight: 1 }}>{s.value}</p>
                     <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 3 }}>{s.label}</p>
@@ -1512,137 +1512,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ BUILT FOR — full section ══════════════════════════ */}
-      <section style={{ padding: isMobile ? '72px 16px' : '96px 40px', background: L.white }}>
-        <div style={{ ...W }}>
-
-          {/* Header */}
-          <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 56 }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:16 }}>
-              Built for
-            </div>
-            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight:900, color:L.slate, letterSpacing:'-.04em', marginBottom:12 }}>
-              Every lease decision is different.<br/>
-              <span style={{ color:L.emerald }}>Your analysis should be too.</span>
-            </h2>
-            <p style={{ fontSize:15, color:L.muted, maxWidth:520, margin:'0 auto', lineHeight:1.75 }}>
-              Locatalyze is calibrated for six business categories — each with its own demand drivers, competition patterns and financial benchmarks.
-            </p>
-          </div>
-
-          {/* 6-card grid */}
-          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:16, marginBottom:40 }}>
-            {[
-              {
-                emoji:'☕', label:'Cafés', slug:'cafes',
-                color:'#059669', bg:'#ECFDF5', border:'#A7F3D0',
-                tagline:'Morning foot traffic is everything.',
-                desc:'Residential density, commuter flow and proximity to offices determine whether a café sinks or swims. We score every block for daily walk-by volume.',
-                insight:'Suburbs with >18k/day foot traffic convert 3× better.',
-                metrics:['Foot traffic density','Income demographics','Competitor café count'],
-              },
-              {
-                emoji:'🍽️', label:'Restaurants', slug:'restaurants',
-                color:'#D97706', bg:'#FFFBEB', border:'#FDE68A',
-                tagline:'Dinner traffic and competition clusters.',
-                desc:'Restaurants depend on evening demand, parking access and a clear gap in the local cuisine market. We map direct competitors and estimate weekend covers.',
-                insight:'Locations with <4 direct competitors yield 40% higher margins.',
-                metrics:['Evening foot traffic','Parking proximity','Cuisine gap analysis'],
-              },
-              {
-                emoji:'👗', label:'Retail', slug:'retail',
-                color:'#8B5CF6', bg:'#F5F3FF', border:'#DDD6FE',
-                tagline:'Visibility, flow, and anchor proximity.',
-                desc:'Street retail lives and dies by pedestrian flow, anchor store proximity and rental benchmarks versus revenue potential. We score all three.',
-                insight:'Anchor store adjacency lifts retail revenue by up to 55%.',
-                metrics:['Pedestrian flow score','Anchor store distance','Retail rent-to-revenue'],
-              },
-              {
-                emoji:'💪', label:'Gyms & Fitness', slug:'gyms',
-                color:'#EF4444', bg:'#FEF2F2', border:'#FECACA',
-                tagline:'Catchment radius and parking access.',
-                desc:'Members drive 10–15 minutes max. We model residential catchment, calculate competition saturation and verify rent against realistic membership revenue.',
-                insight:'4+ gyms within 1km reduces new member acquisition by 60%.',
-                metrics:['Residential catchment (5km)','Gym saturation score','Rent-to-membership ratio'],
-              },
-              {
-                emoji:'🥐', label:'Bakeries', slug:'cafes',
-                color:'#F59E0B', bg:'#FFFBEB', border:'#FDE68A',
-                tagline:'High AM foot traffic near dense residential.',
-                desc:'Bakeries peak before 10am. We prioritise morning commuter flow, residential street density and proximity to schools and transport hubs.',
-                insight:'Morning-peak locations outperform afternoon strips by 2.4×.',
-                metrics:['Morning commuter index','School & transport proximity','Residential density'],
-              },
-              {
-                emoji:'💈', label:'Hair & Beauty', slug:'retail',
-                color:'#0EA5E9', bg:'#EFF6FF', border:'#BAE6FD',
-                tagline:'Repeat customers and local income levels.',
-                desc:'Salons and beauty studios rely on repeat local clientele. Income levels, residential density and walkability are the key signals we score.',
-                insight:'High-income suburbs generate 68% more repeat visit revenue.',
-                metrics:['Local income median','Walkability score','Competition density'],
-              },
-            ].map((biz, i) => (
-              <div key={i}
-                style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px', transition:'all .22s', cursor:'pointer', position:'relative' as const, overflow:'hidden' }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.borderColor = biz.border
-                  el.style.boxShadow = `0 12px 40px ${biz.color}18`
-                  el.style.transform = 'translateY(-4px)'
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.borderColor = L.border
-                  el.style.boxShadow = 'none'
-                  el.style.transform = 'translateY(0)'
-                }}>
-
-                {/* Top accent stripe */}
-                <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${biz.color},${biz.color}66)`, borderRadius:'22px 22px 0 0' }}/>
-
-                {/* Icon + label */}
-                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
-                  <div style={{ width:46, height:46, borderRadius:14, background:biz.bg, border:`1.5px solid ${biz.border}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>
-                    {biz.emoji}
-                  </div>
-                  <div>
-                    <p style={{ fontSize:16, fontWeight:900, color:L.slate, letterSpacing:'-.02em' }}>{biz.label}</p>
-                    <p style={{ fontSize:11, color:biz.color, fontWeight:700, marginTop:1 }}>{biz.tagline}</p>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <p style={{ fontSize:13, color:L.muted, lineHeight:1.7, marginBottom:14 }}>{biz.desc}</p>
-
-                {/* Insight callout */}
-                <div style={{ background:biz.bg, border:`1px solid ${biz.border}`, borderRadius:10, padding:'8px 12px', marginBottom:14 }}>
-                  <p style={{ fontSize:11.5, color:biz.color, fontWeight:700, lineHeight:1.5 }}>💡 {biz.insight}</p>
-                </div>
-
-                {/* Metrics chips */}
-                <div style={{ display:'flex', flexWrap:'wrap' as const, gap:5, marginBottom:16 }}>
-                  {biz.metrics.map(m => (
-                    <span key={m} style={{ fontSize:10, fontWeight:600, color:L.muted, background:'#F8FAFC', border:`1px solid ${L.border}`, borderRadius:6, padding:'3px 8px' }}>{m}</span>
-                  ))}
-                </div>
-
-                {/* CTA link */}
-                <Link href={`/use-case/${biz.slug}`} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:12, fontWeight:700, color:biz.color, textDecoration:'none' }}>
-                  See {biz.label} analysis →
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom CTA row */}
-          <div style={{ textAlign:'center' }}>
-            <p style={{ fontSize:13, color:L.muted, marginBottom:16 }}>Not sure which category fits? Run an analysis and we will detect your business type automatically.</p>
-            <Link href="/auth/signup" style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emerald, color:'#fff', borderRadius:12, padding:'13px 28px', fontWeight:800, fontSize:14, boxShadow:'0 4px 20px rgba(16,185,129,.25)', textDecoration:'none' }}>
-              Analyse my location free →
-            </Link>
-          </div>
+      {/* ══ NICHE STRIP ══════════════════════════════════════ */}
+      <div style={{ background: L.slate, padding: `12px ${isMobile ? 16 : 40}px` }}>
+        <div style={{ ...W, display: 'flex', justifyContent: 'center', gap: isMobile ? 14 : 28, flexWrap: 'wrap', alignItems: 'center' }}>
+          <p style={{ fontSize: 10, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.1em' }}>Built for</p>
+          {['☕ Cafes','🍽️ Restaurants','👗 Retail','💪 Gyms','🥐 Bakeries','💈 Salons'].map(b => (
+            <span key={b} style={{ fontSize: isMobile ? 12 : 13, color: '#64748B', fontWeight: 500 }}>{b}</span>
+          ))}
         </div>
-      </section>
+      </div>
 
       {/* ══ DARK SHOWCASE ════════════════════════════════════ */}
       {!isMobile && <DarkShowcase/>}
@@ -1915,13 +1793,13 @@ export default function LandingPage() {
             <div style={{ display:'flex', alignItems:'center', gap:8, background:L.mint, border:`1px solid ${L.emeraldLt}`, borderRadius:12, padding:'10px 20px' }}>
               <span style={{ fontSize:20, letterSpacing:2, color:'#F59E0B' }}>★★★★★</span>
               <div>
-                <p style={{ fontSize:16, fontWeight:900, color:L.slate, lineHeight:1 }}>4.9 / 5</p>
+                <p style={{ fontSize:16, fontWeight:900, color:L.slate, lineHeight:1 }}>4.8 / 5</p>
                 <p style={{ fontSize:10, color:L.muted, marginTop:1 }}>Average rating</p>
               </div>
             </div>
             {[
-              { value:'$2.4M+', label:'Lease mistakes avoided' },
-              { value:'1,200+', label:'Founders who analysed' },
+              { value:'$340k+', label:'In lease mistakes avoided' },
+              { value:'180+',   label:'Founders who analysed' },
               { value:'94%',    label:'Said reports were accurate' },
             ].map(s => (
               <div key={s.label} style={{ textAlign:'center' as const }}>
