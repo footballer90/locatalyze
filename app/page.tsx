@@ -307,7 +307,8 @@ function DarkShowcase() {
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(20,184,166,.3) 50%, transparent)', zIndex: 5 }}/>
 
       {/* Tab bar */}
-      <div style={{ position: 'relative', zIndex: 5, borderBottom: '1px solid rgba(255,255,255,.05)', display: 'flex', overflowX: 'auto', padding: '0 40px', scrollbarWidth: 'none' as const }}>
+      <div style={{ position: 'relative', zIndex: 5, borderBottom: '1px solid rgba(255,255,255,.05)' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', overflowX: 'auto', padding: '0 40px', scrollbarWidth: 'none' as const }}>
         {SHOWCASE_TABS.map((t,i)=>(
           <button key={t.id} onClick={()=>go(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '16px 22px 14px', fontFamily: font, fontSize: 13.5, fontWeight: i===idx?700:400, color: i===idx?D.text1:D.text3, whiteSpace: 'nowrap' as const, position: 'relative', transition: 'color .2s' }}>
             {t.label}
@@ -315,9 +316,11 @@ function DarkShowcase() {
           </button>
         ))}
       </div>
+      </div>
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 5, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, padding: '72px 48px 80px', alignItems: 'center' }}>
+      <div style={{ position: 'relative', zIndex: 5, padding: '72px 40px 80px' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
         {/* Left text */}
         <div key={tab.id+'-t-'+ak} style={{ animation: 'sc-up .45s ease both' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(15,118,110,.14)', border: `1px solid ${D.glow}40`, borderRadius: 30, padding: '5px 16px 5px 10px', fontSize: 10.5, fontWeight: 700, color: D.glow, letterSpacing: '.12em', textTransform: 'uppercase' as const, marginBottom: 18 }}>
@@ -347,6 +350,7 @@ function DarkShowcase() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Progress */}
       <div style={{ position: 'relative', zIndex: 5, height: 2, background: 'rgba(255,255,255,.04)' }}>
@@ -374,6 +378,136 @@ function ScoreBar({ label, score, color }: { label: string; score: number; color
       </div>
       <div style={{ height: 5, background: L.border, borderRadius: 100, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${score}%`, background: color, borderRadius: 100 }}/>
+      </div>
+    </div>
+  )
+}
+
+// ── How It Works animated demo (light theme) ─────────────────────
+function HowItWorksDemo() {
+  const [phase, setPhase]       = useState(0)
+  const [typed, setTyped]       = useState('')
+  const [progress, setProgress] = useState(0)
+  const [score, setScore]       = useState(0)
+  const [key, setKey]           = useState(0)
+  const addr = '45 King St, Newtown NSW'
+
+  useEffect(() => {
+    let cancelled = false
+    setPhase(0); setTyped(''); setProgress(0); setScore(0)
+    const t1 = setTimeout(() => {
+      if (cancelled) return
+      setPhase(1); let i = 0
+      const ty = setInterval(() => {
+        if (cancelled) { clearInterval(ty); return }
+        i++; setTyped(addr.slice(0, i))
+        if (i >= addr.length) {
+          clearInterval(ty)
+          const t2 = setTimeout(() => {
+            if (cancelled) return
+            setPhase(2); let p = 0
+            const pr = setInterval(() => {
+              if (cancelled) { clearInterval(pr); return }
+              p += 2; setProgress(p)
+              if (p >= 100) {
+                clearInterval(pr); setPhase(3); let s = 0
+                const sc = setInterval(() => {
+                  if (cancelled) { clearInterval(sc); return }
+                  s += 2; setScore(Math.min(s, 82))
+                  if (s >= 82) clearInterval(sc)
+                }, 20)
+              }
+            }, 40)
+          }, 500)
+          return () => clearTimeout(t2)
+        }
+      }, 55)
+    }, 600)
+    // Auto-replay every 15s
+    const replay = setTimeout(() => { if (!cancelled) setKey(k => k + 1) }, 15000)
+    return () => { cancelled = true; clearTimeout(t1); clearTimeout(replay) }
+  }, [key])
+
+  const msgs = ['Resolving coordinates…','Scanning competitors…','Analysing demographics…','Building financial model…','Generating verdict…']
+  const mi = Math.min(Math.floor(progress / 22), msgs.length - 1)
+
+  return (
+    <div style={{ background: L.white, borderRadius: 16, border: `1px solid ${L.border}`, boxShadow: '0 4px 24px rgba(0,0,0,.08)', overflow: 'hidden', width: '100%', maxWidth: 400 }}>
+      {/* Browser chrome */}
+      <div style={{ background: '#F8FAFC', borderBottom: `1px solid ${L.border}`, padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 7 }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {['#FF5F57','#FFBE2E','#27C840'].map(c => <div key={c} style={{ width: 9, height: 9, borderRadius: '50%', background: c }}/>)}
+        </div>
+        <div style={{ flex: 1, background: L.border, borderRadius: 5, height: 20, display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
+          <span style={{ fontSize: 10, color: L.muted }}>locatalyze.vercel.app/analyse</span>
+        </div>
+      </div>
+      <div style={{ padding: 16 }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 5 }}>Business Address</p>
+        <div style={{ background: '#F8FAFC', border: `1.5px solid ${phase >= 1 ? L.emerald : L.border}`, borderRadius: 9, padding: '8px 11px', fontSize: 13, color: L.slate, fontWeight: 500, minHeight: 36, transition: 'border-color .3s', display: 'flex', alignItems: 'center', gap: 2, marginBottom: 12 }}>
+          {typed || <span style={{ color: '#CBD5E1' }}>Enter address...</span>}
+          {phase === 1 && <span style={{ width: 2, height: 13, background: L.emerald, display: 'inline-block', animation: 'blink .7s infinite' }}/>}
+        </div>
+
+        {phase === 2 && (
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+              <span style={{ fontSize: 11, color: L.muted }}>{msgs[mi]}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: L.emerald }}>{progress}%</span>
+            </div>
+            <div style={{ height: 5, background: L.emeraldXlt, borderRadius: 100, overflow: 'hidden', border: `1px solid ${L.emeraldLt}` }}>
+              <div style={{ height: '100%', width: `${progress}%`, background: `linear-gradient(90deg,${L.emerald},#34D399)`, borderRadius: 100, transition: 'width .1s linear' }}/>
+            </div>
+          </div>
+        )}
+
+        {phase === 3 && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <span style={{ background: L.goBg, color: L.go, border: `1.5px solid ${L.goBdr}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 800 }}>✅ GO — Strong</span>
+              <div style={{ position: 'relative', width: 52, height: 52 }}>
+                <svg width="52" height="52" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="26" cy="26" r="21" fill="none" stroke={L.emeraldLt} strokeWidth="5"/>
+                  <circle cx="26" cy="26" r="21" fill="none" stroke={L.emerald} strokeWidth="5" strokeLinecap="round"
+                    strokeDasharray={`${2*Math.PI*21}`} strokeDashoffset={`${2*Math.PI*21*(1-score/100)}`}
+                    style={{ transition: 'stroke-dashoffset .05s linear' }}/>
+                </svg>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{score}</span>
+                  <span style={{ fontSize: 7, color: L.muted }}>/100</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 12 }}>
+              {[{l:'Annual Profit',v:'$297,600',hi:true},{l:'Monthly Revenue',v:'$91,200',hi:false},{l:'Break-even/Day',v:'38 customers',hi:false},{l:'Payback Period',v:'7 months',hi:false}].map(m => (
+                <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '7px 9px' }}>
+                  <p style={{ fontSize: 8, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.06em', marginBottom: 2 }}>{m.l}</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
+                </div>
+              ))}
+            </div>
+
+            {[{l:'Demand',s:85},{l:'Rent',s:78},{l:'Competition',s:72},{l:'Profitability',s:90}].map(b => (
+              <div key={b.l} style={{ marginBottom: 5 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+                  <span style={{ fontSize: 10, color: L.muted }}>{b.l}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: L.emerald }}>{b.s}</span>
+                </div>
+                <div style={{ height: 3, background: L.emeraldXlt, borderRadius: 100, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${b.s}%`, background: L.emerald, borderRadius: 100 }}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {phase === 0 && (
+          <div style={{ textAlign: 'center', padding: '20px 0', color: L.muted, fontSize: 13 }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>📍</div>
+            Starting demo…
+          </div>
+        )}
       </div>
     </div>
   )
@@ -592,6 +726,53 @@ export default function LandingPage() {
                 <p style={{ fontSize: 13.5, color: L.muted, lineHeight: 1.7 }}>{s.desc}</p>
               </div>
             ))}
+          </div>
+
+          {/* ── Live animated demo ── */}
+          <div style={{ marginTop: 48, background: L.white, borderRadius: 24, border: `1px solid ${L.border}`, boxShadow: '0 4px 28px rgba(0,0,0,.06)', overflow: 'hidden' }}>
+            {/* Demo header */}
+            <div style={{ background: L.emeraldXlt, borderBottom: `1px solid ${L.emeraldLt}`, padding: isMobile ? '16px 20px' : '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 10 }}>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 800, color: L.emerald, marginBottom: 2 }}>🎬 Watch it in action</p>
+                <p style={{ fontSize: 12, color: L.muted }}>See a real analysis run from address to verdict — auto-replays every 15 seconds.</p>
+              </div>
+              <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emerald, color: '#fff', borderRadius: 10, padding: '9px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 2px 10px rgba(16,185,129,.25)', whiteSpace: 'nowrap' as const }}>
+                Try it yourself →
+              </Link>
+            </div>
+
+            {/* Two-column: steps list + live widget */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 0 }}>
+              {/* Left: what happens */}
+              <div style={{ padding: isMobile ? '24px 20px' : '36px 40px', borderRight: isMobile ? 'none' : `1px solid ${L.border}`, borderBottom: isMobile ? `1px solid ${L.border}` : 'none' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 22 }}>What happens under the hood</p>
+                {[
+                  { icon: '📍', title: 'Address resolved',      detail: '45 King St, Newtown NSW 2042' },
+                  { icon: '🗺️', title: 'Competitors scanned',   detail: '6 businesses found within 500m' },
+                  { icon: '👥', title: 'Demographics loaded',    detail: 'ABS Census — high income suburb' },
+                  { icon: '💰', title: 'Financial model built',  detail: 'Rent viability + break-even calc' },
+                  { icon: '📊', title: 'Verdict generated',      detail: 'GO — score 82 / 100' },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 14, marginBottom: 18, alignItems: 'flex-start' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: L.emeraldXlt, border: `1.5px solid ${L.emeraldLt}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{item.icon}</div>
+                    <div style={{ flex: 1, paddingTop: 2 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: L.slate }}>{item.title}</p>
+                        <span style={{ fontSize: 11, color: L.emerald, fontWeight: 700 }}>✓</span>
+                      </div>
+                      <p style={{ fontSize: 12, color: L.muted }}>{item.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right: live demo */}
+              <div style={{ padding: isMobile ? '24px 20px' : '36px 40px', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', background: '#F8FBFA' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 18, alignSelf: 'flex-start' as const }}>Live preview</p>
+                <HowItWorksDemo/>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
       </section>
