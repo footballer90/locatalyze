@@ -4,32 +4,15 @@ import Link from 'next/link'
 
 const ADDRESS = '142 Bourke St, Melbourne VIC 3000'
 const STEP_DURATION = 4200
+const font = "'DM Sans', sans-serif"
 
 const STEPS = [
-  {
-    num: '01',
-    icon: '📍',
-    label: 'Step 1',
-    title: 'Enter your location',
-    desc: 'Type any Australian address. Add your business type, monthly rent and average order size. Takes 60 seconds.',
-  },
-  {
-    num: '02',
-    icon: '⚙️',
-    label: 'Step 2',
-    title: 'AI analyses in real time',
-    desc: 'We pull live competitor data, demographics, rental benchmarks and foot traffic signals — all automatically.',
-  },
-  {
-    num: '03',
-    icon: '📊',
-    label: 'Step 3',
-    title: 'Get your full report',
-    desc: 'GO / CAUTION / NO verdict with full financial model, SWOT analysis and 3-year projection.',
-  },
+  { num: '01', emoji: '📍', tag: 'Step 1', title: 'Enter your location',      desc: 'Type any Australian address. Add your business type, monthly rent and average order size. Takes 60 seconds.' },
+  { num: '02', emoji: '⚙️', tag: 'Step 2', title: 'AI analyses in real time', desc: 'We pull live competitor data, demographics, rental benchmarks and foot traffic signals — all automatically.' },
+  { num: '03', emoji: '📊', tag: 'Step 3', title: 'Get your full report',      desc: 'GO / CAUTION / NO verdict with full financial model, SWOT analysis and 3-year projection.' },
 ]
 
-const PROCESS_STEPS = [
+const PS = [
   { icon: '🗺️', text: 'Scanning competitors within 500m' },
   { icon: '👥', text: 'Loading ABS demographic data' },
   { icon: '🚶', text: 'Estimating foot traffic patterns' },
@@ -37,73 +20,64 @@ const PROCESS_STEPS = [
   { icon: '📊', text: 'Generating feasibility report' },
 ]
 
-const REPORT_ROWS = [
-  { icon: '📍', label: 'Location Score', val: '84 / 100', color: '#34D399' },
-  { icon: '👥', label: 'Demand Signal', val: 'Strong', color: '#34D399' },
-  { icon: '🏪', label: 'Competition Risk', val: 'Moderate', color: '#FCD34D' },
-  { icon: '💰', label: 'Rent Viability', val: 'Viable — 9.8%', color: '#34D399' },
-  { icon: '📊', label: 'Demographics', val: 'Excellent match', color: '#34D399' },
+const RR = [
+  { icon: '📍', label: 'Location Score',    val: '84 / 100',   c: '#34D399' },
+  { icon: '👥', label: 'Demand Signal',     val: 'Strong',     c: '#34D399' },
+  { icon: '🏪', label: 'Competition Risk',  val: 'Moderate',   c: '#FBBF24' },
+  { icon: '💰', label: 'Rent Viability',    val: 'Viable — 9.8%', c: '#34D399' },
+  { icon: '📊', label: 'Demographics',      val: 'Excellent match', c: '#34D399' },
 ]
 
-const S = {
-  brand: '#0F766E', brandLight: '#14B8A6',
-  n900: '#1C1917', n700: '#44403C', n500: '#78716C',
-  font: "'DM Sans', sans-serif",
-}
-
-// ── PANEL 1: Enter location ──────────────────────────────────────
-function Panel1({ typedAddr, fieldsReady }: { typedAddr: string; fieldsReady: boolean }) {
+// ── Panel 1 ──────────────────────────────────────────────────────
+function Panel1({ typed, ready }: { typed: string; ready: boolean }) {
+  const inp: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,.04)', border: '1.5px solid rgba(255,255,255,.08)', borderRadius: 9, padding: '11px 13px', marginBottom: 11, fontSize: 13, color: '#F0FDF9', transition: 'border .3s, box-shadow .3s' }
+  const lbl: React.CSSProperties = { fontSize: 10.5, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }
   return (
-    <div style={{ padding: 24 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Business Address</p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#161B22', border: '1.5px solid #0F766E', borderRadius: 9, padding: '11px 13px', marginBottom: 12, boxShadow: '0 0 0 3px rgba(15,118,110,.1)' }}>
-        <span style={{ fontSize: 14 }}>📍</span>
-        <span style={{ fontSize: 13, color: '#E5E7EB', flex: 1 }}>{typedAddr}</span>
-        <span style={{ display: 'inline-block', width: 2, height: 13, background: '#14B8A6', verticalAlign: 'middle', animation: 'blink .85s infinite' }} />
+    <div style={{ padding: 22 }}>
+      <p style={lbl}>Business Address</p>
+      <div style={{ ...inp, border: '1.5px solid #0F766E', boxShadow: '0 0 0 3px rgba(15,118,110,.1)' }}>
+        <span>📍</span>
+        <span style={{ flex: 1 }}>{typed}</span>
+        <span style={{ display: 'inline-block', width: 2, height: 13, background: '#0FDECE', verticalAlign: 'middle', animation: 'hiw-blink .85s infinite' }}/>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9, marginBottom: 11 }}>
         <div>
-          <p style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Business Type</p>
-          <div style={{ background: '#161B22', border: '1.5px solid #1F2937', borderRadius: 9, padding: '10px 12px', fontSize: 12, color: fieldsReady ? '#E5E7EB' : '#4B5563', opacity: fieldsReady ? 1 : 0.35, transition: 'opacity .4s' }}>
-            {fieldsReady ? '☕ Café' : '— Select —'}
-          </div>
+          <p style={lbl}>Business Type</p>
+          <div style={{ ...inp, marginBottom: 0, opacity: ready ? 1 : .3, transition: 'opacity .4s' }}>{ready ? '☕ Café' : '— Select —'}</div>
         </div>
         <div>
-          <p style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Monthly Rent</p>
-          <div style={{ background: '#161B22', border: '1.5px solid #1F2937', borderRadius: 9, padding: '10px 12px', fontSize: 12, color: fieldsReady ? '#E5E7EB' : '#4B5563', opacity: fieldsReady ? 1 : 0.35, transition: 'opacity .4s' }}>
-            {fieldsReady ? '$4,200 / mo' : '$0 / mo'}
-          </div>
+          <p style={lbl}>Monthly Rent</p>
+          <div style={{ ...inp, marginBottom: 0, opacity: ready ? 1 : .3, transition: 'opacity .4s' }}>{ready ? '$4,200 / mo' : '$0 / mo'}</div>
         </div>
       </div>
-      <p style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Average Order Value</p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#161B22', border: '1.5px solid #1F2937', borderRadius: 9, padding: '11px 13px', marginBottom: 18, opacity: fieldsReady ? 1 : 0.35, transition: 'opacity .4s' }}>
-        <span style={{ fontSize: 14 }}>💰</span>
-        <span style={{ fontSize: 13, color: '#E5E7EB' }}>{fieldsReady ? '$9.50' : '—'}</span>
+      <p style={lbl}>Average Order Value</p>
+      <div style={{ ...inp, opacity: ready ? 1 : .3, transition: 'opacity .4s' }}>
+        <span>💰</span><span>{ready ? '$9.50' : '—'}</span>
       </div>
-      <button style={{ width: '100%', background: fieldsReady ? S.brand : 'rgba(255,255,255,.06)', color: fieldsReady ? '#fff' : '#4B5563', border: 'none', borderRadius: 10, padding: '12px', fontSize: 14, fontWeight: 700, fontFamily: S.font, cursor: fieldsReady ? 'pointer' : 'default', transition: 'background .4s, color .4s' }}>
+      <button style={{ width: '100%', border: 'none', borderRadius: 10, padding: 13, fontSize: 14, fontWeight: 700, fontFamily: font, cursor: ready ? 'pointer' : 'default', background: ready ? 'linear-gradient(135deg,#0F766E,#0B9488)' : 'rgba(255,255,255,.05)', color: ready ? '#fff' : 'rgba(255,255,255,.2)', boxShadow: ready ? '0 4px 18px rgba(15,118,110,.35)' : 'none', transition: 'all .4s' }}>
         Analyse this location →
       </button>
     </div>
   )
 }
 
-// ── PANEL 2: Processing ──────────────────────────────────────────
+// ── Panel 2 ──────────────────────────────────────────────────────
 function Panel2({ activePs }: { activePs: number }) {
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ textAlign: 'center', paddingBottom: 20 }}>
-        <div style={{ fontSize: 32, marginBottom: 12, display: 'inline-block', animation: 'spin 2s linear infinite' }}>⚙️</div>
-        <p style={{ fontSize: 15, fontWeight: 700, color: '#F9FAFB', marginBottom: 4 }}>Analysing your location…</p>
+    <div style={{ padding: 22 }}>
+      <div style={{ textAlign: 'center', paddingBottom: 16 }}>
+        <div style={{ fontSize: 30, display: 'inline-block', animation: 'hiw-spin 2s linear infinite' }}>⚙️</div>
+        <p style={{ fontSize: 14, fontWeight: 700, color: '#F0FDF9', marginTop: 10, marginBottom: 4 }}>Analysing your location…</p>
         <p style={{ fontSize: 12, color: '#6B7280' }}>This usually takes 8–12 seconds</p>
       </div>
-      {PROCESS_STEPS.map((ps, i) => {
+      {PS.map((ps, i) => {
         const done = i < activePs
-        const active = i === activePs
+        const cur  = i === activePs
         return (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 8, marginBottom: 6, background: done ? 'rgba(5,150,105,.05)' : active ? 'rgba(15,118,110,.08)' : '#111827', border: `1px solid ${done ? 'rgba(5,150,105,.3)' : active ? 'rgba(15,118,110,.4)' : '#1F2937'}`, opacity: (done || active) ? 1 : 0.3, transition: 'all .4s' }}>
-            <span style={{ fontSize: 14 }}>{ps.icon}</span>
-            <span style={{ fontSize: 12, color: (done || active) ? '#E5E7EB' : '#9CA3AF', flex: 1 }}>{ps.text}</span>
-            {active && <div style={{ width: 12, height: 12, borderRadius: '50%', border: '1.5px solid rgba(15,118,110,.3)', borderTopColor: '#14B8A6', animation: 'spin .7s linear infinite', flexShrink: 0 }} />}
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 8, marginBottom: 6, background: done ? 'rgba(5,150,105,.06)' : cur ? 'rgba(15,118,110,.1)' : 'rgba(255,255,255,.03)', border: `1px solid ${done ? 'rgba(5,150,105,.25)' : cur ? 'rgba(20,184,166,.35)' : 'rgba(255,255,255,.06)'}`, opacity: done || cur ? 1 : .3, transition: 'all .4s' }}>
+            <span style={{ fontSize: 13 }}>{ps.icon}</span>
+            <span style={{ fontSize: 12, color: done || cur ? '#E5E7EB' : '#9CA3AF', flex: 1 }}>{ps.text}</span>
+            {cur  && <div style={{ width: 12, height: 12, borderRadius: '50%', border: '1.5px solid rgba(15,118,110,.25)', borderTopColor: '#0FDECE', animation: 'hiw-spin .7s linear infinite', flexShrink: 0 }}/>}
             {done && <span style={{ fontSize: 12, color: '#34D399' }}>✓</span>}
           </div>
         )
@@ -112,28 +86,28 @@ function Panel2({ activePs }: { activePs: number }) {
   )
 }
 
-// ── PANEL 3: Report ──────────────────────────────────────────────
+// ── Panel 3 ──────────────────────────────────────────────────────
 function Panel3({ visibleRows, showVerdict, showFinal }: { visibleRows: number; showVerdict: boolean; showFinal: boolean }) {
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+    <div style={{ padding: 22 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
         <div>
-          <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 3 }}>📍 142 Bourke St, Melbourne VIC 3000</p>
-          <p style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB' }}>Feasibility Report · Café</p>
+          <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 2 }}>📍 142 Bourke St, Melbourne VIC</p>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#F0FDF9' }}>Feasibility Report · Café</p>
         </div>
         <div style={{ background: 'rgba(5,150,105,.15)', border: '1px solid rgba(5,150,105,.4)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: showVerdict ? 1 : 0, transform: showVerdict ? 'scale(1)' : 'scale(.9)', transition: 'opacity .5s, transform .5s' }}>
-          <p style={{ fontSize: 18, fontWeight: 900, color: '#34D399' }}>GO</p>
+          <p style={{ fontSize: 17, fontWeight: 900, color: '#34D399' }}>GO</p>
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 84</p>
         </div>
       </div>
-      {REPORT_ROWS.map((row, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: '#111827', border: '1px solid #1F2937', borderRadius: 8, marginBottom: 6, opacity: i < visibleRows ? 1 : 0, transform: i < visibleRows ? 'translateX(0)' : 'translateX(-10px)', transition: 'opacity .35s ease, transform .35s ease' }}>
+      {RR.map((row, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.06)', borderRadius: 8, marginBottom: 6, opacity: i < visibleRows ? 1 : 0, transform: i < visibleRows ? 'translateX(0)' : 'translateX(-10px)', transition: 'opacity .35s ease, transform .35s ease' }}>
           <span style={{ fontSize: 14 }}>{row.icon}</span>
           <span style={{ fontSize: 11, color: '#9CA3AF', flex: 1 }}>{row.label}</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: row.color }}>{row.val}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: row.c }}>{row.val}</span>
         </div>
       ))}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'rgba(5,150,105,.1)', border: '1px solid rgba(5,150,105,.3)', borderRadius: 10, padding: '12px 16px', marginTop: 8, opacity: showFinal ? 1 : 0, transform: showFinal ? 'translateY(0)' : 'translateY(8px)', transition: 'opacity .5s, transform .5s' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(5,150,105,.1)', border: '1px solid rgba(5,150,105,.28)', borderRadius: 10, padding: '12px 16px', marginTop: 6, opacity: showFinal ? 1 : 0, transform: showFinal ? 'translateY(0)' : 'translateY(8px)', transition: 'opacity .5s, transform .5s' }}>
         <span style={{ fontSize: 18 }}>✅</span>
         <div>
           <p style={{ fontSize: 13, fontWeight: 800, color: '#34D399' }}>GO — This location is viable</p>
@@ -144,134 +118,116 @@ function Panel3({ visibleRows, showVerdict, showFinal }: { visibleRows: number; 
   )
 }
 
-// ── MAIN COMPONENT ───────────────────────────────────────────────
+// ── Main Component ────────────────────────────────────────────────
 export default function HowItWorks() {
-  const [activeStep, setActiveStep] = useState(0)
-  const [typedAddr, setTypedAddr] = useState('')
-  const [fieldsReady, setFieldsReady] = useState(false)
-  const [activePs, setActivePs] = useState(-1)
-  const [visibleRows, setVisibleRows] = useState(0)
+  const [step, setStep]           = useState(0)
+  const [typed, setTyped]         = useState('')
+  const [ready, setReady]         = useState(false)
+  const [activePs, setActivePs]   = useState(-1)
+  const [visRows, setVisRows]     = useState(0)
   const [showVerdict, setShowVerdict] = useState(false)
   const [showFinal, setShowFinal] = useState(false)
-  const [showBadgeComp, setShowBadgeComp] = useState(false)
-  const [showBadgeScore, setShowBadgeScore] = useState(false)
-  const [progWidth, setProgWidth] = useState([0, 0, 0])
+  const [showComp, setShowComp]   = useState(false)
+  const [showScore, setShowScore] = useState(false)
 
   const autoRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const typeRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const psRef  = useRef<ReturnType<typeof setInterval> | null>(null)
+  const psRef   = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  function clearAllTimers() {
+  function clear() {
     if (autoRef.current) clearTimeout(autoRef.current)
     if (typeRef.current) clearInterval(typeRef.current)
     if (psRef.current)   clearInterval(psRef.current)
   }
 
   function startStep(idx: number) {
-    clearAllTimers()
-    setActiveStep(idx)
-    setProgWidth(prev => { const n = [0,0,0]; n[idx] = 100; return n })
-
-    // reset all states
-    setTypedAddr(''); setFieldsReady(false)
-    setActivePs(-1)
-    setVisibleRows(0); setShowVerdict(false); setShowFinal(false)
-    setShowBadgeComp(false); setShowBadgeScore(false)
+    clear()
+    setStep(idx)
+    setTyped(''); setReady(false); setActivePs(-1)
+    setVisRows(0); setShowVerdict(false); setShowFinal(false)
+    setShowComp(false); setShowScore(false)
 
     if (idx === 0) {
-      // type address
       let i = 0
       typeRef.current = setInterval(() => {
-        if (i < ADDRESS.length) {
-          setTypedAddr(ADDRESS.slice(0, ++i))
-        } else {
+        if (i < ADDRESS.length) { setTyped(ADDRESS.slice(0, ++i)) }
+        else {
           clearInterval(typeRef.current!)
-          setTimeout(() => setFieldsReady(true), 300)
+          setTimeout(() => setReady(true), 300)
         }
       }, 42)
     }
 
     if (idx === 1) {
-      // process steps
-      let ps = 0
-      setActivePs(0)
-      setTimeout(() => setShowBadgeComp(true), 1200)
+      let ps = 0; setActivePs(0)
+      setTimeout(() => setShowComp(true), 1200)
       psRef.current = setInterval(() => {
-        ps++
-        if (ps <= PROCESS_STEPS.length) setActivePs(ps)
-        if (ps >= PROCESS_STEPS.length) clearInterval(psRef.current!)
+        ps++; setActivePs(ps)
+        if (ps >= PS.length) clearInterval(psRef.current!)
       }, 560)
     }
 
     if (idx === 2) {
-      // report rows
       setTimeout(() => setShowVerdict(true), 200)
-      for (let r = 1; r <= REPORT_ROWS.length; r++) {
-        setTimeout(() => setVisibleRows(r), 300 + r * 320)
-      }
-      setTimeout(() => setShowFinal(true), 300 + REPORT_ROWS.length * 320)
-      setTimeout(() => setShowBadgeScore(true), 800)
+      RR.forEach((_, i) => setTimeout(() => setVisRows(i + 1), 300 + i * 320))
+      setTimeout(() => setShowFinal(true), 300 + RR.length * 320)
+      setTimeout(() => setShowScore(true), 800)
     }
 
-    // auto advance
     autoRef.current = setTimeout(() => startStep((idx + 1) % 3), STEP_DURATION + 200)
   }
 
-  useEffect(() => { startStep(0); return () => clearAllTimers() }, [])
+  useEffect(() => { startStep(0); return clear }, [])
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{`
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        @keyframes spin  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+        @keyframes hiw-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes hiw-spin  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes hiw-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
       `}</style>
 
-      <section style={{ background: '#060D0C', padding: '96px 24px', fontFamily: S.font, position: 'relative', overflow: 'hidden' }}>
-        {/* bg glow */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 800, height: 500, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(15,118,110,.06), transparent 70%)', pointerEvents: 'none' }} />
+      <section style={{ position: 'relative', overflow: 'hidden', padding: '96px 24px', fontFamily: font }}>
+        {/* Mesh BG */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, background: 'radial-gradient(ellipse 70% 60% at 85% 15%, rgba(5,150,105,.16) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 5% 90%, rgba(15,118,110,.14) 0%, transparent 55%), radial-gradient(ellipse 80% 70% at 50% 50%, rgba(0,0,0,.85) 0%, transparent 100%), linear-gradient(200deg, #071A16 0%, #040E0C 40%, #081E18 100%)' }}/>
+        {/* Grid lines */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1, backgroundImage: 'linear-gradient(rgba(20,184,166,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(20,184,166,.025) 1px, transparent 1px)', backgroundSize: '60px 60px', WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)' }}/>
+        {/* Noise */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1, opacity: .02, backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '200px 200px' }}/>
+        {/* Top edge */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, zIndex: 10, background: 'linear-gradient(90deg, transparent, rgba(20,184,166,.25) 30%, rgba(20,184,166,.4) 50%, rgba(20,184,166,.25) 70%, transparent)' }}/>
 
-        <div style={{ maxWidth: 1140, margin: '0 auto', position: 'relative' }}>
+        <div style={{ maxWidth: 1140, margin: '0 auto', position: 'relative', zIndex: 5 }}>
 
-          {/* HEADER */}
+          {/* Header */}
           <div style={{ marginBottom: 64 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,.14)', border: '1px solid rgba(15,118,110,.28)', borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: '#14B8A6', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 16 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#14B8A6', animation: 'pulseDot 2s infinite', display: 'inline-block' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(15,118,110,.12)', border: '1px solid rgba(20,184,166,.28)', borderRadius: 30, padding: '5px 16px 5px 10px', fontSize: 10.5, fontWeight: 700, color: '#0FDECE', letterSpacing: '1.8px', textTransform: 'uppercase', marginBottom: 18 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0FDECE', animation: 'hiw-pulse 2s infinite', display: 'inline-block', flexShrink: 0 }}/>
               How it works
             </div>
-            <h2 style={{ fontSize: 'clamp(30px,5vw,46px)', fontWeight: 900, color: '#F9FAFB', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 12 }}>
-              From address to verdict<br />
-              <span style={{ color: '#14B8A6' }}>in 30 seconds.</span>
+            <h2 style={{ fontSize: 'clamp(28px,4.5vw,44px)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.1, marginBottom: 12, background: 'linear-gradient(135deg, #F0FDF9 30%, #0FDECE 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              From address to verdict<br/>in 30 seconds.
             </h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,.42)', lineHeight: 1.75, maxWidth: 500 }}>
-              No spreadsheets. No consultants. Just paste the address.
-            </p>
+            <p style={{ fontSize: 15.5, color: 'rgba(204,235,229,.52)', lineHeight: 1.75, maxWidth: 480 }}>No spreadsheets. No consultants. Just paste the address.</p>
           </div>
 
-          {/* TWO COLUMN */}
+          {/* Two column */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 64, alignItems: 'center' }}>
 
-            {/* LEFT: STEPS */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {STEPS.map((step, i) => {
-                const isActive = activeStep === i
+            {/* Steps */}
+            <div>
+              {STEPS.map((s, i) => {
+                const active = step === i
                 return (
-                  <div
-                    key={i}
-                    onClick={() => startStep(i)}
-                    style={{ display: 'flex', gap: 20, padding: '22px 20px', borderRadius: 16, cursor: 'pointer', border: `1px solid ${isActive ? 'rgba(15,118,110,.25)' : 'transparent'}`, background: isActive ? 'rgba(15,118,110,.08)' : 'transparent', transition: 'all .25s', marginBottom: 4, position: 'relative' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, background: isActive ? S.brand : 'rgba(255,255,255,.06)', color: isActive ? '#fff' : 'rgba(255,255,255,.3)', transition: 'all .25s', marginTop: 2 }}>
-                      {step.num}
-                    </div>
-                    <div style={{ fontSize: 20, flexShrink: 0, marginTop: 8 }}>{step.icon}</div>
+                  <div key={i} onClick={() => startStep(i)} style={{ display: 'flex', gap: 18, padding: '22px 20px', borderRadius: 16, cursor: 'pointer', border: `1px solid ${active ? 'rgba(20,184,166,.22)' : 'transparent'}`, background: active ? 'rgba(15,118,110,.08)' : 'transparent', transition: 'all .25s', marginBottom: 4, boxShadow: active ? '0 0 0 1px rgba(20,184,166,.05) inset' : 'none' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 900, background: active ? '#0F766E' : 'rgba(255,255,255,.05)', color: active ? '#fff' : 'rgba(255,255,255,.25)', boxShadow: active ? '0 4px 12px rgba(15,118,110,.4)' : 'none', transition: 'all .25s', marginTop: 2 }}>{s.num}</div>
+                    <div style={{ fontSize: 20, flexShrink: 0, marginTop: 8 }}>{s.emoji}</div>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: isActive ? '#14B8A6' : 'rgba(255,255,255,.3)', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 5 }}>{step.label}</p>
-                      <p style={{ fontSize: 17, fontWeight: 800, color: isActive ? '#F9FAFB' : 'rgba(255,255,255,.4)', letterSpacing: '-0.02em', marginBottom: isActive ? 8 : 0, transition: 'color .25s' }}>{step.title}</p>
-                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,.45)', lineHeight: 1.7, maxHeight: isActive ? 80 : 0, overflow: 'hidden', opacity: isActive ? 1 : 0, transition: 'max-height .4s ease, opacity .3s ease' }}>{step.desc}</p>
-                      {/* progress bar */}
-                      <div style={{ height: 2, background: 'rgba(255,255,255,.08)', borderRadius: 2, marginTop: isActive ? 12 : 0, overflow: 'hidden', opacity: isActive ? 1 : 0, transition: 'opacity .2s, margin .3s' }}>
-                        <div style={{ height: '100%', background: 'linear-gradient(90deg,#0F766E,#14B8A6)', borderRadius: 2, width: isActive ? '100%' : '0%', transition: isActive ? `width ${STEP_DURATION}ms linear` : 'none' }} />
+                      <p style={{ fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 5, color: active ? '#0FDECE' : 'rgba(255,255,255,.2)', transition: 'color .25s' }}>{s.tag}</p>
+                      <p style={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.025em', marginBottom: active ? 8 : 0, color: active ? '#F0FDF9' : 'rgba(255,255,255,.35)', transition: 'color .25s' }}>{s.title}</p>
+                      <p style={{ fontSize: 13, color: 'rgba(204,235,229,.45)', lineHeight: 1.75, maxHeight: active ? 80 : 0, overflow: 'hidden', opacity: active ? 1 : 0, transition: 'max-height .4s ease, opacity .3s' }}>{s.desc}</p>
+                      <div style={{ height: 2, background: 'rgba(255,255,255,.07)', borderRadius: 2, marginTop: active ? 12 : 0, overflow: 'hidden', opacity: active ? 1 : 0, transition: 'opacity .2s, margin .3s' }}>
+                        <div style={{ height: '100%', background: 'linear-gradient(90deg,#0F766E,#0FDECE)', borderRadius: 2, width: active ? '100%' : '0%', transition: active ? `width ${STEP_DURATION}ms linear` : 'none' }}/>
                       </div>
                     </div>
                   </div>
@@ -279,50 +235,45 @@ export default function HowItWorks() {
               })}
             </div>
 
-            {/* RIGHT: DEVICE */}
+            {/* Device */}
             <div style={{ position: 'relative' }}>
-
-              {/* Floating badge: score */}
-              <div style={{ position: 'absolute', top: -18, right: -18, zIndex: 10, background: 'rgba(10,14,18,.95)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 12, padding: '10px 14px', boxShadow: '0 8px 24px rgba(0,0,0,.5)', display: 'flex', alignItems: 'center', gap: 8, opacity: showBadgeScore ? 1 : 0, transform: showBadgeScore ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.95)', transition: 'opacity .4s, transform .4s' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: 22, fontWeight: 900, color: '#34D399', lineHeight: 1 }}>84</p>
-                  <p style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>Score</p>
-                </div>
-                <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,.08)' }} />
-                <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: 14, fontWeight: 900, color: '#34D399' }}>GO ✅</p>
-                  <p style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>Verdict</p>
+              {/* Score badge */}
+              <div style={{ position: 'absolute', top: -18, right: -18, zIndex: 10, background: 'rgba(8,20,18,.95)', border: '1px solid rgba(20,184,166,.2)', borderRadius: 14, padding: '12px 16px', boxShadow: '0 12px 32px rgba(0,0,0,.5)', backdropFilter: 'blur(12px)', opacity: showScore ? 1 : 0, transform: showScore ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.95)', transition: 'opacity .45s, transform .45s' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: 22, fontWeight: 900, color: '#34D399', lineHeight: 1 }}>84</p>
+                    <p style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>Score</p>
+                  </div>
+                  <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,.08)' }}/>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: 15, fontWeight: 900, color: '#34D399' }}>GO ✅</p>
+                    <p style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>Verdict</p>
+                  </div>
                 </div>
               </div>
-
-              {/* Floating badge: competitors */}
-              <div style={{ position: 'absolute', bottom: 24, left: -20, zIndex: 10, background: 'rgba(10,14,18,.95)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 12, padding: '10px 14px', boxShadow: '0 8px 24px rgba(0,0,0,.5)', opacity: showBadgeComp ? 1 : 0, transform: showBadgeComp ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.95)', transition: 'opacity .4s, transform .4s' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* Competitors badge */}
+              <div style={{ position: 'absolute', bottom: 28, left: -20, zIndex: 10, background: 'rgba(8,20,18,.95)', border: '1px solid rgba(20,184,166,.2)', borderRadius: 14, padding: '12px 16px', boxShadow: '0 12px 32px rgba(0,0,0,.5)', backdropFilter: 'blur(12px)', opacity: showComp ? 1 : 0, transform: showComp ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.95)', transition: 'opacity .45s, transform .45s' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   <span style={{ fontSize: 18 }}>🗺️</span>
                   <div>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: '#F9FAFB' }}>4 competitors found</p>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#F0FDF9' }}>4 competitors found</p>
                     <p style={{ fontSize: 10, color: '#6B7280' }}>within 500m radius</p>
                   </div>
                 </div>
               </div>
 
-              {/* Device */}
-              <div style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,.09)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.04), 0 40px 80px rgba(0,0,0,.7), 0 0 80px rgba(15,118,110,.05)' }}>
-                {/* browser bar */}
-                <div style={{ background: 'rgba(255,255,255,.04)', borderBottom: '1px solid rgba(255,255,255,.07)', padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ background: 'rgba(10,18,16,.92)', border: '1px solid rgba(20,184,166,.14)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.03), 0 40px 80px rgba(0,0,0,.7), 0 0 80px rgba(15,118,110,.06)' }}>
+                <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ display: 'flex', gap: 5 }}>
-                    {['#FF5F57','#FFBD2E','#28CA41'].map(c => <div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }} />)}
+                    {['#FF5F57','#FFBD2E','#28CA41'].map(c => <div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}
                   </div>
-                  <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>
-                    app.locatalyze.com.au/analyse
-                  </div>
+                  <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>app.locatalyze.com.au/analyse</div>
                   <div style={{ width: 17, height: 17, borderRadius: 4, background: 'linear-gradient(135deg,#0F766E,#14B8A6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 900, color: '#fff' }}>L</div>
                 </div>
-                {/* panels */}
-                <div style={{ background: '#0F1117', minHeight: 380 }}>
-                  {activeStep === 0 && <Panel1 typedAddr={typedAddr} fieldsReady={fieldsReady} />}
-                  {activeStep === 1 && <Panel2 activePs={activePs} />}
-                  {activeStep === 2 && <Panel3 visibleRows={visibleRows} showVerdict={showVerdict} showFinal={showFinal} />}
+                <div style={{ background: '#0A1210', minHeight: 380 }}>
+                  {step === 0 && <Panel1 typed={typed} ready={ready}/>}
+                  {step === 1 && <Panel2 activePs={activePs}/>}
+                  {step === 2 && <Panel3 visibleRows={visRows} showVerdict={showVerdict} showFinal={showFinal}/>}
                 </div>
               </div>
             </div>
@@ -330,10 +281,10 @@ export default function HowItWorks() {
 
           {/* CTA */}
           <div style={{ textAlign: 'center', marginTop: 64 }}>
-            <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: S.brand, color: '#fff', borderRadius: 12, padding: '15px 32px', fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 24px rgba(15,118,110,.38)', fontFamily: S.font }}>
+            <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#0F766E,#0B9488)', color: '#fff', borderRadius: 12, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', fontFamily: font, boxShadow: '0 6px 28px rgba(15,118,110,.35), inset 0 1px 0 rgba(255,255,255,.12)' }}>
               Analyse my location free →
             </Link>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,.2)', marginTop: 10 }}>No credit card · Any Australian address · 30 seconds</p>
+            <p style={{ fontSize: 12, color: 'rgba(148,210,198,.28)', marginTop: 10 }}>No credit card · Any Australian address · 30 seconds</p>
           </div>
 
         </div>

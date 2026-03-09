@@ -2,462 +2,308 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-// ─── Each tab = one full feature showcase ───────────────────────────────────
 const TABS = [
   {
-    id: 'location-analysis',
-    label: 'Location Analysis',
-    headline: 'Location intelligence,\nilluminated.',
-    sub: 'Understand exactly what makes a location work — or fail. Analyse foot traffic, daytime population, suburb demographics and proximity to demand generators before you commit to a single dollar of rent.',
-    cta: 'See how it works',
-    href: '/use-case/all',
-    // Background: a street / city aerial
+    id: 'location-analysis', label: 'Location Analysis', accent: '#0F766E',
     photo: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80',
-    photoAlt: 'City aerial view',
-    // Mini UI shown inside device mockup
-    ui: {
-      type: 'score',
-      address: '142 Bourke St, Melbourne VIC',
-      score: 84,
-      verdict: 'GO',
-      verdictColor: '#059669',
-      rows: [
-        { label: 'Foot Traffic', pct: 85, color: '#059669', val: 'High' },
-        { label: 'Demographics', pct: 78, color: '#059669', val: 'Strong' },
-        { label: 'Competition', pct: 52, color: '#D97706', val: 'Moderate' },
-        { label: 'Rent Ratio', pct: 82, color: '#059669', val: '9.2%' },
-      ],
-    },
+    headline: 'Location intelligence,\nilluminated.',
+    sub: 'Understand exactly what makes a location work — or fail. Analyse foot traffic, demographics and proximity to demand generators before you commit to a single dollar of rent.',
+    cta: 'See how it works', ui: 'score',
   },
   {
-    id: 'suburb-scoring',
-    label: 'Suburb Scoring',
-    headline: 'Every suburb scored\nfor your business.',
-    sub: 'Compare suburbs side by side using income data, population density, age profile and spending behaviour. Find the suburb where your business concept has the strongest natural advantage.',
-    cta: 'Explore suburb scores',
-    href: '/use-case/all',
+    id: 'suburb-scoring', label: 'Suburb Scoring', accent: '#0891B2',
     photo: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80',
-    photoAlt: 'Suburban street',
-    ui: {
-      type: 'suburbs',
-      rows: [
-        { name: 'Fitzroy VIC 3065', score: 92, badge: 'Top Pick', badgeColor: '#059669' },
-        { name: 'Newtown NSW 2042', score: 87, badge: 'Strong', badgeColor: '#0F766E' },
-        { name: 'Subiaco WA 6008', score: 83, badge: 'Strong', badgeColor: '#0F766E' },
-        { name: 'New Farm QLD 4005', score: 79, badge: 'Good', badgeColor: '#D97706' },
-        { name: 'Leederville WA 6007', score: 74, badge: 'Good', badgeColor: '#D97706' },
-      ],
-    },
+    headline: 'Every suburb scored\nfor your business.',
+    sub: 'Compare suburbs side by side using income data, population density, age profile and spending behaviour. Find where your concept has the strongest natural advantage.',
+    cta: 'Explore suburb scores', ui: 'suburbs',
   },
   {
-    id: 'competitor-mapping',
-    label: 'Competitor Mapping',
-    headline: 'See every competitor\nbefore they see you.',
-    sub: 'Map every direct competitor within your chosen radius. Understand their ratings, proximity and threat level — and identify the gaps in the market where your concept can own the category.',
-    cta: 'Map competitors now',
-    href: '/use-case/all',
+    id: 'competitor-mapping', label: 'Competitor Mapping', accent: '#7C3AED',
     photo: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80',
-    photoAlt: 'Retail street',
-    ui: {
-      type: 'competitors',
-      radius: '500m',
-      count: 4,
-      rows: [
-        { name: 'The Daily Grind', dist: '120m', stars: 4.2, threat: 'High', color: '#DC2626' },
-        { name: 'Brew & Co.', dist: '280m', stars: 3.8, threat: 'Med', color: '#D97706' },
-        { name: 'Sunrise Café', dist: '390m', stars: 4.5, threat: 'High', color: '#DC2626' },
-        { name: 'Quick Bites', dist: '470m', stars: 3.1, threat: 'Low', color: '#059669' },
-      ],
-    },
+    headline: 'See every competitor\nbefore they see you.',
+    sub: 'Map every direct competitor within your chosen radius. Understand their ratings, proximity and threat level — and find the gaps where your concept can own the category.',
+    cta: 'Map competitors now', ui: 'competitors',
   },
   {
-    id: 'rent-affordability',
-    label: 'Rent Affordability',
-    headline: 'Know if the rent\nmakes financial sense.',
-    sub: 'Enter your expected rent and average transaction value. Locatalyze calculates the exact daily customer volume you need to stay profitable — and tells you if this location can realistically deliver it.',
-    cta: 'Run a rent analysis',
-    href: '/use-case/all',
+    id: 'rent-affordability', label: 'Rent Affordability', accent: '#D97706',
     photo: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=80',
-    photoAlt: 'Commercial property',
-    ui: {
-      type: 'rent',
-      rent: '$4,200 / mo',
-      ratio: '9.8%',
-      status: 'Healthy ✓',
-      statusColor: '#059669',
-      rows: [
-        { label: 'Revenue needed', val: '$42,800 / mo' },
-        { label: 'Daily transactions', val: '156 / day' },
-        { label: 'Break-even', val: '~7 months' },
-        { label: 'Safety buffer', val: '$4,600 / mo' },
-      ],
-    },
+    headline: 'Know if the rent\nmakes financial sense.',
+    sub: 'Enter your expected rent and average transaction value. Locatalyze calculates the exact daily volume you need to stay profitable — and tells you if this location can deliver it.',
+    cta: 'Run a rent analysis', ui: 'rent',
   },
   {
-    id: 'feasibility-reports',
-    label: 'Feasibility Reports',
-    headline: 'A full report,\nin 30 seconds.',
-    sub: 'Get a complete location feasibility report covering demand, competition, demographics and financials. Share it with your accountant, investor or landlord as a professional PDF — generated instantly.',
-    cta: 'See a sample report',
-    href: '/use-case/all',
+    id: 'feasibility-reports', label: 'Feasibility Reports', accent: '#DC2626',
     photo: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=80',
-    photoAlt: 'Business planning',
-    ui: {
-      type: 'report',
-      address: '88 Oxford St, Darlinghurst NSW',
-      verdict: 'GO',
-      verdictColor: '#059669',
-      score: 88,
-      sections: [
-        { icon: '📍', label: 'Location Score', val: '88 / 100', good: true },
-        { icon: '👥', label: 'Demand Signal', val: 'Strong', good: true },
-        { icon: '🏪', label: 'Competition Risk', val: 'Moderate', good: null },
-        { icon: '💰', label: 'Rent Viability', val: 'Viable', good: true },
-        { icon: '📊', label: 'Demographics', val: 'Excellent', good: true },
-      ],
-    },
+    headline: 'A full report,\nin 30 seconds.',
+    sub: 'Get a complete feasibility report covering demand, competition, demographics and financials. Share it with your accountant, investor or landlord as a professional PDF — instantly.',
+    cta: 'See a sample report', ui: 'report',
   },
 ]
 
-// ─── Device mockup UI renderers ──────────────────────────────────────────────
-function MockupUI({ tab }: { tab: typeof TABS[0] }) {
-  const ui = tab.ui
-  const f = "'DM Sans', sans-serif"
+const SCORE_BARS = [
+  { label: 'Foot Traffic', pct: 85, color: '#34D399', val: 'High' },
+  { label: 'Demographics', pct: 78, color: '#34D399', val: 'Strong' },
+  { label: 'Competition',  pct: 52, color: '#FBBF24', val: 'Moderate' },
+  { label: 'Rent Ratio',   pct: 82, color: '#34D399', val: '9.2%' },
+]
 
-  if (ui.type === 'score') {
-    return (
-      <div style={{ fontFamily: f, padding: '20px' }}>
-        <p style={{ fontSize: 10, color: '#6B7280', margin: '0 0 4px' }}>📍 {ui.address}</p>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div>
-            <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0 }}>Location Score</p>
-            <p style={{ fontSize: 36, fontWeight: 900, color: '#F9FAFB', letterSpacing: '-0.04em', margin: '2px 0' }}>{ui.score}</p>
+function ScoreUI({ animKey }: { animKey: number }) {
+  const [score, setScore] = useState(0)
+  const [bars, setBars] = useState(false)
+  useEffect(() => {
+    setScore(0); setBars(false)
+    let n = 0
+    const t = setInterval(() => {
+      n = Math.min(n + 2, 84); setScore(n)
+      if (n >= 84) { clearInterval(t); setBars(true) }
+    }, 18)
+    return () => clearInterval(t)
+  }, [animKey])
+  const offset = 188 - (188 * score / 100)
+  return (
+    <div style={{ padding: 20 }}>
+      <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 4 }}>📍 142 Bourke St, Melbourne VIC</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ position: 'relative', width: 72, height: 72 }}>
+          <svg viewBox="0 0 60 60" width="72" height="72" style={{ transform: 'rotate(-90deg)' }}>
+            <defs><linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#0F766E"/><stop offset="100%" stopColor="#14B8A6"/></linearGradient></defs>
+            <circle fill="none" stroke="rgba(255,255,255,.07)" strokeWidth="6" cx="30" cy="30" r="24"/>
+            <circle fill="none" stroke="url(#rg2)" strokeWidth="6" strokeLinecap="round" cx="30" cy="30" r="24" strokeDasharray="188" strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset .05s linear' }}/>
+          </svg>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: '#F0FDF9' }}>{score}</div>
+        </div>
+        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: score >= 84 ? 1 : 0, transition: 'opacity .4s' }}>
+          <p style={{ fontSize: 17, fontWeight: 900, color: '#34D399' }}>GO ✅</p>
+          <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
+        </div>
+      </div>
+      {SCORE_BARS.map((b, i) => (
+        <div key={i} style={{ marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+            <span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.label}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: b.color }}>{b.val}</span>
           </div>
-          <div style={{ textAlign: 'center', background: ui.verdictColor + '20', border: `1px solid ${ui.verdictColor}50`, borderRadius: 10, padding: '8px 16px' }}>
-            <p style={{ fontSize: 18, fontWeight: 900, color: ui.verdictColor, margin: 0 }}>{ui.verdict} ✅</p>
-            <p style={{ fontSize: 9, color: '#6B7280', margin: '2px 0 0' }}>Verdict</p>
+          <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}>
+            <div style={{ height: '100%', background: b.color, borderRadius: 2, width: bars ? `${b.pct}%` : '0%', transition: `width 1.1s ease ${i * 0.12}s` }}/>
           </div>
         </div>
-        {(ui.rows as Array<{label:string;pct:number;color:string;val:string}>).map((r, i) => (
-          <div key={i} style={{ marginBottom: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-              <span style={{ fontSize: 11, color: '#9CA3AF' }}>{r.label}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: r.color }}>{r.val}</span>
-            </div>
-            <div style={{ height: 5, background: '#1F2937', borderRadius: 3 }}>
-              <div style={{ height: '100%', width: `${r.pct}%`, background: r.color, borderRadius: 3 }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (ui.type === 'suburbs') {
-    return (
-      <div style={{ fontFamily: f, padding: '20px' }}>
-        <p style={{ fontSize: 12, fontWeight: 700, color: '#F9FAFB', margin: '0 0 14px' }}>🏘️ Top Suburbs for Cafés</p>
-        {(ui.rows as Array<{name:string;score:number;badge:string;badgeColor:string}>).map((r, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', marginBottom: 6, background: i === 0 ? 'rgba(15,118,110,0.15)' : '#111827', borderRadius: 9, border: i === 0 ? '1px solid rgba(15,118,110,0.3)' : '1px solid #1F2937' }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#14B8A6', width: 18 }}>#{i + 1}</span>
-            <span style={{ fontSize: 12, color: '#E5E7EB', flex: 1 }}>{r.name}</span>
-            <span style={{ fontSize: 10, color: '#fff', background: r.badgeColor, borderRadius: 5, padding: '2px 7px', fontWeight: 700 }}>{r.badge}</span>
-            <span style={{ fontSize: 13, fontWeight: 800, color: r.score > 85 ? '#34D399' : '#FCD34D' }}>{r.score}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (ui.type === 'competitors') {
-    return (
-      <div style={{ fontFamily: f, padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#F9FAFB', margin: 0 }}>🗺️ Competitors within {ui.radius}</p>
-          <span style={{ fontSize: 11, color: '#6B7280' }}>{ui.count} found</span>
-        </div>
-        {(ui.rows as Array<{name:string;dist:string;stars:number;threat:string;color:string}>).map((r, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 0', borderBottom: i < 3 ? '1px solid #1F2937' : 'none' }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: r.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: '#E5E7EB', flex: 1 }}>{r.name}</span>
-            <span style={{ fontSize: 10, color: '#6B7280' }}>{r.dist}</span>
-            <span style={{ fontSize: 10, color: '#FCD34D' }}>★ {r.stars}</span>
-            <span style={{ fontSize: 10, fontWeight: 700, color: r.color, background: r.color + '20', borderRadius: 4, padding: '2px 6px' }}>{r.threat}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (ui.type === 'rent') {
-    return (
-      <div style={{ fontFamily: f, padding: '20px' }}>
-        <p style={{ fontSize: 12, fontWeight: 700, color: '#F9FAFB', margin: '0 0 14px' }}>💰 Rent Analysis</p>
-        <div style={{ textAlign: 'center', marginBottom: 16 }}>
-          <p style={{ fontSize: 30, fontWeight: 900, color: '#F9FAFB', letterSpacing: '-0.04em', margin: 0 }}>{ui.rent}</p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 6, background: '#059669' + '15', border: '1px solid #059669' + '40', borderRadius: 20, padding: '4px 12px' }}>
-            <span style={{ fontSize: 14, fontWeight: 800, color: '#34D399' }}>{ui.ratio}</span>
-            <span style={{ fontSize: 10, color: '#6B7280' }}>of revenue</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: ui.statusColor }}>{ui.status}</span>
-          </div>
-        </div>
-        {(ui.rows as Array<{label:string;val:string}>).map((r, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderTop: '1px solid #1F2937' }}>
-            <span style={{ fontSize: 11, color: '#6B7280' }}>{r.label}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#E5E7EB' }}>{r.val}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (ui.type === 'report') {
-    return (
-      <div style={{ fontFamily: f, padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-          <div>
-            <p style={{ fontSize: 10, color: '#6B7280', margin: '0 0 2px' }}>📍 {ui.address}</p>
-            <p style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB', margin: 0 }}>Feasibility Report</p>
-          </div>
-          <div style={{ background: ui.verdictColor + '20', border: `1px solid ${ui.verdictColor}50`, borderRadius: 8, padding: '6px 12px', textAlign: 'center' }}>
-            <p style={{ fontSize: 16, fontWeight: 900, color: ui.verdictColor, margin: 0 }}>{ui.verdict}</p>
-            <p style={{ fontSize: 9, color: '#6B7280', margin: '1px 0 0' }}>Score: {ui.score}</p>
-          </div>
-        </div>
-        {(ui.sections as Array<{icon:string;label:string;val:string;good:boolean|null}>).map((s, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid #1F2937' : 'none' }}>
-            <span style={{ fontSize: 14 }}>{s.icon}</span>
-            <span style={{ fontSize: 12, color: '#9CA3AF', flex: 1 }}>{s.label}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: s.good === true ? '#34D399' : s.good === null ? '#FCD34D' : '#F87171' }}>{s.val}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return null
+      ))}
+    </div>
+  )
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
+function SuburbsUI() {
+  const rows = [
+    { name: 'Fitzroy VIC 3065', score: 92, badge: 'Top Pick', bc: '#059669' },
+    { name: 'Newtown NSW 2042', score: 87, badge: 'Strong', bc: '#0F766E' },
+    { name: 'Subiaco WA 6008', score: 83, badge: 'Strong', bc: '#0F766E' },
+    { name: 'New Farm QLD 4005', score: 79, badge: 'Good', bc: '#D97706' },
+    { name: 'Leederville WA 6007', score: 74, badge: 'Good', bc: '#D97706' },
+  ]
+  return (
+    <div style={{ padding: 20 }}>
+      <p style={{ fontSize: 12, fontWeight: 700, color: '#F0FDF9', marginBottom: 14 }}>🏘️ Top Suburbs for Cafés</p>
+      {rows.map((s, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', marginBottom: 6, borderRadius: 9, background: i === 0 ? 'rgba(15,118,110,.14)' : 'rgba(255,255,255,.03)', border: `1px solid ${i === 0 ? 'rgba(15,118,110,.3)' : 'rgba(255,255,255,.06)'}` }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#14B8A6', width: 20 }}>#{i + 1}</span>
+          <span style={{ fontSize: 12, color: '#E5E7EB', flex: 1 }}>{s.name}</span>
+          <span style={{ fontSize: 10, color: '#fff', background: s.bc, borderRadius: 5, padding: '2px 8px', fontWeight: 700 }}>{s.badge}</span>
+          <span style={{ fontSize: 13, fontWeight: 800, color: s.score > 85 ? '#34D399' : '#FCD34D' }}>{s.score}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function CompetitorsUI() {
+  const rows = [
+    { name: 'The Daily Grind', dist: '120m', stars: 4.2, threat: 'High', c: '#F87171' },
+    { name: 'Brew & Co.', dist: '280m', stars: 3.8, threat: 'Med', c: '#FBBF24' },
+    { name: 'Sunrise Café', dist: '390m', stars: 4.5, threat: 'High', c: '#F87171' },
+    { name: 'Quick Bites', dist: '470m', stars: 3.1, threat: 'Low', c: '#34D399' },
+  ]
+  return (
+    <div style={{ padding: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
+        <p style={{ fontSize: 12, fontWeight: 700, color: '#F0FDF9' }}>🗺️ Competitors within 500m</p>
+        <span style={{ fontSize: 11, color: '#6B7280' }}>4 found</span>
+      </div>
+      {rows.map((c, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 0', borderBottom: i < 3 ? '1px solid rgba(255,255,255,.05)' : 'none' }}>
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: c.c, flexShrink: 0 }}/>
+          <span style={{ fontSize: 12, color: '#E5E7EB', flex: 1 }}>{c.name}</span>
+          <span style={{ fontSize: 10, color: '#6B7280' }}>{c.dist}</span>
+          <span style={{ fontSize: 10, color: '#FBBF24' }}>★ {c.stars}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: c.c, background: c.c + '18', borderRadius: 4, padding: '2px 7px' }}>{c.threat}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function RentUI() {
+  return (
+    <div style={{ padding: 20 }}>
+      <p style={{ fontSize: 12, fontWeight: 700, color: '#F0FDF9', marginBottom: 14 }}>💰 Rent Analysis</p>
+      <div style={{ textAlign: 'center', marginBottom: 16 }}>
+        <p style={{ fontSize: 30, fontWeight: 900, color: '#F0FDF9', letterSpacing: '-0.04em' }}>$4,200 / mo</p>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 7, background: 'rgba(5,150,105,.1)', border: '1px solid rgba(5,150,105,.3)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: '#34D399' }}>9.8%</span>
+          <span style={{ fontSize: 10, color: '#6B7280' }}>of revenue</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#059669' }}>Healthy ✓</span>
+        </div>
+      </div>
+      {[['Revenue needed','$42,800 / mo'],['Daily transactions','156 / day'],['Break-even','~7 months'],['Safety buffer','$4,600 / mo']].map(([l, v], i) => (
+        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderTop: '1px solid rgba(255,255,255,.05)' }}>
+          <span style={{ fontSize: 11, color: '#6B7280' }}>{l}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#E5E7EB' }}>{v}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ReportUI() {
+  const rows = [
+    { icon: '📍', label: 'Location Score', val: '88 / 100', c: '#34D399' },
+    { icon: '👥', label: 'Demand Signal', val: 'Strong', c: '#34D399' },
+    { icon: '🏪', label: 'Competition Risk', val: 'Moderate', c: '#FBBF24' },
+    { icon: '💰', label: 'Rent Viability', val: 'Viable', c: '#34D399' },
+    { icon: '📊', label: 'Demographics', val: 'Excellent', c: '#34D399' },
+  ]
+  return (
+    <div style={{ padding: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+        <div>
+          <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 2 }}>📍 88 Oxford St, Darlinghurst NSW</p>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#F0FDF9' }}>Feasibility Report</p>
+        </div>
+        <div style={{ background: 'rgba(5,150,105,.15)', border: '1px solid rgba(5,150,105,.4)', borderRadius: 8, padding: '7px 14px', textAlign: 'center' }}>
+          <p style={{ fontSize: 17, fontWeight: 900, color: '#34D399' }}>GO</p>
+          <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 88</p>
+        </div>
+      </div>
+      {rows.map((r, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid rgba(255,255,255,.05)' : 'none' }}>
+          <span style={{ fontSize: 14 }}>{r.icon}</span>
+          <span style={{ fontSize: 12, color: '#9CA3AF', flex: 1 }}>{r.label}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: r.c }}>{r.val}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function DeviceUI({ uiType, animKey }: { uiType: string; animKey: number }) {
+  if (uiType === 'score')       return <ScoreUI animKey={animKey}/>
+  if (uiType === 'suburbs')     return <SuburbsUI/>
+  if (uiType === 'competitors') return <CompetitorsUI/>
+  if (uiType === 'rent')        return <RentUI/>
+  return <ReportUI/>
+}
+
+const font = "'DM Sans', sans-serif"
+
 export default function GlideShowcase() {
   const [activeIdx, setActiveIdx] = useState(0)
-  const [prevIdx, setPrevIdx] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const autoRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [paused, setPaused] = useState(false)
-  const font = "'DM Sans', sans-serif"
-
+  const [animKey, setAnimKey] = useState(0)
+  const pausedRef = useRef(false)
   const active = TABS[activeIdx]
 
-  function goTo(idx: number) {
-    if (idx === activeIdx || isTransitioning) return
-    setPrevIdx(activeIdx)
-    setIsTransitioning(true)
-    setTimeout(() => {
-      setActiveIdx(idx)
-      setIsTransitioning(false)
-    }, 300)
-  }
-
-  // Auto-advance
   useEffect(() => {
-    if (paused) return
-    autoRef.current = setInterval(() => {
-      setActiveIdx(prev => {
-        setPrevIdx(prev)
-        setIsTransitioning(true)
-        setTimeout(() => setIsTransitioning(false), 300)
-        return (prev + 1) % TABS.length
-      })
-    }, 5000)
-    return () => { if (autoRef.current) clearInterval(autoRef.current) }
-  }, [paused])
+    const t = setInterval(() => {
+      if (!pausedRef.current) {
+        setActiveIdx(i => (i + 1) % TABS.length)
+        setAnimKey(k => k + 1)
+      }
+    }, 4500)
+    return () => clearInterval(t)
+  }, [])
+
+  function goTo(i: number) {
+    setActiveIdx(i); setAnimKey(k => k + 1)
+    pausedRef.current = true
+    setTimeout(() => { pausedRef.current = false }, 10000)
+  }
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{`
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(32px) } to { opacity: 1; transform: translateX(0) } }
-        .showcase-bg {
-          transition: opacity 0.5s ease;
-        }
-        .tab-underline {
-          transition: width 0.3s ease, background 0.3s ease;
-        }
-        .device-float {
-          animation: slideInRight 0.5s ease both;
-        }
-        .text-reveal {
-          animation: slideUp 0.45s ease both;
-        }
+        @keyframes gsUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+        .gs-anim { animation: gsUp .45s ease both }
+        .gs-tab-btn:hover { color: rgba(240,253,249,.65) !important }
       `}</style>
 
       <section
-        style={{ position: 'relative', fontFamily: font, overflow: 'hidden', background: '#0A0A0A' }}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
+        style={{ position: 'relative', fontFamily: font, overflow: 'hidden' }}
+        onMouseEnter={() => { pausedRef.current = true }}
+        onMouseLeave={() => { pausedRef.current = false }}
       >
-        {/* ── Background photo with dark overlay ── */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-          {/* Current bg */}
-          <img
-            key={active.id + '-bg'}
-            src={active.photo}
-            alt={active.photoAlt}
-            style={{
-              position: 'absolute', inset: 0, width: '100%', height: '100%',
-              objectFit: 'cover', objectPosition: 'center',
-              filter: 'grayscale(60%) brightness(0.35)',
-              animation: 'fadeIn 0.6s ease both',
-            }}
-          />
-          {/* Gradient overlays for text readability */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(6,6,6,0.92) 40%, rgba(6,6,6,0.3) 100%)' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(6,6,6,0.8) 0%, transparent 50%)' }} />
-          {/* Teal accent glow */}
-          <div style={{ position: 'absolute', bottom: -100, left: -100, width: 600, height: 400, borderRadius: '50%', background: `radial-gradient(ellipse, ${active.id === 'rent-affordability' ? '#D97706' : '#0F766E'}18, transparent 70%)`, transition: 'background 0.6s ease', pointerEvents: 'none' }} />
+        {/* Mesh BG */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, background: 'radial-gradient(ellipse 80% 60% at 10% 20%, rgba(15,118,110,.2) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 90% 80%, rgba(6,95,70,.18) 0%, transparent 55%), radial-gradient(ellipse 100% 80% at 50% 50%, rgba(3,12,11,.9) 0%, transparent 100%), linear-gradient(160deg, #061412 0%, #030C0B 50%, #071814 100%)' }}/>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 1, opacity: .025, backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '200px 200px' }}/>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, zIndex: 10, background: 'linear-gradient(90deg, transparent, rgba(20,184,166,.35) 30%, rgba(20,184,166,.5) 50%, rgba(20,184,166,.35) 70%, transparent)' }}/>
+
+        {/* Tabs */}
+        <div style={{ position: 'relative', zIndex: 5, borderBottom: '1px solid rgba(255,255,255,.05)', display: 'flex', overflowX: 'auto', padding: '0 40px', scrollbarWidth: 'none' }}>
+          {TABS.map((tab, i) => (
+            <button key={tab.id} className="gs-tab-btn" onClick={() => goTo(i)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '18px 24px 16px', fontFamily: font, fontSize: 13.5, fontWeight: i === activeIdx ? 700 : 400, color: i === activeIdx ? '#F0FDF9' : 'rgba(148,210,198,.3)', whiteSpace: 'nowrap', position: 'relative', transition: 'color .2s' }}>
+              {tab.label}
+              <div style={{ position: 'absolute', bottom: -1, left: '50%', transform: 'translateX(-50%)', height: 2, borderRadius: 2, background: 'linear-gradient(90deg,#0F766E,#0FDECE)', width: i === activeIdx ? '80%' : '0%', transition: 'width .35s ease' }}/>
+            </button>
+          ))}
         </div>
 
-        {/* ── Tab navigation — exactly like Glide ── */}
-        <div style={{ position: 'relative', zIndex: 2, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px', display: 'flex', overflowX: 'auto', gap: 0 }}>
-            {TABS.map((tab, i) => {
-              const isActive = i === activeIdx
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => { goTo(i); setPaused(true); setTimeout(() => setPaused(false), 10000) }}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: '22px 28px 20px', position: 'relative',
-                    color: isActive ? '#F9FAFB' : 'rgba(255,255,255,0.38)',
-                    fontSize: 14, fontWeight: isActive ? 700 : 400,
-                    fontFamily: font, whiteSpace: 'nowrap',
-                    transition: 'color 0.25s ease',
-                  }}
-                >
-                  {tab.label}
-                  {/* Active underline */}
-                  <div style={{
-                    position: 'absolute', bottom: -1, left: '50%',
-                    transform: 'translateX(-50%)',
-                    height: 2, background: '#ffffff',
-                    borderRadius: 2,
-                    width: isActive ? '80%' : '0%',
-                    transition: 'width 0.3s ease',
-                  }} />
-                </button>
-              )
-            })}
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 5, display: 'flex', alignItems: 'center', gap: 48, padding: '72px 48px 80px', minHeight: 460 }}>
+          {/* BG photo */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
+            <img key={active.id} src={active.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(60%) brightness(.22)', position: 'absolute', inset: 0 }}/>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(6,20,18,.97) 40%, rgba(6,20,18,.3) 100%)' }}/>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(3,12,11,.9) 0%, transparent 55%)' }}/>
+            <div style={{ position: 'absolute', bottom: -80, left: -80, width: 500, height: 380, borderRadius: '50%', background: `radial-gradient(ellipse, ${active.accent}20, transparent 70%)`, transition: 'background .6s', pointerEvents: 'none' }}/>
           </div>
-        </div>
 
-        {/* ── Main content: text left + device right ── */}
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: 1200, margin: '0 auto', padding: '72px 40px 80px', display: 'flex', alignItems: 'center', gap: 48, minHeight: 520 }}>
-
-          {/* LEFT: text content */}
-          <div style={{ flex: '0 0 auto', maxWidth: 460 }} key={active.id + '-text'} className="text-reveal">
-            <h2 style={{
-              fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 900,
-              color: '#F9FAFB', letterSpacing: '-0.04em',
-              lineHeight: 1.1, margin: '0 0 20px',
-              whiteSpace: 'pre-line',
-            }}>
+          {/* Left text */}
+          <div key={active.id + '-t-' + animKey} className="gs-anim" style={{ flex: '0 0 auto', maxWidth: 380, position: 'relative', zIndex: 5 }}>
+            <h2 style={{ fontSize: 'clamp(26px,3.8vw,40px)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.08, marginBottom: 18, whiteSpace: 'pre-line', background: 'linear-gradient(135deg, #F0FDF9 30%, #0FDECE 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               {active.headline}
             </h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, margin: '0 0 32px', maxWidth: 380 }}>
-              {active.sub}
-            </p>
-            <Link
-              href={active.href}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(8px)',
-                color: '#F9FAFB', borderRadius: 10,
-                padding: '13px 22px', fontSize: 14, fontWeight: 600,
-                textDecoration: 'none', fontFamily: font,
-                transition: 'background 0.2s ease',
-              }}
-            >
-              {active.cta}
-              <span style={{ fontSize: 16 }}>→</span>
+            <p style={{ fontSize: 14.5, color: 'rgba(204,235,229,.55)', lineHeight: 1.8, marginBottom: 28 }}>{active.sub}</p>
+            <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(20,184,166,.3)', background: 'rgba(15,118,110,.12)', backdropFilter: 'blur(10px)', color: '#F0FDF9', borderRadius: 10, padding: '12px 20px', fontSize: 13.5, fontWeight: 600, textDecoration: 'none', fontFamily: font }}>
+              {active.cta} &nbsp;→
             </Link>
           </div>
 
-          {/* RIGHT: Floating device mockup — exactly like Glide's tablet */}
-          <div
-            key={active.id + '-device'}
-            className="device-float"
-            style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
-          >
-            <div style={{
-              width: '100%', maxWidth: 580,
-              background: 'rgba(10,10,10,0.85)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 20,
-              boxShadow: '0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.08)',
-              backdropFilter: 'blur(20px)',
-              overflow: 'hidden',
-            }}>
-              {/* Device toolbar */}
-              <div style={{
-                background: 'rgba(255,255,255,0.04)',
-                borderBottom: '1px solid rgba(255,255,255,0.08)',
-                padding: '12px 16px',
-                display: 'flex', alignItems: 'center', gap: 10,
-              }}>
+          {/* Right device */}
+          <div key={active.id + '-d-' + animKey} className="gs-anim" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', position: 'relative', zIndex: 5 }}>
+            <div style={{ width: '100%', maxWidth: 460, background: 'rgba(10,18,16,.92)', border: '1px solid rgba(20,184,166,.14)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.03), 0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(15,118,110,.08)', backdropFilter: 'blur(20px)' }}>
+              <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '11px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ display: 'flex', gap: 5 }}>
-                  {['#FF5F57','#FFBD2E','#28CA41'].map(c => (
-                    <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
-                  ))}
+                  {['#FF5F57','#FFBD2E','#28CA41'].map(c => <div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}
                 </div>
-                <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 6, padding: '4px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 10, color: '#6B7280' }}>🔒</span>
-                  <span style={{ fontSize: 11, color: '#6B7280' }}>app.locatalyze.com.au/analyse</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 5, background: 'linear-gradient(135deg,#0F766E,#14B8A6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#fff' }}>L</div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF' }}>Locatalyze</span>
-                </div>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>app.locatalyze.com.au/analyse</div>
+                <div style={{ width: 17, height: 17, borderRadius: 4, background: 'linear-gradient(135deg,#0F766E,#14B8A6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 900, color: '#fff' }}>L</div>
               </div>
-              {/* Device content */}
-              <div style={{ background: '#0F1117', minHeight: 300 }}>
-                <MockupUI tab={active} />
+              <div style={{ background: '#0A1210', minHeight: 300 }}>
+                <DeviceUI uiType={active.ui} animKey={animKey}/>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Progress bar at bottom ── */}
-        <div style={{ position: 'relative', zIndex: 2, height: 2, background: 'rgba(255,255,255,0.06)' }}>
-          <div style={{
-            height: '100%',
-            background: 'linear-gradient(90deg, #0F766E, #14B8A6)',
-            width: `${((activeIdx + 1) / TABS.length) * 100}%`,
-            transition: 'width 0.4s ease',
-            borderRadius: 1,
-          }} />
+        {/* Progress */}
+        <div style={{ position: 'relative', zIndex: 5, height: 2, background: 'rgba(255,255,255,.04)' }}>
+          <div style={{ height: '100%', background: `linear-gradient(90deg,${active.accent},#14B8A6)`, width: `${((activeIdx + 1) / TABS.length) * 100}%`, transition: 'width .4s ease' }}/>
         </div>
 
-        {/* ── Bottom CTA strip ── */}
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '32px 24px 44px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <Link href="/auth/signup" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: '#0F766E', color: '#fff', borderRadius: 12,
-            padding: '14px 30px', fontSize: 15, fontWeight: 700,
-            textDecoration: 'none', fontFamily: font,
-            boxShadow: '0 4px 24px rgba(15,118,110,0.4)',
-          }}>
-            Analyse my location free
-            <span style={{ fontSize: 18 }}>→</span>
+        {/* Bottom CTA */}
+        <div style={{ position: 'relative', zIndex: 5, textAlign: 'center', padding: '28px 20px 36px', background: 'rgba(3,12,11,.6)', borderTop: '1px solid rgba(255,255,255,.04)', backdropFilter: 'blur(10px)' }}>
+          <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#0F766E,#0B9488)', color: '#fff', borderRadius: 12, padding: '14px 30px', fontSize: 14.5, fontWeight: 800, textDecoration: 'none', fontFamily: font, boxShadow: '0 6px 28px rgba(15,118,110,.35), inset 0 1px 0 rgba(255,255,255,.12)' }}>
+            Analyse my location free &nbsp;→
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', marginTop: 10 }}>
-            No credit card required · Any Australian address · Results in 30 seconds
-          </p>
+          <p style={{ fontSize: 11.5, color: 'rgba(148,210,198,.28)', marginTop: 10 }}>No credit card required · Any Australian address · Results in 30 seconds</p>
         </div>
       </section>
     </>
