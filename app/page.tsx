@@ -54,292 +54,202 @@ function useIsMobile() {
   return v
 }
 
-// ── Map Demo ──────────────────────────────────────────────────────
-// Competitor pins on a street-grid map, then score card slides up
+// ── SuburbExplorer — hero widget ─────────────────────────────────
+// Interactive suburb × business type picker → instant verdict grid.
+// Totally different from the CinematicWalkthrough (no process, no map,
+// no typing animation — pure side-by-side comparison intelligence).
 
-const COMPETITORS = [
-  { x: 62,  y: 44,  label: 'The Daily Grind',  threat: 'High',   rating: 4.2, dist: '120m', color: '#EF4444', delay: 0    },
-  { x: 31,  y: 61,  label: 'Brew & Co.',        threat: 'Med',    rating: 3.8, dist: '280m', color: '#F59E0B', delay: 400  },
-  { x: 74,  y: 72,  label: 'Sunrise Café',      threat: 'High',   rating: 4.5, dist: '390m', color: '#EF4444', delay: 800  },
-  { x: 22,  y: 32,  label: 'Quick Bites',       threat: 'Low',    rating: 3.1, dist: '470m', color: '#10B981', delay: 1200 },
-  { x: 80,  y: 28,  label: 'Corner Press',      threat: 'Med',    rating: 4.0, dist: '490m', color: '#F59E0B', delay: 1600 },
+const SE_SUBURBS = [
+  { name: 'Fitzroy',   state: 'VIC', income: '$88k', pop: '21k', age: '25–35', icon: '🏙️' },
+  { name: 'Surry Hills',state: 'NSW',income: '$96k', pop: '16k', age: '28–38', icon: '☕' },
+  { name: 'Subiaco',   state: 'WA',  income: '$94k', pop: '19k', age: '30–45', icon: '🌿' },
+  { name: 'Fortitude Valley', state: 'QLD', income: '$71k', pop: '12k', age: '20–32', icon: '🎶' },
+  { name: 'Joondalup', state: 'WA',  income: '$68k', pop: '58k', age: '35–55', icon: '🏘️' },
 ]
 
-// Street grid lines [x1,y1,x2,y2] as percentages
-const STREETS = [
-  // Horizontal
-  [0,25,100,25],[0,50,100,50],[0,75,100,75],
-  // Vertical
-  [20,0,20,100],[45,0,45,100],[70,0,70,100],
-  // Diagonal-ish
-  [0,60,30,40],[70,60,100,80],
+const SE_TYPES = [
+  { emoji: '☕', label: 'Café' },
+  { emoji: '🍽️', label: 'Restaurant' },
+  { emoji: '🛍️', label: 'Retail' },
+  { emoji: '💪', label: 'Gym' },
 ]
 
-// City blocks (filled rectangles) [x,y,w,h]
-const BLOCKS = [
-  [22,26,22,23],[47,26,22,23],[22,51,22,23],[47,51,22,23],
-  [0,0,18,24],[72,0,28,24],[0,76,18,24],[72,76,28,24],
-  [0,26,18,23],[72,26,27,23],[0,51,18,23],[72,51,27,23],
-]
+// [suburb][businessType] → { verdict, score, demand, rent, comp, profit, revenue, note }
+const SE_GRID: Record<string, Record<string, { verdict: 'GO'|'CAUTION'|'NO', score: number, demand: number, rent: number, comp: number, profit: number, revenue: string, annualProfit: string, note: string }>> = {
+  'Fitzroy': {
+    'Café':       { verdict:'GO',      score:86, demand:88, rent:72, comp:74, profit:88, revenue:'$96k/mo',  annualProfit:'$318k/yr', note:'Young creative demographic with strong daily café culture.' },
+    'Restaurant': { verdict:'GO',      score:79, demand:84, rent:68, comp:71, profit:82, revenue:'$88k/mo',  annualProfit:'$271k/yr', note:'Vibrant dining strip — differentiated concepts thrive here.' },
+    'Retail':     { verdict:'CAUTION', score:62, demand:65, rent:55, comp:58, profit:60, revenue:'$61k/mo',  annualProfit:'$128k/yr', note:'Rising rents squeeze retail margins. Niche only.' },
+    'Gym':        { verdict:'CAUTION', score:58, demand:70, rent:52, comp:55, profit:54, revenue:'$54k/mo',  annualProfit:'$108k/yr', note:'Saturated boutique fitness market — differentiation critical.' },
+  },
+  'Surry Hills': {
+    'Café':       { verdict:'GO',      score:88, demand:91, rent:70, comp:76, profit:90, revenue:'$102k/mo', annualProfit:'$342k/yr', note:'Australia\'s most café-dense suburb — only premium concepts win.' },
+    'Restaurant': { verdict:'GO',      score:82, demand:89, rent:66, comp:72, profit:85, revenue:'$94k/mo',  annualProfit:'$296k/yr', note:'Strong dining culture, high disposable income.' },
+    'Retail':     { verdict:'CAUTION', score:60, demand:63, rent:52, comp:60, profit:58, revenue:'$58k/mo',  annualProfit:'$112k/yr', note:'Foot traffic is high but competition is fierce.' },
+    'Gym':        { verdict:'GO',      score:74, demand:80, rent:64, comp:68, profit:76, revenue:'$71k/mo',  annualProfit:'$194k/yr', note:'Health-conscious, high income — boutique fitness viable.' },
+  },
+  'Subiaco': {
+    'Café':       { verdict:'GO',      score:82, demand:85, rent:78, comp:72, profit:90, revenue:'$91k/mo',  annualProfit:'$297k/yr', note:'High-income professionals. Low competition density is the key.' },
+    'Restaurant': { verdict:'GO',      score:76, demand:80, rent:74, comp:70, profit:78, revenue:'$84k/mo',  annualProfit:'$244k/yr', note:'Affluent dining market, strong weekend trade.' },
+    'Retail':     { verdict:'GO',      score:71, demand:74, rent:70, comp:65, profit:73, revenue:'$68k/mo',  annualProfit:'$178k/yr', note:'Boutique retail performs well in this demographic.' },
+    'Gym':        { verdict:'CAUTION', score:63, demand:68, rent:60, comp:58, profit:62, revenue:'$56k/mo',  annualProfit:'$118k/yr', note:'2 established gyms nearby. Differentiation required.' },
+  },
+  'Fortitude Valley': {
+    'Café':       { verdict:'CAUTION', score:65, demand:72, rent:60, comp:64, profit:63, revenue:'$68k/mo',  annualProfit:'$152k/yr', note:'Heavy foot traffic on weekends, slow weekday mornings.' },
+    'Restaurant': { verdict:'GO',      score:78, demand:84, rent:62, comp:68, profit:80, revenue:'$82k/mo',  annualProfit:'$228k/yr', note:'Nightlife district — evening dining highly viable.' },
+    'Retail':     { verdict:'NO',      score:42, demand:48, rent:40, comp:44, profit:44, revenue:'$44k/mo',  annualProfit:'$62k/yr',  note:'Primarily a nightlife precinct — daytime retail struggles.' },
+    'Gym':        { verdict:'CAUTION', score:60, demand:66, rent:55, comp:58, profit:58, revenue:'$52k/mo',  annualProfit:'$104k/yr', note:'Young demographic is a fit, but rent-to-revenue ratio is tight.' },
+  },
+  'Joondalup': {
+    'Café':       { verdict:'CAUTION', score:61, demand:65, rent:62, comp:56, profit:60, revenue:'$62k/mo',  annualProfit:'$128k/yr', note:'Residential suburban. Café demand exists but competition is growing.' },
+    'Restaurant': { verdict:'CAUTION', score:58, demand:62, rent:58, comp:54, profit:57, revenue:'$56k/mo',  annualProfit:'$112k/yr', note:'Primarily a family dining market — limited premium opportunity.' },
+    'Retail':     { verdict:'CAUTION', score:55, demand:58, rent:54, comp:52, profit:54, revenue:'$51k/mo',  annualProfit:'$96k/yr',  note:'Shopping centre dominates — street retail faces headwinds.' },
+    'Gym':        { verdict:'NO',      score:44, demand:48, rent:38, comp:42, profit:46, revenue:'$48k/mo',  annualProfit:'$38k/yr',  note:'4 established gyms within 1km. Rent at 34% of revenue.' },
+  },
+}
 
-function MapDemo() {
-  const [phase, setPhase]         = useState(0) // 0=idle 1=typing 2=scanning 3=pins 4=result
-  const [typed, setTyped]         = useState('')
-  const [visiblePins, setVisible] = useState<number[]>([])
-  const [scanLine, setScanLine]   = useState(0)
-  const [score, setScore]         = useState(0)
-  const [scoreAnim, setScoreAnim] = useState(0)
-  const [tooltip, setTooltip]     = useState<number|null>(null)
-  const addr = '45 King St, Newtown NSW'
+function SuburbExplorer() {
+  const [subIdx, setSubIdx]   = useState(0)
+  const [typeIdx, setTypeIdx] = useState(0)
+  const [animKey, setAnimKey] = useState(0)
 
-  useEffect(() => {
-    let dead = false
-    const go = () => {
-      // Reset
-      setPhase(0); setTyped(''); setVisible([]); setScanLine(0); setScore(0); setScoreAnim(0)
+  const sub  = SE_SUBURBS[subIdx]
+  const type = SE_TYPES[typeIdx]
+  const data = SE_GRID[sub.name]?.[type.label]
 
-      // Phase 1 — type address
-      const t1 = setTimeout(() => {
-        if (dead) return
-        setPhase(1); let i = 0
-        const ty = setInterval(() => {
-          if (dead) { clearInterval(ty); return }
-          i++; setTyped(addr.slice(0, i))
-          if (i >= addr.length) {
-            clearInterval(ty)
+  const selectSub  = (i: number) => { setSubIdx(i);  setAnimKey(k => k + 1) }
+  const selectType = (i: number) => { setTypeIdx(i); setAnimKey(k => k + 1) }
 
-            // Phase 2 — scanning animation
-            const t2 = setTimeout(() => {
-              if (dead) return
-              setPhase(2); let sl = 0
-              const scan = setInterval(() => {
-                if (dead) { clearInterval(scan); return }
-                sl += 3; setScanLine(sl)
-                if (sl >= 100) {
-                  clearInterval(scan)
+  const vColor  = !data ? L.emerald : data.verdict === 'GO' ? '#059669' : data.verdict === 'CAUTION' ? '#D97706' : '#DC2626'
+  const vBg     = !data ? L.emeraldXlt : data.verdict === 'GO' ? '#ECFDF5' : data.verdict === 'CAUTION' ? '#FFFBEB' : '#FEF2F2'
+  const vBorder = !data ? L.emeraldLt  : data.verdict === 'GO' ? '#A7F3D0' : data.verdict === 'CAUTION' ? '#FDE68A' : '#FECACA'
+  const vIcon   = !data ? '✅' : data.verdict === 'GO' ? '✅' : data.verdict === 'CAUTION' ? '⚠️' : '🚫'
 
-                  // Phase 3 — pins appear one by one
-                  setPhase(3)
-                  COMPETITORS.forEach((_, idx) => {
-                    setTimeout(() => {
-                      if (!dead) setVisible(v => [...v, idx])
-                    }, COMPETITORS[idx].delay)
-                  })
-
-                  // Phase 4 — result card after all pins
-                  const t4 = setTimeout(() => {
-                    if (dead) return
-                    setPhase(4); let s = 0
-                    const sa = setInterval(() => {
-                      if (dead) { clearInterval(sa); return }
-                      s += 2; setScoreAnim(Math.min(s, 82))
-                      if (s >= 82) { clearInterval(sa); setScore(82) }
-                    }, 18)
-                  }, COMPETITORS.length * 400 + 600)
-                  return () => clearTimeout(t4)
-                }
-              }, 25)
-            }, 400)
-            return () => clearTimeout(t2)
-          }
-        }, 60)
-      }, 700)
-
-      // Auto replay
-      const replay = setTimeout(() => { if (!dead) go() }, 18000)
-      return () => { clearTimeout(t1); clearTimeout(replay) }
-    }
-    go()
-    return () => { dead = true }
-  }, [])
-
-  const circumference = 2 * Math.PI * 28
+  // The 4 stat tiles in the 2×2 grid
+  const statTiles = data ? [
+    { label: 'Foot Demand',  value: data.demand, color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
+    { label: 'Rent Fit',     value: data.rent,   color: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE' },
+    { label: 'Competition',  value: data.comp,   color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A' },
+    { label: 'Profitability',value: data.profit, color: vColor,    bg: vBg,       border: vBorder   },
+  ] : []
 
   return (
-    <div style={{ background: L.white, borderRadius: 20, border: `1px solid ${L.border}`, boxShadow: '0 16px 56px rgba(0,0,0,.12)', overflow: 'hidden', width: '100%', maxWidth: 460, fontFamily: font }}>
+    <div style={{ width: '100%', maxWidth: 500, fontFamily: font }}>
 
-      {/* Browser chrome */}
-      <div style={{ background: '#F8FAFC', borderBottom: `1px solid ${L.border}`, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ display: 'flex', gap: 5 }}>
-          {['#FF5F57','#FFBE2E','#27C840'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }}/>)}
-        </div>
-        <div style={{ flex: 1, background: '#E2E8F0', borderRadius: 6, height: 22, display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
-          <span style={{ fontSize: 11, color: L.muted }}>locatalyze.vercel.app/analyse</span>
-        </div>
-      </div>
-
-      {/* Address bar */}
-      <div style={{ padding: '12px 16px 0' }}>
-        <p style={{ fontSize: 10, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 5 }}>Business Address</p>
-        <div style={{ background: '#F8FAFC', border: `1.5px solid ${phase >= 1 ? L.emerald : L.border}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: L.slate, fontWeight: 500, minHeight: 38, transition: 'border-color .3s', display: 'flex', alignItems: 'center', gap: 2, marginBottom: 10 }}>
-          {typed || <span style={{ color: '#CBD5E1' }}>Enter your business address…</span>}
-          {phase === 1 && <span style={{ width: 2, height: 14, background: L.emerald, display: 'inline-block', animation: 'blink .7s infinite' }}/>}
-        </div>
-      </div>
-
-      {/* MAP AREA */}
-      <div style={{ position: 'relative', height: 240, margin: '0 16px', borderRadius: 14, overflow: 'hidden', background: '#EFF6EE', border: `1.5px solid ${L.emeraldLt}` }}>
-
-        {/* SVG street grid */}
-        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 100 100" preserveAspectRatio="none">
-          {/* Blocks */}
-          {BLOCKS.map(([x,y,w,h], i) => (
-            <rect key={i} x={x} y={y} width={w} height={h} fill="#D1FAE5" opacity="0.7"/>
-          ))}
-          {/* Streets */}
-          {STREETS.map(([x1,y1,x2,y2], i) => (
-            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#A7F3D0" strokeWidth="0.6"/>
-          ))}
-          {/* Scan line (phase 2) */}
-          {phase === 2 && (
-            <rect x="0" y={scanLine - 3} width="100" height="6"
-              fill="url(#scanGrad)" opacity="0.7"/>
-          )}
-          <defs>
-            <linearGradient id="scanGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10B981" stopOpacity="0"/>
-              <stop offset="50%" stopColor="#10B981" stopOpacity="0.6"/>
-              <stop offset="100%" stopColor="#10B981" stopOpacity="0"/>
-            </linearGradient>
-          </defs>
-        </svg>
-
-        {/* Map label top-left */}
-        <div style={{ position: 'absolute', top: 8, left: 10, background: 'rgba(255,255,255,.9)', borderRadius: 7, padding: '3px 8px', fontSize: 10, fontWeight: 700, color: L.slate, backdropFilter: 'blur(4px)', border: `1px solid ${L.border}` }}>
-          📍 Newtown NSW 2042
-        </div>
-
-        {/* Scan status */}
-        {phase === 2 && (
-          <div style={{ position: 'absolute', top: 8, right: 10, background: L.emerald, color: '#fff', borderRadius: 7, padding: '3px 10px', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#fff', display: 'inline-block', animation: 'pulse-dot 0.8s infinite' }}/>
-            Scanning…
-          </div>
-        )}
-
-        {/* Competitor count badge (phase 3+) */}
-        {phase >= 3 && (
-          <div style={{ position: 'absolute', top: 8, right: 10, background: '#fff', color: L.slate, borderRadius: 7, padding: '3px 10px', fontSize: 10, fontWeight: 700, border: `1px solid ${L.border}`, boxShadow: '0 2px 8px rgba(0,0,0,.08)' }}>
-            {visiblePins.length} competitors found
-          </div>
-        )}
-
-        {/* 500m radius ring — centred on our pin (45%, 52%) */}
-        {phase >= 3 && (
-          <div style={{ position: 'absolute', left: '45%', top: '52%', transform: 'translate(-50%,-50%)',
-            width: 130, height: 130, borderRadius: '50%',
-            border: '1.5px dashed rgba(16,185,129,.45)',
-            background: 'rgba(16,185,129,.04)',
-            animation: 'ring-in .5s ease both',
-            pointerEvents: 'none',
-          }}/>
-        )}
-
-        {/* Competitor pins */}
-        {COMPETITORS.map((c, i) => (
-          visiblePins.includes(i) && (
-            <div key={i}
-              style={{ position: 'absolute', left: `${c.x}%`, top: `${c.y}%`, transform: 'translate(-50%,-100%)', animation: 'pin-drop .35s cubic-bezier(.175,.885,.32,1.275) both', cursor: 'pointer', zIndex: 5 }}
-              onMouseEnter={() => setTooltip(i)}
-              onMouseLeave={() => setTooltip(null)}>
-              {/* Pin shape */}
-              <div style={{ position: 'relative' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50% 50% 50% 0', background: c.color, transform: 'rotate(-45deg)', boxShadow: `0 3px 10px ${c.color}60`, border: '2px solid #fff' }}/>
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 900 }}>
-                  {c.threat === 'High' ? '!' : c.threat === 'Med' ? '~' : '✓'}
-                </div>
-              </div>
-              {/* Tooltip */}
-              {tooltip === i && (
-                <div style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#fff', borderRadius: 9, padding: '7px 10px', fontSize: 10, fontWeight: 600, color: L.slate, whiteSpace: 'nowrap' as const, boxShadow: '0 4px 16px rgba(0,0,0,.14)', border: `1px solid ${L.border}`, zIndex: 20, pointerEvents: 'none' }}>
-                  <p style={{ fontWeight: 800, marginBottom: 2 }}>{c.label}</p>
-                  <p style={{ color: L.muted }}>⭐ {c.rating} · {c.dist} · <span style={{ color: c.color, fontWeight: 700 }}>{c.threat} threat</span></p>
-                </div>
-              )}
-            </div>
-          )
+      {/* ── Business type selector ── */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+        {SE_TYPES.map((t, i) => (
+          <button key={i} onClick={() => selectType(i)} style={{
+            flex: 1, padding: '8px 4px', borderRadius: 10, border: 'none', cursor: 'pointer',
+            fontFamily: font, fontSize: 11, fontWeight: i === typeIdx ? 700 : 500,
+            background: i === typeIdx ? L.slate : '#F1F5F9',
+            color: i === typeIdx ? '#fff' : L.muted,
+            transition: 'all .2s',
+          }}>
+            <div style={{ fontSize: 16, marginBottom: 2 }}>{t.emoji}</div>
+            {t.label}
+          </button>
         ))}
-
-        {/* YOUR location pin — always centred */}
-        {phase >= 2 && (
-          <div style={{ position: 'absolute', left: '45%', top: '52%', transform: 'translate(-50%,-100%)', zIndex: 10, animation: 'pin-drop .4s cubic-bezier(.175,.885,.32,1.275) both' }}>
-            <div style={{ position: 'relative' }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50% 50% 50% 0', background: L.emerald, transform: 'rotate(-45deg)', boxShadow: `0 4px 14px rgba(16,185,129,.5)`, border: '2.5px solid #fff' }}/>
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>📍</div>
-            </div>
-            <div style={{ marginTop: 2, background: L.emerald, color: '#fff', borderRadius: 6, padding: '2px 7px', fontSize: 9, fontWeight: 800, textAlign: 'center' as const, whiteSpace: 'nowrap' as const }}>You</div>
-          </div>
-        )}
-
-        {/* Map attribution */}
-        <div style={{ position: 'absolute', bottom: 6, right: 8, fontSize: 9, color: '#94A3B8' }}>Locatalyze Maps</div>
       </div>
 
-      {/* RESULT CARD — slides up phase 4 */}
-      <div style={{
-        margin: '0 16px',
-        maxHeight: phase === 4 ? 220 : 0,
-        overflow: 'hidden',
-        transition: 'max-height .6s cubic-bezier(.4,0,.2,1)',
-      }}>
-        <div style={{ padding: '14px 0 4px' }}>
-          {/* Verdict row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.goBg, color: L.go, border: `1.5px solid ${L.goBdr}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 800, marginBottom: 5 }}>
-                ✅ GO — Strong Opportunity
-              </div>
-              <p style={{ fontSize: 11, color: L.muted }}>45 King St, Newtown NSW · 5 competitors in 500m</p>
-            </div>
-            {/* Score ring */}
-            <div style={{ position: 'relative', width: 56, height: 56, flexShrink: 0 }}>
-              <svg width="56" height="56" style={{ transform: 'rotate(-90deg)' }}>
-                <circle cx="28" cy="28" r="22" fill="none" stroke={L.emeraldLt} strokeWidth="5"/>
-                <circle cx="28" cy="28" r="22" fill="none" stroke={L.emerald} strokeWidth="5" strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={circumference - (circumference * scoreAnim / 100)}
-                  style={{ transition: 'stroke-dashoffset .04s linear' }}/>
-              </svg>
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 15, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{scoreAnim}</span>
-                <span style={{ fontSize: 8, color: L.muted }}>/100</span>
-              </div>
-            </div>
-          </div>
+      {/* ── Main panel: suburb list (left) + result (right) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', background: '#fff', borderRadius: 20, border: `1px solid ${L.border}`, boxShadow: '0 16px 56px rgba(0,0,0,.1)', overflow: 'hidden' }}>
 
-          {/* Mini stat row */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, marginBottom: 10 }}>
-            {[{l:'Annual Profit',v:'$297k',hi:true},{l:'Monthly Rev',v:'$91k',hi:false},{l:'Break-even',v:'38/day',hi:false},{l:'Payback',v:'7 mo',hi:false}].map(m => (
-              <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '7px 6px', textAlign: 'center' as const }}>
-                <p style={{ fontSize: 8, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.04em', marginBottom: 2 }}>{m.l}</p>
-                <p style={{ fontSize: 12, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
-              </div>
-            ))}
+        {/* Left: suburb list */}
+        <div style={{ borderRight: `1px solid ${L.border}`, background: '#FAFBFC' }}>
+          <div style={{ padding: '12px 14px', borderBottom: `1px solid ${L.border}` }}>
+            <p style={{ fontSize: 9, fontWeight: 800, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.1em' }}>Select suburb</p>
           </div>
+          {SE_SUBURBS.map((s, i) => {
+            const d = SE_GRID[s.name]?.[type.label]
+            const vc = !d ? L.emerald : d.verdict === 'GO' ? '#059669' : d.verdict === 'CAUTION' ? '#D97706' : '#DC2626'
+            const vb = !d ? L.emeraldXlt : d.verdict === 'GO' ? '#ECFDF5' : d.verdict === 'CAUTION' ? '#FFFBEB' : '#FEF2F2'
+            return (
+              <button key={i} onClick={() => selectSub(i)} style={{
+                width: '100%', padding: '11px 14px', border: 'none', cursor: 'pointer', fontFamily: font,
+                background: i === subIdx ? '#fff' : 'transparent',
+                borderLeft: `3px solid ${i === subIdx ? vc : 'transparent'}`,
+                borderBottom: `1px solid ${L.border}`,
+                textAlign: 'left' as const, transition: 'all .18s',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <span style={{ fontSize: 12, fontWeight: i === subIdx ? 800 : 600, color: i === subIdx ? L.slate : L.muted }}>
+                    {s.icon} {s.name}
+                  </span>
+                  {d && (
+                    <span style={{ fontSize: 9, fontWeight: 800, color: vc, background: vb, borderRadius: 5, padding: '1px 5px' }}>
+                      {d.verdict}
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: 10, color: '#94A3B8' }}>{s.state} · {s.income} avg</p>
+              </button>
+            )
+          })}
+        </div>
 
-          {/* Threat legend */}
-          <div style={{ display: 'flex', gap: 12, paddingTop: 8, borderTop: `1px solid ${L.border}` }}>
-            {[{c:'#EF4444',l:'High threat (2)'},{c:'#F59E0B',l:'Medium (2)'},{c:'#10B981',l:'Low threat (1)'}].map(item => (
-              <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.c }}/>
-                <span style={{ fontSize: 10, color: L.muted }}>{item.l}</span>
+        {/* Right: result panel */}
+        <div key={animKey} style={{ animation: 'se-fade .3s ease' }}>
+          {data && (
+            <>
+              {/* Verdict hero strip */}
+              <div style={{ padding: '16px 18px', borderBottom: `1px solid ${L.border}`, background: vBg }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div>
+                    <p style={{ fontSize: 10, color: vColor, fontWeight: 700, marginBottom: 3 }}>
+                      {type.emoji} {type.label} · {sub.name}, {sub.state}
+                    </p>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', border: `1.5px solid ${vBorder}`, borderRadius: 10, padding: '5px 12px' }}>
+                      <span style={{ fontSize: 16 }}>{vIcon}</span>
+                      <span style={{ fontSize: 15, fontWeight: 900, color: vColor }}>{data.verdict}</span>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center' as const }}>
+                    <p style={{ fontSize: 28, fontWeight: 900, color: vColor, lineHeight: 1, letterSpacing: '-.03em' }}>{data.score}</p>
+                    <p style={{ fontSize: 9, color: L.muted, marginTop: 1 }}>/ 100 score</p>
+                  </div>
+                </div>
+                <p style={{ fontSize: 11, color: vColor, lineHeight: 1.55, opacity: .85 }}>{data.note}</p>
               </div>
-            ))}
-          </div>
+
+              {/* 2×2 score tiles */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: L.border }}>
+                {statTiles.map((t, i) => (
+                  <div key={i} style={{ background: '#fff', padding: '13px 14px' }}>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 6 }}>{t.label}</p>
+                    <p style={{ fontSize: 22, fontWeight: 900, color: t.color, letterSpacing: '-.02em', lineHeight: 1, marginBottom: 6 }}>{t.value}</p>
+                    <div style={{ height: 4, background: '#F1F5F9', borderRadius: 100, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', borderRadius: 100, width: `${t.value}%`, background: t.color, opacity: .75 }}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Revenue footer */}
+              <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAFBFC', borderTop: `1px solid ${L.border}` }}>
+                <div>
+                  <p style={{ fontSize: 9, color: L.muted, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 2 }}>Est. Monthly Revenue</p>
+                  <p style={{ fontSize: 16, fontWeight: 900, color: L.slate, letterSpacing: '-.02em' }}>{data.revenue}</p>
+                </div>
+                <div style={{ textAlign: 'right' as const }}>
+                  <p style={{ fontSize: 9, color: L.muted, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 2 }}>Annual Profit</p>
+                  <p style={{ fontSize: 16, fontWeight: 900, color: vColor, letterSpacing: '-.02em' }}>{data.annualProfit}</p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Bottom padding */}
-      <div style={{ height: 14 }}/>
+      {/* Caption */}
+      <p style={{ fontSize: 11, color: '#94A3B8', textAlign: 'center' as const, marginTop: 12 }}>
+        Click any suburb or business type · Your real report uses live data
+      </p>
 
       <style>{`
-        @keyframes pin-drop {
-          from { opacity:0; transform: translate(-50%,-70%) scale(0.3); }
-          to   { opacity:1; transform: translate(-50%,-100%) scale(1); }
-        }
-        @keyframes ring-in {
-          from { opacity:0; transform: translate(-50%,-50%) scale(0.4); }
-          to   { opacity:1; transform: translate(-50%,-50%) scale(1); }
+        @keyframes se-fade {
+          from { opacity:0; transform:translateX(8px); }
+          to   { opacity:1; transform:translateX(0); }
         }
       `}</style>
     </div>
@@ -1559,9 +1469,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Map Demo */}
+            {/* Suburb Explorer */}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <MapDemo/>
+              <SuburbExplorer/>
             </div>
           </div>
         </div>
