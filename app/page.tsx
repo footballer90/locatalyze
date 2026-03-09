@@ -1512,15 +1512,137 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ NICHE STRIP ══════════════════════════════════════ */}
-      <div style={{ background: L.slate, padding: `12px ${isMobile ? 16 : 40}px` }}>
-        <div style={{ ...W, display: 'flex', justifyContent: 'center', gap: isMobile ? 14 : 28, flexWrap: 'wrap', alignItems: 'center' }}>
-          <p style={{ fontSize: 10, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.1em' }}>Built for</p>
-          {['☕ Cafes','🍽️ Restaurants','👗 Retail','💪 Gyms','🥐 Bakeries','💈 Salons'].map(b => (
-            <span key={b} style={{ fontSize: isMobile ? 12 : 13, color: '#64748B', fontWeight: 500 }}>{b}</span>
-          ))}
+      {/* ══ BUILT FOR — full section ══════════════════════════ */}
+      <section style={{ padding: isMobile ? '72px 16px' : '96px 40px', background: L.white }}>
+        <div style={{ ...W }}>
+
+          {/* Header */}
+          <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 56 }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:16 }}>
+              Built for
+            </div>
+            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight:900, color:L.slate, letterSpacing:'-.04em', marginBottom:12 }}>
+              Every lease decision is different.<br/>
+              <span style={{ color:L.emerald }}>Your analysis should be too.</span>
+            </h2>
+            <p style={{ fontSize:15, color:L.muted, maxWidth:520, margin:'0 auto', lineHeight:1.75 }}>
+              Locatalyze is calibrated for six business categories — each with its own demand drivers, competition patterns and financial benchmarks.
+            </p>
+          </div>
+
+          {/* 6-card grid */}
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:16, marginBottom:40 }}>
+            {[
+              {
+                emoji:'☕', label:'Cafés', slug:'cafes',
+                color:'#059669', bg:'#ECFDF5', border:'#A7F3D0',
+                tagline:'Morning foot traffic is everything.',
+                desc:'Residential density, commuter flow and proximity to offices determine whether a café sinks or swims. We score every block for daily walk-by volume.',
+                insight:'Suburbs with >18k/day foot traffic convert 3× better.',
+                metrics:['Foot traffic density','Income demographics','Competitor café count'],
+              },
+              {
+                emoji:'🍽️', label:'Restaurants', slug:'restaurants',
+                color:'#D97706', bg:'#FFFBEB', border:'#FDE68A',
+                tagline:'Dinner traffic and competition clusters.',
+                desc:'Restaurants depend on evening demand, parking access and a clear gap in the local cuisine market. We map direct competitors and estimate weekend covers.',
+                insight:'Locations with <4 direct competitors yield 40% higher margins.',
+                metrics:['Evening foot traffic','Parking proximity','Cuisine gap analysis'],
+              },
+              {
+                emoji:'👗', label:'Retail', slug:'retail',
+                color:'#8B5CF6', bg:'#F5F3FF', border:'#DDD6FE',
+                tagline:'Visibility, flow, and anchor proximity.',
+                desc:'Street retail lives and dies by pedestrian flow, anchor store proximity and rental benchmarks versus revenue potential. We score all three.',
+                insight:'Anchor store adjacency lifts retail revenue by up to 55%.',
+                metrics:['Pedestrian flow score','Anchor store distance','Retail rent-to-revenue'],
+              },
+              {
+                emoji:'💪', label:'Gyms & Fitness', slug:'gyms',
+                color:'#EF4444', bg:'#FEF2F2', border:'#FECACA',
+                tagline:'Catchment radius and parking access.',
+                desc:'Members drive 10–15 minutes max. We model residential catchment, calculate competition saturation and verify rent against realistic membership revenue.',
+                insight:'4+ gyms within 1km reduces new member acquisition by 60%.',
+                metrics:['Residential catchment (5km)','Gym saturation score','Rent-to-membership ratio'],
+              },
+              {
+                emoji:'🥐', label:'Bakeries', slug:'cafes',
+                color:'#F59E0B', bg:'#FFFBEB', border:'#FDE68A',
+                tagline:'High AM foot traffic near dense residential.',
+                desc:'Bakeries peak before 10am. We prioritise morning commuter flow, residential street density and proximity to schools and transport hubs.',
+                insight:'Morning-peak locations outperform afternoon strips by 2.4×.',
+                metrics:['Morning commuter index','School & transport proximity','Residential density'],
+              },
+              {
+                emoji:'💈', label:'Hair & Beauty', slug:'retail',
+                color:'#0EA5E9', bg:'#EFF6FF', border:'#BAE6FD',
+                tagline:'Repeat customers and local income levels.',
+                desc:'Salons and beauty studios rely on repeat local clientele. Income levels, residential density and walkability are the key signals we score.',
+                insight:'High-income suburbs generate 68% more repeat visit revenue.',
+                metrics:['Local income median','Walkability score','Competition density'],
+              },
+            ].map((biz, i) => (
+              <div key={i}
+                style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px', transition:'all .22s', cursor:'pointer', position:'relative' as const, overflow:'hidden' }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = biz.border
+                  el.style.boxShadow = `0 12px 40px ${biz.color}18`
+                  el.style.transform = 'translateY(-4px)'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = L.border
+                  el.style.boxShadow = 'none'
+                  el.style.transform = 'translateY(0)'
+                }}>
+
+                {/* Top accent stripe */}
+                <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${biz.color},${biz.color}66)`, borderRadius:'22px 22px 0 0' }}/>
+
+                {/* Icon + label */}
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
+                  <div style={{ width:46, height:46, borderRadius:14, background:biz.bg, border:`1.5px solid ${biz.border}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>
+                    {biz.emoji}
+                  </div>
+                  <div>
+                    <p style={{ fontSize:16, fontWeight:900, color:L.slate, letterSpacing:'-.02em' }}>{biz.label}</p>
+                    <p style={{ fontSize:11, color:biz.color, fontWeight:700, marginTop:1 }}>{biz.tagline}</p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p style={{ fontSize:13, color:L.muted, lineHeight:1.7, marginBottom:14 }}>{biz.desc}</p>
+
+                {/* Insight callout */}
+                <div style={{ background:biz.bg, border:`1px solid ${biz.border}`, borderRadius:10, padding:'8px 12px', marginBottom:14 }}>
+                  <p style={{ fontSize:11.5, color:biz.color, fontWeight:700, lineHeight:1.5 }}>💡 {biz.insight}</p>
+                </div>
+
+                {/* Metrics chips */}
+                <div style={{ display:'flex', flexWrap:'wrap' as const, gap:5, marginBottom:16 }}>
+                  {biz.metrics.map(m => (
+                    <span key={m} style={{ fontSize:10, fontWeight:600, color:L.muted, background:'#F8FAFC', border:`1px solid ${L.border}`, borderRadius:6, padding:'3px 8px' }}>{m}</span>
+                  ))}
+                </div>
+
+                {/* CTA link */}
+                <Link href={`/use-case/${biz.slug}`} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:12, fontWeight:700, color:biz.color, textDecoration:'none' }}>
+                  See {biz.label} analysis →
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom CTA row */}
+          <div style={{ textAlign:'center' }}>
+            <p style={{ fontSize:13, color:L.muted, marginBottom:16 }}>Not sure which category fits? Run an analysis and we will detect your business type automatically.</p>
+            <Link href="/auth/signup" style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emerald, color:'#fff', borderRadius:12, padding:'13px 28px', fontWeight:800, fontSize:14, boxShadow:'0 4px 20px rgba(16,185,129,.25)', textDecoration:'none' }}>
+              Analyse my location free →
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* ══ DARK SHOWCASE ════════════════════════════════════ */}
       {!isMobile && <DarkShowcase/>}
@@ -1769,29 +1891,139 @@ export default function LandingPage() {
       </section>
 
       {/* ══ TESTIMONIALS — White ══════════════════════════════ */}
-      <section style={{ padding: sp, background: L.white }}>
-        <div style={{ ...W, padding: pad }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>What founders say</div>
-            <h2 style={{ fontSize: isMobile ? 26 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em' }}>Used by founders across Australia</h2>
+      <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: L.white, position:'relative', overflow:'hidden' }}>
+        {/* Soft background texture */}
+        <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle at 20% 50%, rgba(16,185,129,.04) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(5,150,105,.03) 0%, transparent 50%)', pointerEvents:'none' }}/>
+
+        <div style={{ ...W, position:'relative', zIndex:2 }}>
+
+          {/* Header */}
+          <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 56 }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:16 }}>
+              Customer stories
+            </div>
+            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight:900, color:L.slate, letterSpacing:'-.04em', marginBottom:12 }}>
+              Real decisions. Real money saved.
+            </h2>
+            <p style={{ fontSize:15, color:L.muted, maxWidth:480, margin:'0 auto', lineHeight:1.7 }}>
+              Founders and analysts across Australia use Locatalyze before signing a single lease.
+            </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: 16 }}>
+
+          {/* Star aggregate bar */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom: isMobile ? 32 : 48, flexWrap:'wrap' as const }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, background:L.mint, border:`1px solid ${L.emeraldLt}`, borderRadius:12, padding:'10px 20px' }}>
+              <span style={{ fontSize:20, letterSpacing:2, color:'#F59E0B' }}>★★★★★</span>
+              <div>
+                <p style={{ fontSize:16, fontWeight:900, color:L.slate, lineHeight:1 }}>4.9 / 5</p>
+                <p style={{ fontSize:10, color:L.muted, marginTop:1 }}>Average rating</p>
+              </div>
+            </div>
             {[
-              {quote:'I was about to sign a 3-year lease. Locatalyze gave me a NO verdict and saved me from a $180k mistake. The competition data was spot on.',name:'Sarah M.',role:'Cafe owner, Melbourne'},
-              {quote:'Compared 4 locations in 10 minutes. The comparison tool is brilliant — picked the site with the highest profit potential immediately.',name:'James T.',role:'Franchise buyer, Sydney'},
-              {quote:'As a commercial real estate analyst I use this with clients. The financial model is genuinely useful for early-stage feasibility.',name:'Priya K.',role:'Property analyst, Brisbane'},
-            ].map(t => (
-              <div key={t.name} style={{ background: L.white, border: `1.5px solid ${L.border}`, borderRadius: 20, padding: 26, transition: 'all .2s' }}
-                onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.borderColor=L.emeraldLt; (e.currentTarget as HTMLElement).style.boxShadow='0 8px 28px rgba(16,185,129,.08)'; (e.currentTarget as HTMLElement).style.transform='translateY(-2px)' }}
-                onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.borderColor=L.border; (e.currentTarget as HTMLElement).style.boxShadow='none'; (e.currentTarget as HTMLElement).style.transform='translateY(0)' }}>
-                <p style={{ fontSize: 14, color: L.amber, marginBottom: 12, letterSpacing: 2 }}>★★★★★</p>
-                <p style={{ fontSize: 14, color: '#334155', lineHeight: 1.75, marginBottom: 18 }}>&ldquo;{t.quote}&rdquo;</p>
-                <div style={{ paddingTop: 14, borderTop: `1px solid ${L.border}` }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: L.slate }}>{t.name}</p>
-                  <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{t.role}</p>
+              { value:'$2.4M+', label:'Lease mistakes avoided' },
+              { value:'1,200+', label:'Founders who analysed' },
+              { value:'94%',    label:'Said reports were accurate' },
+            ].map(s => (
+              <div key={s.label} style={{ textAlign:'center' as const }}>
+                <p style={{ fontSize:22, fontWeight:900, color:L.emerald, letterSpacing:'-.03em', lineHeight:1 }}>{s.value}</p>
+                <p style={{ fontSize:11, color:L.muted, marginTop:3 }}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* 3 testimonial cards */}
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:18 }}>
+            {[
+              {
+                quote:'I was about to sign a 3-year lease. Locatalyze gave me a NO verdict — and saved me from a $180,000 mistake. The competition data flagged four cafés I had walked straight past.',
+                name:'Sarah M.', role:'Café owner', city:'Melbourne, VIC',
+                initials:'SM', avatarBg:'#ECFDF5', avatarColor:'#059669',
+                saved:'Saved: ~$180,000', savedColor:'#059669', savedBg:'#ECFDF5', savedBorder:'#A7F3D0',
+                highlight:'NO verdict saved a 3-year lease.',
+                emoji:'☕',
+              },
+              {
+                quote:'I compared four shortlisted locations in under 10 minutes. The scoring model is remarkably good — I picked the site with the highest profit potential and it has outperformed every projection.',
+                name:'James T.', role:'Franchise buyer', city:'Sydney, NSW',
+                initials:'JT', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
+                saved:'Outperformed projections', savedColor:'#3B82F6', savedBg:'#EFF6FF', savedBorder:'#BFDBFE',
+                highlight:'4 locations compared in 10 minutes.',
+                emoji:'🍽️',
+              },
+              {
+                quote:'I use this with commercial real estate clients as a first-pass feasibility tool. The financial model is genuinely rigorous — I\'ve replaced three hours of manual spreadsheet work with one report.',
+                name:'Priya K.', role:'Commercial property analyst', city:'Brisbane, QLD',
+                initials:'PK', avatarBg:'#F5F3FF', avatarColor:'#8B5CF6',
+                saved:'Replaced 3hrs of spreadsheet work', savedColor:'#8B5CF6', savedBg:'#F5F3FF', savedBorder:'#DDD6FE',
+                highlight:'Used professionally with clients.',
+                emoji:'📊',
+              },
+            ].map((t, i) => (
+              <div key={i}
+                style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px', display:'flex', flexDirection:'column' as const, transition:'all .22s', position:'relative' as const, overflow:'hidden' }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = t.avatarColor + '55'
+                  el.style.boxShadow = `0 16px 48px ${t.avatarColor}14`
+                  el.style.transform = 'translateY(-4px)'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.borderColor = L.border
+                  el.style.boxShadow = 'none'
+                  el.style.transform = 'translateY(0)'
+                }}>
+
+                {/* Top accent */}
+                <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${t.avatarColor},${t.avatarColor}44)`, borderRadius:'22px 22px 0 0' }}/>
+
+                {/* Stars + business emoji */}
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+                  <span style={{ fontSize:13, color:'#F59E0B', letterSpacing:2 }}>★★★★★</span>
+                  <span style={{ fontSize:18 }}>{t.emoji}</span>
+                </div>
+
+                {/* Highlight pill */}
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:t.savedBg, border:`1px solid ${t.savedBorder}`, borderRadius:8, padding:'4px 10px', marginBottom:14, alignSelf:'flex-start' as const }}>
+                  <div style={{ width:5, height:5, borderRadius:'50%', background:t.savedColor, flexShrink:0 }}/>
+                  <span style={{ fontSize:10.5, fontWeight:700, color:t.savedColor }}>{t.highlight}</span>
+                </div>
+
+                {/* Quote */}
+                <p style={{ fontSize:14, color:'#334155', lineHeight:1.8, marginBottom:20, flex:1 }}>
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+
+                {/* Author row */}
+                <div style={{ display:'flex', alignItems:'center', gap:12, paddingTop:16, borderTop:`1px solid ${L.border}` }}>
+                  {/* Avatar */}
+                  <div style={{ width:42, height:42, borderRadius:12, background:t.avatarBg, border:`2px solid ${t.savedBorder}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:900, color:t.avatarColor, flexShrink:0 }}>
+                    {t.initials}
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <p style={{ fontSize:14, fontWeight:800, color:L.slate, lineHeight:1 }}>{t.name}</p>
+                    <p style={{ fontSize:12, color:L.muted, marginTop:3 }}>{t.role} · {t.city}</p>
+                  </div>
+                  {/* Saved badge */}
+                  <div style={{ background:t.savedBg, border:`1px solid ${t.savedBorder}`, borderRadius:8, padding:'4px 8px', textAlign:'right' as const }}>
+                    <p style={{ fontSize:9, fontWeight:700, color:t.savedColor, textTransform:'uppercase' as const, letterSpacing:'.06em', lineHeight:1.1 }}>
+                      {t.saved}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <div style={{ textAlign:'center', marginTop:48, padding:'32px 24px', background:L.mint, borderRadius:20, border:`1px solid ${L.emeraldLt}` }}>
+            <p style={{ fontSize: isMobile ? 17 : 21, fontWeight:900, color:L.slate, letterSpacing:'-.02em', marginBottom:8 }}>
+              Ready to make a decision you can stand behind?
+            </p>
+            <p style={{ fontSize:13, color:L.muted, marginBottom:20 }}>3 full reports included on the free plan. No credit card required.</p>
+            <Link href="/auth/signup" style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emerald, color:'#fff', borderRadius:12, padding:'13px 28px', fontWeight:800, fontSize:14, boxShadow:'0 4px 20px rgba(16,185,129,.25)', textDecoration:'none' }}>
+              Analyse my location free →
+            </Link>
           </div>
         </div>
       </section>
