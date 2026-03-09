@@ -3,6 +3,7 @@ import Footer from '@/components/Footer'
 import GlideShowcase from '@/components/GlideShowcase'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import HowItWorks from '@/components/HowItWorks'
 
 const S = {
   font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -380,30 +381,7 @@ export default function LandingPage() {
 
       <GlideShowcase />
 
-      {/* ── How it works ── */}
-      <section id="how-it-works" style={{ padding: sectionPad, background: S.white }}>
-        <div style={{ ...W, padding: pad }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>How it works</p>
-            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: S.n900, letterSpacing: '-0.04em', marginBottom: 12 }}>From address to verdict in 30 seconds</h2>
-            <p style={{ fontSize: 15, color: S.n500, maxWidth: 500, margin: '0 auto' }}>No spreadsheets. No consultants. Just paste the address.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: 16 }}>
-            {[
-              { n: '01', icon: '📍', title: 'Enter your location', desc: 'Type any Australian address. Add your business type, monthly rent and average order size. Takes 60 seconds.' },
-              { n: '02', icon: '⚙️', title: 'AI analyses in real time', desc: 'We pull live competitor data, demographics, rental benchmarks and foot traffic signals — all automatically.' },
-              { n: '03', icon: '📊', title: 'Get your full report', desc: 'GO / CAUTION / NO verdict with full financial model, SWOT analysis and 3-year projection.' },
-            ].map(s => (
-              <div key={s.n} style={{ background: S.n50, borderRadius: 16, border: `1px solid ${S.n200}`, padding: '28px 24px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: 16, right: 16, fontSize: 28, fontWeight: 900, color: S.n100 }}>{s.n}</div>
-                <span style={{ fontSize: 28, display: 'block', marginBottom: 14 }}>{s.icon}</span>
-                <h3 style={{ fontSize: 17, fontWeight: 800, color: S.n900, marginBottom: 8 }}>{s.title}</h3>
-                <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* ── Sample Report ── */}
       <section id="sample-report" style={{ padding: sectionPad, background: S.n50 }}>
