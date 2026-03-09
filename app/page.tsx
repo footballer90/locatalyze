@@ -555,16 +555,510 @@ function DarkShowcase() {
   )
 }
 
-// ── ScoreBar (sample report) ──────────────────────────────────────
-function ScoreBar({ label, score, color }: { label: string; score: number; color: string }) {
+// ── Premium Report ─────────────────────────────────────────────────
+
+const PR_DATA = {
+  go: {
+    biz: 'Specialty Coffee Shop', location: 'Subiaco, WA', suburb: 'High-income inner suburb', verdict: 'GO', score: 82,
+    verdictColor: '#059669', verdictBg: '#ECFDF5', verdictBorder: '#A7F3D0',
+    accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
+    kpis: [
+      { label: 'Monthly Revenue',  value: '$91,200',  sub: '+12% vs benchmark', up: true  },
+      { label: 'Monthly Profit',   value: '$24,800',  sub: '27% margin',        up: true  },
+      { label: 'Annual Profit',    value: '$297,600', sub: 'Year 1 projection',  up: true  },
+      { label: 'Payback Period',   value: '7 months', sub: 'Below avg 14mo',    up: true  },
+    ],
+    revenue: [58, 67, 74, 80, 86, 91],
+    profit:  [10, 14, 17, 21, 23, 25],
+    scores: [
+      { label: 'Foot Traffic & Demand', score: 85, icon: '🚶' },
+      { label: 'Rent Affordability',    score: 78, icon: '🏠' },
+      { label: 'Competition Level',     score: 72, icon: '🏪' },
+      { label: 'Profitability',         score: 90, icon: '💰' },
+    ],
+    heatmap: [8,6,5,7,9,8,7, 4,3,2,4,6,5,4, 6,5,4,6,8,7,6, 5,4,3,5,7,6,5, 7,6,5,7,9,8,7],
+    swot: {
+      strengths:     ['High foot traffic from young professionals', 'Affluent demographics — avg income $95k+', 'Underserved specialty coffee segment'],
+      weaknesses:    ['Competitive market with 3 established chains', 'High commercial rent at $3,800/mo'],
+      opportunities: ['Growing café culture in WA', 'Weekend brunch market largely untapped'],
+      threats:       ['Large chain expansion into the area', 'Rising commercial rent prices YoY'],
+    },
+    rec: 'Strong opportunity. High demand demographics combined with manageable competition makes this an excellent location for a specialty coffee concept. Financial projections indicate profitability within 7 months.',
+  },
+  caution: {
+    biz: 'Casual Dining Restaurant', location: 'Fremantle, WA', suburb: 'Tourist & mixed-use precinct', verdict: 'CAUTION', score: 61,
+    verdictColor: '#D97706', verdictBg: '#FFFBEB', verdictBorder: '#FDE68A',
+    accentGrad: 'linear-gradient(135deg,#B45309 0%,#D97706 100%)',
+    kpis: [
+      { label: 'Monthly Revenue',  value: '$74,400',  sub: '-8% vs benchmark',  up: false },
+      { label: 'Monthly Profit',   value: '$11,200',  sub: '15% margin',        up: false },
+      { label: 'Annual Profit',    value: '$134,400', sub: 'Year 1 projection', up: false },
+      { label: 'Payback Period',   value: '14 months',sub: 'Near avg 14mo',     up: true  },
+    ],
+    revenue: [42, 55, 68, 74, 70, 74],
+    profit:  [4,  8,  12, 11, 9,  11],
+    scores: [
+      { label: 'Foot Traffic & Demand', score: 68, icon: '🚶' },
+      { label: 'Rent Affordability',    score: 55, icon: '🏠' },
+      { label: 'Competition Level',     score: 60, icon: '🏪' },
+      { label: 'Profitability',         score: 62, icon: '💰' },
+    ],
+    heatmap: [7,8,9,8,6,4,3, 3,4,5,5,4,3,2, 5,6,7,7,5,4,3, 4,5,6,6,4,3,2, 6,7,8,8,6,4,3],
+    swot: {
+      strengths:     ['High tourist foot traffic in peak season', 'Strong weekend dining culture'],
+      weaknesses:    ['Heavy seasonal demand fluctuation', 'High rent at $5,200/mo vs revenue'],
+      opportunities: ['Underserved dinner market on weekdays', 'Coastal dining experience premium'],
+      threats:       ['8 direct competitors within 500m', 'Off-season revenue drop risk'],
+    },
+    rec: 'Proceed with caution. Strong peak-season potential is undermined by significant seasonal dependency. Consider a lean operating model to protect against off-season periods.',
+  },
+  no: {
+    biz: 'Boutique Gym', location: 'Joondalup, WA', suburb: 'Outer suburban residential', verdict: 'NO', score: 44,
+    verdictColor: '#DC2626', verdictBg: '#FEF2F2', verdictBorder: '#FECACA',
+    accentGrad: 'linear-gradient(135deg,#991B1B 0%,#DC2626 100%)',
+    kpis: [
+      { label: 'Monthly Revenue',  value: '$51,000',  sub: '-38% vs benchmark',  up: false },
+      { label: 'Monthly Profit',   value: '$3,200',   sub: '6% margin',          up: false },
+      { label: 'Annual Profit',    value: '$38,400',  sub: 'Year 1 projection',  up: false },
+      { label: 'Payback Period',   value: 'Not viable',sub: '>36 months risk',   up: false },
+    ],
+    revenue: [38, 42, 46, 50, 51, 51],
+    profit:  [1,  1,  2,  3,  3,  3],
+    scores: [
+      { label: 'Foot Traffic & Demand', score: 48, icon: '🚶' },
+      { label: 'Rent Affordability',    score: 38, icon: '🏠' },
+      { label: 'Competition Level',     score: 42, icon: '🏪' },
+      { label: 'Profitability',         score: 46, icon: '💰' },
+    ],
+    heatmap: [3,2,1,2,3,2,1, 2,1,1,1,2,2,1, 4,3,2,3,4,3,2, 3,2,1,2,3,2,1, 2,1,1,2,2,2,1],
+    swot: {
+      strengths:     ['Large 15km residential catchment', 'No specialist CrossFit within 2km'],
+      weaknesses:    ['4 established gyms already within 1km', 'Rent at $6,800/mo consumes 34% revenue'],
+      opportunities: ['Underserved women-only fitness niche', 'Corporate wellness contracts potential'],
+      threats:       ['Planet Fitness opening 800m away Q3', 'Membership churn risk in saturated market'],
+    },
+    rec: 'Not recommended. The location is oversaturated with established fitness competitors and rent far exceeds safe thresholds. Without a highly differentiated concept, financial viability is unlikely.',
+  },
+}
+
+// Animated score ring
+function ScoreRing({ score, color, size = 72 }: { score: number; color: string; size?: number }) {
+  const [anim, setAnim] = useState(0)
+  const r = size * 0.38
+  const circ = 2 * Math.PI * r
+  useEffect(() => {
+    setAnim(0)
+    const id = setInterval(() => setAnim(a => { if (a >= score) { clearInterval(id); return score }; return a + 2 }), 14)
+    return () => clearInterval(id)
+  }, [score])
   return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-        <span style={{ fontSize: 12, color: L.muted, fontWeight: 500 }}>{label}</span>
-        <span style={{ fontSize: 12, fontWeight: 700, color }}>{score}</span>
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(0,0,0,.06)" strokeWidth={size*0.07}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={size*0.07}
+          strokeLinecap="round" strokeDasharray={circ}
+          strokeDashoffset={circ - circ * anim / 100}
+          style={{ transition: 'stroke-dashoffset .03s linear' }}/>
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: size * 0.24, fontWeight: 900, color, lineHeight: 1 }}>{anim}</span>
+        <span style={{ fontSize: size * 0.115, color: L.muted, marginTop: 1 }}>/100</span>
       </div>
-      <div style={{ height: 5, background: L.border, borderRadius: 100, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${score}%`, background: color, borderRadius: 100 }}/>
+    </div>
+  )
+}
+
+// SVG bar + line chart
+function RevenueChart({ revenue, profit, color }: { revenue: number[]; profit: number[]; color: string }) {
+  const [fired, setFired] = useState(false)
+  useEffect(() => { setFired(false); const t = setTimeout(() => setFired(true), 80); return () => clearTimeout(t) }, [revenue])
+  const months = ['Jul','Aug','Sep','Oct','Nov','Dec']
+  const maxR = Math.max(...revenue)
+  const W = 340, H = 100, padL = 32, padB = 20, padT = 8
+  const bW = (W - padL) / revenue.length - 6
+  // Line path for profit
+  const pts = profit.map((v, i) => {
+    const x = padL + i * ((W - padL) / revenue.length) + bW / 2
+    const y = padT + (H - padT - padB) * (1 - v / maxR)
+    return `${x},${y}`
+  })
+  const linePath = 'M ' + pts.join(' L ')
+  return (
+    <div style={{ position: 'relative' }}>
+      <svg viewBox={`0 0 ${W} ${H + padB}`} style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
+        {/* Grid lines */}
+        {[0.25, 0.5, 0.75, 1].map(f => (
+          <line key={f} x1={padL} y1={padT + (H - padT - padB) * (1 - f)} x2={W} y2={padT + (H - padT - padB) * (1 - f)}
+            stroke={L.border} strokeWidth=".8" strokeDasharray="4 3"/>
+        ))}
+        {/* Revenue bars */}
+        {revenue.map((v, i) => {
+          const x = padL + i * ((W - padL) / revenue.length) + 3
+          const barH = (H - padT - padB) * (v / maxR)
+          const y = padT + (H - padT - padB) - barH
+          return (
+            <rect key={i} x={x} y={fired ? y : padT + H - padT - padB} width={bW}
+              height={fired ? barH : 0} rx="4"
+              fill={`${color}22`} stroke={`${color}44`} strokeWidth=".8"
+              style={{ transition: `height .6s ease ${i * .07}s, y .6s ease ${i * .07}s` }}/>
+          )
+        })}
+        {/* Profit line */}
+        <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          strokeDasharray="400" strokeDashoffset={fired ? '0' : '400'}
+          style={{ transition: 'stroke-dashoffset 1.2s ease .3s' }}/>
+        {/* Profit dots */}
+        {profit.map((v, i) => {
+          const x = padL + i * ((W - padL) / revenue.length) + bW / 2
+          const y = padT + (H - padT - padB) * (1 - v / maxR)
+          return <circle key={i} cx={x} cy={y} r="3.5" fill="#fff" stroke={color} strokeWidth="2"
+            opacity={fired ? 1 : 0} style={{ transition: `opacity .2s ease ${.8 + i * .07}s` }}/>
+        })}
+        {/* X axis labels */}
+        {months.map((m, i) => (
+          <text key={m} x={padL + i * ((W - padL) / revenue.length) + bW / 2} y={H + padB - 2}
+            textAnchor="middle" fontSize="9" fill={L.muted}>{m}</text>
+        ))}
+        {/* Y axis labels */}
+        {[0, 50, 100].map(v => (
+          <text key={v} x={padL - 4} y={padT + (H - padT - padB) * (1 - v / maxR) + 3}
+            textAnchor="end" fontSize="8" fill={L.muted}>{v > 0 ? `$${v}k` : ''}</text>
+        ))}
+      </svg>
+      <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: `${color}33`, border: `1px solid ${color}55` }}/>
+          <span style={{ fontSize: 10, color: L.muted }}>Monthly Revenue ($k)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 16, height: 2, background: color, borderRadius: 2 }}/>
+          <span style={{ fontSize: 10, color: L.muted }}>Monthly Profit ($k)</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Demand heatmap (7 days × 5 time slots)
+function DemandHeatmap({ data, color }: { data: number[]; color: string }) {
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  const times = ['Morning','Midday','Arvo','Evening','Night']
+  const max = Math.max(...data)
+  const [hov, setHov] = useState<number|null>(null)
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 3, marginBottom: 4, paddingLeft: 38 }}>
+        {days.map(d => <div key={d} style={{ flex: 1, fontSize: 8, color: L.muted, textAlign: 'center' as const, fontWeight: 600 }}>{d}</div>)}
+      </div>
+      {times.map((t, ti) => (
+        <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 3 }}>
+          <div style={{ width: 34, fontSize: 8, color: L.muted, textAlign: 'right' as const, paddingRight: 4, fontWeight: 600, flexShrink: 0 }}>{t}</div>
+          {days.map((_, di) => {
+            const idx = ti * 7 + di
+            const v = data[idx] || 0
+            const intensity = v / max
+            return (
+              <div key={di} onMouseEnter={() => setHov(idx)} onMouseLeave={() => setHov(null)}
+                style={{ flex: 1, height: 18, borderRadius: 4, cursor: 'default',
+                  background: intensity > 0.7 ? color : intensity > 0.4 ? `${color}88` : intensity > 0.2 ? `${color}44` : `${color}18`,
+                  transition: 'transform .15s', transform: hov === idx ? 'scale(1.25)' : 'scale(1)',
+                  position: 'relative' as const,
+                }}/>
+            )
+          })}
+        </div>
+      ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
+        <span style={{ fontSize: 9, color: L.muted }}>Low</span>
+        {[0.15, 0.35, 0.55, 0.75, 1].map(f => (
+          <div key={f} style={{ width: 14, height: 10, borderRadius: 3, background: f > 0.7 ? color : f > 0.4 ? `${color}88` : f > 0.2 ? `${color}44` : `${color}18` }}/>
+        ))}
+        <span style={{ fontSize: 9, color: L.muted }}>High</span>
+      </div>
+    </div>
+  )
+}
+
+// Animated score bar
+function PremiumBar({ label, score, color, icon, delay = 0, fired }: { label: string; score: number; color: string; icon: string; delay?: number; fired: boolean }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+          <span style={{ fontSize: 14 }}>{icon}</span>
+          <span style={{ fontSize: 12.5, color: L.slate, fontWeight: 600 }}>{label}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color }}>{score}</span>
+          <span style={{ fontSize: 10, color: L.muted }}>/100</span>
+        </div>
+      </div>
+      <div style={{ height: 8, background: '#F1F5F9', borderRadius: 100, overflow: 'hidden' }}>
+        <div style={{
+          height: '100%', borderRadius: 100,
+          background: `linear-gradient(90deg, ${color}cc, ${color})`,
+          width: fired ? `${score}%` : '0%',
+          transition: `width 1s cubic-bezier(.4,0,.2,1) ${delay}s`,
+          boxShadow: `0 0 8px ${color}55`,
+        }}/>
+      </div>
+    </div>
+  )
+}
+
+// SWOT 2×2 grid
+function SwotGrid({ swot }: { swot: typeof PR_DATA.go.swot }) {
+  const quadrants = [
+    { key: 'strengths',     label: 'Strengths',     icon: '💪', bg: '#F0FDF4', border: '#BBF7D0', text: '#065F46', dot: '#059669' },
+    { key: 'weaknesses',    label: 'Weaknesses',    icon: '⚠️', bg: '#FFFBEB', border: '#FDE68A', text: '#78350F', dot: '#D97706' },
+    { key: 'opportunities', label: 'Opportunities', icon: '🚀', bg: '#EFF6FF', border: '#BFDBFE', text: '#1E3A8A', dot: '#3B82F6' },
+    { key: 'threats',       label: 'Threats',       icon: '⚡', bg: '#FEF2F2', border: '#FECACA', text: '#7F1D1D', dot: '#DC2626' },
+  ] as const
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      {quadrants.map(q => (
+        <div key={q.key} style={{ background: q.bg, border: `1.5px solid ${q.border}`, borderRadius: 14, padding: '14px 16px', transition: 'transform .2s, box-shadow .2s' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.08)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <div style={{ width: 26, height: 26, borderRadius: 8, background: q.dot, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>{q.icon}</div>
+            <span style={{ fontSize: 11, fontWeight: 800, color: q.text, textTransform: 'uppercase' as const, letterSpacing: '.07em' }}>{q.label}</span>
+          </div>
+          {(swot[q.key] as string[]).map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 6 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: q.dot, marginTop: 5, flexShrink: 0 }}/>
+              <p style={{ fontSize: 11.5, color: q.text, lineHeight: 1.55 }}>{item}</p>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'; isMobile: boolean }) {
+  const d = PR_DATA[verdict]
+  const [barsFired, setBarsFired] = useState(false)
+  const [activeSection, setActiveSection] = useState<'overview' | 'financials' | 'market' | 'swot'>('overview')
+
+  useEffect(() => {
+    setBarsFired(false)
+    setActiveSection('overview')
+    const t = setTimeout(() => setBarsFired(true), 200)
+    return () => clearTimeout(t)
+  }, [verdict])
+
+  const tabs = [
+    { id: 'overview',   label: 'Overview',    icon: '📊' },
+    { id: 'financials', label: 'Financials',  icon: '💰' },
+    { id: 'market',     label: 'Market',      icon: '🗺️' },
+    { id: 'swot',       label: 'SWOT',        icon: '⚡' },
+  ] as const
+
+  return (
+    <div style={{ background: L.white, borderRadius: 24, border: `1px solid ${L.border}`, boxShadow: '0 16px 64px rgba(0,0,0,.1)', overflow: 'hidden', fontFamily: font }}>
+
+      {/* ── Report Header ── */}
+      <div style={{ background: `linear-gradient(135deg, #0C1F1C 0%, #0F766E 60%, #0891B2 100%)`, padding: isMobile ? '24px 20px' : '32px 40px', position: 'relative', overflow: 'hidden' }}>
+        {/* Decorative circles */}
+        <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,.04)', pointerEvents: 'none' }}/>
+        <div style={{ position: 'absolute', bottom: -20, right: 80, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,.03)', pointerEvents: 'none' }}/>
+
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          {/* Top meta row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' as const }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.12)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.8)', fontWeight: 600 }}>
+              📍 {d.location}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.6)', fontWeight: 500 }}>
+              🏙️ {d.suburb}
+            </div>
+            <div style={{ marginLeft: 'auto' as const, background: 'rgba(255,255,255,.1)', borderRadius: 8, padding: '3px 10px', fontSize: 10, color: 'rgba(255,255,255,.5)', fontWeight: 500 }}>
+              {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 20 }}>
+            <div>
+              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#fff', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
+              {/* Verdict badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: d.verdictBg, border: `2px solid ${d.verdictBorder}`, borderRadius: 14, padding: '8px 18px' }}>
+                <span style={{ fontSize: 20 }}>{verdict === 'go' ? '✅' : verdict === 'caution' ? '⚠️' : '🚫'}</span>
+                <div>
+                  <p style={{ fontSize: 16, fontWeight: 900, color: d.verdictColor, lineHeight: 1 }}>{d.verdict}</p>
+                  <p style={{ fontSize: 10, color: d.verdictColor, opacity: 0.75, marginTop: 1 }}>Location Verdict</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Score ring + KPI pills */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' as const }}>
+              <div style={{ textAlign: 'center' as const }}>
+                <ScoreRing score={d.score} color={d.verdictColor} size={isMobile ? 68 : 84}/>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>Feasibility Score</p>
+              </div>
+              {!isMobile && (
+                <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
+                  {d.kpis.slice(0, 2).map(k => (
+                    <div key={k.label} style={{ background: 'rgba(255,255,255,.1)', borderRadius: 10, padding: '8px 16px', backdropFilter: 'blur(4px)' }}>
+                      <p style={{ fontSize: 9, color: 'rgba(255,255,255,.5)', textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 2 }}>{k.label}</p>
+                      <p style={{ fontSize: 18, fontWeight: 900, color: '#fff', lineHeight: 1 }}>{k.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Inner nav tabs ── */}
+      <div style={{ display: 'flex', borderBottom: `1px solid ${L.border}`, background: '#FAFBFC', overflowX: 'auto' as const }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setActiveSection(t.id)}
+            style={{ flex: isMobile ? 'none' : 1, padding: isMobile ? '12px 16px' : '14px 20px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: font, fontSize: 13, fontWeight: activeSection === t.id ? 700 : 500, color: activeSection === t.id ? d.verdictColor : L.muted, borderBottom: `2px solid ${activeSection === t.id ? d.verdictColor : 'transparent'}`, whiteSpace: 'nowrap' as const, transition: 'all .2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <span>{t.icon}</span>{t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── AI Verdict banner ── */}
+      <div style={{ margin: '20px 24px 0', background: d.verdictBg, border: `1px solid ${d.verdictBorder}`, borderRadius: 12, padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <div style={{ width: 28, height: 28, borderRadius: 8, background: d.verdictColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0 }}>💡</div>
+        <p style={{ fontSize: 13, color: d.verdictColor, lineHeight: 1.65 }}><strong>AI Analysis:</strong> {d.rec}</p>
+      </div>
+
+      {/* ── Tab content ── */}
+      <div style={{ padding: isMobile ? '20px 16px' : '24px 24px 32px' }}>
+
+        {/* OVERVIEW */}
+        {activeSection === 'overview' && (
+          <div style={{ animation: 'cw-fade .3s ease' }}>
+            {/* 4 KPI cards */}
+            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 12 }}>Key Metrics</p>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: 10, marginBottom: 28 }}>
+              {d.kpis.map((k, i) => (
+                <div key={i} style={{ background: i === 2 ? d.verdictBg : '#F8FAFC', borderRadius: 14, border: `1.5px solid ${i === 2 ? d.verdictBorder : L.border}`, padding: '14px 16px', transition: 'transform .2s, box-shadow .2s', cursor: 'default' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 20px rgba(0,0,0,.08)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+                  <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 6 }}>{k.label}</p>
+                  <p style={{ fontSize: isMobile ? 15 : 18, fontWeight: 900, color: i === 2 ? d.verdictColor : L.slate, letterSpacing: '-.02em', lineHeight: 1, marginBottom: 4 }}>{k.value}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontSize: 9, color: k.up ? '#059669' : '#DC2626' }}>{k.up ? '↑' : '↓'}</span>
+                    <span style={{ fontSize: 9, color: L.muted }}>{k.sub}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Score breakdown */}
+            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>Score Breakdown</p>
+            <div style={{ background: '#FAFBFC', borderRadius: 16, border: `1px solid ${L.border}`, padding: '18px 20px' }}>
+              {d.scores.map((s, i) => (
+                <PremiumBar key={i} label={s.label} score={s.score} color={d.verdictColor} icon={s.icon} delay={i * 0.1} fired={barsFired}/>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* FINANCIALS */}
+        {activeSection === 'financials' && (
+          <div style={{ animation: 'cw-fade .3s ease' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>6-Month Revenue & Profit Projection</p>
+            <div style={{ background: '#FAFBFC', borderRadius: 16, border: `1px solid ${L.border}`, padding: '20px' }}>
+              <RevenueChart revenue={d.revenue} profit={d.profit} color={d.verdictColor}/>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginTop: 20 }}>
+              <div style={{ background: '#FAFBFC', borderRadius: 14, border: `1px solid ${L.border}`, padding: '16px 18px' }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 12 }}>Break-Even Analysis</p>
+                {[['Daily customers needed', verdict === 'go' ? '38' : verdict === 'caution' ? '52' : '74'],
+                  ['Avg. transaction value', verdict === 'go' ? '$8.50' : verdict === 'caution' ? '$42' : '$55'],
+                  ['Fixed costs / month', verdict === 'go' ? '$14,200' : verdict === 'caution' ? '$18,600' : '$22,400'],
+                  ['Variable cost ratio', verdict === 'go' ? '38%' : verdict === 'caution' ? '42%' : '48%'],
+                ].map(([l, v]) => (
+                  <div key={l as string} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
+                    <span style={{ fontSize: 12, color: L.muted }}>{l}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: L.slate }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: '#FAFBFC', borderRadius: 14, border: `1px solid ${L.border}`, padding: '16px 18px' }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 12 }}>3-Year Outlook</p>
+                {[['Year 1 Revenue', verdict === 'go' ? '$1.09M' : verdict === 'caution' ? '$893k' : '$612k'],
+                  ['Year 2 Revenue', verdict === 'go' ? '$1.31M' : verdict === 'caution' ? '$982k' : '$637k'],
+                  ['Year 3 Revenue', verdict === 'go' ? '$1.48M' : verdict === 'caution' ? '$1.04M' : '$651k'],
+                  ['3-Year Total Profit', verdict === 'go' ? '$1.04M' : verdict === 'caution' ? '$452k' : '$89k'],
+                ].map(([l, v], i) => (
+                  <div key={l as string} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
+                    <span style={{ fontSize: 12, color: L.muted }}>{l}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: i === 3 ? d.verdictColor : L.slate }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MARKET */}
+        {activeSection === 'market' && (
+          <div style={{ animation: 'cw-fade .3s ease' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>Demand Heatmap — Weekly Foot Traffic</p>
+            <div style={{ background: '#FAFBFC', borderRadius: 16, border: `1px solid ${L.border}`, padding: '20px' }}>
+              <DemandHeatmap data={d.heatmap} color={d.verdictColor}/>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginTop: 20 }}>
+              <div style={{ background: '#FAFBFC', borderRadius: 14, border: `1px solid ${L.border}`, padding: '16px 18px' }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 12 }}>Competitor Proximity</p>
+                {[
+                  { name: 'Direct competitors (500m)', val: verdict === 'go' ? '3' : verdict === 'caution' ? '8' : '4', risk: verdict === 'go' ? 'low' : verdict === 'caution' ? 'high' : 'med' },
+                  { name: 'Indirect competitors (1km)', val: verdict === 'go' ? '7' : verdict === 'caution' ? '14' : '12', risk: verdict === 'go' ? 'low' : 'high' },
+                  { name: 'Competition intensity', val: verdict === 'go' ? 'Moderate' : verdict === 'caution' ? 'High' : 'Very High', risk: verdict === 'go' ? 'low' : 'high' },
+                  { name: 'Market gap score', val: verdict === 'go' ? '72 / 100' : verdict === 'caution' ? '44 / 100' : '28 / 100', risk: verdict === 'go' ? 'low' : 'high' },
+                ].map(row => (
+                  <div key={row.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
+                    <span style={{ fontSize: 12, color: L.muted }}>{row.name}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: row.risk === 'low' ? '#059669' : row.risk === 'med' ? '#D97706' : '#DC2626' }}>{row.val}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: '#FAFBFC', borderRadius: 14, border: `1px solid ${L.border}`, padding: '16px 18px' }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 12 }}>Demographics Snapshot</p>
+                {[
+                  { label: 'Population (5km)', value: verdict === 'go' ? '42,800' : verdict === 'caution' ? '31,200' : '58,400' },
+                  { label: 'Median Income', value: verdict === 'go' ? '$94,200' : verdict === 'caution' ? '$71,400' : '$68,800' },
+                  { label: 'Primary Age Group', value: verdict === 'go' ? '25–44 yrs' : verdict === 'caution' ? '20–35 yrs' : '35–55 yrs' },
+                  { label: 'Foot Traffic Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
+                ].map(row => (
+                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
+                    <span style={{ fontSize: 12, color: L.muted }}>{row.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: L.slate }}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SWOT */}
+        {activeSection === 'swot' && (
+          <div style={{ animation: 'cw-fade .3s ease' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>SWOT Analysis</p>
+            <SwotGrid swot={d.swot}/>
+          </div>
+        )}
+      </div>
+
+      {/* ── Footer CTA ── */}
+      <div style={{ borderTop: `1px solid ${L.border}`, padding: isMobile ? '16px' : '18px 24px', background: L.mint, display: 'flex', flexDirection: isMobile ? 'column' : 'row' as const, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: 12 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: L.slate, marginBottom: 2 }}>This is a sample. Your real report uses live data.</p>
+          <p style={{ fontSize: 11, color: L.muted }}>Every address generates a unique analysis — no two reports are the same.</p>
+        </div>
+        <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: L.emerald, color: '#fff', borderRadius: 12, padding: '12px 24px', fontSize: 13, fontWeight: 800, boxShadow: '0 4px 16px rgba(16,185,129,.3)', whiteSpace: 'nowrap' as const, textDecoration: 'none' }}>
+          Get my free report →
+        </Link>
       </div>
     </div>
   )
@@ -954,36 +1448,9 @@ export default function LandingPage() {
 
   useEffect(() => { if (scrolled && menuOpen) setMenuOpen(false) }, [scrolled])
 
-  const sampleReports = {
-    go: {
-      biz: 'Specialty Coffee Shop', location: 'Subiaco, WA', verdict: 'GO', score: 82,
-      revenue: '$91,200', profit: '$24,800', annualProfit: '$297,600', breakeven: '38 customers/day', payback: '7 months',
-      scores: [{label:'Demand & Demographics',score:85,color:L.go},{label:'Rent Affordability',score:78,color:L.go},{label:'Competition',score:72,color:L.go},{label:'Profitability',score:90,color:L.go}],
-      swot: { strengths:['Strong foot traffic from professionals','High disposable income area'], weaknesses:['Competitive market with established brands'], opportunities:['Growing brunch culture in the area'], threats:['Rising commercial rents in suburb'] },
-      rec: 'Strong opportunity. High demand demographics combined with manageable competition makes this an excellent location.',
-    },
-    caution: {
-      biz: 'Casual Dining Restaurant', location: 'Fremantle, WA', verdict: 'CAUTION', score: 61,
-      revenue: '$74,400', profit: '$11,200', annualProfit: '$134,400', breakeven: '52 customers/day', payback: '14 months',
-      scores: [{label:'Demand & Demographics',score:68,color:L.caution},{label:'Rent Affordability',score:55,color:L.caution},{label:'Competition',score:60,color:L.caution},{label:'Profitability',score:62,color:L.caution}],
-      swot: { strengths:['High tourist foot traffic in peak season'], weaknesses:['Strong seasonal demand fluctuation'], opportunities:['Underserved dinner market on weekdays'], threats:['8 direct competitors within 500m'] },
-      rec: 'Proceed with caution. Seasonal tourism dependency creates revenue instability.',
-    },
-    no: {
-      biz: 'Boutique Gym', location: 'Joondalup, WA', verdict: 'NO', score: 44,
-      revenue: '$51,000', profit: '$3,200', annualProfit: '$38,400', breakeven: '74 customers/day', payback: 'Not viable',
-      scores: [{label:'Demand & Demographics',score:48,color:L.danger},{label:'Rent Affordability',score:38,color:L.danger},{label:'Competition',score:42,color:L.danger},{label:'Profitability',score:46,color:L.danger}],
-      swot: { strengths:['Large residential catchment area'], weaknesses:['4 established gyms already nearby'], opportunities:['Limited group fitness options'], threats:['High rent consuming 34% of projected revenue'] },
-      rec: 'Not recommended. Oversaturated fitness market with insufficient margin.',
-    },
-  }
-
-  const r  = sampleReports[activeTab]
-  const vc = activeTab === 'go'
-    ? { bg: L.goBg,       text: L.go,      border: L.goBdr,      icon: '✅' }
-    : activeTab === 'caution'
-    ? { bg: L.cautionBg,  text: L.caution, border: L.cautionBdr, icon: '⚠️' }
-    : { bg: L.dangerBg,   text: L.danger,  border: L.dangerBdr,  icon: '🚫' }
+  const sampleReports = {} // data now lives in PR_DATA inside PremiumReport
+  const r = {} as any
+  const vc = {} as any
 
   const pad = isMobile ? '0 16px' : '0 40px'
   const sp  = isMobile ? '64px 16px' : '96px 40px'
@@ -1161,99 +1628,34 @@ export default function LandingPage() {
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>Sample report</div>
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>See exactly what you get</h2>
-            <p style={{ fontSize: 15, color: L.muted }}>Select a verdict to see how each scenario looks.</p>
+            <p style={{ fontSize: 15, color: L.muted }}>Switch between verdicts to explore every scenario.</p>
           </div>
 
-          {/* Tabs */}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
-            {(['go','caution','no'] as const).map(v => (
+          {/* Verdict switcher */}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 28, flexWrap: 'wrap' }}>
+            {([
+              { v: 'go',      label: 'GO Verdict',      icon: '✅', active: '#059669', badge: 'Best case' },
+              { v: 'caution', label: 'CAUTION',          icon: '⚠️', active: '#D97706', badge: 'Mixed signals' },
+              { v: 'no',      label: 'NO Verdict',       icon: '🚫', active: '#DC2626', badge: 'Avoid' },
+            ] as const).map(({ v, label, icon, active, badge }) => (
               <button key={v} onClick={() => setActiveTab(v)} style={{
-                padding: isMobile ? '9px 16px' : '11px 24px', borderRadius: 10, border: 'none', fontSize: isMobile ? 12 : 14, fontWeight: 700,
-                background: activeTab === v ? (v==='go'?L.emerald:v==='caution'?L.caution:L.danger) : L.white,
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: isMobile ? '10px 16px' : '12px 22px', borderRadius: 14, border: 'none', cursor: 'pointer', fontFamily: font,
+                background: activeTab === v ? active : L.white,
                 color: activeTab === v ? '#fff' : L.muted,
-                boxShadow: activeTab === v ? '0 4px 16px rgba(0,0,0,.15)' : '0 1px 3px rgba(0,0,0,.06)',
-                outline: activeTab === v ? 'none' : `1.5px solid ${L.border}`,
+                boxShadow: activeTab === v ? `0 6px 20px ${active}44` : `0 1px 4px rgba(0,0,0,.07), inset 0 0 0 1.5px ${L.border}`,
+                transition: 'all .25s',
               }}>
-                {v==='go'?'✅ GO verdict':v==='caution'?'⚠️ CAUTION':'🚫 NO verdict'}
+                <span style={{ fontSize: 16 }}>{icon}</span>
+                <div style={{ textAlign: 'left' as const }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, lineHeight: 1 }}>{label}</p>
+                  <p style={{ fontSize: 10, opacity: .75, marginTop: 2 }}>{badge}</p>
+                </div>
               </button>
             ))}
           </div>
 
-          {/* Report card */}
-          <div style={{ background: L.white, borderRadius: 24, border: `1px solid ${L.border}`, boxShadow: '0 8px 48px rgba(0,0,0,.08)', overflow: 'hidden' }}>
-            {/* Header */}
-            <div style={{ background: `linear-gradient(135deg,#0F766E 0%,#0891B2 100%)`, padding: isMobile ? '24px 20px' : '32px 40px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ flex: 1, marginRight: 16 }}>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', marginBottom: 4 }}>📍 {r.location}</p>
-                  <h3 style={{ fontSize: isMobile ? 18 : 24, fontWeight: 900, color: '#fff', letterSpacing: '-.02em', marginBottom: 12 }}>{r.biz}</h3>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: vc.bg, color: vc.text, border: `1.5px solid ${vc.border}`, borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 800 }}>
-                    {vc.icon} {r.verdict} Verdict
-                  </span>
-                </div>
-                <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                  <div style={{ position: 'relative', width: isMobile ? 72 : 96, height: isMobile ? 72 : 96 }}>
-                    <svg width={isMobile?72:96} height={isMobile?72:96} style={{ transform: 'rotate(-90deg)' }}>
-                      <circle cx={isMobile?36:48} cy={isMobile?36:48} r={isMobile?28:38} fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="8"/>
-                      <circle cx={isMobile?36:48} cy={isMobile?36:48} r={isMobile?28:38} fill="none" stroke={vc.text} strokeWidth="8" strokeLinecap="round"
-                        strokeDasharray={`${2*Math.PI*(isMobile?28:38)}`} strokeDashoffset={`${2*Math.PI*(isMobile?28:38)*(1-r.score/100)}`}/>
-                    </svg>
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: isMobile?20:26, fontWeight: 900, color: '#fff', lineHeight: 1 }}>{r.score}</span>
-                      <span style={{ fontSize: 10, color: 'rgba(255,255,255,.6)' }}>/100</span>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,.5)', marginTop: 4 }}>Score</p>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ padding: isMobile ? '20px 16px' : '32px 40px' }}>
-              <div style={{ background: vc.bg, border: `1px solid ${vc.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 24 }}>
-                <p style={{ fontSize: 13, color: vc.text, lineHeight: 1.7 }}>💡 <strong>AI Verdict:</strong> {r.rec}</p>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 24 : 32 }}>
-                {/* Financials */}
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 12 }}>Key Financials</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
-                    {[{l:'Monthly Revenue',v:r.revenue,hi:false},{l:'Monthly Profit',v:r.profit,hi:false},{l:'Annual Profit',v:r.annualProfit,hi:true},{l:'Payback Period',v:r.payback,hi:false}].map(m => (
-                      <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 10, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '12px 14px' }}>
-                        <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>{m.l}</p>
-                        <p style={{ fontSize: 15, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 10 }}>Score Breakdown</p>
-                  {r.scores.map(s => <ScoreBar key={s.label} label={s.label} score={s.score} color={s.color}/>)}
-                </div>
-                {/* SWOT */}
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 12 }}>SWOT Analysis</p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {[
-                      {key:'strengths',icon:'💪',items:r.swot.strengths,bg:L.goBg,border:L.goBdr,text:'#065F46'},
-                      {key:'weaknesses',icon:'⚠️',items:r.swot.weaknesses,bg:L.cautionBg,border:L.cautionBdr,text:'#92400E'},
-                      {key:'opportunities',icon:'🚀',items:r.swot.opportunities,bg:'#EFF6FF',border:'#BFDBFE',text:'#1D4ED8'},
-                      {key:'threats',icon:'🔴',items:r.swot.threats,bg:L.dangerBg,border:L.dangerBdr,text:'#991B1B'},
-                    ].map(sw => (
-                      <div key={sw.key} style={{ background: sw.bg, border: `1px solid ${sw.border}`, borderRadius: 10, padding: '10px 12px' }}>
-                        <p style={{ fontSize: 11, fontWeight: 800, color: sw.text, marginBottom: 4, textTransform: 'uppercase' }}>{sw.icon} {sw.key}</p>
-                        {sw.items.map((item,i) => <p key={i} style={{ fontSize: 12, color: sw.text, opacity: .85 }}>· {item}</p>)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ borderTop: `1px solid ${L.border}`, padding: isMobile ? 16 : '20px 40px', background: L.mint, display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: 12 }}>
-              <p style={{ fontSize: 13, color: L.muted }}>This is a sample. Your real report uses live data for your exact address.</p>
-              <Link href="/auth/signup" style={{ background: L.emerald, color: '#fff', borderRadius: 10, padding: '11px 22px', fontSize: 13, fontWeight: 700, boxShadow: '0 2px 10px rgba(16,185,129,.25)', whiteSpace: 'nowrap' }}>
-                Get my report free →
-              </Link>
-            </div>
-          </div>
+          <PremiumReport verdict={activeTab} isMobile={isMobile}/>
         </div>
       </section>
 
