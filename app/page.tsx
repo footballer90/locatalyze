@@ -1,5 +1,6 @@
 'use client'
 import Footer from '@/components/Footer'
+import GlideShowcase from '@/components/GlideShowcase'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
@@ -376,6 +377,8 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      <GlideShowcase />
 
       {/* ── How it works ── */}
       <section id="how-it-works" style={{ padding: sectionPad, background: S.white }}>
