@@ -2,10 +2,10 @@
 import Footer from '@/components/Footer'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity } from 'lucide-react'
 
 // ── Design tokens ──────────────────────────────────────────────────
 const L = {
-  // Light sections
   white:      '#FFFFFF',
   mint:       '#F0FDF4',
   emerald:    '#10B981',
@@ -15,7 +15,6 @@ const L = {
   slate:      '#0F172A',
   muted:      '#64748B',
   border:     '#E2E8F0',
-  // Verdicts
   go:         '#059669',
   goBg:       '#ECFDF5',
   goBdr:      '#A7F3D0',
@@ -28,7 +27,6 @@ const L = {
   amber:      '#F59E0B',
 }
 
-// Dark showcase tokens
 const D = {
   brand:  '#0F766E',
   bl:     '#14B8A6',
@@ -43,6 +41,20 @@ const D = {
 
 const font = "'DM Sans','Inter','Helvetica Neue',Arial,sans-serif"
 
+// ── Lucide icon wrapper ───────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const LI_MAP: Record<string, any> = {
+  mapPin: MapPin, users: Users, home: Home, barChart: BarChart2, bot: Bot,
+  trendingUp: TrendingUp, map: Map, globe: Globe, refreshCw: RefreshCw,
+  lightbulb: Lightbulb, lineChart: LineChart, navigation: Navigation,
+  zap: Zap, shield: Shield, trophy: Trophy, target: Target, activity: Activity,
+}
+function LI({ n, size = 18, color = 'currentColor', sw = 2 }: { n: string; size?: number; color?: string; sw?: number }) {
+  const C = LI_MAP[n]
+  if (!C) return null
+  return <C size={size} color={color} strokeWidth={sw}/>
+}
+
 // ── Hooks ─────────────────────────────────────────────────────────
 function useIsMobile() {
   const [v, setV] = useState(false)
@@ -55,10 +67,6 @@ function useIsMobile() {
 }
 
 // ── ReportPreview — hero widget ───────────────────────────────────
-// Shows the finished product: a premium report card cycling through
-// 3 locations. Looks nothing like the How It Works walkthrough.
-// No process, no steps, no map — pure polished output.
-
 const RP_CASES = [
   {
     id: 0,
@@ -74,7 +82,7 @@ const RP_CASES = [
       { l: 'Payback Period',   v: '7 months', highlight: false },
     ],
     tags: ['High Income Area', 'Low Competition', '500m Radius Checked'],
-    snap: [{ l: 'Demand',       v: 85 }, { l: 'Rent Fit',  v: 78 }, { l: 'Comp.',    v: 72 }],
+    snap: [{ l: 'Demand', v: 85 }, { l: 'Rent Fit', v: 78 }, { l: 'Comp.', v: 72 }],
   },
   {
     id: 1,
@@ -114,7 +122,6 @@ function ReportPreview() {
   const [caseIdx, setCaseIdx]   = useState(0)
   const [animKey, setAnimKey]   = useState(0)
   const [score, setScore]       = useState(0)
-  const [profit, setProfit]     = useState(0)
   const [snapping, setSnapping] = useState(false)
 
   const switchTo = (i: number) => {
@@ -125,15 +132,13 @@ function ReportPreview() {
     }, 200)
   }
 
-  // Auto-cycle
   useEffect(() => {
     const t = setInterval(() => switchTo((caseIdx + 1) % RP_CASES.length), 4800)
     return () => clearInterval(t)
   }, [caseIdx])
 
-  // Count-up score
   useEffect(() => {
-    setScore(0); setProfit(0)
+    setScore(0)
     const target = RP_CASES[caseIdx].score
     let s = 0
     const id = setInterval(() => {
@@ -152,7 +157,7 @@ function ReportPreview() {
   return (
     <div style={{ width: '100%', maxWidth: 460, fontFamily: font }}>
 
-      {/* ── Switcher dots ── */}
+      {/* Switcher dots */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
         {RP_CASES.map((cs, i) => (
           <button key={i} onClick={() => switchTo(i)} style={{
@@ -173,21 +178,19 @@ function ReportPreview() {
         <span style={{ fontSize: 10, color: L.muted }}>Live demo</span>
       </div>
 
-      {/* ── Report card ── */}
+      {/* Report card */}
       <div style={{
         borderRadius: 22, overflow: 'hidden',
         boxShadow: '0 24px 64px rgba(0,0,0,.15), 0 4px 16px rgba(0,0,0,.08)',
         opacity: snapping ? 0 : 1, transform: snapping ? 'translateY(6px) scale(.99)' : 'translateY(0) scale(1)',
         transition: 'opacity .2s, transform .2s',
       }}>
-        {/* ── Dark gradient header ── */}
+        {/* Dark gradient header */}
         <div style={{ background: c.gradHeader, padding: '22px 22px 18px', position: 'relative', overflow: 'hidden' }}>
-          {/* Decorative rings */}
           <div style={{ position:'absolute', top:-50, right:-50, width:200, height:200, borderRadius:'50%', border:'1px solid rgba(255,255,255,.07)', pointerEvents:'none' }}/>
           <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', border:'1px solid rgba(255,255,255,.05)', pointerEvents:'none' }}/>
 
           <div style={{ position:'relative', zIndex:2 }}>
-            {/* Top row: branding + date */}
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
               <div style={{ display:'flex', alignItems:'center', gap:7 }}>
                 <div style={{ width:22, height:22, borderRadius:6, background:'rgba(255,255,255,.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:900, color:'#fff' }}>L</div>
@@ -198,7 +201,6 @@ function ReportPreview() {
               </span>
             </div>
 
-            {/* Business + location */}
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
               <span style={{ fontSize:22 }}>{c.emoji}</span>
               <div>
@@ -207,7 +209,6 @@ function ReportPreview() {
               </div>
             </div>
 
-            {/* Verdict + score side by side */}
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:14 }}>
               <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:c.colorLight, border:`2px solid ${c.colorMid}`, borderRadius:14, padding:'8px 16px' }}>
                 <span style={{ fontSize:20 }}>{vIcon}</span>
@@ -216,7 +217,6 @@ function ReportPreview() {
                   <p style={{ fontSize:9.5, color:c.color, opacity:.75, marginTop:1 }}>{c.verdictSub}</p>
                 </div>
               </div>
-              {/* Score ring */}
               <div style={{ textAlign:'center' as const }}>
                 <div style={{ position:'relative', width:74, height:74 }}>
                   <svg width="74" height="74" style={{ transform:'rotate(-90deg)' }}>
@@ -237,16 +237,14 @@ function ReportPreview() {
           </div>
         </div>
 
-        {/* ── White body ── */}
+        {/* White body */}
         <div style={{ background:'#fff' }}>
-          {/* Tags row */}
           <div style={{ padding:'12px 20px 0', display:'flex', gap:6, flexWrap:'wrap' as const }}>
             {c.tags.map(t => (
               <span key={t} style={{ fontSize:10, fontWeight:700, color:c.color, background:c.colorLight, border:`1px solid ${c.colorMid}`, borderRadius:6, padding:'2px 8px' }}>{t}</span>
             ))}
           </div>
 
-          {/* 4 KPI tiles */}
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:1, background:L.border, margin:'12px 0 0', borderTop:`1px solid ${L.border}` }}>
             {c.metrics.map((m, i) => (
               <div key={i} style={{ background: m.highlight ? c.colorLight : '#fff', padding:'12px 16px' }}>
@@ -256,7 +254,6 @@ function ReportPreview() {
             ))}
           </div>
 
-          {/* 3 mini score bars */}
           <div style={{ padding:'12px 20px 16px', display:'flex', gap:12 }}>
             {c.snap.map((s, i) => (
               <div key={i} style={{ flex:1 }}>
@@ -272,7 +269,7 @@ function ReportPreview() {
           </div>
         </div>
 
-        {/* ── Footer ── */}
+        {/* Footer */}
         <div style={{ background:'#F8FAFC', borderTop:`1px solid ${L.border}`, padding:'10px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <span style={{ fontSize:10, color:L.muted }}>Based on live data · Australian addresses only</span>
           <span style={{ fontSize:10, fontWeight:700, color:c.color }}>View full report →</span>
@@ -306,7 +303,9 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
   const off = 188-(188*sc/100)
   return (
     <div style={{ padding: 20 }}>
-      <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 8 }}>📍 142 Bourke St, Melbourne VIC</p>
+      <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 8, display:'flex', alignItems:'center', gap:4 }}>
+        <LI n="mapPin" size={10} color='#6B7280'/>142 Bourke St, Melbourne VIC
+      </p>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ position: 'relative', width: 72, height: 72 }}>
           <svg viewBox="0 0 60 60" width="72" height="72" style={{ transform: 'rotate(-90deg)' }}>
@@ -390,7 +389,12 @@ function ShowcaseReportUI() {
   return (
     <div style={{ padding: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-        <div><p style={{ fontSize: 10, color: '#6B7280', marginBottom: 2 }}>📍 88 Oxford St, Darlinghurst NSW</p><p style={{ fontSize: 13, fontWeight: 700, color: D.text1 }}>Feasibility Report</p></div>
+        <div>
+          <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 2, display:'flex', alignItems:'center', gap:4 }}>
+            <LI n="mapPin" size={10} color='#6B7280'/>88 Oxford St, Darlinghurst NSW
+          </p>
+          <p style={{ fontSize: 13, fontWeight: 700, color: D.text1 }}>Feasibility Report</p>
+        </div>
         <div style={{ background: 'rgba(5,150,105,.15)', border: '1px solid rgba(5,150,105,.4)', borderRadius: 8, padding: '7px 14px', textAlign: 'center' }}>
           <p style={{ fontSize: 17, fontWeight: 900, color: D.e }}>GO</p>
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 88</p>
@@ -431,57 +435,54 @@ function DarkShowcase() {
   return (
     <div style={{ position: 'relative', overflow: 'hidden', fontFamily: font }}
       onMouseEnter={()=>{ paused.current=true }} onMouseLeave={()=>{ paused.current=false }}>
-      {/* Mesh BG */}
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 10% 20%, rgba(15,118,110,.2) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 90% 80%, rgba(6,95,70,.18) 0%, transparent 55%), linear-gradient(160deg, #061412 0%, #030C0B 50%, #071814 100%)' }}/>
-      {/* Top glow line */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(20,184,166,.5) 50%, transparent)', zIndex: 5 }}/>
-      {/* Bottom glow line */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(20,184,166,.3) 50%, transparent)', zIndex: 5 }}/>
 
       {/* Tab bar */}
       <div style={{ position: 'relative', zIndex: 5, borderBottom: '1px solid rgba(255,255,255,.05)' }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', overflowX: 'auto', padding: '0 40px', scrollbarWidth: 'none' as const }}>
-        {SHOWCASE_TABS.map((t,i)=>(
-          <button key={t.id} onClick={()=>go(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '16px 22px 14px', fontFamily: font, fontSize: 13.5, fontWeight: i===idx?700:400, color: i===idx?D.text1:D.text3, whiteSpace: 'nowrap' as const, position: 'relative', transition: 'color .2s' }}>
-            {t.label}
-            <div style={{ position: 'absolute', bottom: -1, left: '50%', transform: 'translateX(-50%)', height: 2, background: `linear-gradient(90deg,${D.brand},${D.glow})`, borderRadius: 2, width: i===idx?'80%':'0%', transition: 'width .35s ease' }}/>
-          </button>
-        ))}
-      </div>
+        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', overflowX: 'auto', padding: '0 40px', scrollbarWidth: 'none' as const }}>
+          {SHOWCASE_TABS.map((t,i)=>(
+            <button key={t.id} onClick={()=>go(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '16px 22px 14px', fontFamily: font, fontSize: 13.5, fontWeight: i===idx?700:400, color: i===idx?D.text1:D.text3, whiteSpace: 'nowrap' as const, position: 'relative', transition: 'color .2s' }}>
+              {t.label}
+              <div style={{ position: 'absolute', bottom: -1, left: '50%', transform: 'translateX(-50%)', height: 2, background: `linear-gradient(90deg,${D.brand},${D.glow})`, borderRadius: 2, width: i===idx?'80%':'0%', transition: 'width .35s ease' }}/>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 5, padding: '72px 40px 80px' }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
-        {/* Left text */}
-        <div key={tab.id+'-t-'+ak} style={{ animation: 'sc-up .45s ease both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(15,118,110,.14)', border: `1px solid ${D.glow}40`, borderRadius: 30, padding: '5px 16px 5px 10px', fontSize: 10.5, fontWeight: 700, color: D.glow, letterSpacing: '.12em', textTransform: 'uppercase' as const, marginBottom: 18 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: D.glow, display: 'inline-block' }}/>
-            Feature Showcase
+        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+          {/* Left text */}
+          <div key={tab.id+'-t-'+ak} style={{ animation: 'sc-up .45s ease both' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(15,118,110,.14)', border: `1px solid ${D.glow}40`, borderRadius: 30, padding: '5px 16px 5px 10px', fontSize: 10.5, fontWeight: 700, color: D.glow, letterSpacing: '.12em', textTransform: 'uppercase' as const, marginBottom: 18 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: D.glow, display: 'inline-block' }}/>
+              Feature Showcase
+            </div>
+            <h2 style={{ fontSize: 'clamp(26px,3.8vw,40px)', fontWeight: 900, letterSpacing: '-.045em', lineHeight: 1.08, marginBottom: 18, whiteSpace: 'pre-line' as const, background: `linear-gradient(135deg, ${D.text1} 30%, ${D.glow} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              {tab.headline}
+            </h2>
+            <p style={{ fontSize: 14.5, color: D.text2, lineHeight: 1.8, marginBottom: 28 }}>{tab.sub}</p>
+            <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid rgba(20,184,166,.3)`, background: 'rgba(15,118,110,.12)', color: D.text1, borderRadius: 10, padding: '12px 20px', fontSize: 13.5, fontWeight: 600, textDecoration: 'none', fontFamily: font }}>
+              See how it works →
+            </Link>
           </div>
-          <h2 style={{ fontSize: 'clamp(26px,3.8vw,40px)', fontWeight: 900, letterSpacing: '-.045em', lineHeight: 1.08, marginBottom: 18, whiteSpace: 'pre-line' as const, background: `linear-gradient(135deg, ${D.text1} 30%, ${D.glow} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            {tab.headline}
-          </h2>
-          <p style={{ fontSize: 14.5, color: D.text2, lineHeight: 1.8, marginBottom: 28 }}>{tab.sub}</p>
-          <Link href="/auth/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid rgba(20,184,166,.3)`, background: 'rgba(15,118,110,.12)', color: D.text1, borderRadius: 10, padding: '12px 20px', fontSize: 13.5, fontWeight: 600, textDecoration: 'none', fontFamily: font }}>
-            See how it works →
-          </Link>
-        </div>
 
-        {/* Right device */}
-        <div key={tab.id+'-d-'+ak} style={{ animation: 'sc-up .5s ease both', display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', maxWidth: 440, background: 'rgba(10,18,16,.92)', border: D.border, borderRadius: 18, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(15,118,110,.08)' }}>
-            <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ display: 'flex', gap: 4 }}>{['#FF5F57','#FFBD2E','#28CA41'].map(c=><div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}</div>
-              <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>app.locatalyze.com.au/analyse</div>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 900, color: '#fff' }}>L</div>
-            </div>
-            <div style={{ background: '#0A1210', minHeight: 280 }}>
-              <ShowcaseDeviceUI ui={tab.ui} ak={ak}/>
+          {/* Right device */}
+          <div key={tab.id+'-d-'+ak} style={{ animation: 'sc-up .5s ease both', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ width: '100%', maxWidth: 440, background: 'rgba(10,18,16,.92)', border: D.border, borderRadius: 18, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(15,118,110,.08)' }}>
+              <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 4 }}>{['#FF5F57','#FFBD2E','#28CA41'].map(c=><div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}</div>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>app.locatalyze.com.au/analyse</div>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 900, color: '#fff' }}>L</div>
+              </div>
+              <div style={{ background: '#0A1210', minHeight: 280 }}>
+                <ShowcaseDeviceUI ui={tab.ui} ak={ak}/>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
 
       {/* Progress */}
@@ -501,7 +502,6 @@ function DarkShowcase() {
 }
 
 // ── Premium Report ─────────────────────────────────────────────────
-
 const PR_DATA = {
   go: {
     biz: 'Specialty Coffee Shop', location: 'Subiaco, WA', suburb: 'High-income inner suburb', verdict: 'GO', score: 82,
@@ -510,16 +510,16 @@ const PR_DATA = {
     kpis: [
       { label: 'Monthly Revenue',  value: '$91,200',  sub: '+12% vs benchmark', up: true  },
       { label: 'Monthly Profit',   value: '$24,800',  sub: '27% margin',        up: true  },
-      { label: 'Annual Profit',    value: '$297,600', sub: 'Year 1 projection',  up: true  },
+      { label: 'Annual Profit',    value: '$297,600', sub: 'Year 1 projection', up: true  },
       { label: 'Payback Period',   value: '7 months', sub: 'Below avg 14mo',    up: true  },
     ],
     revenue: [58, 67, 74, 80, 86, 91],
     profit:  [10, 14, 17, 21, 23, 25],
     scores: [
-      { label: 'Foot Traffic & Demand', score: 85, icon: '🚶' },
-      { label: 'Rent Affordability',    score: 78, icon: '🏠' },
-      { label: 'Competition Level',     score: 72, icon: '🏪' },
-      { label: 'Profitability',         score: 90, icon: '💰' },
+      { label: 'Foot Traffic & Demand', score: 85, icon: 'activity' },
+      { label: 'Rent Affordability',    score: 78, icon: 'home' },
+      { label: 'Competition Level',     score: 72, icon: 'target' },
+      { label: 'Profitability',         score: 90, icon: 'trendingUp' },
     ],
     heatmap: [8,6,5,7,9,8,7, 4,3,2,4,6,5,4, 6,5,4,6,8,7,6, 5,4,3,5,7,6,5, 7,6,5,7,9,8,7],
     swot: {
@@ -543,10 +543,10 @@ const PR_DATA = {
     revenue: [42, 55, 68, 74, 70, 74],
     profit:  [4,  8,  12, 11, 9,  11],
     scores: [
-      { label: 'Foot Traffic & Demand', score: 68, icon: '🚶' },
-      { label: 'Rent Affordability',    score: 55, icon: '🏠' },
-      { label: 'Competition Level',     score: 60, icon: '🏪' },
-      { label: 'Profitability',         score: 62, icon: '💰' },
+      { label: 'Foot Traffic & Demand', score: 68, icon: 'activity' },
+      { label: 'Rent Affordability',    score: 55, icon: 'home' },
+      { label: 'Competition Level',     score: 60, icon: 'target' },
+      { label: 'Profitability',         score: 62, icon: 'trendingUp' },
     ],
     heatmap: [7,8,9,8,6,4,3, 3,4,5,5,4,3,2, 5,6,7,7,5,4,3, 4,5,6,6,4,3,2, 6,7,8,8,6,4,3],
     swot: {
@@ -570,10 +570,10 @@ const PR_DATA = {
     revenue: [38, 42, 46, 50, 51, 51],
     profit:  [1,  1,  2,  3,  3,  3],
     scores: [
-      { label: 'Foot Traffic & Demand', score: 48, icon: '🚶' },
-      { label: 'Rent Affordability',    score: 38, icon: '🏠' },
-      { label: 'Competition Level',     score: 42, icon: '🏪' },
-      { label: 'Profitability',         score: 46, icon: '💰' },
+      { label: 'Foot Traffic & Demand', score: 48, icon: 'activity' },
+      { label: 'Rent Affordability',    score: 38, icon: 'home' },
+      { label: 'Competition Level',     score: 42, icon: 'target' },
+      { label: 'Profitability',         score: 46, icon: 'trendingUp' },
     ],
     heatmap: [3,2,1,2,3,2,1, 2,1,1,1,2,2,1, 4,3,2,3,4,3,2, 3,2,1,2,3,2,1, 2,1,1,2,2,2,1],
     swot: {
@@ -586,7 +586,6 @@ const PR_DATA = {
   },
 }
 
-// Animated score ring
 function ScoreRing({ score, color, size = 72 }: { score: number; color: string; size?: number }) {
   const [anim, setAnim] = useState(0)
   const r = size * 0.38
@@ -613,7 +612,6 @@ function ScoreRing({ score, color, size = 72 }: { score: number; color: string; 
   )
 }
 
-// SVG bar + line chart
 function RevenueChart({ revenue, profit, color }: { revenue: number[]; profit: number[]; color: string }) {
   const [fired, setFired] = useState(false)
   useEffect(() => { setFired(false); const t = setTimeout(() => setFired(true), 80); return () => clearTimeout(t) }, [revenue])
@@ -621,7 +619,6 @@ function RevenueChart({ revenue, profit, color }: { revenue: number[]; profit: n
   const maxR = Math.max(...revenue)
   const W = 340, H = 100, padL = 32, padB = 20, padT = 8
   const bW = (W - padL) / revenue.length - 6
-  // Line path for profit
   const pts = profit.map((v, i) => {
     const x = padL + i * ((W - padL) / revenue.length) + bW / 2
     const y = padT + (H - padT - padB) * (1 - v / maxR)
@@ -631,12 +628,10 @@ function RevenueChart({ revenue, profit, color }: { revenue: number[]; profit: n
   return (
     <div style={{ position: 'relative' }}>
       <svg viewBox={`0 0 ${W} ${H + padB}`} style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
-        {/* Grid lines */}
         {[0.25, 0.5, 0.75, 1].map(f => (
           <line key={f} x1={padL} y1={padT + (H - padT - padB) * (1 - f)} x2={W} y2={padT + (H - padT - padB) * (1 - f)}
             stroke={L.border} strokeWidth=".8" strokeDasharray="4 3"/>
         ))}
-        {/* Revenue bars */}
         {revenue.map((v, i) => {
           const x = padL + i * ((W - padL) / revenue.length) + 3
           const barH = (H - padT - padB) * (v / maxR)
@@ -648,23 +643,19 @@ function RevenueChart({ revenue, profit, color }: { revenue: number[]; profit: n
               style={{ transition: `height .6s ease ${i * .07}s, y .6s ease ${i * .07}s` }}/>
           )
         })}
-        {/* Profit line */}
         <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           strokeDasharray="400" strokeDashoffset={fired ? '0' : '400'}
           style={{ transition: 'stroke-dashoffset 1.2s ease .3s' }}/>
-        {/* Profit dots */}
         {profit.map((v, i) => {
           const x = padL + i * ((W - padL) / revenue.length) + bW / 2
           const y = padT + (H - padT - padB) * (1 - v / maxR)
           return <circle key={i} cx={x} cy={y} r="3.5" fill="#fff" stroke={color} strokeWidth="2"
             opacity={fired ? 1 : 0} style={{ transition: `opacity .2s ease ${.8 + i * .07}s` }}/>
         })}
-        {/* X axis labels */}
         {months.map((m, i) => (
           <text key={m} x={padL + i * ((W - padL) / revenue.length) + bW / 2} y={H + padB - 2}
             textAnchor="middle" fontSize="9" fill={L.muted}>{m}</text>
         ))}
-        {/* Y axis labels */}
         {[0, 50, 100].map(v => (
           <text key={v} x={padL - 4} y={padT + (H - padT - padB) * (1 - v / maxR) + 3}
             textAnchor="end" fontSize="8" fill={L.muted}>{v > 0 ? `$${v}k` : ''}</text>
@@ -684,7 +675,6 @@ function RevenueChart({ revenue, profit, color }: { revenue: number[]; profit: n
   )
 }
 
-// Demand heatmap (7 days × 5 time slots)
 function DemandHeatmap({ data, color }: { data: number[]; color: string }) {
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   const times = ['Morning','Midday','Arvo','Evening','Night']
@@ -724,13 +714,13 @@ function DemandHeatmap({ data, color }: { data: number[]; color: string }) {
   )
 }
 
-// Animated score bar
+// ── icon is now a Lucide name string (activity/home/target/trendingUp)
 function PremiumBar({ label, score, color, icon, delay = 0, fired }: { label: string; score: number; color: string; icon: string; delay?: number; fired: boolean }) {
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-          <span style={{ fontSize: 14 }}>{icon}</span>
+          <LI n={icon} size={16} color={color}/>
           <span style={{ fontSize: 12.5, color: L.slate, fontWeight: 600 }}>{label}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -751,7 +741,6 @@ function PremiumBar({ label, score, color, icon, delay = 0, fired }: { label: st
   )
 }
 
-// SWOT 2×2 grid
 function SwotGrid({ swot }: { swot: typeof PR_DATA.go.swot }) {
   const quadrants = [
     { key: 'strengths',     label: 'Strengths',     icon: '💪', bg: '#F0FDF4', border: '#BBF7D0', text: '#065F46', dot: '#059669' },
@@ -793,27 +782,27 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
     return () => clearTimeout(t)
   }, [verdict])
 
+  // icon is now a Lucide name string (barChart/lineChart/map/zap)
   const tabs = [
-    { id: 'overview',   label: 'Overview',    icon: '📊' },
-    { id: 'financials', label: 'Financials',  icon: '💰' },
-    { id: 'market',     label: 'Market',      icon: '🗺️' },
-    { id: 'swot',       label: 'SWOT',        icon: '⚡' },
+    { id: 'overview',   label: 'Overview',   icon: 'barChart'   },
+    { id: 'financials', label: 'Financials', icon: 'lineChart'  },
+    { id: 'market',     label: 'Market',     icon: 'map'        },
+    { id: 'swot',       label: 'SWOT',       icon: 'zap'        },
   ] as const
 
   return (
     <div style={{ background: L.white, borderRadius: 24, border: `1px solid ${L.border}`, boxShadow: '0 16px 64px rgba(0,0,0,.1)', overflow: 'hidden', fontFamily: font }}>
 
-      {/* ── Report Header ── */}
+      {/* Report Header */}
       <div style={{ background: `linear-gradient(135deg, #0C1F1C 0%, #0F766E 60%, #0891B2 100%)`, padding: isMobile ? '24px 20px' : '32px 40px', position: 'relative', overflow: 'hidden' }}>
-        {/* Decorative circles */}
         <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,.04)', pointerEvents: 'none' }}/>
         <div style={{ position: 'absolute', bottom: -20, right: 80, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,.03)', pointerEvents: 'none' }}/>
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          {/* Top meta row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' as const }}>
+            {/* Location badge — MapPin icon */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.12)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.8)', fontWeight: 600 }}>
-              📍 {d.location}
+              <LI n="mapPin" size={11} color='rgba(255,255,255,.8)'/> {d.location}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.6)', fontWeight: 500 }}>
               🏙️ {d.suburb}
@@ -826,7 +815,6 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 20 }}>
             <div>
               <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#fff', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
-              {/* Verdict badge */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: d.verdictBg, border: `2px solid ${d.verdictBorder}`, borderRadius: 14, padding: '8px 18px' }}>
                 <span style={{ fontSize: 20 }}>{verdict === 'go' ? '✅' : verdict === 'caution' ? '⚠️' : '🚫'}</span>
                 <div>
@@ -836,7 +824,6 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
               </div>
             </div>
 
-            {/* Score ring + KPI pills */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' as const }}>
               <div style={{ textAlign: 'center' as const }}>
                 <ScoreRing score={d.score} color={d.verdictColor} size={isMobile ? 68 : 84}/>
@@ -857,29 +844,31 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
         </div>
       </div>
 
-      {/* ── Inner nav tabs ── */}
+      {/* Inner nav tabs — Lucide icons */}
       <div style={{ display: 'flex', borderBottom: `1px solid ${L.border}`, background: '#FAFBFC', overflowX: 'auto' as const }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setActiveSection(t.id)}
             style={{ flex: isMobile ? 'none' : 1, padding: isMobile ? '12px 16px' : '14px 20px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: font, fontSize: 13, fontWeight: activeSection === t.id ? 700 : 500, color: activeSection === t.id ? d.verdictColor : L.muted, borderBottom: `2px solid ${activeSection === t.id ? d.verdictColor : 'transparent'}`, whiteSpace: 'nowrap' as const, transition: 'all .2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            <span>{t.icon}</span>{t.label}
+            <LI n={t.icon} size={14} color={activeSection === t.id ? d.verdictColor : L.muted}/>
+            {t.label}
           </button>
         ))}
       </div>
 
-      {/* ── AI Verdict banner ── */}
+      {/* AI Verdict banner — Lightbulb icon */}
       <div style={{ margin: '20px 24px 0', background: d.verdictBg, border: `1px solid ${d.verdictBorder}`, borderRadius: 12, padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-        <div style={{ width: 28, height: 28, borderRadius: 8, background: d.verdictColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0 }}>💡</div>
+        <div style={{ width: 28, height: 28, borderRadius: 8, background: d.verdictColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <LI n="lightbulb" size={14} color="#fff"/>
+        </div>
         <p style={{ fontSize: 13, color: d.verdictColor, lineHeight: 1.65 }}><strong>AI Analysis:</strong> {d.rec}</p>
       </div>
 
-      {/* ── Tab content ── */}
+      {/* Tab content */}
       <div style={{ padding: isMobile ? '20px 16px' : '24px 24px 32px' }}>
 
         {/* OVERVIEW */}
         {activeSection === 'overview' && (
           <div style={{ animation: 'cw-fade .3s ease' }}>
-            {/* 4 KPI cards */}
             <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 12 }}>Key Metrics</p>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: 10, marginBottom: 28 }}>
               {d.kpis.map((k, i) => (
@@ -896,7 +885,6 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
               ))}
             </div>
 
-            {/* Score breakdown */}
             <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>Score Breakdown</p>
             <div style={{ background: '#FAFBFC', borderRadius: 16, border: `1px solid ${L.border}`, padding: '18px 20px' }}>
               {d.scores.map((s, i) => (
@@ -995,7 +983,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
         )}
       </div>
 
-      {/* ── Footer CTA ── */}
+      {/* Footer CTA */}
       <div style={{ borderTop: `1px solid ${L.border}`, padding: isMobile ? '16px' : '18px 24px', background: L.mint, display: 'flex', flexDirection: isMobile ? 'column' : 'row' as const, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: 12 }}>
         <div>
           <p style={{ fontSize: 13, fontWeight: 600, color: L.slate, marginBottom: 2 }}>This is a sample. Your real report uses live data.</p>
@@ -1009,47 +997,46 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
   )
 }
 
-// ── How It Works animated demo (light theme) ─────────────────────
-// ── Cinematic Walkthrough — replaces How It Works ────────────────
-// 3-phase split-screen browser: form (left) + map/results (right)
+// ── Cinematic Walkthrough ─────────────────────────────────────────
 const CW_PINS = [
   { x:58, y:40, label:'The Daily Grind', threat:'High', rating:4.2, dist:'120m', color:'#EF4444', d:0 },
   { x:28, y:58, label:'Brew & Co.',      threat:'Med',  rating:3.8, dist:'280m', color:'#F59E0B', d:350 },
   { x:72, y:68, label:'Sunrise Café',    threat:'High', rating:4.5, dist:'390m', color:'#EF4444', d:700 },
   { x:20, y:30, label:'Quick Bites',     threat:'Low',  rating:3.1, dist:'470m', color:'#10B981', d:1050 },
 ]
+
+// icon is a Lucide name string (mapPin/navigation/users/trendingUp/barChart)
 const CW_STEPS = [
-  { icon:'📍', label:'Address resolved',     detail:'45 King St, Newtown NSW 2042' },
-  { icon:'🗺️', label:'Competitors scanned',  detail:'4 businesses within 500m' },
-  { icon:'👥', label:'Demographics loaded',   detail:'ABS — high income, young adults' },
-  { icon:'💰', label:'Financial model built', detail:'Rent viability + break-even' },
-  { icon:'📊', label:'Verdict generated',     detail:'GO — score 82 / 100' },
+  { icon: 'mapPin',     label: 'Address resolved',     detail: '45 King St, Newtown NSW 2042' },
+  { icon: 'navigation', label: 'Competitors scanned',  detail: '4 businesses within 500m' },
+  { icon: 'users',      label: 'Demographics loaded',   detail: 'ABS — high income, young adults' },
+  { icon: 'trendingUp', label: 'Financial model built', detail: 'Rent viability + break-even' },
+  { icon: 'barChart',   label: 'Verdict generated',     detail: 'GO — score 82 / 100' },
 ]
+
 const CW_PHASE_META = [
-  { step:'01', label:'Enter Address',  desc:'Type any Australian address. Add your business type, monthly rent and transaction value. Done in 60 seconds.' },
-  { step:'02', label:'AI Analyses',    desc:'Locatalyze scans competitors, loads live demographics, calculates rent viability and builds your financial model — all in real time.' },
-  { step:'03', label:'Get Your Report',desc:'Receive a clear GO, CAUTION or NO verdict with a full financial model, score breakdown, SWOT analysis and 3-year projection.' },
+  { step:'01', label:'Enter Address',   desc:'Type any Australian address. Add your business type, monthly rent and transaction value. Done in 60 seconds.' },
+  { step:'02', label:'AI Analyses',     desc:'Locatalyze scans competitors, loads live demographics, calculates rent viability and builds your financial model — all in real time.' },
+  { step:'03', label:'Get Your Report', desc:'Receive a clear GO, CAUTION or NO verdict with a full financial model, score breakdown, SWOT analysis and 3-year projection.' },
 ]
 
 function CinematicWalkthrough() {
-  const [phase, setPhase]       = useState(0)   // 0=ready 1=typing 2=scanning 3=report
-  const [typed, setTyped]       = useState('')
-  const [progress, setProgress] = useState(0)
-  const [stepsVisible, setSteps]= useState(0)
-  const [scanLine, setScanLine] = useState(0)
-  const [pins, setPins]         = useState<number[]>([])
+  const [phase, setPhase]        = useState(0)
+  const [typed, setTyped]        = useState('')
+  const [progress, setProgress]  = useState(0)
+  const [stepsVisible, setSteps] = useState(0)
+  const [scanLine, setScanLine]  = useState(0)
+  const [pins, setPins]          = useState<number[]>([])
   const [scoreAnim, setScoreAnim]= useState(0)
   const [barsFired, setBarsFired]= useState(false)
-  const [replay, setReplay]     = useState(0)
+  const [replay, setReplay]      = useState(0)
   const addr = '45 King St, Newtown NSW'
 
   useEffect(() => {
     let dead = false
-    // Reset everything
     setPhase(0); setTyped(''); setProgress(0); setSteps(0)
     setScanLine(0); setPins([]); setScoreAnim(0); setBarsFired(false)
 
-    // ── Phase 1: type address (starts 0.5s)
     const t1 = setTimeout(() => {
       if (dead) return; setPhase(1); let i = 0
       const ty = setInterval(() => {
@@ -1057,32 +1044,26 @@ function CinematicWalkthrough() {
         i++; setTyped(addr.slice(0, i))
         if (i >= addr.length) {
           clearInterval(ty)
-          // ── Phase 2: scan (starts 0.6s after typing done)
           const t2 = setTimeout(() => {
             if (dead) return; setPhase(2)
-            // scan line sweeps
             let sl = 0
             const scan = setInterval(() => {
               if (dead) { clearInterval(scan); return }
               sl += 2; setScanLine(sl)
               if (sl >= 100) clearInterval(scan)
             }, 28)
-            // progress bar
             let p = 0
             const pr = setInterval(() => {
               if (dead) { clearInterval(pr); return }
               p += 1.4; setProgress(Math.min(p, 100))
               if (p >= 100) clearInterval(pr)
             }, 38)
-            // steps check off
             CW_STEPS.forEach((_, idx) => {
               setTimeout(() => { if (!dead) setSteps(idx + 1) }, 500 + idx * 520)
             })
-            // pins drop
             CW_PINS.forEach((pin, idx) => {
               setTimeout(() => { if (!dead) setPins(v => [...v, idx]) }, 400 + pin.d)
             })
-            // ── Phase 3: report (starts after scanning)
             const t3 = setTimeout(() => {
               if (dead) return; setPhase(3); let s = 0
               const sa = setInterval(() => {
@@ -1098,7 +1079,6 @@ function CinematicWalkthrough() {
       }, 65)
     }, 500)
 
-    // auto-replay
     const rp = setTimeout(() => { if (!dead) setReplay(r => r + 1) }, 17000)
     return () => { dead = true; clearTimeout(t1); clearTimeout(rp) }
   }, [replay])
@@ -1108,7 +1088,7 @@ function CinematicWalkthrough() {
 
   return (
     <div style={{ width: '100%', fontFamily: font }}>
-      {/* ── Phase stepper ── */}
+      {/* Phase stepper */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 32 }}>
         {CW_PHASE_META.map((p, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
@@ -1132,7 +1112,7 @@ function CinematicWalkthrough() {
         ))}
       </div>
 
-      {/* ── Browser mockup ── */}
+      {/* Browser mockup */}
       <div style={{ background: L.white, borderRadius: 20, border: `1px solid ${L.border}`, boxShadow: '0 8px 48px rgba(0,0,0,.1)', overflow: 'hidden' }}>
         {/* Chrome bar */}
         <div style={{ background: '#F8FAFC', borderBottom: `1px solid ${L.border}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1176,7 +1156,7 @@ function CinematicWalkthrough() {
                   ))}
                 </div>
 
-                {/* Progress */}
+                {/* Progress — Lucide step icons */}
                 {phase === 2 && (
                   <div style={{ animation: 'cw-fade .3s ease' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -1188,7 +1168,7 @@ function CinematicWalkthrough() {
                     </div>
                     {CW_STEPS.map((s, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, opacity: stepsVisible > i ? 1 : 0.28, transition: 'opacity .3s' }}>
-                        <span style={{ fontSize: 13 }}>{s.icon}</span>
+                        <LI n={s.icon} size={15} color={stepsVisible > i ? L.emerald : L.muted}/>
                         <div style={{ flex: 1 }}>
                           <span style={{ fontSize: 12, fontWeight: 600, color: stepsVisible > i ? L.slate : L.muted }}>{s.label}</span>
                           {stepsVisible > i && <p style={{ fontSize: 10, color: L.muted, marginTop: 1 }}>{s.detail}</p>}
@@ -1253,9 +1233,8 @@ function CinematicWalkthrough() {
             )}
           </div>
 
-          {/* RIGHT PANEL — map always visible */}
+          {/* RIGHT PANEL — map */}
           <div style={{ position: 'relative', background: '#EFF6EE', overflow: 'hidden', minHeight: 340 }}>
-            {/* Street grid SVG */}
             <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 100 100" preserveAspectRatio="none">
               {[[22,26,22,23],[47,26,22,23],[22,51,22,23],[47,51,22,23],[0,0,18,24],[72,0,28,24],[0,76,18,24],[72,76,28,24],[0,26,18,23],[72,26,27,23],[0,51,18,23],[72,51,27,23]].map(([x,y,w,h],i) => (
                 <rect key={i} x={x} y={y} width={w} height={h} fill="#D1FAE5" opacity=".75"/>
@@ -1263,7 +1242,6 @@ function CinematicWalkthrough() {
               {[[0,25,100,25],[0,50,100,50],[0,75,100,75],[20,0,20,100],[45,0,45,100],[70,0,70,100]].map(([x1,y1,x2,y2],i) => (
                 <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#A7F3D0" strokeWidth=".6"/>
               ))}
-              {/* Scan line (phase 2) */}
               {phase === 2 && scanLine < 100 && (
                 <rect x="0" y={scanLine - 4} width="100" height="8" fill="url(#cwScan)" opacity=".8"/>
               )}
@@ -1276,22 +1254,22 @@ function CinematicWalkthrough() {
               </defs>
             </svg>
 
-            {/* Phase 1: idle overlay */}
+            {/* Phase 1: idle overlay — Map icon */}
             {phase <= 1 && (
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', background: 'rgba(240,253,244,.5)', backdropFilter: 'blur(2px)' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🗺️</div>
+                <div style={{ marginBottom: 8 }}>
+                  <LI n="map" size={36} color={L.muted}/>
+                </div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: L.muted }}>Map loads after address entry</p>
               </div>
             )}
 
-            {/* Location label */}
             {phase >= 2 && (
               <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,.92)', borderRadius: 8, padding: '3px 10px', fontSize: 10, fontWeight: 700, color: L.slate, backdropFilter: 'blur(4px)', border: `1px solid ${L.border}`, zIndex: 5 }}>
                 📍 Newtown NSW 2042
               </div>
             )}
 
-            {/* Scanning badge */}
             {phase === 2 && (
               <div style={{ position: 'absolute', top: 10, right: 10, background: L.emerald, color: '#fff', borderRadius: 8, padding: '3px 10px', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5, zIndex: 5 }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#fff', display: 'inline-block', animation: 'pulse-dot .8s infinite' }}/>
@@ -1299,19 +1277,16 @@ function CinematicWalkthrough() {
               </div>
             )}
 
-            {/* Competitors badge (phase 3) */}
             {phase === 3 && (
               <div style={{ position: 'absolute', top: 10, right: 10, background: '#fff', color: L.slate, borderRadius: 8, padding: '3px 10px', fontSize: 10, fontWeight: 700, border: `1px solid ${L.border}`, boxShadow: '0 2px 8px rgba(0,0,0,.08)', zIndex: 5 }}>
                 {CW_PINS.length} competitors mapped
               </div>
             )}
 
-            {/* 500m radius ring */}
             {phase >= 2 && (
               <div style={{ position: 'absolute', left: '45%', top: '52%', transform: 'translate(-50%,-50%)', width: 140, height: 140, borderRadius: '50%', border: '1.5px dashed rgba(16,185,129,.45)', background: 'rgba(16,185,129,.04)', animation: 'ring-in .5s ease', pointerEvents: 'none', zIndex: 3 }}/>
             )}
 
-            {/* Competitor pins */}
             {phase >= 2 && CW_PINS.map((c, i) => pins.includes(i) && (
               <div key={i} style={{ position: 'absolute', left: `${c.x}%`, top: `${c.y}%`, transform: 'translate(-50%,-100%)', animation: 'pin-drop .35s cubic-bezier(.175,.885,.32,1.275) both', zIndex: 4 }}>
                 <div style={{ position: 'relative', width: 20, height: 20 }}>
@@ -1323,7 +1298,6 @@ function CinematicWalkthrough() {
               </div>
             ))}
 
-            {/* YOUR pin */}
             {phase >= 2 && (
               <div style={{ position: 'absolute', left: '45%', top: '52%', transform: 'translate(-50%,-100%)', animation: 'pin-drop .4s cubic-bezier(.175,.885,.32,1.275) both', zIndex: 6 }}>
                 <div style={{ position: 'relative', width: 24, height: 24 }}>
@@ -1334,7 +1308,6 @@ function CinematicWalkthrough() {
               </div>
             )}
 
-            {/* Phase 3 threat legend */}
             {phase === 3 && (
               <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, background: 'rgba(255,255,255,.94)', borderRadius: 10, padding: '8px 12px', display: 'flex', gap: 12, backdropFilter: 'blur(4px)', border: `1px solid ${L.border}`, zIndex: 5 }}>
                 {[{c:'#EF4444',l:'High (2)'},{c:'#F59E0B',l:'Medium (1)'},{c:'#10B981',l:'Low (1)'}].map(item => (
@@ -1347,7 +1320,6 @@ function CinematicWalkthrough() {
               </div>
             )}
 
-            {/* Map attribution */}
             <div style={{ position: 'absolute', bottom: 6, right: 8, fontSize: 9, color: '#94A3B8', zIndex: 2 }}>Locatalyze Maps</div>
           </div>
         </div>
@@ -1358,7 +1330,7 @@ function CinematicWalkthrough() {
         </div>
       </div>
 
-      {/* ── Phase description ── */}
+      {/* Phase descriptions */}
       <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
         {CW_PHASE_META.map((p, i) => (
           <div key={i} style={{ padding: '18px 20px', borderRadius: 16, background: phaseIdx === i ? L.emeraldXlt : '#F8FAFC', border: `1.5px solid ${phaseIdx === i ? L.emeraldLt : L.border}`, transition: 'all .4s' }}>
@@ -1373,6 +1345,8 @@ function CinematicWalkthrough() {
 
       <style>{`
         @keyframes cw-fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes pin-drop { from{opacity:0;transform:translate(-50%,-80%) scale(.5)} to{opacity:1;transform:translate(-50%,-100%) scale(1)} }
+        @keyframes ring-in { from{opacity:0;transform:translate(-50%,-50%) scale(.6)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
       `}</style>
     </div>
   )
@@ -1393,10 +1367,6 @@ export default function LandingPage() {
 
   useEffect(() => { if (scrolled && menuOpen) setMenuOpen(false) }, [scrolled])
 
-  const sampleReports = {} // data now lives in PR_DATA inside PremiumReport
-  const r = {} as any
-  const vc = {} as any
-
   const pad = isMobile ? '0 16px' : '0 40px'
   const sp  = isMobile ? '64px 16px' : '96px 40px'
   const W   = { maxWidth: 1240, margin: '0 auto' }
@@ -1414,7 +1384,7 @@ export default function LandingPage() {
         @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
       `}</style>
 
-      {/* ── NAV ── */}
+      {/* NAV */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: scrolled || menuOpen ? 'rgba(255,255,255,.97)' : 'transparent',
@@ -1451,7 +1421,6 @@ export default function LandingPage() {
         )}
       </nav>
 
-      {/* Mobile menu */}
       {isMobile && menuOpen && (
         <div style={{ position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99, background: L.white, borderBottom: `1px solid ${L.border}`, padding: 16, boxShadow: '0 8px 24px rgba(0,0,0,.08)' }}>
           {[{l:'How it works',h:'#how-it-works'},{l:'Sample report',h:'#sample-report'},{l:'Pricing',h:'#pricing'},{l:'Methodology',h:'/methodology'}].map(item => (
@@ -1464,14 +1433,12 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* ══ HERO — White ══════════════════════════════════════ */}
+      {/* HERO */}
       <section style={{ paddingTop: isMobile ? 80 : 100, paddingBottom: isMobile ? 56 : 80, background: L.white, position: 'relative', overflow: 'hidden' }}>
-        {/* Soft mint gradient at bottom */}
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 160, background: `linear-gradient(to top, ${L.mint}, transparent)`, pointerEvents: 'none' }}/>
         <div style={{ ...W, padding: pad, position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 36 : 60, alignItems: 'center' }}>
 
-            {/* Copy */}
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 100, padding: '5px 14px 5px 10px', fontSize: 11, fontWeight: 700, color: L.emerald, marginBottom: 20 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: L.emerald, display: 'inline-block', animation: 'pulse-dot 2s infinite' }}/>
@@ -1493,7 +1460,6 @@ export default function LandingPage() {
               </div>
               <p style={{ fontSize: 12, color: '#94A3B8' }}>Free plan · No credit card · 3 full reports included</p>
 
-              {/* Stats */}
               <div style={{ display: 'flex', gap: isMobile ? 20 : 28, marginTop: 28, paddingTop: 24, borderTop: `1px solid ${L.border}`, flexWrap: 'wrap' }}>
                 {[{value:'180+',label:'founders analysed'},{value:'620+',label:'locations scored'},{value:'94%',label:'accuracy rating'}].map(s => (
                   <div key={s.label}>
@@ -1504,7 +1470,6 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Report Preview */}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <ReportPreview/>
             </div>
@@ -1512,7 +1477,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ NICHE STRIP ══════════════════════════════════════ */}
+      {/* NICHE STRIP */}
       <div style={{ background: L.slate, padding: `12px ${isMobile ? 16 : 40}px` }}>
         <div style={{ ...W, display: 'flex', justifyContent: 'center', gap: isMobile ? 14 : 28, flexWrap: 'wrap', alignItems: 'center' }}>
           <p style={{ fontSize: 10, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.1em' }}>Built for</p>
@@ -1522,10 +1487,9 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ══ DARK SHOWCASE ════════════════════════════════════ */}
+      {/* DARK SHOWCASE */}
       {!isMobile && <DarkShowcase/>}
 
-      {/* Mobile version of showcase (simplified) */}
       {isMobile && (
         <section style={{ padding: '56px 16px', background: '#030C0B', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(15,118,110,.14)', border: '1px solid rgba(20,184,166,.28)', borderRadius: 30, padding: '5px 14px 5px 10px', fontSize: 10.5, fontWeight: 700, color: D.glow, letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 18 }}>
@@ -1541,8 +1505,7 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* ══ HOW IT WORKS — Mint ══════════════════════════════ */}
-      {/* ══ HOW IT WORKS — Mint ══════════════════════════════ */}
+      {/* HOW IT WORKS */}
       <section id="how-it-works" style={{ padding: sp, background: L.mint }}>
         <div style={{ ...W, padding: pad }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -1567,7 +1530,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ SAMPLE REPORT — White ════════════════════════════ */}
+      {/* SAMPLE REPORT */}
       <section id="sample-report" style={{ padding: sp, background: L.white }}>
         <div style={{ ...W, padding: pad }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
@@ -1576,12 +1539,11 @@ export default function LandingPage() {
             <p style={{ fontSize: 15, color: L.muted }}>Switch between verdicts to explore every scenario.</p>
           </div>
 
-          {/* Verdict switcher */}
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 28, flexWrap: 'wrap' }}>
             {([
-              { v: 'go',      label: 'GO Verdict',      icon: '✅', active: '#059669', badge: 'Best case' },
-              { v: 'caution', label: 'CAUTION',          icon: '⚠️', active: '#D97706', badge: 'Mixed signals' },
-              { v: 'no',      label: 'NO Verdict',       icon: '🚫', active: '#DC2626', badge: 'Avoid' },
+              { v: 'go',      label: 'GO Verdict',  icon: '✅', active: '#059669', badge: 'Best case' },
+              { v: 'caution', label: 'CAUTION',      icon: '⚠️', active: '#D97706', badge: 'Mixed signals' },
+              { v: 'no',      label: 'NO Verdict',   icon: '🚫', active: '#DC2626', badge: 'Avoid' },
             ] as const).map(({ v, label, icon, active, badge }) => (
               <button key={v} onClick={() => setActiveTab(v)} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -1604,13 +1566,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ DATA SOURCES — Dark premium ══════════════════════ */}
+      {/* DATA SOURCES — Dark premium — Lucide icons throughout */}
       <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: '#0B1512', position: 'relative', overflow: 'hidden' }}>
-        {/* Subtle radial glow */}
         <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:800, height:600, background:'radial-gradient(ellipse, rgba(16,185,129,.07) 0%, transparent 70%)', pointerEvents:'none' }}/>
 
         <div style={{ ...W, position:'relative', zIndex:2 }}>
-          {/* ── Header ── */}
+          {/* Header */}
           <div style={{ textAlign:'center', marginBottom: isMobile ? 40 : 64 }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'rgba(16,185,129,.12)', border:'1px solid rgba(16,185,129,.25)', borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:'#34D399', textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:16 }}>
               Data infrastructure
@@ -1626,19 +1587,19 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* ── Pipeline row ── */}
+          {/* Pipeline row — Globe / Activity / BarChart2 / Shield */}
           {!isMobile && (
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:0, marginBottom:64 }}>
               {[
-                { icon:'🗺️', label:'Live Data' },
-                { icon:'⚙️', label:'AI Processing' },
-                { icon:'📊', label:'Scoring Engine' },
-                { icon:'✅', label:'Your Verdict' },
+                { icon: 'globe',    label: 'Live Data' },
+                { icon: 'activity', label: 'AI Processing' },
+                { icon: 'barChart', label: 'Scoring Engine' },
+                { icon: 'shield',   label: 'Your Verdict' },
               ].map((step, i) => (
                 <div key={i} style={{ display:'flex', alignItems:'center' }}>
                   <div style={{ display:'flex', flexDirection:'column' as const, alignItems:'center', gap:8 }}>
-                    <div style={{ width:52, height:52, borderRadius:16, background: i === 3 ? 'linear-gradient(135deg,#059669,#10B981)' : 'rgba(255,255,255,.05)', border: i === 3 ? 'none' : '1px solid rgba(255,255,255,.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, boxShadow: i === 3 ? '0 4px 20px rgba(16,185,129,.4)' : 'none' }}>
-                      {step.icon}
+                    <div style={{ width:52, height:52, borderRadius:16, background: i === 3 ? 'linear-gradient(135deg,#059669,#10B981)' : 'rgba(255,255,255,.05)', border: i === 3 ? 'none' : '1px solid rgba(255,255,255,.08)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow: i === 3 ? '0 4px 20px rgba(16,185,129,.4)' : 'none' }}>
+                      <LI n={step.icon} size={22} color={i === 3 ? '#fff' : 'rgba(204,235,229,.45)'}/>
                     </div>
                     <span style={{ fontSize:11, fontWeight:600, color: i === 3 ? '#34D399' : 'rgba(204,235,229,.45)', whiteSpace:'nowrap' as const }}>{step.label}</span>
                   </div>
@@ -1652,86 +1613,79 @@ export default function LandingPage() {
             </div>
           )}
 
-          {/* ── 6 source cards — 3×2 grid ── */}
+          {/* 6 source cards — Navigation/Users/Home/Target/Bot/TrendingUp */}
           <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:14, marginBottom:48 }}>
             {[
               {
-                icon:'🗺️', source:'Google Maps & Places', badge:'Live API',
+                icon: 'navigation', source:'Google Maps & Places', badge:'Live API',
                 headline:'Every competitor mapped within 500m',
                 body:'We pull real-time business data — names, categories, ratings and coordinates — directly from Google Places. No manual databases, no stale listings.',
                 proof:'Updated with each analysis',
                 color:'#3B82F6', colorBg:'rgba(59,130,246,.08)', colorBorder:'rgba(59,130,246,.2)',
               },
               {
-                icon:'👥', source:'ABS Census & Demographics', badge:'Gov. verified',
+                icon: 'users', source:'ABS Census & Demographics', badge:'Gov. verified',
                 headline:'Income, age and population by suburb',
                 body:'Australian Bureau of Statistics census data gives us median income, age profile and population density — the foundation of every demand estimate.',
                 proof:'2021 ABS Census + quarterly updates',
                 color:'#8B5CF6', colorBg:'rgba(139,92,246,.08)', colorBorder:'rgba(139,92,246,.2)',
               },
               {
-                icon:'🏠', source:'Commercial Rent Benchmarks', badge:'Market data',
+                icon: 'home', source:'Commercial Rent Benchmarks', badge:'Market data',
                 headline:'Fair rent for every suburb and zone',
                 body:'Aggregated from commercial property listings and market research, we estimate realistic rent ranges so your financial model reflects what you\'ll actually pay.',
                 proof:'Refreshed monthly per suburb',
                 color:'#F59E0B', colorBg:'rgba(245,158,11,.08)', colorBorder:'rgba(245,158,11,.2)',
               },
               {
-                icon:'📊', source:'Competition Scoring Engine', badge:'AI-computed',
+                icon: 'target', source:'Competition Scoring Engine', badge:'AI-computed',
                 headline:'Threat rating for every nearby business',
                 body:'Our model scores competitor intensity by proximity, rating, category overlap and business count — giving you a number, not a vague "there\'s some competition."',
                 proof:'Per-radius, per-category scoring',
                 color:'#EF4444', colorBg:'rgba(239,68,68,.08)', colorBorder:'rgba(239,68,68,.2)',
               },
               {
-                icon:'🤖', source:'AI Financial Model', badge:'Proprietary',
+                icon: 'bot', source:'AI Financial Model', badge:'Proprietary',
                 headline:'Break-even, profit and 3-year outlook',
                 body:'Input your rent and transaction value — our model calculates daily volume needed, monthly profit, payback period and a 3-year revenue projection.',
-                proof:'Calibrated on 4,800+ analyses',
+                proof:'Calibrated on 180+ analyses',
                 color:'#10B981', colorBg:'rgba(16,185,129,.08)', colorBorder:'rgba(16,185,129,.25)',
               },
               {
-                icon:'📈', source:'Market Demand Signals', badge:'Multi-source',
+                icon: 'trendingUp', source:'Market Demand Signals', badge:'Multi-source',
                 headline:'Search trends and foot traffic by suburb',
                 body:'We combine category-level search volume, proximity to demand generators (transport, offices, universities) and ABS commute data to estimate real demand.',
                 proof:'Google Trends + ABS movement data',
                 color:'#0EA5E9', colorBg:'rgba(14,165,233,.08)', colorBorder:'rgba(14,165,233,.2)',
               },
-            ].map((d, i) => (
+            ].map((ds, i) => (
               <div key={i}
-                style={{ background:'rgba(255,255,255,.03)', border:`1px solid ${d.colorBorder}`, borderRadius:18, padding:'22px 20px', transition:'transform .2s, background .2s, box-shadow .2s', cursor:'default' }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform='translateY(-4px)'; el.style.background=d.colorBg; el.style.boxShadow=`0 12px 40px ${d.color}22` }}
+                style={{ background:'rgba(255,255,255,.03)', border:`1px solid ${ds.colorBorder}`, borderRadius:18, padding:'22px 20px', transition:'transform .2s, background .2s, box-shadow .2s', cursor:'default' }}
+                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform='translateY(-4px)'; el.style.background=ds.colorBg; el.style.boxShadow=`0 12px 40px ${ds.color}22` }}
                 onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform='translateY(0)'; el.style.background='rgba(255,255,255,.03)'; el.style.boxShadow='none' }}>
 
-                {/* Card top row */}
                 <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
-                  <div style={{ width:44, height:44, borderRadius:14, background:d.colorBg, border:`1px solid ${d.colorBorder}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>
-                    {d.icon}
+                  <div style={{ width:44, height:44, borderRadius:14, background:ds.colorBg, border:`1px solid ${ds.colorBorder}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <LI n={ds.icon} size={20} color={ds.color}/>
                   </div>
-                  <span style={{ fontSize:9, fontWeight:800, color:d.color, background:d.colorBg, border:`1px solid ${d.colorBorder}`, borderRadius:6, padding:'3px 8px', textTransform:'uppercase' as const, letterSpacing:'.07em' }}>
-                    {d.badge}
+                  <span style={{ fontSize:9, fontWeight:800, color:ds.color, background:ds.colorBg, border:`1px solid ${ds.colorBorder}`, borderRadius:6, padding:'3px 8px', textTransform:'uppercase' as const, letterSpacing:'.07em' }}>
+                    {ds.badge}
                   </span>
                 </div>
 
-                {/* Source label */}
-                <p style={{ fontSize:10, fontWeight:700, color:d.color, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:6 }}>{d.source}</p>
+                <p style={{ fontSize:10, fontWeight:700, color:ds.color, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:6 }}>{ds.source}</p>
+                <p style={{ fontSize:14, fontWeight:800, color:'#F0FDF9', lineHeight:1.35, marginBottom:8 }}>{ds.headline}</p>
+                <p style={{ fontSize:12.5, color:'rgba(204,235,229,.5)', lineHeight:1.7, marginBottom:12 }}>{ds.body}</p>
 
-                {/* Headline */}
-                <p style={{ fontSize:14, fontWeight:800, color:'#F0FDF9', lineHeight:1.35, marginBottom:8 }}>{d.headline}</p>
-
-                {/* Body */}
-                <p style={{ fontSize:12.5, color:'rgba(204,235,229,.5)', lineHeight:1.7, marginBottom:12 }}>{d.body}</p>
-
-                {/* Proof tag */}
                 <div style={{ display:'flex', alignItems:'center', gap:5, paddingTop:12, borderTop:'1px solid rgba(255,255,255,.06)' }}>
-                  <div style={{ width:5, height:5, borderRadius:'50%', background:d.color, animation:'pulse-dot 2s infinite', flexShrink:0 }}/>
-                  <span style={{ fontSize:10, color:'rgba(204,235,229,.35)', fontWeight:600 }}>{d.proof}</span>
+                  <div style={{ width:5, height:5, borderRadius:'50%', background:ds.color, animation:'pulse-dot 2s infinite', flexShrink:0 }}/>
+                  <span style={{ fontSize:10, color:'rgba(204,235,229,.35)', fontWeight:600 }}>{ds.proof}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* ── Bottom trust bar ── */}
+          {/* Trust bar — Trophy / Globe / RefreshCw */}
           <div style={{ background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:18, padding: isMobile ? '20px 16px' : '24px 32px' }}>
             <div style={{ display:'flex', flexDirection: isMobile ? 'column' : 'row' as const, alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 20 : 40, justifyContent:'space-between' }}>
               <div>
@@ -1740,12 +1694,14 @@ export default function LandingPage() {
               </div>
               <div style={{ display:'flex', gap:12, flexShrink:0, flexWrap:'wrap' as const }}>
                 {[
-                  { icon:'🔬', label:'94% accuracy', sub:'vs post-opening data' },
-                  { icon:'📍', label:'Australian only', sub:'Localised benchmarks' },
-                  { icon:'🔄', label:'Updated live', sub:'Per-analysis refresh' },
+                  { icon: 'trophy',    label: '94% accuracy',    sub: 'vs post-opening data' },
+                  { icon: 'globe',     label: 'Australian only', sub: 'Localised benchmarks' },
+                  { icon: 'refreshCw', label: 'Updated live',    sub: 'Per-analysis refresh' },
                 ].map(t => (
                   <div key={t.label} style={{ textAlign:'center' as const, padding:'10px 16px', background:'rgba(16,185,129,.06)', border:'1px solid rgba(16,185,129,.15)', borderRadius:12 }}>
-                    <div style={{ fontSize:18, marginBottom:4 }}>{t.icon}</div>
+                    <div style={{ display:'flex', justifyContent:'center', marginBottom:6 }}>
+                      <LI n={t.icon} size={20} color='#34D399'/>
+                    </div>
                     <p style={{ fontSize:12, fontWeight:800, color:'#34D399', lineHeight:1 }}>{t.label}</p>
                     <p style={{ fontSize:10, color:'rgba(204,235,229,.4)', marginTop:2 }}>{t.sub}</p>
                   </div>
@@ -1768,14 +1724,11 @@ export default function LandingPage() {
         `}</style>
       </section>
 
-      {/* ══ TESTIMONIALS — White ══════════════════════════════ */}
+      {/* TESTIMONIALS */}
       <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: L.white, position:'relative', overflow:'hidden' }}>
-        {/* Soft background texture */}
         <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle at 20% 50%, rgba(16,185,129,.04) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(5,150,105,.03) 0%, transparent 50%)', pointerEvents:'none' }}/>
 
         <div style={{ ...W, position:'relative', zIndex:2 }}>
-
-          {/* Header */}
           <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 56 }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:16 }}>
               Customer stories
@@ -1788,7 +1741,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Star aggregate bar */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom: isMobile ? 32 : 48, flexWrap:'wrap' as const }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, background:L.mint, border:`1px solid ${L.emeraldLt}`, borderRadius:12, padding:'10px 20px' }}>
               <span style={{ fontSize:20, letterSpacing:2, color:'#F59E0B' }}>★★★★★</span>
@@ -1809,7 +1761,6 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* 3 testimonial cards */}
           <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:18 }}>
             {[
               {
@@ -1851,30 +1802,19 @@ export default function LandingPage() {
                   el.style.boxShadow = 'none'
                   el.style.transform = 'translateY(0)'
                 }}>
-
-                {/* Top accent */}
                 <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${t.avatarColor},${t.avatarColor}44)`, borderRadius:'22px 22px 0 0' }}/>
-
-                {/* Stars + business emoji */}
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
                   <span style={{ fontSize:13, color:'#F59E0B', letterSpacing:2 }}>★★★★★</span>
                   <span style={{ fontSize:18 }}>{t.emoji}</span>
                 </div>
-
-                {/* Highlight pill */}
                 <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:t.savedBg, border:`1px solid ${t.savedBorder}`, borderRadius:8, padding:'4px 10px', marginBottom:14, alignSelf:'flex-start' as const }}>
                   <div style={{ width:5, height:5, borderRadius:'50%', background:t.savedColor, flexShrink:0 }}/>
                   <span style={{ fontSize:10.5, fontWeight:700, color:t.savedColor }}>{t.highlight}</span>
                 </div>
-
-                {/* Quote */}
                 <p style={{ fontSize:14, color:'#334155', lineHeight:1.8, marginBottom:20, flex:1 }}>
                   &ldquo;{t.quote}&rdquo;
                 </p>
-
-                {/* Author row */}
                 <div style={{ display:'flex', alignItems:'center', gap:12, paddingTop:16, borderTop:`1px solid ${L.border}` }}>
-                  {/* Avatar */}
                   <div style={{ width:42, height:42, borderRadius:12, background:t.avatarBg, border:`2px solid ${t.savedBorder}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:900, color:t.avatarColor, flexShrink:0 }}>
                     {t.initials}
                   </div>
@@ -1882,7 +1822,6 @@ export default function LandingPage() {
                     <p style={{ fontSize:14, fontWeight:800, color:L.slate, lineHeight:1 }}>{t.name}</p>
                     <p style={{ fontSize:12, color:L.muted, marginTop:3 }}>{t.role} · {t.city}</p>
                   </div>
-                  {/* Saved badge */}
                   <div style={{ background:t.savedBg, border:`1px solid ${t.savedBorder}`, borderRadius:8, padding:'4px 8px', textAlign:'right' as const }}>
                     <p style={{ fontSize:9, fontWeight:700, color:t.savedColor, textTransform:'uppercase' as const, letterSpacing:'.06em', lineHeight:1.1 }}>
                       {t.saved}
@@ -1893,7 +1832,6 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Bottom CTA */}
           <div style={{ textAlign:'center', marginTop:48, padding:'32px 24px', background:L.mint, borderRadius:20, border:`1px solid ${L.emeraldLt}` }}>
             <p style={{ fontSize: isMobile ? 17 : 21, fontWeight:900, color:L.slate, letterSpacing:'-.02em', marginBottom:8 }}>
               Ready to make a decision you can stand behind?
@@ -1906,7 +1844,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ PRICING — Mint ════════════════════════════════════ */}
+      {/* PRICING */}
       <section id="pricing" style={{ padding: sp, background: L.mint }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: pad }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -1962,7 +1900,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ FINAL CTA — White ════════════════════════════════ */}
+      {/* FINAL CTA */}
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>
         <div style={{ maxWidth: 560, margin: '0 auto', padding: pad }}>
           <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 14, lineHeight: 1.1 }}>
