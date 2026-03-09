@@ -54,107 +54,294 @@ function useIsMobile() {
   return v
 }
 
-// ── Product Demo ──────────────────────────────────────────────────
-function ProductDemo() {
-  const [phase, setPhase] = useState(0)
-  const [typed, setTyped]   = useState('')
-  const [progress, setProgress] = useState(0)
-  const [score, setScore]   = useState(0)
+// ── Map Demo ──────────────────────────────────────────────────────
+// Competitor pins on a street-grid map, then score card slides up
+
+const COMPETITORS = [
+  { x: 62,  y: 44,  label: 'The Daily Grind',  threat: 'High',   rating: 4.2, dist: '120m', color: '#EF4444', delay: 0    },
+  { x: 31,  y: 61,  label: 'Brew & Co.',        threat: 'Med',    rating: 3.8, dist: '280m', color: '#F59E0B', delay: 400  },
+  { x: 74,  y: 72,  label: 'Sunrise Café',      threat: 'High',   rating: 4.5, dist: '390m', color: '#EF4444', delay: 800  },
+  { x: 22,  y: 32,  label: 'Quick Bites',       threat: 'Low',    rating: 3.1, dist: '470m', color: '#10B981', delay: 1200 },
+  { x: 80,  y: 28,  label: 'Corner Press',      threat: 'Med',    rating: 4.0, dist: '490m', color: '#F59E0B', delay: 1600 },
+]
+
+// Street grid lines [x1,y1,x2,y2] as percentages
+const STREETS = [
+  // Horizontal
+  [0,25,100,25],[0,50,100,50],[0,75,100,75],
+  // Vertical
+  [20,0,20,100],[45,0,45,100],[70,0,70,100],
+  // Diagonal-ish
+  [0,60,30,40],[70,60,100,80],
+]
+
+// City blocks (filled rectangles) [x,y,w,h]
+const BLOCKS = [
+  [22,26,22,23],[47,26,22,23],[22,51,22,23],[47,51,22,23],
+  [0,0,18,24],[72,0,28,24],[0,76,18,24],[72,76,28,24],
+  [0,26,18,23],[72,26,27,23],[0,51,18,23],[72,51,27,23],
+]
+
+function MapDemo() {
+  const [phase, setPhase]         = useState(0) // 0=idle 1=typing 2=scanning 3=pins 4=result
+  const [typed, setTyped]         = useState('')
+  const [visiblePins, setVisible] = useState<number[]>([])
+  const [scanLine, setScanLine]   = useState(0)
+  const [score, setScore]         = useState(0)
+  const [scoreAnim, setScoreAnim] = useState(0)
+  const [tooltip, setTooltip]     = useState<number|null>(null)
   const addr = '45 King St, Newtown NSW'
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setPhase(1); let i = 0
-      const ty = setInterval(() => {
-        i++; setTyped(addr.slice(0, i))
-        if (i >= addr.length) {
-          clearInterval(ty)
-          setTimeout(() => {
-            setPhase(2); let p = 0
-            const pr = setInterval(() => {
-              p += 2; setProgress(p)
-              if (p >= 100) {
-                clearInterval(pr); setPhase(3); let s = 0
-                const sc = setInterval(() => { s += 2; setScore(Math.min(s, 82)); if (s >= 82) clearInterval(sc) }, 20)
-              }
-            }, 40)
-          }, 500)
-        }
-      }, 55)
-    }, 800)
-    return () => clearTimeout(t)
+    let dead = false
+    const go = () => {
+      // Reset
+      setPhase(0); setTyped(''); setVisible([]); setScanLine(0); setScore(0); setScoreAnim(0)
+
+      // Phase 1 — type address
+      const t1 = setTimeout(() => {
+        if (dead) return
+        setPhase(1); let i = 0
+        const ty = setInterval(() => {
+          if (dead) { clearInterval(ty); return }
+          i++; setTyped(addr.slice(0, i))
+          if (i >= addr.length) {
+            clearInterval(ty)
+
+            // Phase 2 — scanning animation
+            const t2 = setTimeout(() => {
+              if (dead) return
+              setPhase(2); let sl = 0
+              const scan = setInterval(() => {
+                if (dead) { clearInterval(scan); return }
+                sl += 3; setScanLine(sl)
+                if (sl >= 100) {
+                  clearInterval(scan)
+
+                  // Phase 3 — pins appear one by one
+                  setPhase(3)
+                  COMPETITORS.forEach((_, idx) => {
+                    setTimeout(() => {
+                      if (!dead) setVisible(v => [...v, idx])
+                    }, COMPETITORS[idx].delay)
+                  })
+
+                  // Phase 4 — result card after all pins
+                  const t4 = setTimeout(() => {
+                    if (dead) return
+                    setPhase(4); let s = 0
+                    const sa = setInterval(() => {
+                      if (dead) { clearInterval(sa); return }
+                      s += 2; setScoreAnim(Math.min(s, 82))
+                      if (s >= 82) { clearInterval(sa); setScore(82) }
+                    }, 18)
+                  }, COMPETITORS.length * 400 + 600)
+                  return () => clearTimeout(t4)
+                }
+              }, 25)
+            }, 400)
+            return () => clearTimeout(t2)
+          }
+        }, 60)
+      }, 700)
+
+      // Auto replay
+      const replay = setTimeout(() => { if (!dead) go() }, 18000)
+      return () => { clearTimeout(t1); clearTimeout(replay) }
+    }
+    go()
+    return () => { dead = true }
   }, [])
 
-  const msgs = ['Resolving coordinates...','Scanning competitors...','Analysing demographics...','Building financial model...','Generating verdict...']
-  const mi = Math.min(Math.floor(progress / 22), msgs.length - 1)
+  const circumference = 2 * Math.PI * 28
 
   return (
-    <div style={{ background: L.white, borderRadius: 18, border: `1px solid ${L.border}`, boxShadow: '0 12px 48px rgba(0,0,0,.1)', overflow: 'hidden', width: '100%', maxWidth: 440 }}>
+    <div style={{ background: L.white, borderRadius: 20, border: `1px solid ${L.border}`, boxShadow: '0 16px 56px rgba(0,0,0,.12)', overflow: 'hidden', width: '100%', maxWidth: 460, fontFamily: font }}>
+
       {/* Browser chrome */}
       <div style={{ background: '#F8FAFC', borderBottom: `1px solid ${L.border}`, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{ display: 'flex', gap: 5 }}>
           {['#FF5F57','#FFBE2E','#27C840'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }}/>)}
         </div>
-        <div style={{ flex: 1, background: L.border, borderRadius: 6, height: 22, display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
+        <div style={{ flex: 1, background: '#E2E8F0', borderRadius: 6, height: 22, display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
           <span style={{ fontSize: 11, color: L.muted }}>locatalyze.vercel.app/analyse</span>
         </div>
       </div>
-      <div style={{ padding: 18 }}>
-        <p style={{ fontSize: 10, fontWeight: 700, color: L.muted, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 5 }}>Business Address</p>
-        <div style={{ background: '#F8FAFC', border: `1.5px solid ${phase >= 1 ? L.emerald : L.border}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: L.slate, fontWeight: 500, minHeight: 38, transition: 'border-color .3s', display: 'flex', alignItems: 'center', gap: 2, marginBottom: 12 }}>
-          {typed || <span style={{ color: '#CBD5E1' }}>Enter address...</span>}
+
+      {/* Address bar */}
+      <div style={{ padding: '12px 16px 0' }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 5 }}>Business Address</p>
+        <div style={{ background: '#F8FAFC', border: `1.5px solid ${phase >= 1 ? L.emerald : L.border}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: L.slate, fontWeight: 500, minHeight: 38, transition: 'border-color .3s', display: 'flex', alignItems: 'center', gap: 2, marginBottom: 10 }}>
+          {typed || <span style={{ color: '#CBD5E1' }}>Enter your business address…</span>}
           {phase === 1 && <span style={{ width: 2, height: 14, background: L.emerald, display: 'inline-block', animation: 'blink .7s infinite' }}/>}
         </div>
+      </div>
+
+      {/* MAP AREA */}
+      <div style={{ position: 'relative', height: 240, margin: '0 16px', borderRadius: 14, overflow: 'hidden', background: '#EFF6EE', border: `1.5px solid ${L.emeraldLt}` }}>
+
+        {/* SVG street grid */}
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 100 100" preserveAspectRatio="none">
+          {/* Blocks */}
+          {BLOCKS.map(([x,y,w,h], i) => (
+            <rect key={i} x={x} y={y} width={w} height={h} fill="#D1FAE5" opacity="0.7"/>
+          ))}
+          {/* Streets */}
+          {STREETS.map(([x1,y1,x2,y2], i) => (
+            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#A7F3D0" strokeWidth="0.6"/>
+          ))}
+          {/* Scan line (phase 2) */}
+          {phase === 2 && (
+            <rect x="0" y={scanLine - 3} width="100" height="6"
+              fill="url(#scanGrad)" opacity="0.7"/>
+          )}
+          <defs>
+            <linearGradient id="scanGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10B981" stopOpacity="0"/>
+              <stop offset="50%" stopColor="#10B981" stopOpacity="0.6"/>
+              <stop offset="100%" stopColor="#10B981" stopOpacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* Map label top-left */}
+        <div style={{ position: 'absolute', top: 8, left: 10, background: 'rgba(255,255,255,.9)', borderRadius: 7, padding: '3px 8px', fontSize: 10, fontWeight: 700, color: L.slate, backdropFilter: 'blur(4px)', border: `1px solid ${L.border}` }}>
+          📍 Newtown NSW 2042
+        </div>
+
+        {/* Scan status */}
         {phase === 2 && (
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-              <span style={{ fontSize: 11, color: L.muted }}>{msgs[mi]}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: L.emerald }}>{progress}%</span>
-            </div>
-            <div style={{ height: 4, background: L.border, borderRadius: 100, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${progress}%`, background: `linear-gradient(90deg,${L.emerald},#34D399)`, borderRadius: 100, transition: 'width .1s linear' }}/>
-            </div>
+          <div style={{ position: 'absolute', top: 8, right: 10, background: L.emerald, color: '#fff', borderRadius: 7, padding: '3px 10px', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#fff', display: 'inline-block', animation: 'pulse-dot 0.8s infinite' }}/>
+            Scanning…
           </div>
         )}
-        {phase === 3 && (
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ background: L.goBg, color: L.go, border: `1.5px solid ${L.goBdr}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 800 }}>✅ GO</span>
-              <div style={{ position: 'relative', width: 56, height: 56 }}>
-                <svg width="56" height="56" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="28" cy="28" r="22" fill="none" stroke={L.border} strokeWidth="5"/>
-                  <circle cx="28" cy="28" r="22" fill="none" stroke={L.emerald} strokeWidth="5" strokeLinecap="round"
-                    strokeDasharray={`${2*Math.PI*22}`} strokeDashoffset={`${2*Math.PI*22*(1-score/100)}`}
-                    style={{ transition: 'stroke-dashoffset .05s linear' }}/>
-                </svg>
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 14, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{score}</span>
-                  <span style={{ fontSize: 8, color: L.muted }}>/100</span>
+
+        {/* Competitor count badge (phase 3+) */}
+        {phase >= 3 && (
+          <div style={{ position: 'absolute', top: 8, right: 10, background: '#fff', color: L.slate, borderRadius: 7, padding: '3px 10px', fontSize: 10, fontWeight: 700, border: `1px solid ${L.border}`, boxShadow: '0 2px 8px rgba(0,0,0,.08)' }}>
+            {visiblePins.length} competitors found
+          </div>
+        )}
+
+        {/* 500m radius ring — centred on our pin (45%, 52%) */}
+        {phase >= 3 && (
+          <div style={{ position: 'absolute', left: '45%', top: '52%', transform: 'translate(-50%,-50%)',
+            width: 130, height: 130, borderRadius: '50%',
+            border: '1.5px dashed rgba(16,185,129,.45)',
+            background: 'rgba(16,185,129,.04)',
+            animation: 'ring-in .5s ease both',
+            pointerEvents: 'none',
+          }}/>
+        )}
+
+        {/* Competitor pins */}
+        {COMPETITORS.map((c, i) => (
+          visiblePins.includes(i) && (
+            <div key={i}
+              style={{ position: 'absolute', left: `${c.x}%`, top: `${c.y}%`, transform: 'translate(-50%,-100%)', animation: 'pin-drop .35s cubic-bezier(.175,.885,.32,1.275) both', cursor: 'pointer', zIndex: 5 }}
+              onMouseEnter={() => setTooltip(i)}
+              onMouseLeave={() => setTooltip(null)}>
+              {/* Pin shape */}
+              <div style={{ position: 'relative' }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50% 50% 50% 0', background: c.color, transform: 'rotate(-45deg)', boxShadow: `0 3px 10px ${c.color}60`, border: '2px solid #fff' }}/>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 900 }}>
+                  {c.threat === 'High' ? '!' : c.threat === 'Med' ? '~' : '✓'}
                 </div>
               </div>
+              {/* Tooltip */}
+              {tooltip === i && (
+                <div style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#fff', borderRadius: 9, padding: '7px 10px', fontSize: 10, fontWeight: 600, color: L.slate, whiteSpace: 'nowrap' as const, boxShadow: '0 4px 16px rgba(0,0,0,.14)', border: `1px solid ${L.border}`, zIndex: 20, pointerEvents: 'none' }}>
+                  <p style={{ fontWeight: 800, marginBottom: 2 }}>{c.label}</p>
+                  <p style={{ color: L.muted }}>⭐ {c.rating} · {c.dist} · <span style={{ color: c.color, fontWeight: 700 }}>{c.threat} threat</span></p>
+                </div>
+              )}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 12 }}>
-              {[{l:'Annual Profit',v:'$297,600',hi:true},{l:'Monthly Revenue',v:'$91,200',hi:false},{l:'Break-even/Day',v:'38 customers',hi:false},{l:'Payback Period',v:'7 months',hi:false}].map(m => (
-                <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '8px 10px' }}>
-                  <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 2 }}>{m.l}</p>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
-                </div>
-              ))}
+          )
+        ))}
+
+        {/* YOUR location pin — always centred */}
+        {phase >= 2 && (
+          <div style={{ position: 'absolute', left: '45%', top: '52%', transform: 'translate(-50%,-100%)', zIndex: 10, animation: 'pin-drop .4s cubic-bezier(.175,.885,.32,1.275) both' }}>
+            <div style={{ position: 'relative' }}>
+              <div style={{ width: 26, height: 26, borderRadius: '50% 50% 50% 0', background: L.emerald, transform: 'rotate(-45deg)', boxShadow: `0 4px 14px rgba(16,185,129,.5)`, border: '2.5px solid #fff' }}/>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>📍</div>
             </div>
-            {[{l:'Demand',s:85},{l:'Rent',s:78},{l:'Competition',s:72},{l:'Profitability',s:90}].map(b => (
-              <div key={b.l} style={{ marginBottom: 6 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <span style={{ fontSize: 10, color: L.muted }}>{b.l}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: L.emerald }}>{b.s}</span>
-                </div>
-                <div style={{ height: 3, background: L.border, borderRadius: 100, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${b.s}%`, background: L.emerald, borderRadius: 100 }}/>
-                </div>
+            <div style={{ marginTop: 2, background: L.emerald, color: '#fff', borderRadius: 6, padding: '2px 7px', fontSize: 9, fontWeight: 800, textAlign: 'center' as const, whiteSpace: 'nowrap' as const }}>You</div>
+          </div>
+        )}
+
+        {/* Map attribution */}
+        <div style={{ position: 'absolute', bottom: 6, right: 8, fontSize: 9, color: '#94A3B8' }}>Locatalyze Maps</div>
+      </div>
+
+      {/* RESULT CARD — slides up phase 4 */}
+      <div style={{
+        margin: '0 16px',
+        maxHeight: phase === 4 ? 220 : 0,
+        overflow: 'hidden',
+        transition: 'max-height .6s cubic-bezier(.4,0,.2,1)',
+      }}>
+        <div style={{ padding: '14px 0 4px' }}>
+          {/* Verdict row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.goBg, color: L.go, border: `1.5px solid ${L.goBdr}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 800, marginBottom: 5 }}>
+                ✅ GO — Strong Opportunity
+              </div>
+              <p style={{ fontSize: 11, color: L.muted }}>45 King St, Newtown NSW · 5 competitors in 500m</p>
+            </div>
+            {/* Score ring */}
+            <div style={{ position: 'relative', width: 56, height: 56, flexShrink: 0 }}>
+              <svg width="56" height="56" style={{ transform: 'rotate(-90deg)' }}>
+                <circle cx="28" cy="28" r="22" fill="none" stroke={L.emeraldLt} strokeWidth="5"/>
+                <circle cx="28" cy="28" r="22" fill="none" stroke={L.emerald} strokeWidth="5" strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={circumference - (circumference * scoreAnim / 100)}
+                  style={{ transition: 'stroke-dashoffset .04s linear' }}/>
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 15, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{scoreAnim}</span>
+                <span style={{ fontSize: 8, color: L.muted }}>/100</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Mini stat row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, marginBottom: 10 }}>
+            {[{l:'Annual Profit',v:'$297k',hi:true},{l:'Monthly Rev',v:'$91k',hi:false},{l:'Break-even',v:'38/day',hi:false},{l:'Payback',v:'7 mo',hi:false}].map(m => (
+              <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '7px 6px', textAlign: 'center' as const }}>
+                <p style={{ fontSize: 8, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.04em', marginBottom: 2 }}>{m.l}</p>
+                <p style={{ fontSize: 12, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
               </div>
             ))}
           </div>
-        )}
+
+          {/* Threat legend */}
+          <div style={{ display: 'flex', gap: 12, paddingTop: 8, borderTop: `1px solid ${L.border}` }}>
+            {[{c:'#EF4444',l:'High threat (2)'},{c:'#F59E0B',l:'Medium (2)'},{c:'#10B981',l:'Low threat (1)'}].map(item => (
+              <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.c }}/>
+                <span style={{ fontSize: 10, color: L.muted }}>{item.l}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* Bottom padding */}
+      <div style={{ height: 14 }}/>
+
+      <style>{`
+        @keyframes pin-drop {
+          from { opacity:0; transform: translate(-50%,-70%) scale(0.3); }
+          to   { opacity:1; transform: translate(-50%,-100%) scale(1); }
+        }
+        @keyframes ring-in {
+          from { opacity:0; transform: translate(-50%,-50%) scale(0.4); }
+          to   { opacity:1; transform: translate(-50%,-50%) scale(1); }
+        }
+      `}</style>
     </div>
   )
 }
@@ -666,9 +853,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Demo */}
+            {/* Map Demo */}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <ProductDemo/>
+              <MapDemo/>
             </div>
           </div>
         </div>
