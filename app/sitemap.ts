@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 const CITIES = ['sydney','melbourne','brisbane','perth','adelaide','gold_coast','canberra','hobart']
 const BIZ_TYPES = ['cafe','restaurant','gym','retail','bakery','salon']
-const BASE = 'https://locatalyze.vercel.app'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
