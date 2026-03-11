@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 
 // ── Inline SVG logo (dark variant — white text + teal accent) ──
