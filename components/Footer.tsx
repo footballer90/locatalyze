@@ -1,7 +1,4 @@
-'use client'
 import Link from 'next/link'
-// ... rest of file stays exactly the same
-// import Link from 'next/link'
 
 // ── Inline SVG logo (dark variant — white text + teal accent) ──
 function Logo() {
@@ -277,12 +274,12 @@ export default function Footer() {
     {
       title: 'Use Cases',
       links: [
-       { label: 'Cafes & Coffee',    href: '/use-case/cafes' },
-{ label: 'Restaurants',       href: '/use-case/restaurants' },
-{ label: 'Retail Stores',     href: '/use-case/retail' },
-{ label: 'Gyms & Fitness',    href: '/use-case/gyms' },
-{ label: 'Takeaway',          href: '/use-case/takeaway' },
-{ label: 'All business types',href: '/use-case/all' },
+        { label: 'Cafes & Coffee',    href: '/use-case/cafes' },
+        { label: 'Restaurants',       href: '/use-case/restaurants' },
+        { label: 'Retail Stores',     href: '/use-case/retail' },
+        { label: 'Gyms & Fitness',    href: '/use-case/gyms' },
+        { label: 'Takeaway',          href: '/use-case/takeaway' },
+        { label: 'All business types',href: '/use-case/all' },
       ],
     },
     {
@@ -363,12 +360,14 @@ export default function Footer() {
             {/* Social links */}
             <div style={S.socialRow}>
               <a href="https://twitter.com/locatalyze" target="_blank" rel="noopener noreferrer"
+                aria-label="Locatalyze on Twitter"
                 style={S.socialBtn}
                 onMouseEnter={e => hoverSocial(e, true)}
                 onMouseLeave={e => hoverSocial(e, false)}>
                 <TwitterIcon />
               </a>
               <a href="https://linkedin.com/company/locatalyze" target="_blank" rel="noopener noreferrer"
+                aria-label="Locatalyze on LinkedIn"
                 style={S.socialBtn}
                 onMouseEnter={e => hoverSocial(e, true)}
                 onMouseLeave={e => hoverSocial(e, false)}>

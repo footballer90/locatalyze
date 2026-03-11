@@ -1395,7 +1395,7 @@ export default function LandingPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         transition: 'all .3s',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Link href="/" aria-label="Locatalyze — go to homepage" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 30, height: 30, borderRadius: 9, background: L.emerald, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 14 }}>L</div>
           <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-.03em', color: L.slate }}>Locatalyze</span>
         </Link>
@@ -1414,7 +1414,7 @@ export default function LandingPage() {
         )}
 
         {isMobile && (
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', padding: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
+          <button aria-label="Open navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', padding: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
             <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none' }}/>
             <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', opacity: menuOpen ? 0 : 1 }}/>
             <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none' }}/>
