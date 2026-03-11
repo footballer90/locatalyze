@@ -1,11 +1,6 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Target modern browsers — eliminates legacy JS polyfills (saves ~14 KiB)
-  experimental: {
-    browsersListQuery: 'chrome >= 80, edge >= 80, firefox >= 80, safari >= 14',
-  },
-
   async headers() {
     return [
       {
