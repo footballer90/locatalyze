@@ -3,15 +3,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CITIES, BUSINESS_TYPES, CITY_SLUGS, TYPE_SLUGS, getCityTypeInsight, getScoreColor, getVerdictColor } from '@/lib/location-data'
 
-export async function generateStaticParams() {
-  const params = []
-  for (const city of CITY_SLUGS) {
-    for (const type of TYPE_SLUGS) {
-      params.push({ city, type })
-    }
-  }
-  return params
-}
+// Render on first visit, cache for 24h — avoids pre-building hundreds of pages at deploy time
+export const dynamicParams = true
+export const revalidate = 86400
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string; type: string }> }) {
   const { city: citySlug, type: typeSlug } = await params

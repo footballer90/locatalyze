@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { SUBURBS, SUBURB_SLUGS, getSuburb, getSuburbsByCity } from '@/lib/suburb-data'
 import { BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
 
-export async function generateStaticParams() {
-  return SUBURB_SLUGS.map(suburb => ({ suburb }))
-}
+export const dynamicParams = true
+export const revalidate = 86400
 
 export async function generateMetadata({ params }: { params: Promise<{ suburb: string }> }) {
   const { suburb: suburbSlug } = await params
