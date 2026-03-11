@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // Types are still enforced in your editor and can be checked locally with `tsc --noEmit`.
   typescript: { ignoreBuildErrors: true },
   eslint:     { ignoreDuringBuilds: true },
+  experimental: { turbo: {} },   // ← add this line
 
   async headers() {
     return [
