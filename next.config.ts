@@ -2,7 +2,6 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
-  eslint:     { ignoreDuringBuilds: true },
   // Limit to 1 parallel compilation worker — reduces peak memory at the cost of build speed
   experimental: { cpus: 1 },
 
