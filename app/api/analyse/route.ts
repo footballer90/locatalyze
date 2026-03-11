@@ -37,36 +37,6 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   if (!isFinite(setup)  || setup  < 100  || setup  > 10000000) return { valid: false, error: 'Setup budget must be between $100 and $10,000,000' }
   if (!isFinite(ticket) || ticket < 1    || ticket > 10000)    return { valid: false, error: 'Average ticket size must be between $1 and $10,000' }
   const clean = (s: string) => s.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
-
-  // Prompt injection defence: strip common injection patterns from address field
-  const INJECTION_PATTERNS = [
-    /ignore\s+(all\s+)?instructions?/gi,
-    /forget\s+(all\s+)?previous/gi,
-    /you\s+are\s+(now\s+)?a/gi,
-    /act\s+as\s+(a|an)/gi,
-    /disregard\s+(all\s+)?/gi,
-    /system\s*:/gi,
-    /assistant\s*:/gi,
-    /\[\s*system\s*\]/gi,
-    /output\s*:\s*go\b/gi,
-    /output\s*:\s*caution\b/gi,
-    /output\s*:\s*no\b/gi,
-    /score\s*:\s*\d+/gi,
-    /verdict\s*:\s*(go|caution|no)\b/gi,
-  ]
-  function sanitizeAddress(raw: string): string {
-    let s = clean(raw)
-    for (const p of INJECTION_PATTERNS) {
-      s = s.replace(p, '')
-    }
-    // Australian address format: allow letters, numbers, spaces, commas, hyphens, slashes, dots
-    s = s.replace(/[^a-zA-Z0-9 ,.\-\/'']/g, '').trim()
-    return s
-  }
-  const sanitizedAddress = sanitizeAddress(data.address)
-  if (sanitizedAddress.length < 5) {
-    return errorResponse('Address contains invalid characters. Please enter a valid Australian address.', 400)
-  }
   return {
     valid: true,
     data: {
@@ -78,6 +48,29 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
       userId: typeof userId === 'string' ? userId.slice(0, 100) : undefined,
     }
   }
+}
+
+// ─── Prompt injection defence ────────────────────────────────────────────────
+const INJECTION_PATTERNS = [
+  /ignore\s+(all\s+)?instructions?/gi,
+  /forget\s+(all\s+)?previous/gi,
+  /you\s+are\s+(now\s+)?a/gi,
+  /act\s+as\s+(a|an)/gi,
+  /disregard\s+(all\s+)?/gi,
+  /system\s*:/gi,
+  /assistant\s*:/gi,
+  /\[\s*system\s*\]/gi,
+  /output\s*:\s*go\b/gi,
+  /output\s*:\s*caution\b/gi,
+  /output\s*:\s*no\b/gi,
+  /score\s*:\s*\d+/gi,
+  /verdict\s*:\s*(go|caution|no)\b/gi,
+]
+function sanitizeAddress(raw: string): string {
+  let s = raw.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
+  for (const p of INJECTION_PATTERNS) s = s.replace(p, '')
+  // Allow only chars valid in Australian addresses
+  return s.replace(/[^a-zA-Z0-9 ,.\-\/'']/g, '').trim()
 }
 
 export async function POST(request: NextRequest) {
@@ -100,6 +93,12 @@ export async function POST(request: NextRequest) {
   const validation = validatePayload(rawBody)
   if (!validation.valid) return errorResponse(validation.error, 400)
   const { data } = validation
+  // Sanitize address against prompt injection (applied after type validation)
+  const sanitizedAddress = sanitizeAddress(data.address)
+  if (sanitizedAddress.length < 5) {
+    return errorResponse('Address contains invalid characters. Please enter a valid Australian address.', 400)
+  }
+  data.address = sanitizedAddress
 
   // ── Webhook URL check ──────────────────────────────────────────────────────
   const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
