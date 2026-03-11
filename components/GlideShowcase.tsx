@@ -79,7 +79,7 @@ function ScoreUI({ animKey }: { animKey: number }) {
             {score === null ? '—' : displayed}
           </div>
         </div>
-        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: score >= 84 ? 1 : 0, transition: 'opacity .4s' }}>
+        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: (score ?? 0) >= 84 ? 1 : 0, transition: 'opacity .4s' }}>
           <p style={{ fontSize: 17, fontWeight: 900, color: '#34D399' }}>GO ✅</p>
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
