@@ -3,9 +3,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CITIES, BUSINESS_TYPES, CITY_SLUGS, getCityTypeInsight, getScoreColor } from '@/lib/location-data'
 
-export async function generateStaticParams() {
-  return CITY_SLUGS.map(city => ({ city }))
-}
+export const dynamicParams = true
+export const revalidate = 86400
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
