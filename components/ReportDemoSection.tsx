@@ -565,7 +565,7 @@ export default function ReportDemoSection() {
   const [tab,     setTab]     = useState<Tab>('overview')
   const [fading,  setFading]  = useState(false)
   const [fired,   setFired]   = useState(false)
-  const [score,   setScore]   = useState(0)
+  const [score,   setScore]   = useState<number | null>(null)
 
   const d  = DATA[verdict]
   const vc = VERDICT_CONFIG[verdict]
@@ -575,19 +575,22 @@ export default function ReportDemoSection() {
     setFading(true)
     setTimeout(() => {
       setVerdict(v); setTab('overview')
-      setFading(false); setFired(false); setScore(0)
+      setFading(false); setFired(false); setScore(null)
     }, 160)
   }
 
   useEffect(() => {
-    setScore(0)
+    setScore(null)
     const target = d.score
     let n = 0
-    const id = setInterval(() => {
-      n = Math.min(n + 2, target); setScore(n)
-      if (n >= target) clearInterval(id)
-    }, 14)
-    return () => clearInterval(id)
+    const start = setTimeout(() => {
+      const id = setInterval(() => {
+        n = Math.min(n + 2, target); setScore(n)
+        if (n >= target) clearInterval(id)
+      }, 14)
+      return () => clearInterval(id)
+    }, 80)
+    return () => clearTimeout(start)
   }, [verdict])
 
   useEffect(() => {
@@ -741,7 +744,7 @@ export default function ReportDemoSection() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1 }}>
-                    {score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
+                    {score === null ? '—' : score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
                   </div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: D.text3, letterSpacing: '.07em', textTransform: 'uppercase' }}>
                     Feasibility Score

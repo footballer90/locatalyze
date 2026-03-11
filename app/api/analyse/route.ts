@@ -37,6 +37,36 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   if (!isFinite(setup)  || setup  < 100  || setup  > 10000000) return { valid: false, error: 'Setup budget must be between $100 and $10,000,000' }
   if (!isFinite(ticket) || ticket < 1    || ticket > 10000)    return { valid: false, error: 'Average ticket size must be between $1 and $10,000' }
   const clean = (s: string) => s.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
+
+  // Prompt injection defence: strip common injection patterns from address field
+  const INJECTION_PATTERNS = [
+    /ignore\s+(all\s+)?instructions?/gi,
+    /forget\s+(all\s+)?previous/gi,
+    /you\s+are\s+(now\s+)?a/gi,
+    /act\s+as\s+(a|an)/gi,
+    /disregard\s+(all\s+)?/gi,
+    /system\s*:/gi,
+    /assistant\s*:/gi,
+    /\[\s*system\s*\]/gi,
+    /output\s*:\s*go\b/gi,
+    /output\s*:\s*caution\b/gi,
+    /output\s*:\s*no\b/gi,
+    /score\s*:\s*\d+/gi,
+    /verdict\s*:\s*(go|caution|no)\b/gi,
+  ]
+  function sanitizeAddress(raw: string): string {
+    let s = clean(raw)
+    for (const p of INJECTION_PATTERNS) {
+      s = s.replace(p, '')
+    }
+    // Australian address format: allow letters, numbers, spaces, commas, hyphens, slashes, dots
+    s = s.replace(/[^a-zA-Z0-9 ,.\-\/'']/g, '').trim()
+    return s
+  }
+  const sanitizedAddress = sanitizeAddress(data.address)
+  if (sanitizedAddress.length < 5) {
+    return errorResponse('Address contains invalid characters. Please enter a valid Australian address.', 400)
+  }
   return {
     valid: true,
     data: {
@@ -92,10 +122,6 @@ export async function POST(request: NextRequest) {
       const { data: profile } = await sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
       const plan = profile?.plan || 'free'
       const used = profile?.total_analyses_used ?? 0
-      // Skip quota check for admin
-      if (profile?.plan === 'admin') {
-        // allow through
-      }
       if (plan === 'free' && used >= FREE_LIMIT) {
         return errorResponse(`You've used all ${FREE_LIMIT} free analyses. Upgrade to Pro for unlimited reports.`, 402)
       }
@@ -120,7 +146,7 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json', 'User-Agent': 'Locatalyze/1.0' },
       body:    JSON.stringify({
         businessType:  data.businessType,
-        address:       data.address,
+        address:       sanitizedAddress,
         monthlyRent:   data.monthlyRent,
         setupBudget:   data.setupBudget,
         avgTicketSize: data.avgTicketSize,
@@ -207,13 +233,13 @@ export async function POST(request: NextRequest) {
         breakeven_daily:     rpt.breakeven_daily,
         breakeven_months:    rpt.breakeven_months,
         full_report_markdown: JSON.stringify(rpt.financials || {}),
-        location_name:       rpt.location?.formattedAddress || data.address,
+        location_name:       rpt.location?.formattedAddress || sanitizedAddress,
         business_type:       data.businessType,
         monthly_rent:        data.monthlyRent,
-        address:             data.address,
+        address:             sanitizedAddress,
         result_data:         rpt,          // full structured report — report page reads from here
         input_data:          rpt.input_data || {
-          businessType: data.businessType, address: data.address,
+          businessType: data.businessType, address: sanitizedAddress,
           monthlyRent: data.monthlyRent, setupBudget: data.setupBudget, avgTicketSize: data.avgTicketSize,
         },
         status: 'complete',
