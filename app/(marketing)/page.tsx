@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 // app/(marketing)/location/page.tsx
 import Link from 'next/link'
-import { CITIES, BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
 
 export const metadata = {
   title: 'Business Location Analysis — Australian Cities | Locatalyze',
@@ -37,6 +36,11 @@ const S = {
   ctaBtn: { display: 'inline-block', background: '#FFFFFF', color: '#059669', fontWeight: 700, fontSize: 16, padding: '14px 36px', borderRadius: 100, textDecoration: 'none' },
 }
 
+
+async function getData() {
+  const { CITIES, BUSINESS_TYPES, getScoreColor } = await import('@/lib/location-data')
+  return { CITIES, BUSINESS_TYPES, getScoreColor }
+}
 export default function LocationIndexPage() {
   return (
     <div style={S.page}>

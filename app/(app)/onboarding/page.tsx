@@ -1,5 +1,6 @@
 'use client'
 export const dynamic = 'force-dynamic'
+import { BUSINESS_TYPES } from '@/lib/location-data'
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'

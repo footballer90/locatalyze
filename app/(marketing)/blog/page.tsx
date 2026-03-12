@@ -1,8 +1,8 @@
 'use client'
 export const dynamic = 'force-dynamic'
+import { POST_LIST } from '@/lib/blog-posts'
 import Link from 'next/link'
 import { useState } from 'react'
-import { POST_LIST } from '@/lib/blog-posts'
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
@@ -13,6 +13,11 @@ const S = {
 
 const CATS = ['All', 'Cafes', 'Restaurants', 'Gyms', 'Retail', 'Finance', 'Strategy', 'Data', 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Tools']
 
+
+async function getData() {
+  const { POST_LIST } = await import('@/lib/blog-posts')
+  return { POST_LIST }
+}
 export default function BlogPage() {
   const [cat, setCat] = useState('All')
   const filtered = cat === 'All' ? POST_LIST : POST_LIST.filter(p => p.category === cat)

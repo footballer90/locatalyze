@@ -70,6 +70,7 @@ const S = {
 }
 
 export default async function SEOLocationPage({ params }: { params: Promise<{ businessType: string; city: string }> }) {
+  const { BIZ_TYPES, CITIES } = await import('@/lib/location-data')
   const { businessType, city } = await params
   const biz = BIZ_TYPES[businessType]
   const loc = CITIES[city]

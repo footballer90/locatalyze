@@ -1,5 +1,6 @@
 'use client'
 export const dynamic = 'force-dynamic'
+import { CITIES, BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -135,6 +136,11 @@ function SuburbScoreBadge({ score }: { score: number }) {
   )
 }
 
+
+async function getData() {
+  const { CITIES, BUSINESS_TYPES, getScoreColor } = await import('@/lib/location-data')
+  return { CITIES, BUSINESS_TYPES, getScoreColor }
+}
 export default function AnalysePage() {
   const [openCity, setOpenCity] = useState<string | null>('Sydney')
 
