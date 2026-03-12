@@ -137,9 +137,6 @@ function SuburbScoreBadge({ score }: { score: number }) {
 }
 
 
-async function getData() {
-  const { CITIES, BUSINESS_TYPES, getScoreColor } = await import('@/lib/location-data')
-  return { CITIES, BUSINESS_TYPES, getScoreColor }
 }
 export default function AnalysePage() {
   const [openCity, setOpenCity] = useState<string | null>('Sydney')

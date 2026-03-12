@@ -14,9 +14,6 @@ const S = {
 const CATS = ['All', 'Cafes', 'Restaurants', 'Gyms', 'Retail', 'Finance', 'Strategy', 'Data', 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Tools']
 
 
-async function getData() {
-  const { POST_LIST } = await import('@/lib/blog-posts')
-  return { POST_LIST }
 }
 export default function BlogPage() {
   const [cat, setCat] = useState('All')
