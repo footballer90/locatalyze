@@ -3,8 +3,8 @@ export const dynamicParams = true
 // app/(marketing)/suburb/[suburb]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { SUBURBS, SUBURB_SLUGS, getSuburb, getSuburbsByCity } from '@/lib/suburb-data'
-import { BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
+// lazy-loaded below
+// lazy-loaded below
 
 
 export async function generateMetadata({ params }: { params: Promise<{ suburb: string }> }) {

@@ -3,7 +3,7 @@ export const dynamicParams = true
 // 🔑 KEY CHANGE: force-dynamic prevents ALL static pre-rendering at build time
 
 import Link from 'next/link'
-import { POSTS, POST_LIST, type Section } from '@/lib/blog-posts'
+// lazy-loaded below
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
