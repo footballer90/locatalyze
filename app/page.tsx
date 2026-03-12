@@ -1,13 +1,15 @@
 'use client'
+import dynamic from 'next/dynamic'
 export const dynamic = 'force-dynamic'
 import Footer from '@/components/Footer'
-import ReportDemoSection from '@/components/ReportDemoSection'
+const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'))
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import ReportPreview from '@/components/landing/ReportPreview'
-import DarkShowcase from '@/components/landing/DarkShowcase'
-import PremiumReport from '@/components/landing/PremiumReport'
-import CinematicWalkthrough, { CW_PHASE_META } from '@/components/landing/CinematicWalkthrough'
+const ReportPreview = dynamic(() => import('@/components/landing/ReportPreview'))
+const DarkShowcase = dynamic(() => import('@/components/landing/DarkShowcase'))
+const PremiumReport = dynamic(() => import('@/components/landing/PremiumReport'))
+const CinematicWalkthrough = dynamic(() => import('@/components/landing/CinematicWalkthrough'))
+import type { CW_PHASE_META } from '@/components/landing/CinematicWalkthrough'
 import { L, D, font, LI, useIsMobile } from '@/components/landing/tokens'
 
 export default function LandingPage() {
