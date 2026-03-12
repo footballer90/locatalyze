@@ -1,7 +1,10 @@
+// 🔑 KEY CHANGE: force-dynamic prevents ALL static pre-rendering at build time
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+
 import Link from 'next/link'
 import { Metadata } from 'next'
 
-// ── Data ──────────────────────────────────────────────────────────────────────
 const CITIES: Record<string, {
   name: string; state: string; pop: string; medianRent: string;
   areas: string[]; traits: string[]; avgFootTraffic: string
@@ -20,25 +23,19 @@ const BIZ_TYPES: Record<string, {
   name: string; slug: string; avgSetup: string; avgTicket: string;
   keyMetrics: string[]; considerations: string[]; icon: string
 }> = {
-  cafe:         { name: 'Cafe',               slug: 'cafe',         avgSetup: '$80,000–$150,000', avgTicket: '$8–$15',   icon: '☕', keyMetrics: ['Morning foot traffic', 'Office worker proximity', 'Parking access'], considerations: ['Seating capacity vs rent', 'Coffee competition density', 'Breakfast vs all-day trade'] },
-  restaurant:   { name: 'Restaurant',         slug: 'restaurant',   avgSetup: '$150,000–$350,000', avgTicket: '$35–$65',  icon: '🍽️', keyMetrics: ['Dinner foot traffic', 'Parking availability', 'Demographic spend'], considerations: ['Liquor licence area', 'Kitchen fit-out costs', 'Delivery zone viability'] },
-  gym:          { name: 'Gym & Fitness Studio',slug: 'gym',          avgSetup: '$120,000–$250,000', avgTicket: '$60–$120', icon: '💪', keyMetrics: ['Residential catchment', 'Competitor gym count', 'Parking access'], considerations: ['Large floor space requirements', 'Equipment capital costs', 'Membership churn rates'] },
-  retail:       { name: 'Retail Store',        slug: 'retail',       avgSetup: '$60,000–$180,000',  avgTicket: '$45–$90',  icon: '🛍️', keyMetrics: ['Foot traffic count', 'Anchor store proximity', 'Demographics match'], considerations: ['Online competition impact', 'Seasonal inventory', 'Street vs mall trade'] },
-  bakery:       { name: 'Bakery',              slug: 'bakery',       avgSetup: '$90,000–$200,000',  avgTicket: '$12–$25',  icon: '🥐', keyMetrics: ['Morning commuter traffic', 'Residential density', 'Parking for early customers'], considerations: ['Early morning operations', 'Fit-out for commercial kitchen', 'Artisan vs volume model'] },
-  salon:        { name: 'Hair & Beauty Salon',  slug: 'salon',        avgSetup: '$40,000–$120,000',  avgTicket: '$80–$180', icon: '💈', keyMetrics: ['Female demographic density', 'Foot traffic', 'Visibility from street'], considerations: ['Appointment-based vs walk-in', 'Chair rental vs employed', 'Social media catchment'] },
+  cafe:       { name: 'Cafe',                slug: 'cafe',       avgSetup: '$80,000–$150,000',  avgTicket: '$8–$15',   icon: '☕', keyMetrics: ['Morning foot traffic','Office worker proximity','Parking access'], considerations: ['Seating capacity vs rent','Coffee competition density','Breakfast vs all-day trade'] },
+  restaurant: { name: 'Restaurant',          slug: 'restaurant', avgSetup: '$150,000–$350,000', avgTicket: '$35–$65',  icon: '🍽️', keyMetrics: ['Dinner foot traffic','Parking availability','Demographic spend'], considerations: ['Liquor licence area','Kitchen fit-out costs','Delivery zone viability'] },
+  gym:        { name: 'Gym & Fitness Studio', slug: 'gym',        avgSetup: '$120,000–$250,000', avgTicket: '$60–$120', icon: '💪', keyMetrics: ['Residential catchment','Competitor gym count','Parking access'], considerations: ['Large floor space requirements','Equipment capital costs','Membership churn rates'] },
+  retail:     { name: 'Retail Store',         slug: 'retail',     avgSetup: '$60,000–$180,000',  avgTicket: '$45–$90',  icon: '🛍️', keyMetrics: ['Foot traffic count','Anchor store proximity','Demographics match'], considerations: ['Online competition impact','Seasonal inventory','Street vs mall trade'] },
+  bakery:     { name: 'Bakery',               slug: 'bakery',     avgSetup: '$90,000–$200,000',  avgTicket: '$12–$25',  icon: '🥐', keyMetrics: ['Morning commuter traffic','Residential density','Parking for early customers'], considerations: ['Early morning operations','Fit-out for commercial kitchen','Artisan vs volume model'] },
+  salon:      { name: 'Hair & Beauty Salon',  slug: 'salon',      avgSetup: '$40,000–$120,000',  avgTicket: '$80–$180', icon: '💈', keyMetrics: ['Female demographic density','Foot traffic','Visibility from street'], considerations: ['Appointment-based vs walk-in','Chair rental vs employed','Social media catchment'] },
 }
 
-function slugToLabel(s: string) {
-  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-}
-
-// ── Metadata ──────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: { params: Promise<{ businessType: string; city: string }> }): Promise<Metadata> {
   const { businessType, city } = await params
-  const biz  = BIZ_TYPES[businessType]
-  const loc  = CITIES[city]
+  const biz = BIZ_TYPES[businessType]
+  const loc = CITIES[city]
   if (!biz || !loc) return { title: 'Locatalyze' }
-
   return {
     title: `${biz.name} Location Analysis ${loc.name} ${loc.state} | Locatalyze`,
     description: `Find the best location for your ${biz.name.toLowerCase()} in ${loc.name}. AI-powered analysis of competition, foot traffic, demographics and profitability. GO / CAUTION / NO verdict in 30 seconds.`,
@@ -50,11 +47,6 @@ export async function generateMetadata({ params }: { params: Promise<{ businessT
   }
 }
 
-// ── Static params (all 48 combinations) ──────────────────────────────────────
-export const dynamicParams = true
-export const revalidate = 86400
-
-// ── Sample data per city/biz combo (deterministic from slug) ─────────────────
 function getSampleData(bizSlug: string, citySlug: string) {
   const seed = (bizSlug.length * 7 + citySlug.length * 13) % 30
   return {
@@ -77,7 +69,6 @@ const S = {
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
 export default async function SEOLocationPage({ params }: { params: Promise<{ businessType: string; city: string }> }) {
   const { businessType, city } = await params
   const biz = BIZ_TYPES[businessType]
@@ -128,7 +119,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
 
-        {/* ── Hero ── */}
+        {/* Hero */}
         <div style={{ marginBottom: 48 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 700, color: S.brand, marginBottom: 16 }}>
             {biz.icon} AI Location Analysis
@@ -146,7 +137,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           <p style={{ fontSize: 12, color: S.n400, marginTop: 10 }}>Free · No credit card · 30 seconds</p>
         </div>
 
-        {/* ── City overview ── */}
+        {/* City overview */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 48 }}>
           <div>
             <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 16 }}>
@@ -166,20 +157,18 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
               ))}
             </div>
           </div>
-
-          {/* Sample metrics card */}
           <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 20, padding: '24px' }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
               {loc.name} {biz.name} · Typical figures
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {[
-                { label: 'Monthly Revenue',    value: sample.avgRevenue     },
-                { label: 'Monthly Profit',     value: sample.avgProfit      },
-                { label: 'Avg Competitors',    value: `${sample.competitorCount} nearby` },
-                { label: 'Demand Level',       value: sample.demandLevel    },
-                { label: 'Rent as % Revenue',  value: sample.rentPercent    },
-                { label: 'Break-even',         value: sample.breakeven      },
+                { label: 'Monthly Revenue',   value: sample.avgRevenue },
+                { label: 'Monthly Profit',    value: sample.avgProfit },
+                { label: 'Avg Competitors',   value: `${sample.competitorCount} nearby` },
+                { label: 'Demand Level',      value: sample.demandLevel },
+                { label: 'Rent as % Revenue', value: sample.rentPercent },
+                { label: 'Break-even',        value: sample.breakeven },
               ].map(m => (
                 <div key={m.label} style={{ background: S.white, borderRadius: 10, border: `1px solid ${S.n200}`, padding: '12px 14px' }}>
                   <p style={{ fontSize: 9, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{m.label}</p>
@@ -191,7 +180,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           </div>
         </div>
 
-        {/* ── Key areas ── */}
+        {/* Key areas */}
         <div style={{ marginBottom: 48 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 8 }}>
             Popular {biz.name} Locations in {loc.name}
@@ -209,7 +198,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           </div>
         </div>
 
-        {/* ── What to consider ── */}
+        {/* Key metrics + watch out */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 48 }}>
           <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 16, padding: '22px' }}>
             <h3 style={{ fontSize: 16, fontWeight: 800, color: '#065F46', marginBottom: 14 }}>📊 Key metrics for {biz.name}s</h3>
@@ -229,7 +218,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           </div>
         </div>
 
-        {/* ── Setup costs ── */}
+        {/* Setup costs */}
         <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '24px', marginBottom: 48 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginBottom: 12 }}>
             {biz.name} Setup Costs in {loc.name}
@@ -242,7 +231,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           </p>
         </div>
 
-        {/* ── CTA box ── */}
+        {/* CTA */}
         <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 20, padding: '36px', marginBottom: 48, textAlign: 'center' }}>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 10 }}>Free location analysis</p>
           <h2 style={{ fontSize: 28, fontWeight: 900, color: S.white, letterSpacing: '-0.03em', marginBottom: 12, lineHeight: 1.2 }}>
@@ -257,7 +246,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 10 }}>No credit card · 3 free reports</p>
         </div>
 
-        {/* ── Internal links — other cities ── */}
+        {/* Internal links — other cities */}
         <div style={{ marginBottom: 48 }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 14 }}>
             {biz.name} Location Analysis — Other Cities
@@ -272,7 +261,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           </div>
         </div>
 
-        {/* ── Internal links — other biz types ── */}
+        {/* Internal links — other biz types */}
         <div style={{ marginBottom: 48 }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 14 }}>
             Other Business Types in {loc.name}
@@ -287,7 +276,7 @@ export default async function SEOLocationPage({ params }: { params: Promise<{ bu
           </div>
         </div>
 
-        {/* ── FAQ (good for SEO) ── */}
+        {/* FAQ */}
         <div style={{ marginBottom: 48 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 20 }}>
             Frequently Asked Questions
