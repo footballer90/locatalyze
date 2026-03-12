@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
-  // ✅ Lazy import in metadata too
+  const { CITIES } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) return {}
   return {

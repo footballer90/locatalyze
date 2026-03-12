@@ -9,6 +9,7 @@ import Link from 'next/link'
 
 export async function generateMetadata({ params }: { params: Promise<{ suburb: string }> }) {
   const { suburb: suburbSlug } = await params
+  const { getSuburb } = await import('@/lib/suburb-data')
   const suburb = getSuburb(suburbSlug)
   if (!suburb) return {}
   return {
