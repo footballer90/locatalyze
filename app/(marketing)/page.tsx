@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 // app/(marketing)/location/page.tsx
 import Link from 'next/link'
 import { CITIES, BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'

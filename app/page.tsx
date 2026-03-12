@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import Footer from '@/components/Footer'
 import ReportDemoSection from '@/components/ReportDemoSection'
 import { useState, useEffect } from 'react'
