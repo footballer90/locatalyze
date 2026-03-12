@@ -22,6 +22,7 @@ export default function BlogPage() {
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
 
+        {/* Header */}
         <div style={{ background: S.headerBg, padding: '60px 24px 48px' }}>
           <div style={{ maxWidth: 1000, margin: '0 auto' }}>
             <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 32 }}>
@@ -34,6 +35,7 @@ export default function BlogPage() {
           </div>
         </div>
 
+        {/* Content */}
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '48px 20px 80px' }}>
 
           {/* Featured */}
@@ -52,7 +54,7 @@ export default function BlogPage() {
             </div>
           </Link>
 
-          {/* Category filter */}
+          {/* Category Filter */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
             {CATS.map(c => (
               <button key={c} onClick={() => setCat(c)}

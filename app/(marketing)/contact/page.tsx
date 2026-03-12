@@ -91,7 +91,7 @@ export default function ContactPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
-                { icon: '✉️', title: 'Email us directly', body: 'hello@locatalyze.com.au', sub: 'We reply within one business day.' },
+                { icon: '✉️', title: 'Email us directly', body: 'hello@locatalyze.com', sub: 'We reply within one business day.' },
                 { icon: '🕐', title: 'Business hours', body: 'Mon – Fri, 9am – 5pm AEST', sub: 'We are based in Australia.' },
                 { icon: '💬', title: 'Help Centre', body: 'Browse common questions', sub: 'Most answers are there already.', link: '/help' },
               ].map(item => (
