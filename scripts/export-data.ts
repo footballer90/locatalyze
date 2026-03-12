@@ -1,6 +1,6 @@
-import { CITIES, BUSINESS_TYPES, CITY_SLUGS, TYPE_SLUGS } from '../lib/location-data'
-import { SUBURBS, SUBURB_SLUGS } from '../lib/suburb-data'
-import { POSTS, POST_LIST } from '../lib/blog-posts'
+import { CITIES, BUSINESS_TYPES, CITY_SLUGS, TYPE_SLUGS } from '../lib/location-data.source'
+import { SUBURBS, SUBURB_SLUGS } from '../lib/suburb-data.source'
+import { POSTS, POST_LIST } from '../lib/blog-posts.source'
 import fs from 'fs'
 
 fs.mkdirSync('public/data', { recursive: true })
