@@ -7,7 +7,6 @@ import Link from 'next/link'
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
   // ✅ Lazy import in metadata too
-  const { CITIES } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) return {}
   return {
@@ -69,7 +68,6 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
   const { city: citySlug } = await params
   const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   // ✅ All data loaded lazily — not bundled at build time
-  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) notFound()
 
