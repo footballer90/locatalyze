@@ -2,7 +2,11 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
-  // eslint config removed — not supported in Next.js 16
+
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
 
   async headers() {
     return [
