@@ -1,4 +1,3 @@
-cat > "app/(marketing)/location/[city]/page.tsx" << 'EOF'
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
@@ -68,6 +67,7 @@ function trafficBadgeStyle(level: string) {
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
+  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   // ✅ All data loaded lazily — not bundled at build time
   const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
