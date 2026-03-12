@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 // app/(marketing)/layout.tsx
 // This is a SERVER component — do NOT add 'use client' here.
 // All interactive children (Footer, newsletter form) handle their own client boundary.

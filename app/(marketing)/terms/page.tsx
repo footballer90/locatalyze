@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 
 export default function TermsPage() {
   const EFFECTIVE_DATE = '8 March 2025'
