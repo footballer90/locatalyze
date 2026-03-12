@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_TURBOPACK=0 node --max-old-space-size=4096 node_modules/.bin/next build",
+    "build": "npx tsx scripts/export-data.ts && NEXT_TURBOPACK=0 node --max-old-space-size=4096 node_modules/.bin/next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -29,6 +29,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
