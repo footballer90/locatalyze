@@ -41,7 +41,8 @@ async function getData() {
   const { CITIES, BUSINESS_TYPES, getScoreColor } = await import('@/lib/location-data')
   return { CITIES, BUSINESS_TYPES, getScoreColor }
 }
-export default function LocationIndexPage() {
+export default async function LocationIndexPage() {
+  const { CITIES, BUSINESS_TYPES, getScoreColor } = await getData()
   return (
     <div style={S.page}>
       <section style={S.hero}>
