@@ -118,6 +118,7 @@ function renderSection(section: Section, idx: number) {
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
+  const { POSTS, POST_LIST } = await import('@/lib/blog-posts')
   const post = POSTS[slug]
 
   if (!post) {

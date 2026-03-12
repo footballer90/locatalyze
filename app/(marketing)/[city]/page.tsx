@@ -67,6 +67,7 @@ function trafficBadgeStyle(level: string) {
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
+  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) notFound()
 

@@ -71,6 +71,8 @@ const S = {
 
 export default async function SuburbPage({ params }: { params: Promise<{ suburb: string }> }) {
   const { suburb: suburbSlug } = await params
+  const { getSuburb, getSuburbsByCity } = await import('@/lib/suburb-data')
+  const { BUSINESS_TYPES, getScoreColor } = await import('@/lib/location-data')
   const suburb = getSuburb(suburbSlug)
   if (!suburb) notFound()
 

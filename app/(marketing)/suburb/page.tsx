@@ -1,4 +1,3 @@
-cat > "app/(marketing)/suburb/page.tsx" << 'EOF'
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
@@ -18,17 +17,11 @@ const S = {
   card: { border: '1px solid #E2E8F0', borderRadius: 16, padding: 20, background: '#FFFFFF', textDecoration: 'none', color: 'inherit', display: 'block' },
   cardName: { fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 4 },
   cardCity: { fontSize: 13, color: '#64748B', marginBottom: 10 },
-  badge: (t: string) => ({
-    display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20,
-    background: t === 'Very High' ? '#D1FAE5' : t === 'High' ? '#DBEAFE' : t === 'Moderate' ? '#FEF3C7' : '#F1F5F9',
-    color: t === 'Very High' ? '#059669' : t === 'High' ? '#1D4ED8' : t === 'Moderate' ? '#D97706' : '#64748B',
-  }),
   cta: { background: 'linear-gradient(135deg,#059669 0%,#0F766E 100%)', padding: '64px 24px', textAlign: 'center' as const },
   ctaBtn: { display: 'inline-block', background: '#FFFFFF', color: '#059669', fontWeight: 700, fontSize: 16, padding: '14px 36px', borderRadius: 100, textDecoration: 'none' },
 }
 
 export default async function SuburbsPage() {
-  // ✅ Lazy import — only loads at request time, not at build time
   const { SUBURBS } = await import('@/lib/suburb-data')
   const { getScoreColor } = await import('@/lib/location-data')
 
@@ -57,7 +50,11 @@ export default async function SuburbsPage() {
               <div style={S.cardName}>{suburb.name}</div>
               <div style={S.cardCity}>{suburb.city}, {suburb.state}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={S.badge(suburb.footTraffic)}>{suburb.footTraffic} traffic</span>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20,
+                  background: suburb.footTraffic === 'Very High' ? '#D1FAE5' : suburb.footTraffic === 'High' ? '#DBEAFE' : '#FEF3C7',
+                  color: suburb.footTraffic === 'Very High' ? '#059669' : suburb.footTraffic === 'High' ? '#1D4ED8' : '#D97706',
+                }}>{suburb.footTraffic} traffic</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: getScoreColor(avgScore) }}>{avgScore}/100</span>
               </div>
               <div style={{ fontSize: 12, color: '#64748B', marginTop: 8 }}>{suburb.rentRange}</div>
@@ -74,4 +71,3 @@ export default async function SuburbsPage() {
     </div>
   )
 }
-EOF

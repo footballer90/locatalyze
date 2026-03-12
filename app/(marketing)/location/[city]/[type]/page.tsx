@@ -73,6 +73,7 @@ function swotCardStyle(color: string, bg: string) {
 
 export default async function CityTypePage({ params }: { params: Promise<{ city: string; type: string }> }) {
   const { city: citySlug, type: typeSlug } = await params
+  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   const type = BUSINESS_TYPES.find(t => t.slug === typeSlug)
   if (!city || !type) notFound()
