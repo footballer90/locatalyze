@@ -1,6 +1,6 @@
-// 🔑 KEY CHANGE: force-dynamic prevents ALL static pre-rendering at build time
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
+// 🔑 KEY CHANGE: force-dynamic prevents ALL static pre-rendering at build time
 
 import Link from 'next/link'
 import { Metadata } from 'next'
