@@ -1,6 +1,5 @@
 'use client'
 export const dynamic = 'force-dynamic'
-import { CITIES, BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
 import Link from 'next/link'
 import { useState } from 'react'
 
