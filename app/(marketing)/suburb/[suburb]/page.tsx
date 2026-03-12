@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 // app/(marketing)/suburb/[suburb]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
