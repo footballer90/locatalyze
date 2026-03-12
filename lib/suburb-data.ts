@@ -1,7 +1,9 @@
-// lib/suburb-data.ts — thin wrapper, data served from public/data/suburbs.json
-import _data from '../public/data/suburbs.json'
+// lib/suburb-data.ts
+import path from 'path'
+import { readFileSync } from 'fs'
 
-const d = _data as any
+const d = JSON.parse(readFileSync(path.join(process.cwd(), 'public/data/suburbs.json'), 'utf8'))
+
 export const SUBURB_SLUGS: string[] = d.SUBURB_SLUGS
 export const SUBURBS: any[] = d.SUBURBS
 

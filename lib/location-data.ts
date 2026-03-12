@@ -1,7 +1,9 @@
-// lib/location-data.ts — thin wrapper, data served from public/data/location.json
-import _data from '../public/data/location.json'
+// lib/location-data.ts
+import path from 'path'
+import { readFileSync } from 'fs'
 
-const d = _data as any
+const d = JSON.parse(readFileSync(path.join(process.cwd(), 'public/data/location.json'), 'utf8'))
+
 export const CITY_SLUGS: string[] = d.CITY_SLUGS
 export const TYPE_SLUGS: string[] = d.TYPE_SLUGS
 export const CITIES: any[] = d.CITIES
