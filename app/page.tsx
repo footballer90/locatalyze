@@ -1,14 +1,14 @@
 'use client'
-import dynamic from 'next/dynamic'
 export const dynamic = 'force-dynamic'
+import nextDynamic from 'next/dynamic'
 import Footer from '@/components/Footer'
-const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'))
+const ReportDemoSection = nextDynamic(() => import('@/components/ReportDemoSection'))
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-const ReportPreview = dynamic(() => import('@/components/landing/ReportPreview'))
-const DarkShowcase = dynamic(() => import('@/components/landing/DarkShowcase'))
-const PremiumReport = dynamic(() => import('@/components/landing/PremiumReport'))
-const CinematicWalkthrough = dynamic(() => import('@/components/landing/CinematicWalkthrough'))
+const ReportPreview = nextDynamic(() => import('@/components/landing/ReportPreview'))
+const DarkShowcase = nextDynamic(() => import('@/components/landing/DarkShowcase'))
+const PremiumReport = nextDynamic(() => import('@/components/landing/PremiumReport'))
+const CinematicWalkthrough = nextDynamic(() => import('@/components/landing/CinematicWalkthrough'))
 import type { CW_PHASE_META } from '@/components/landing/CinematicWalkthrough'
 import { L, D, font, LI, useIsMobile } from '@/components/landing/tokens'
 
