@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic'
 // app/layout.tsx
 import type { Metadata } from 'next'
 import { DM_Sans } from 'next/font/google'

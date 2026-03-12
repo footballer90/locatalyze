@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-dynamic'
 import ShareButton from '@/components/ShareButton'
 import ExportPDFButton from '@/components/ExportPDFButton'
 import { use, useCallback, useEffect, useMemo, useState, useRef } from 'react'
