@@ -1,4 +1,6 @@
+import 'server-only'
 // lib/location-data.ts
+import 'server-only'
 import path from 'path'
 import { readFileSync } from 'fs'
 
