@@ -14,7 +14,6 @@ const S = {
 const CATS = ['All', 'Cafes', 'Restaurants', 'Gyms', 'Retail', 'Finance', 'Strategy', 'Data', 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Tools']
 
 
-}
 export default function BlogPage() {
   const [cat, setCat] = useState('All')
   const filtered = cat === 'All' ? POST_LIST : POST_LIST.filter(p => p.category === cat)
