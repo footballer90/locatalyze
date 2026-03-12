@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export function generateStaticParams() { return [] }
 export const dynamicParams = true
 // 🔑 KEY CHANGE: force-dynamic prevents ALL static pre-rendering at build time
 

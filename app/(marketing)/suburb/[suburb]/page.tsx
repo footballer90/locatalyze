@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export function generateStaticParams() { return [] }
 export const dynamicParams = true
 // app/(marketing)/suburb/[suburb]/page.tsx
 import { notFound } from 'next/navigation'
