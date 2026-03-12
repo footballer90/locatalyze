@@ -1,7 +1,7 @@
 'use client'
-import { POST_LIST } from '@/lib/blog-posts'
 import Link from 'next/link'
 import { useState } from 'react'
+import { POST_LIST } from '@/lib/blog-posts'
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
@@ -11,7 +11,6 @@ const S = {
 }
 
 const CATS = ['All', 'Cafes', 'Restaurants', 'Gyms', 'Retail', 'Finance', 'Strategy', 'Data', 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Tools']
-
 
 export default function BlogPage() {
   const [cat, setCat] = useState('All')
@@ -23,7 +22,6 @@ export default function BlogPage() {
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
 
-        {/* Header */}
         <div style={{ background: S.headerBg, padding: '60px 24px 48px' }}>
           <div style={{ maxWidth: 1000, margin: '0 auto' }}>
             <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 32 }}>
@@ -36,7 +34,6 @@ export default function BlogPage() {
           </div>
         </div>
 
-        {/* Content */}
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '48px 20px 80px' }}>
 
           {/* Featured */}
@@ -55,7 +52,7 @@ export default function BlogPage() {
             </div>
           </Link>
 
-          {/* Category Filter */}
+          {/* Category filter */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
             {CATS.map(c => (
               <button key={c} onClick={() => setCat(c)}

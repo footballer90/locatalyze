@@ -134,7 +134,6 @@ function SuburbScoreBadge({ score }: { score: number }) {
   )
 }
 
-
 export default function AnalysePage() {
   const [openCity, setOpenCity] = useState<string | null>('Sydney')
 

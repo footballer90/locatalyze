@@ -1,16 +1,15 @@
-export const dynamic = 'force-dynamic'
-export function generateStaticParams() { return [] }
-export const dynamicParams = true
 // app/(marketing)/suburb/[suburb]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-// lazy-loaded below
-// lazy-loaded below
+import { SUBURBS, SUBURB_SLUGS, getSuburb, getSuburbsByCity } from '@/lib/suburb-data'
+import { BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
 
+export async function generateStaticParams() {
+  return SUBURB_SLUGS.map(suburb => ({ suburb }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ suburb: string }> }) {
   const { suburb: suburbSlug } = await params
-  const { getSuburb } = await import('@/lib/suburb-data')
   const suburb = getSuburb(suburbSlug)
   if (!suburb) return {}
   return {
@@ -73,8 +72,6 @@ const S = {
 
 export default async function SuburbPage({ params }: { params: Promise<{ suburb: string }> }) {
   const { suburb: suburbSlug } = await params
-  const { getSuburb, getSuburbsByCity } = await import('@/lib/suburb-data')
-  const { BUSINESS_TYPES, getScoreColor } = await import('@/lib/location-data')
   const suburb = getSuburb(suburbSlug)
   if (!suburb) notFound()
 

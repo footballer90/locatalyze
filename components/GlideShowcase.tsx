@@ -48,23 +48,18 @@ const SCORE_BARS = [
 ]
 
 function ScoreUI({ animKey }: { animKey: number }) {
-  const [score, setScore] = useState<number | null>(null)
+  const [score, setScore] = useState(0)
   const [bars, setBars] = useState(false)
   useEffect(() => {
-    setScore(null); setBars(false)
+    setScore(0); setBars(false)
     let n = 0
-    // Small delay so the ring never flashes 0 on initial render
-    const start = setTimeout(() => {
-      const t = setInterval(() => {
-        n = Math.min(n + 2, 84); setScore(n)
-        if (n >= 84) { clearInterval(t); setBars(true) }
-      }, 18)
-      return () => clearInterval(t)
-    }, 80)
-    return () => clearTimeout(start)
+    const t = setInterval(() => {
+      n = Math.min(n + 2, 84); setScore(n)
+      if (n >= 84) { clearInterval(t); setBars(true) }
+    }, 18)
+    return () => clearInterval(t)
   }, [animKey])
-  const displayed = score ?? 0
-  const offset = 188 - (188 * displayed / 100)
+  const offset = 188 - (188 * score / 100)
   return (
     <div style={{ padding: 20 }}>
       <p style={{ fontSize: 10, color: '#6B7280', marginBottom: 4 }}>📍 142 Bourke St, Melbourne VIC</p>
@@ -75,11 +70,9 @@ function ScoreUI({ animKey }: { animKey: number }) {
             <circle fill="none" stroke="rgba(255,255,255,.07)" strokeWidth="6" cx="30" cy="30" r="24"/>
             <circle fill="none" stroke="url(#rg2)" strokeWidth="6" strokeLinecap="round" cx="30" cy="30" r="24" strokeDasharray="188" strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset .05s linear' }}/>
           </svg>
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: '#F0FDF9' }}>
-            {score === null ? '—' : displayed}
-          </div>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: '#F0FDF9' }}>{score}</div>
         </div>
-        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: (score ?? 0) >= 84 ? 1 : 0, transition: 'opacity .4s' }}>
+        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: score >= 84 ? 1 : 0, transition: 'opacity .4s' }}>
           <p style={{ fontSize: 17, fontWeight: 900, color: '#34D399' }}>GO ✅</p>
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>

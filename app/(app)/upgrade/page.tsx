@@ -111,18 +111,18 @@ export default function UpgradePage() {
             </button>
           </div>
 
-          {/* Founder Annual */}
+          {/* Lifetime */}
           <div style={{ background: `linear-gradient(145deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 24, padding: '32px 28px', boxShadow: '0 8px 32px rgba(15,118,110,0.25)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: S.amber, color: S.white, borderRadius: 100, padding: '4px 16px', fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap', boxShadow: '0 2px 10px rgba(217,119,6,0.3)' }}>
-              SAVE 35% — ANNUAL
+              BEST VALUE — PAY ONCE
             </div>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Pro Annual</p>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>\
-              <span style={{ fontSize: 44, fontWeight: 900, color: S.white, letterSpacing: '-0.03em' }}>$149</span>
-              <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)' }}>/year</span>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Pro Lifetime</p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
+              <span style={{ fontSize: 44, fontWeight: 900, color: S.white, letterSpacing: '-0.03em' }}>$49</span>
+              <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)' }}>one-time</span>
             </div>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 28 }}>Equivalent to $12.40/mo — billed annually</p>
-            {['Everything in Monthly', 'Save $79 vs monthly billing', 'Priority support', 'Location comparison tool', 'First access to new features'].map(f => (
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 28 }}>Pay once, yours forever</p>
+            {['Everything in Monthly', 'Never pay again', 'Locked-in pricing', 'Lifetime updates', 'First access to new features'].map(f => (
               <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 10, color: S.white, fontWeight: 900 }}>✓</span>
@@ -140,14 +140,14 @@ export default function UpgradePage() {
                 boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
               }}
             >
-              {loading === 'lifetime' ? 'Redirecting to Stripe…' : 'Get annual access — $149/yr'}
+              {loading === 'lifetime' ? 'Redirecting to Stripe…' : 'Get lifetime access — $49'}
             </button>
           </div>
         </div>
 
         {/* Trust badges */}
         <div style={{ marginTop: 36, display: 'flex', gap: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {['Secure checkout via Stripe', 'Instant access after payment', 'All major cards accepted', 'Cancel anytime'].map(b => (
+          {['🔒 Secure checkout via Stripe', '✅ Instant access after payment', '💳 All major cards accepted', '↩ Cancel monthly anytime'].map(b => (
             <span key={b} style={{ fontSize: 13, color: S.n500, fontWeight: 500 }}>{b}</span>
           ))}
         </div>
@@ -157,8 +157,8 @@ export default function UpgradePage() {
           <h3 style={{ fontSize: 18, fontWeight: 800, color: S.n900, marginBottom: 20, textAlign: 'center' }}>Common questions</h3>
           {[
             { q: 'What happens to my free reports?', a: 'They stay. Upgrading gives you unlimited reports on top of your existing 3.' },
-            { q: 'Can I cancel monthly or annual?', a: 'Monthly: cancel any time, access until end of billing period. Annual: cancel before renewal to avoid next charge.' },
-            { q: 'What is included in annual vs monthly?', a: 'Annual includes everything in Monthly plus priority support and the location comparison tool, at a 35% saving.' },
+            { q: 'Can I cancel monthly?', a: 'Yes, any time. You keep access until the end of your billing period.' },
+            { q: 'Is lifetime really once-off?', a: 'Yes. $49 once and you never pay again — including all future features.' },
             { q: 'What payment methods are accepted?', a: 'All major credit and debit cards via Stripe. Apple Pay and Google Pay where available.' },
           ].map(item => (
             <div key={item.q} style={{ borderBottom: `1px solid ${S.n100}`, padding: '16px 0' }}>

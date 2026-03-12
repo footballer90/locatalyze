@@ -6,21 +6,24 @@ const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
-    { url: BASE,                  lastModified: new Date(), changeFrequency: 'weekly'  as const, priority: 1.0 },
+    { url: BASE, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1 },
     { url: `${BASE}/auth/signup`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE}/auth/login`,  lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
-    { url: `${BASE}/analyse`,     lastModified: new Date(), changeFrequency: 'weekly'  as const, priority: 0.9 },
-    { url: `${BASE}/blog`,        lastModified: new Date(), changeFrequency: 'weekly'  as const, priority: 0.8 },
+    { url: `${BASE}/analyse`,     lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
   ]
 
-  const seoPages = BIZ_TYPES.flatMap(biz =>
-    CITIES.map(city => ({
-      url: `${BASE}/analyse/${biz}/${city}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }))
-  )
+  // All 48 SEO pages
+  const seoPages = []
+  for (const biz of BIZ_TYPES) {
+    for (const city of CITIES) {
+      seoPages.push({
+        url: `${BASE}/analyse/${biz}/${city}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      })
+    }
+  }
 
   return [...staticPages, ...seoPages]
 }

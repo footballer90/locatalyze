@@ -1,13 +1,14 @@
-export const dynamic = 'force-dynamic'
-export function generateStaticParams() { return [] }
-export const dynamicParams = true
-
+// app/(marketing)/location/[city]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { CITIES, BUSINESS_TYPES, CITY_SLUGS, getCityTypeInsight, getScoreColor } from '@/lib/location-data'
+
+export async function generateStaticParams() {
+  return CITY_SLUGS.map(city => ({ city }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
-  const { CITIES } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) return {}
   return {
@@ -67,8 +68,6 @@ function trafficBadgeStyle(level: string) {
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
-  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
-  // ✅ All data loaded lazily — not bundled at build time
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) notFound()
 
@@ -90,10 +89,22 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
           </h1>
           <p style={S.subtitle}>{city.description}</p>
           <div style={S.statRow}>
-            <div style={S.stat}><div style={S.statLabel}>Population</div><div style={S.statValue}>{city.population}</div></div>
-            <div style={S.stat}><div style={S.statLabel}>Avg Income</div><div style={S.statValue}>{city.avgIncome}</div></div>
-            <div style={S.stat}><div style={S.statLabel}>Market Demand</div><div style={{ ...S.statValue, color: getScoreColor(city.demandScore) }}>{city.demandScore}/100</div></div>
-            <div style={S.stat}><div style={S.statLabel}>Business Climate</div><div style={S.statValue}>{city.businessClimate}</div></div>
+            <div style={S.stat}>
+              <div style={S.statLabel}>Population</div>
+              <div style={S.statValue}>{city.population}</div>
+            </div>
+            <div style={S.stat}>
+              <div style={S.statLabel}>Avg Income</div>
+              <div style={S.statValue}>{city.avgIncome}</div>
+            </div>
+            <div style={S.stat}>
+              <div style={S.statLabel}>Market Demand</div>
+              <div style={{ ...S.statValue, color: getScoreColor(city.demandScore) }}>{city.demandScore}/100</div>
+            </div>
+            <div style={S.stat}>
+              <div style={S.statLabel}>Business Climate</div>
+              <div style={S.statValue}>{city.businessClimate}</div>
+            </div>
           </div>
         </div>
       </section>
@@ -122,7 +133,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
       <section style={S.section}>
         <div style={S.inner}>
           <h2 style={S.sectionTitle}>Analyse by Business Type</h2>
-          <p style={S.sectionSub}>Demand scores and opportunity insights for each business category in {city.name}</p>
+          <p style={S.sectionSub}>See demand scores and opportunity insights for each business category in {city.name}</p>
           <div style={S.typeGrid}>
             {BUSINESS_TYPES.map(type => {
               const insight = getCityTypeInsight(city.slug, type.slug)
@@ -149,11 +160,15 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
           <div style={S.grid2}>
             <div style={S.card}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: '#059669' }}>✓ Market Strengths</h3>
-              <div style={S.pillRow}>{city.strengths.map(s => <span key={s} style={S.pillGreen}>{s}</span>)}</div>
+              <div style={S.pillRow}>
+                {city.strengths.map(s => <span key={s} style={S.pillGreen}>{s}</span>)}
+              </div>
             </div>
             <div style={S.card}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: '#DC2626' }}>⚠ Market Challenges</h3>
-              <div style={S.pillRow}>{city.challenges.map(c => <span key={c} style={S.pill}>{c}</span>)}</div>
+              <div style={S.pillRow}>
+                {city.challenges.map(c => <span key={c} style={S.pill}>{c}</span>)}
+              </div>
             </div>
           </div>
         </div>
@@ -165,8 +180,14 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         <div style={S.inner}>
           <h2 style={S.sectionTitle}>Economic Overview</h2>
           <div style={{ ...S.card, display: 'flex', flexWrap: 'wrap' as const, gap: 32 }}>
-            <div style={{ flex: '1 1 280px' }}><div style={S.statLabel}>Key Industries</div><div style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', marginTop: 8 }}>{city.economy}</div></div>
-            <div style={{ flex: '1 1 280px' }}><div style={S.statLabel}>City Tagline</div><div style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', marginTop: 8 }}>{city.tagline}</div></div>
+            <div style={{ flex: '1 1 280px' }}>
+              <div style={S.statLabel}>Key Industries</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', marginTop: 8 }}>{city.economy}</div>
+            </div>
+            <div style={{ flex: '1 1 280px' }}>
+              <div style={S.statLabel}>City Tagline</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: '#0F172A', marginTop: 8 }}>{city.tagline}</div>
+            </div>
           </div>
         </div>
       </section>

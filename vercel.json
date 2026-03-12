@@ -1,7 +1,10 @@
 {
-  "functions": {
-    "app/**": {
-      "memory": 1024
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "locatalyze.vercel.app" }],
+      "destination": "https://locatalyze.com/$1",
+      "permanent": true
     }
-  }
+  ]
 }

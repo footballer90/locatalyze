@@ -1,12 +1,17 @@
-export const dynamic = 'force-dynamic'
-export function generateStaticParams() { return [] }
-export const dynamicParams = true
 // app/(marketing)/location/[city]/[type]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-// lazy-loaded below
+import { CITIES, BUSINESS_TYPES, CITY_SLUGS, TYPE_SLUGS, getCityTypeInsight, getScoreColor, getVerdictColor } from '@/lib/location-data'
 
-// Render on first visit, cache for 24h — avoids pre-building hundreds of pages at deploy time
+export async function generateStaticParams() {
+  const params = []
+  for (const city of CITY_SLUGS) {
+    for (const type of TYPE_SLUGS) {
+      params.push({ city, type })
+    }
+  }
+  return params
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string; type: string }> }) {
   const { city: citySlug, type: typeSlug } = await params
@@ -74,7 +79,6 @@ function swotCardStyle(color: string, bg: string) {
 
 export default async function CityTypePage({ params }: { params: Promise<{ city: string; type: string }> }) {
   const { city: citySlug, type: typeSlug } = await params
-  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   const type = BUSINESS_TYPES.find(t => t.slug === typeSlug)
   if (!city || !type) notFound()

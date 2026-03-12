@@ -50,29 +50,6 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   }
 }
 
-// ─── Prompt injection defence ────────────────────────────────────────────────
-const INJECTION_PATTERNS = [
-  /ignore\s+(all\s+)?instructions?/gi,
-  /forget\s+(all\s+)?previous/gi,
-  /you\s+are\s+(now\s+)?a/gi,
-  /act\s+as\s+(a|an)/gi,
-  /disregard\s+(all\s+)?/gi,
-  /system\s*:/gi,
-  /assistant\s*:/gi,
-  /\[\s*system\s*\]/gi,
-  /output\s*:\s*go\b/gi,
-  /output\s*:\s*caution\b/gi,
-  /output\s*:\s*no\b/gi,
-  /score\s*:\s*\d+/gi,
-  /verdict\s*:\s*(go|caution|no)\b/gi,
-]
-function sanitizeAddress(raw: string): string {
-  let s = raw.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
-  for (const p of INJECTION_PATTERNS) s = s.replace(p, '')
-  // Allow only chars valid in Australian addresses
-  return s.replace(/[^a-zA-Z0-9 ,.\-\/'']/g, '').trim()
-}
-
 export async function POST(request: NextRequest) {
   // ── Rate limit ─────────────────────────────────────────────────────────────
   if (ratelimit) {
@@ -93,12 +70,6 @@ export async function POST(request: NextRequest) {
   const validation = validatePayload(rawBody)
   if (!validation.valid) return errorResponse(validation.error, 400)
   const { data } = validation
-  // Sanitize address against prompt injection (applied after type validation)
-  const sanitizedAddress = sanitizeAddress(data.address)
-  if (sanitizedAddress.length < 5) {
-    return errorResponse('Address contains invalid characters. Please enter a valid Australian address.', 400)
-  }
-  data.address = sanitizedAddress
 
   // ── Webhook URL check ──────────────────────────────────────────────────────
   const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
@@ -121,6 +92,10 @@ export async function POST(request: NextRequest) {
       const { data: profile } = await sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
       const plan = profile?.plan || 'free'
       const used = profile?.total_analyses_used ?? 0
+      // Skip quota check for admin
+      if (profile?.plan === 'admin') {
+        // allow through
+      }
       if (plan === 'free' && used >= FREE_LIMIT) {
         return errorResponse(`You've used all ${FREE_LIMIT} free analyses. Upgrade to Pro for unlimited reports.`, 402)
       }
@@ -145,7 +120,7 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json', 'User-Agent': 'Locatalyze/1.0' },
       body:    JSON.stringify({
         businessType:  data.businessType,
-        address:       sanitizedAddress,
+        address:       data.address,
         monthlyRent:   data.monthlyRent,
         setupBudget:   data.setupBudget,
         avgTicketSize: data.avgTicketSize,
@@ -232,13 +207,13 @@ export async function POST(request: NextRequest) {
         breakeven_daily:     rpt.breakeven_daily,
         breakeven_months:    rpt.breakeven_months,
         full_report_markdown: JSON.stringify(rpt.financials || {}),
-        location_name:       rpt.location?.formattedAddress || sanitizedAddress,
+        location_name:       rpt.location?.formattedAddress || data.address,
         business_type:       data.businessType,
         monthly_rent:        data.monthlyRent,
-        address:             sanitizedAddress,
+        address:             data.address,
         result_data:         rpt,          // full structured report — report page reads from here
         input_data:          rpt.input_data || {
-          businessType: data.businessType, address: sanitizedAddress,
+          businessType: data.businessType, address: data.address,
           monthlyRent: data.monthlyRent, setupBudget: data.setupBudget, avgTicketSize: data.avgTicketSize,
         },
         status: 'complete',

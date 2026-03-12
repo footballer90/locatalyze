@@ -1,10 +1,5 @@
-export const dynamic = 'force-dynamic'
-export function generateStaticParams() { return [] }
-export const dynamicParams = true
-// 🔑 KEY CHANGE: force-dynamic prevents ALL static pre-rendering at build time
-
 import Link from 'next/link'
-// lazy-loaded below
+import { POSTS, POST_LIST, type Section } from '@/lib/blog-posts'
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
@@ -17,10 +12,10 @@ const S = {
 }
 
 const VARIANT_COLORS = {
-  teal:  { color: S.brand,   bg: S.brandFaded, border: S.brandBorder },
-  amber: { color: S.amber,   bg: S.amberBg,    border: S.amberBdr },
-  green: { color: S.emerald, bg: S.emeraldBg,  border: S.emeraldBdr },
-  red:   { color: S.red,     bg: S.redBg,      border: S.redBdr },
+  teal: { color: S.brand, bg: S.brandFaded, border: S.brandBorder },
+  amber: { color: S.amber, bg: S.amberBg, border: S.amberBdr },
+  green: { color: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr },
+  red: { color: S.red, bg: S.redBg, border: S.redBdr },
 }
 
 function renderSection(section: Section, idx: number) {
@@ -117,9 +112,12 @@ function renderSection(section: Section, idx: number) {
   }
 }
 
+export async function generateStaticParams() {
+  return Object.keys(POSTS).map(slug => ({ slug }))
+}
+
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { POSTS, POST_LIST } = await import('@/lib/blog-posts')
   const post = POSTS[slug]
 
   if (!post) {
@@ -144,7 +142,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
 
-        {/* Nav */}
+        {/* Nav bar */}
         <div style={{ background: S.headerBg, padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg,#0F766E,#14B8A6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}>L</div>
@@ -171,16 +169,21 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
         {/* Content */}
         <div style={{ maxWidth: 760, margin: '0 auto', padding: '44px 20px 80px' }}>
+
+          {/* Intro */}
           <p style={{ fontSize: 17, color: S.n700, lineHeight: 1.85, marginBottom: 36, fontWeight: 500, borderLeft: `3px solid ${S.brand}`, paddingLeft: 18 }}>{post.intro}</p>
+
+          {/* SEO meta info */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 36, flexWrap: 'wrap' }}>
             {post.tags.map(tag => (
               <span key={tag} style={{ background: S.n50, color: S.n500, border: `1px solid ${S.n200}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 600 }}>{tag}</span>
             ))}
           </div>
 
+          {/* Article sections */}
           {post.sections.map((section, i) => renderSection(section, i))}
 
-          {/* CTA */}
+          {/* In-article CTA */}
           <div style={{ background: `linear-gradient(135deg,${S.brand},#0891B2)`, borderRadius: 16, padding: '32px', textAlign: 'center', marginTop: 48, marginBottom: 12 }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8 }}>Analyse your location now — free</h3>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 20 }}>Paste any Australian address. Get competition counts, demographic scoring and a full financial model in 30 seconds.</p>

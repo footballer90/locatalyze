@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
-import NewsletterForm from '@/components/NewsletterForm'
+// ... rest of file stays exactly the same
+// import Link from 'next/link'
 
 // ── Inline SVG logo (dark variant — white text + teal accent) ──
 function Logo() {
@@ -276,12 +277,12 @@ export default function Footer() {
     {
       title: 'Use Cases',
       links: [
-        { label: 'Cafes & Coffee',    href: '/use-case/cafes' },
-        { label: 'Restaurants',       href: '/use-case/restaurants' },
-        { label: 'Retail Stores',     href: '/use-case/retail' },
-        { label: 'Gyms & Fitness',    href: '/use-case/gyms' },
-        { label: 'Takeaway',          href: '/use-case/takeaway' },
-        { label: 'All business types',href: '/use-case/all' },
+       { label: 'Cafes & Coffee',    href: '/use-case/cafes' },
+{ label: 'Restaurants',       href: '/use-case/restaurants' },
+{ label: 'Retail Stores',     href: '/use-case/retail' },
+{ label: 'Gyms & Fitness',    href: '/use-case/gyms' },
+{ label: 'Takeaway',          href: '/use-case/takeaway' },
+{ label: 'All business types',href: '/use-case/all' },
       ],
     },
     {
@@ -326,7 +327,20 @@ export default function Footer() {
             <span style={S.newsletterTitle}>📍 Get weekly location insights</span>
             <span style={S.newsletterSub}>Where Australian businesses are opening, failing, and thriving.</span>
           </div>
-          <NewsletterForm />
+          <div style={S.newsletterForm}>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              style={S.newsletterInput}
+              onFocus={e => { e.currentTarget.style.borderColor = '#0F766E' }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#1F2937' }}
+            />
+            <button style={S.newsletterBtn}
+              onMouseEnter={e => { e.currentTarget.style.background = '#0D6B63' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#0F766E' }}>
+              Subscribe
+            </button>
+          </div>
         </div>
 
         {/* ── Main grid ── */}
@@ -349,14 +363,12 @@ export default function Footer() {
             {/* Social links */}
             <div style={S.socialRow}>
               <a href="https://twitter.com/locatalyze" target="_blank" rel="noopener noreferrer"
-                aria-label="Locatalyze on Twitter"
                 style={S.socialBtn}
                 onMouseEnter={e => hoverSocial(e, true)}
                 onMouseLeave={e => hoverSocial(e, false)}>
                 <TwitterIcon />
               </a>
               <a href="https://linkedin.com/company/locatalyze" target="_blank" rel="noopener noreferrer"
-                aria-label="Locatalyze on LinkedIn"
                 style={S.socialBtn}
                 onMouseEnter={e => hoverSocial(e, true)}
                 onMouseLeave={e => hoverSocial(e, false)}>
@@ -390,9 +402,9 @@ export default function Footer() {
           {[
             { icon: '🇦🇺', text: 'Built in Australia' },
             { icon: '📊', text: 'ABS Census data' },
-            { icon: '🔒', text: 'Bank-grade encryption' },
-            { icon: '🛡', text: 'SOC 2 aligned infrastructure' },
-            { icon: '🗺', text: 'Live location data' },
+            { icon: '🗺', text: 'OpenStreetMap' },
+            { icon: '🔒', text: 'Supabase encrypted storage' },
+            { icon: '⚡', text: 'Powered by GPT-4o-mini' },
           ].map(item => (
             <div key={item.text} style={S.trustItem}>
               <span>{item.icon}</span>

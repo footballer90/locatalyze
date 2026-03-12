@@ -1,15 +1,14 @@
-export const dynamic = 'force-dynamic'
-export function generateStaticParams() { return [] }
-export const dynamicParams = true
 // app/(marketing)/location/[city]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-// lazy-loaded below
+import { CITIES, BUSINESS_TYPES, CITY_SLUGS, getCityTypeInsight, getScoreColor } from '@/lib/location-data'
 
+export async function generateStaticParams() {
+  return CITY_SLUGS.map(city => ({ city }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
-  const { CITIES } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) return {}
   return {
@@ -69,7 +68,6 @@ function trafficBadgeStyle(level: string) {
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const { city: citySlug } = await params
-  const { CITIES, BUSINESS_TYPES, getCityTypeInsight, getScoreColor } = await import('@/lib/location-data')
   const city = CITIES.find(c => c.slug === citySlug)
   if (!city) notFound()
 
