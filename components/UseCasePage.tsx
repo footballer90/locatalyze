@@ -1,3 +1,4 @@
+import { Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, Store } from 'lucide-react'
 'use client'
 import Link from 'next/link'
 
@@ -116,7 +117,7 @@ export function UseCasePage({ type }: { type: string }) {
             <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 13 }}>L</div>
             <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>Locatalyze</span>
           </Link>
-          <span style={{ fontSize: 52, display: 'block', marginBottom: 12 }}>{config.icon}</span>
+          <span style={{ fontSize: 52, display: 'block', marginBottom: 12 }}>{ICON_MAP[config.icon] ?? config.icon}</span>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.15)', border: '1px solid rgba(15,118,110,0.3)', borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, color: S.brandLight, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 14 }}>{config.subtitle}</div>
           <h1 style={{ fontSize: '36px', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.5px', marginBottom: 12 }}>{config.title}</h1>
           <p style={{ fontSize: 15, color: '#9CA3AF', maxWidth: 520, margin: '0 auto' }}>{config.description}</p>
@@ -129,7 +130,7 @@ export function UseCasePage({ type }: { type: string }) {
               {config.keyFactors.map(f => (
                 <div key={f.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '20px' }}>
                   <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 9, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{f.icon}</div>
+                    <div style={{ width: 36, height: 36, borderRadius: 9, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{ICON_MAP[f.icon] ?? f.icon}</div>
                     <div>
                       <p style={{ fontSize: 14, fontWeight: 700, color: S.n900, marginBottom: 4 }}>{f.title}</p>
                       <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.65 }}>{f.desc}</p>

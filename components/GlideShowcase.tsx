@@ -1,3 +1,4 @@
+import { Store } from 'lucide-react'
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -167,7 +168,7 @@ function ReportUI() {
   const rows = [
     { icon: '📍', label: 'Location Score', val: '88 / 100', c: '#34D399' },
     { icon: '👥', label: 'Demand Signal', val: 'Strong', c: '#34D399' },
-    { icon: '🏪', label: 'Competition Risk', val: 'Moderate', c: '#FBBF24' },
+    { icon: <Store size={14} strokeWidth={1.6} />, label: 'Competition Risk', val: 'Moderate', c: '#FBBF24' },
     { icon: '💰', label: 'Rent Viability', val: 'Viable', c: '#34D399' },
     { icon: '📊', label: 'Demographics', val: 'Excellent', c: '#34D399' },
   ]

@@ -1,3 +1,4 @@
+import { Store } from 'lucide-react'
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -23,7 +24,7 @@ const PS = [
 const RR = [
   { icon: '📍', label: 'Location Score',    val: '84 / 100',   c: '#34D399' },
   { icon: '👥', label: 'Demand Signal',     val: 'Strong',     c: '#34D399' },
-  { icon: '🏪', label: 'Competition Risk',  val: 'Moderate',   c: '#FBBF24' },
+  { icon: <Store size={14} strokeWidth={1.6} />, label: 'Competition Risk',  val: 'Moderate',   c: '#FBBF24' },
   { icon: '💰', label: 'Rent Viability',    val: 'Viable — 9.8%', c: '#34D399' },
   { icon: '📊', label: 'Demographics',      val: 'Excellent match', c: '#34D399' },
 ]
