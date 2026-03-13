@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 const dm = DM_Sans({ subsets: ['latin'], weight: ['400','500','600','700','800','900'] });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
