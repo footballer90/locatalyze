@@ -1,5 +1,4 @@
 'use client'
-const Testimonials = nextDynamic(() => import('@/components/Testimonials'))
 import Footer from '@/components/Footer'
 import ReportDemoSection from '@/components/ReportDemoSection'
 import { useState, useEffect, useRef } from 'react'
