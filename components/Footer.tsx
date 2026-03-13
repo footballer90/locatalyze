@@ -402,9 +402,9 @@ export default function Footer() {
           {[
             { icon: '🇦🇺', text: 'Built in Australia' },
             { icon: '📊', text: 'ABS Census data' },
-            { icon: '🗺', text: 'OpenStreetMap' },
-            { icon: '🔒', text: 'Supabase encrypted storage' },
-            { icon: '⚡', text: 'Powered by GPT-4o-mini' },
+            { icon: '🌏', text: 'Australian data sources' },
+            { icon: '🔒', text: 'Bank-grade encryption' },
+            { icon: '⚡', text: 'AI-powered analysis' },
           ].map(item => (
             <div key={item.text} style={S.trustItem}>
               <span>{item.icon}</span>
