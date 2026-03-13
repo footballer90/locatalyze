@@ -1,6 +1,6 @@
-import { Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, Store } from 'lucide-react'
 'use client'
 import Link from 'next/link'
+import { Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, Store } from 'lucide-react'
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
