@@ -1751,12 +1751,12 @@ export default function LandingPage() {
                 emoji:'🍕',
               },
               {
-                quote:'I use this with commercial real estate clients as a first-pass feasibility tool. The financial model is genuinely rigorous — I\'ve replaced three hours of manual spreadsheet work with one report.',
-                name:'Priya K.', role:'Commercial property analyst', city:'Brisbane, QLD',
-                initials:'PK', avatarBg:'#F5F3FF', avatarColor:'#8B5CF6',
-                saved:'Replaced 3hrs of spreadsheet work', savedColor:'#8B5CF6', savedBg:'#F5F3FF', savedBorder:'#DDD6FE',
-                highlight:'Used professionally with clients.',
-                emoji:'📊',
+                quote:'Before I signed on a restaurant I was buying, I ran the location through Locatalyze. The demographic breakdown and competitor analysis gave me a proper understanding of what I was walking into. Went in with total confidence.',
+                name:'Andrew W.', role:'Restaurant owner', city:'Perth, WA',
+                initials:'AW', avatarBg:'#F5F3FF', avatarColor:'#8B5CF6',
+                saved:'Restaurant acquisition validated', savedColor:'#8B5CF6', savedBg:'#F5F3FF', savedBorder:'#DDD6FE',
+                highlight:'Bought with total confidence.',
+                emoji:'🍽️',
               },
             ].map((t, i) => (
               <div key={i}
