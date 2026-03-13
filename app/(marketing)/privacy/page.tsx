@@ -1,5 +1,12 @@
 'use client'
 
+export const metadata = {
+  title: 'Privacy Policy — Locatalyze',
+  description: 'How Locatalyze collects, uses, and protects your data. We never sell your information.',
+  alternates: { canonical: 'https://www.locatalyze.com/privacy' },
+}
+
+
 export default function PrivacyPage() {
   const EFFECTIVE_DATE = '8 March 2025'
   const EMAIL = 'privacy@locatalyze.com.au'

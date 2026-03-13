@@ -116,6 +116,16 @@ export async function generateStaticParams() {
   return Object.keys(POSTS).map(slug => ({ slug }))
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const post = POST_LIST.find((p: { slug: string }) => p.slug === slug)
+  return {
+    title: post ? `${post.title} — Locatalyze` : 'Blog — Locatalyze',
+    description: post?.excerpt ?? 'Business location strategy for Australian entrepreneurs.',
+    alternates: { canonical: `https://www.locatalyze.com/blog/${slug}` },
+  }
+}
+
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const post = POSTS[slug]

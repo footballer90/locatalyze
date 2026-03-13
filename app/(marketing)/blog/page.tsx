@@ -1,4 +1,11 @@
 'use client'
+
+export const metadata = {
+  title: 'Blog — Business location strategy for Australian entrepreneurs',
+  description: 'Guides, data, and frameworks for choosing the right suburb, validating demand, and avoiding expensive location mistakes across Australia.',
+  alternates: { canonical: 'https://www.locatalyze.com/blog' },
+}
+
 import Link from 'next/link'
 import { useState } from 'react'
 import { POST_LIST } from '@/lib/blog-posts'

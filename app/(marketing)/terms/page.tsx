@@ -1,5 +1,12 @@
 'use client'
 
+export const metadata = {
+  title: 'Terms of Service — Locatalyze',
+  description: 'Read the Locatalyze terms of service covering usage, payments, data, and liability.',
+  alternates: { canonical: 'https://www.locatalyze.com/terms' },
+}
+
+
 export default function TermsPage() {
   const EFFECTIVE_DATE = '8 March 2025'
   const COMPANY = 'Locatalyze'

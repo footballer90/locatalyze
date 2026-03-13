@@ -8,16 +8,6 @@ export async function generateStaticParams() {
   return SUBURB_SLUGS.map(suburb => ({ suburb }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ suburb: string }> }) {
-  const { suburb: suburbSlug } = await params
-  const suburb = getSuburb(suburbSlug)
-  if (!suburb) return {}
-  return {
-    title: `Best Place to Open a Business in ${suburb.name}, ${suburb.city} | Locatalyze`,
-    description: `Is ${suburb.name} a good location for your business? Market demand scores, rent ranges, top streets, and SWOT analysis for opening a café, restaurant, retail, gym or takeaway in ${suburb.name}.`,
-    keywords: `open business ${suburb.name}, cafe ${suburb.name}, restaurant ${suburb.name}, ${suburb.name} commercial rent, best suburb ${suburb.city} business, ${suburb.name} foot traffic`,
-  }
-}
 
 const S = {
   page: { fontFamily: "'DM Sans','Inter','Helvetica Neue',Arial,sans-serif", color: '#0F172A', background: '#FFFFFF', minHeight: '100vh' },
@@ -68,6 +58,16 @@ const S = {
   ctaTitle: { fontSize: 28, fontWeight: 700, color: '#FFFFFF', marginBottom: 12 },
   ctaSub: { fontSize: 17, color: '#A7F3D0', marginBottom: 32 },
   ctaBtn: { display: 'inline-block', background: '#FFFFFF', color: '#059669', fontWeight: 700, fontSize: 16, padding: '14px 36px', borderRadius: 100, textDecoration: 'none' },
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ suburb: string }> }) {
+  const { suburb: slug } = await params
+  const name = slug.replace(/-/g, ' ').replace(/w/g, c => c.toUpperCase())
+  return {
+    title: `${name} business location analysis — Locatalyze`,
+    description: `Is ${name} a good location for your business? Market demand, rent ranges, and competitor density — AI analysis in 30 seconds.`,
+    alternates: { canonical: `https://www.locatalyze.com/suburb/${slug}` },
+  }
 }
 
 export default async function SuburbPage({ params }: { params: Promise<{ suburb: string }> }) {
