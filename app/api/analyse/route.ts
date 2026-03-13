@@ -36,7 +36,12 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   if (!isFinite(rent)   || rent   < 100  || rent   > 500000)  return { valid: false, error: 'Monthly rent must be between $100 and $500,000' }
   if (!isFinite(setup)  || setup  < 100  || setup  > 10000000) return { valid: false, error: 'Setup budget must be between $100 and $10,000,000' }
   if (!isFinite(ticket) || ticket < 1    || ticket > 10000)    return { valid: false, error: 'Average ticket size must be between $1 and $10,000' }
-  const clean = (s: string) => s.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
+  const injectionPattern = /ignore|forget|disregard|pretend|you are|act as|jailbreak|prompt|system:|assistant:|\\n\\n/gi
+  const clean = (s: string) => {
+    const stripped = s.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
+    if (injectionPattern.test(stripped)) return stripped.replace(injectionPattern, '')
+    return stripped
+  }
   return {
     valid: true,
     data: {
