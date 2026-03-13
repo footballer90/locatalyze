@@ -133,7 +133,7 @@ export default function MethodologyPage() {
             <DataCard icon="👥" title="ABS Census Estimates" badge="2021–2026" desc="Population demographics, median income, household size and age distribution aligned to Australian Bureau of Statistics data." />
             <DataCard icon="🏠" title="Commercial Rent Database" badge="Benchmarks" desc="Suburb-level commercial rent benchmarks calibrated from publicly available commercial property listings and market reports." />
             <DataCard icon="📊" title="Industry Benchmarks" badge="By category" desc="Revenue per square metre, labour cost ratios, COGS percentages and average ticket size benchmarks segmented by business type." />
-            <DataCard icon="🤖" title="AI Financial Model" badge="Claude AI" desc="Our AI synthesises all inputs to produce the narrative analysis, risk scenarios, SWOT assessment and 3-year projection model." />
+            <DataCard icon="🤖" title="AI Financial Model" badge="AI Analysis" desc="Our AI synthesises all inputs to produce the narrative analysis, risk scenarios, SWOT assessment and 3-year projection model." />
             <DataCard icon="📈" title="Market Demand Signals" badge="Composite" desc="Category search trend proxies, foot traffic signals and business category growth data used to assess demand in your area." />
           </div>
         </section>
