@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 // ─────────────────────────────────────────────────────────────────
@@ -566,6 +566,8 @@ export default function ReportDemoSection() {
   const [fading,  setFading]  = useState(false)
   const [fired,   setFired]   = useState(false)
   const [score,   setScore]   = useState(0)
+  const [visible, setVisible] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
 
   const d  = DATA[verdict]
   const vc = VERDICT_CONFIG[verdict]
@@ -580,6 +582,18 @@ export default function ReportDemoSection() {
   }
 
   useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
+      { threshold: 0.2 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!visible) return
     setScore(0)
     const target = d.score
     let n = 0
@@ -615,7 +629,7 @@ export default function ReportDemoSection() {
   ]
 
   return (
-    <section style={{
+    <section ref={sectionRef} style={{
       background: `
         radial-gradient(ellipse 80% 60% at 10% 20%, rgba(15,118,110,.18) 0%, transparent 55%),
         radial-gradient(ellipse 60% 50% at 90% 80%, rgba(6,95,70,.15)   0%, transparent 55%),
@@ -740,7 +754,7 @@ export default function ReportDemoSection() {
                   {vc.label}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1 }}>
+                  <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1, opacity: visible ? 1 : 0, transition: 'opacity 0.3s' }}>
                     {score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
                   </div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: D.text3, letterSpacing: '.07em', textTransform: 'uppercase' }}>
