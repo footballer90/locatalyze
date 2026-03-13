@@ -1482,8 +1482,17 @@ export default function LandingPage() {
       <div style={{ background: L.slate, padding: `12px ${isMobile ? 16 : 40}px` }}>
         <div style={{ ...W, display: 'flex', justifyContent: 'center', gap: isMobile ? 14 : 28, flexWrap: 'wrap', alignItems: 'center' }}>
           <p style={{ fontSize: 10, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.1em' }}>Built for</p>
-          {['☕ Cafes','🍽️ Restaurants','👗 Retail','💪 Gyms','🥐 Bakeries','💈 Salons'].map(b => (
-            <span key={b} style={{ fontSize: isMobile ? 12 : 13, color: '#64748B', fontWeight: 500 }}>{b}</span>
+          {[
+            { icon: <Coffee size={14} strokeWidth={1.8} />, label: 'Cafes' },
+            { icon: <UtensilsCrossed size={14} strokeWidth={1.8} />, label: 'Restaurants' },
+            { icon: <ShoppingBag size={14} strokeWidth={1.8} />, label: 'Retail' },
+            { icon: <Dumbbell size={14} strokeWidth={1.8} />, label: 'Gyms' },
+            { icon: <Croissant size={14} strokeWidth={1.8} />, label: 'Bakeries' },
+            { icon: <Scissors size={14} strokeWidth={1.8} />, label: 'Salons' },
+          ].map(b => (
+            <span key={b.label} style={{ fontSize: isMobile ? 12 : 13, color: '#64748B', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 5 }}>
+              {b.icon}{b.label}
+            </span>
           ))}
         </div>
       </div>
