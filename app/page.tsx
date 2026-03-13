@@ -3,7 +3,7 @@ import Footer from '@/components/Footer'
 import ReportDemoSection from '@/components/ReportDemoSection'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity } from 'lucide-react'
+import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors } from 'lucide-react'
 
 // ── Design tokens ──────────────────────────────────────────────────
 const L = {
