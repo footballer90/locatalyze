@@ -1,4 +1,5 @@
 'use client'
+const Testimonials = nextDynamic(() => import('@/components/Testimonials'))
 import Footer from '@/components/Footer'
 import ReportDemoSection from '@/components/ReportDemoSection'
 import { useState, useEffect, useRef } from 'react'
@@ -1534,6 +1535,7 @@ export default function LandingPage() {
       <div id="sample-report">
         <ReportDemoSection />
       </div>
+      <Testimonials /> 
 
       {/* DATA SOURCES — Dark premium — Lucide icons throughout */}
       <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: '#0B1512', position: 'relative', overflow: 'hidden' }}>
