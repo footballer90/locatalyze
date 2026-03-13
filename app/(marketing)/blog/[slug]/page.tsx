@@ -121,7 +121,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = POST_LIST.find((p: { slug: string }) => p.slug === slug)
   return {
     title: post ? `${post.title} — Locatalyze` : 'Blog — Locatalyze',
-    description: post?.excerpt ?? 'Business location strategy for Australian entrepreneurs.',
+    description: post?.metaDescription ?? 'Business location strategy for Australian entrepreneurs.',
     alternates: { canonical: `https://www.locatalyze.com/blog/${slug}` },
   }
 }
