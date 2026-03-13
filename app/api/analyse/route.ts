@@ -72,14 +72,14 @@ export async function POST(request: NextRequest) {
   const { data } = validation
 
   // ── Webhook URL check ──────────────────────────────────────────────────────
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
+  const webhookUrl = process.env.N8N_WEBHOOK_URL
   if (!webhookUrl) {
-    return errorResponse('Analysis service not configured — NEXT_PUBLIC_N8N_WEBHOOK_URL is missing from Vercel env vars.', 503)
+    return errorResponse('Analysis service not configured — N8N_WEBHOOK_URL is missing from Vercel env vars.', 503)
   }
   // Catch the #1 most common mistake: using the test URL instead of production
   if (webhookUrl.includes('/webhook-test/')) {
     return errorResponse(
-      'n8n webhook is using a TEST URL. In n8n, click the webhook node → copy the Production URL (/webhook/ not /webhook-test/) → update NEXT_PUBLIC_N8N_WEBHOOK_URL in Vercel.',
+      'n8n webhook is using a TEST URL. In n8n, click the webhook node → copy the Production URL (/webhook/ not /webhook-test/) → update N8N_WEBHOOK_URL in Vercel.',
       503
     )
   }
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
 
     if (!text || text.trim() === '') {
       return errorResponse(
-        'n8n returned an empty response. Check: (1) workflow Active toggle is ON, (2) NEXT_PUBLIC_N8N_WEBHOOK_URL uses the Production URL (/webhook/ not /webhook-test/).',
+        'n8n returned an empty response. Check: (1) workflow Active toggle is ON, (2) N8N_WEBHOOK_URL uses the Production URL (/webhook/ not /webhook-test/).',
         502
       )
     }
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     return errorResponse(
       isTimeout
         ? 'n8n timed out (>50s). The GPT step may be slow — check n8n execution log. Consider adding a timeout to node 14.'
-        : 'Could not reach n8n. Check that NEXT_PUBLIC_N8N_WEBHOOK_URL is correct and n8n is running.',
+        : 'Could not reach n8n. Check that N8N_WEBHOOK_URL is correct and n8n is running.',
       502
     )
   }

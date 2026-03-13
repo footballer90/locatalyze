@@ -402,7 +402,7 @@ function MapPanel({ address, lat, lng, businessType, competitorNames, competitor
   // Fetch competitor locations from Geoapify once we have coords
   useEffect(() => {
     if (!resolvedCoords) return
-    const GEOAPIFY_KEY = '41f9188296dd47dfb5741e6e20d98807'
+    const GEOAPIFY_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_KEY || ''
     const CATEGORY_MAP: Record<string, string> = {
       cafe: 'catering.cafe,catering.coffee', coffee: 'catering.cafe,catering.coffee',
       restaurant: 'catering.restaurant,catering.fast_food', bar: 'catering.bar,catering.pub',
