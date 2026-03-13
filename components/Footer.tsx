@@ -1,8 +1,3 @@
-'use client'
-import Link from 'next/link'
-// ... rest of file stays exactly the same
-// import Link from 'next/link'
-
 // ── Inline SVG logo (dark variant — white text + teal accent) ──
 function Logo() {
   return (
@@ -41,8 +36,8 @@ function LinkedInIcon() {
 }
 
 export default function Footer() {
-  const [email, setEmail] = React.useState('')
-  const [subStatus, setSubStatus] = React.useState<'idle'|'ok'|'err'>('idle')
+  const [email, setEmail] = useState('')
+  const [subStatus, setSubStatus] = useState<'idle'|'ok'|'err'>('idle')
 
   const handleSubscribe = async () => {
     // Honeypot check is server-side via hidden field
