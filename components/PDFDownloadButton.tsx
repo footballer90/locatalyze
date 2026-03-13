@@ -262,7 +262,7 @@ function ReportPDF({ report }: { report: any }) {
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Locatalyze · locatalyze.vercel.app</Text>
+          <Text style={styles.footerText}>Locatalyze · locatalyze.com</Text>
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>
@@ -377,7 +377,7 @@ function ReportPDF({ report }: { report: any }) {
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Report ID: {report.id} · Locatalyze · locatalyze.vercel.app</Text>
+          <Text style={styles.footerText}>Report ID: {report.id} · Locatalyze · locatalyze.com</Text>
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
       </Page>

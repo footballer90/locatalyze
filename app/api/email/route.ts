@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 
 function getResend() { return new Resend(process.env.RESEND_API_KEY || '') }
 const FROM = 'Locatalyze <reports@locatalyze.com>'
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.vercel.app'
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(n: number | null | undefined) {
@@ -120,7 +120,7 @@ function reportReadyHTML(report: any, reportUrl: string) {
         <tr><td style="padding:20px 0;text-align:center;">
           <p style="margin:0;font-size:11px;color:#A8A29E;">You received this because you ran a location analysis on Locatalyze.</p>
           <p style="margin:4px 0 0;font-size:11px;color:#A8A29E;">
-            <a href="${SITE}" style="color:#0F766E;text-decoration:none;">locatalyze.vercel.app</a>
+            <a href="${SITE}" style="color:#0F766E;text-decoration:none;">locatalyze.com</a>
           </p>
         </td></tr>
 
@@ -214,7 +214,7 @@ function welcomeHTML(email: string) {
         <tr><td style="padding:20px 0;text-align:center;">
           <p style="margin:0;font-size:11px;color:#A8A29E;">You're receiving this because you signed up for Locatalyze.</p>
           <p style="margin:4px 0 0;font-size:11px;color:#A8A29E;">
-            <a href="${SITE}" style="color:#0F766E;text-decoration:none;">locatalyze.vercel.app</a>
+            <a href="${SITE}" style="color:#0F766E;text-decoration:none;">locatalyze.com</a>
           </p>
         </td></tr>
 

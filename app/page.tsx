@@ -475,7 +475,7 @@ function DarkShowcase() {
             <div style={{ width: '100%', maxWidth: 440, background: 'rgba(10,18,16,.92)', border: D.border, borderRadius: 18, overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(15,118,110,.08)' }}>
               <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ display: 'flex', gap: 4 }}>{['#FF5F57','#FFBD2E','#28CA41'].map(c=><div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}</div>
-                <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>app.locatalyze.com.au/analyse</div>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>locatalyze.com/analyse</div>
                 <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 900, color: '#fff' }}>L</div>
               </div>
               <div style={{ background: '#0A1210', minHeight: 280 }}>
@@ -1121,7 +1121,7 @@ function CinematicWalkthrough() {
             {['#FF5F57','#FFBE2E','#27C840'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }}/>)}
           </div>
           <div style={{ flex: 1, background: L.border, borderRadius: 6, height: 22, display: 'flex', alignItems: 'center', paddingLeft: 10 }}>
-            <span style={{ fontSize: 11, color: L.muted }}>locatalyze.vercel.app/analyse</span>
+            <span style={{ fontSize: 11, color: L.muted }}>locatalyze.com/analyse</span>
           </div>
           {phase >= 2 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 6, padding: '3px 10px', fontSize: 10, fontWeight: 700, color: L.emerald }}>

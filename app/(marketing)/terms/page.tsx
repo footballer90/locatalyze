@@ -281,7 +281,7 @@ export default function TermsPage() {
           <div id="service" style={S.section}>
             <h2 style={S.h2}>2. About the Service</h2>
             <p style={S.p}>
-              Locatalyze ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>") operates an online location feasibility analysis platform accessible at locatalyze.vercel.app and associated domains (the "<strong>Platform</strong>").
+              Locatalyze ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>") operates an online location feasibility analysis platform accessible at locatalyze.com and associated domains (the "<strong>Platform</strong>").
             </p>
             <p style={S.p}>
               The Platform uses publicly available geographic data, algorithmic financial modelling, and artificial intelligence (AI) to generate indicative feasibility reports for commercial locations in Australia. These reports are provided as a starting point for user research only.

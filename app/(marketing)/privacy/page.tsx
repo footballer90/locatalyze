@@ -231,7 +231,7 @@ export default function PrivacyPage() {
           <div id="who" style={S.section}>
             <h2 style={S.h2}>1. Who We Are</h2>
             <p style={S.p}>
-              Locatalyze ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>") operates the location feasibility analysis platform at locatalyze.vercel.app. We are an Australian-based software company.
+              Locatalyze ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>") operates the location feasibility analysis platform at locatalyze.com. We are an Australian-based software company.
             </p>
             <p style={S.p}>
               We are committed to protecting your personal information in accordance with the <em>Privacy Act 1988</em> (Cth) and the 13 Australian Privacy Principles (APPs) contained therein.

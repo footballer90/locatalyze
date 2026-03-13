@@ -50,7 +50,7 @@ export async function POST(
         success: true,
         is_public: true,
         public_token: token,
-        share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.vercel.app'}/r/${token}`,
+        share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'}/r/${token}`,
       }))
     } else {
       const { error: updateError } = await supabase
