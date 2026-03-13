@@ -105,6 +105,16 @@ const CONFIGS: Record<string, Config> = {
   },
 }
 
+const ICON_MAP: Record<string, React.ReactNode> = {
+  '☕': <Coffee size={20} strokeWidth={1.6} />,
+  '🍽️': <UtensilsCrossed size={20} strokeWidth={1.6} />,
+  '👗': <ShoppingBag size={20} strokeWidth={1.6} />,
+  '💪': <Dumbbell size={20} strokeWidth={1.6} />,
+  '🥐': <Croissant size={20} strokeWidth={1.6} />,
+  '💈': <Scissors size={20} strokeWidth={1.6} />,
+  '🏪': <Store size={20} strokeWidth={1.6} />,
+}
+
 export function UseCasePage({ type }: { type: string }) {
   const config = CONFIGS[type] || CONFIGS.all
 
