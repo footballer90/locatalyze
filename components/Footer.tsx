@@ -41,6 +41,24 @@ function LinkedInIcon() {
 }
 
 export default function Footer() {
+  const [email, setEmail] = React.useState('')
+  const [subStatus, setSubStatus] = React.useState<'idle'|'ok'|'err'>('idle')
+
+  const handleSubscribe = async () => {
+    // Honeypot check is server-side via hidden field
+    if (!email || !email.includes('@')) return
+    try {
+      const res = await fetch('/api/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'newsletter', email }),
+      })
+      setSubStatus(res.ok ? 'ok' : 'err')
+    } catch {
+      setSubStatus('err')
+    }
+  }
+
   const S = {
     footer: {
       background: '#080F0E',
@@ -328,18 +346,38 @@ export default function Footer() {
             <span style={S.newsletterSub}>Where Australian businesses are opening, failing, and thriving.</span>
           </div>
           <div style={S.newsletterForm}>
+            {/* Honeypot — bots fill this, humans don't */}
             <input
-              type="email"
-              placeholder="you@example.com"
-              style={S.newsletterInput}
-              onFocus={e => { e.currentTarget.style.borderColor = '#0F766E' }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#1F2937' }}
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}
             />
-            <button style={S.newsletterBtn}
-              onMouseEnter={e => { e.currentTarget.style.background = '#0D6B63' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#0F766E' }}>
-              Subscribe
-            </button>
+            {subStatus === 'ok' ? (
+              <span style={{ color: '#10B981', fontSize: 14, fontWeight: 600 }}>✓ You're on the list!</span>
+            ) : (
+              <>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.currentTarget.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
+                  style={S.newsletterInput}
+                  onFocus={e => { e.currentTarget.style.borderColor = '#0F766E' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = '#1F2937' }}
+                />
+                <button
+                  style={S.newsletterBtn}
+                  onClick={handleSubscribe}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#0D6B63' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#0F766E' }}>
+                  Subscribe
+                </button>
+              </>
+            )}
           </div>
         </div>
 
