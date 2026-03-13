@@ -1867,36 +1867,64 @@ export default function LandingPage() {
             <div style={{ background: L.white, border: `1.5px solid ${L.border}`, borderRadius: 22, padding: 26, boxShadow: '0 4px 20px rgba(0,0,0,.06)' }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: L.muted, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>Pro Monthly</p>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                <p style={{ fontSize: 38, fontWeight: 900, color: L.slate, letterSpacing: '-.03em' }}>$19</p>
-                <p style={{ fontSize: 13, color: L.muted }}>/month</p>
+              {/* Free */}
+              <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+                <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Free</p>
+                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                  <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$0</p>
+                </div>
+                <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>3 reports · no credit card</p>
+                {['3 location reports','GO/CAUTION/NO verdict','Competitor map','Demographic breakdown'].map(f => (
+                  <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
+                ))}
+                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted }}>Start free</Link>
               </div>
-              <p style={{ fontSize: 13, color: L.muted, marginBottom: 22 }}>Cancel anytime</p>
-              {['Unlimited reports','Location comparison','PDF export','Priority support'].map(f => (
-                <p key={f} style={{ fontSize: 13, color: '#334155', marginBottom: 9, display: 'flex', alignItems: 'center', gap: 7 }}><span style={{ color: L.emerald, fontWeight: 700 }}>✓</span>{f}</p>
-              ))}
-              <Link href="/auth/signup" style={{ display: 'block', marginTop: 22, textAlign: 'center', padding: 11, border: `1.5px solid ${L.emerald}`, borderRadius: 11, fontSize: 13, fontWeight: 700, color: L.emerald }}>
-                Start monthly
-              </Link>
-            </div>
-            {/* Lifetime */}
-            <div style={{ background: `linear-gradient(135deg,#0F766E 0%,#0891B2 100%)`, borderRadius: 22, padding: 26, position: 'relative', boxShadow: '0 8px 32px rgba(15,118,110,.25)', marginTop: isMobile ? 16 : 0 }}>
-              <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: L.amber, color: '#fff', borderRadius: 100, padding: '4px 14px', fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}>BEST VALUE</div>
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,.5)', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>Pro Lifetime</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                <p style={{ fontSize: 38, fontWeight: 900, color: '#fff', letterSpacing: '-.03em' }}>$49</p>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,.5)' }}>one-time</p>
+
+              {/* Pro */}
+              <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+                <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Pro</p>
+                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                  <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$59</p>
+                  <p style={{ fontSize:13, color:L.muted }}>/month</p>
+                </div>
+                <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>20 reports · ≈ $2.95 each</p>
+                <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Cancel anytime</p>
+                {['20 reports per month','Location comparison','PDF export','Priority support'].map(f => (
+                  <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
+                ))}
+                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.emerald}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.emerald }}>Start Pro</Link>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,.5)', marginBottom: 22 }}>Pay once, use forever</p>
-              {['Unlimited reports','Location comparison','PDF export','Priority support'].map(f => (
-                <p key={f} style={{ fontSize: 13, color: 'rgba(255,255,255,.85)', marginBottom: 9, display: 'flex', alignItems: 'center', gap: 7 }}><span style={{ fontWeight: 700 }}>✓</span>{f}</p>
-              ))}
-              <Link href="/auth/signup" style={{ display: 'block', marginTop: 22, textAlign: 'center', padding: 11, background: '#fff', borderRadius: 11, fontSize: 13, fontWeight: 800, color: '#0F766E' }}>
-                Get lifetime access
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+
+              {/* Annual */}
+              <div style={{ background:'linear-gradient(135deg,#0F766E 0%,#0891B2 100%)', borderRadius:22, padding:'26px 24px', position:'relative', boxShadow:'0 8px 32px rgba(15,118,110,.25)', marginTop: isMobile ? 16 : 0 }}>
+                <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:L.amber, color:'#fff', borderRadius:100, padding:'4px 14px', fontSize:11, fontWeight:800, whiteSpace:'nowrap' }}>⭐ MOST POPULAR</div>
+                <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.5)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Annual</p>
+                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                  <p style={{ fontSize:34, fontWeight:900, color:'#fff', letterSpacing:'-.03em' }}>$490</p>
+                  <p style={{ fontSize:13, color:'rgba(255,255,255,.5)' }}>/year</p>
+                </div>
+                <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>240 reports · save $218</p>
+                <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>vs $708 monthly</p>
+                {['240 reports per year','Location comparison','PDF export','Priority support'].map(f => (
+                  <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ fontWeight:700 }}>✓</span>{f}</p>
+                ))}
+                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E' }}>Get Annual — $490/yr</Link>
+              </div>
+
+              {/* Business */}
+              <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+                <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Business</p>
+                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                  <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$119</p>
+                  <p style={{ fontSize:13, color:L.muted }}>/month</p>
+                </div>
+                <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>60 reports · ≈ $1.98 each</p>
+                <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Agencies & franchisees</p>
+                {['60 reports per month','Location comparison','PDF export','Team sharing (soon)','API access (soon)'].map(f => (
+                  <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
+                ))}
+                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted }}>Start Business</Link>
+              </div>
 
       {/* FINAL CTA */}
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>

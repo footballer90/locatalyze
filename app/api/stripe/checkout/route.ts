@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
-export async function POST() {
+const PRICE_IDS: Record<string, string | undefined> = {
+  pro:      process.env.STRIPE_PRO_PRICE_ID,
+  business: process.env.STRIPE_BUSINESS_PRICE_ID,
+  annual:   process.env.STRIPE_ANNUAL_PRICE_ID,
+}
+
+export async function POST(req: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2025-02-24.acacia',
   })
@@ -10,6 +16,14 @@ export async function POST() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json().catch(() => ({}))
+  const plan: string = body.plan ?? 'pro'
+
+  const priceId = PRICE_IDS[plan]
+  if (!priceId) {
+    return NextResponse.json({ error: `Unknown plan: ${plan}` }, { status: 400 })
+  }
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -34,11 +48,10 @@ export async function POST() {
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
-    line_items: [
-      { price: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!, quantity: 1 },
-    ],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true&plan=${plan}`,
+    cancel_url:  `${process.env.NEXT_PUBLIC_APP_URL}/upgrade`,
+    metadata: { plan, supabase_user_id: user.id },
   })
 
   return NextResponse.json({ url: session.url })
