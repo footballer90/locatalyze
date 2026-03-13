@@ -1462,7 +1462,7 @@ export default function LandingPage() {
               <p style={{ fontSize: 12, color: '#94A3B8' }}>Free plan · No credit card · 3 full reports included</p>
 
               <div style={{ display: 'flex', gap: isMobile ? 20 : 28, marginTop: 28, paddingTop: 24, borderTop: `1px solid ${L.border}`, flexWrap: 'wrap' }}>
-                {[{value:'180+',label:'founders analysed'},{value:'620+',label:'locations scored'},{value:'94%',label:'accuracy rating'}].map(s => (
+                {[{value:'180+',label:'founders analysed‡'},{value:'620+',label:'locations scored'},{value:'94%',label:'accuracy rating*'}].map(s => (
                   <div key={s.label}>
                     <p style={{ fontSize: isMobile ? 18 : 22, fontWeight: 900, color: L.emerald, letterSpacing: '-.03em', lineHeight: 1 }}>{s.value}</p>
                     <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 3 }}>{s.label}</p>
@@ -1617,7 +1617,7 @@ export default function LandingPage() {
                 icon: 'bot', source:'AI Financial Model', badge:'Proprietary',
                 headline:'Break-even, profit and 3-year outlook',
                 body:'Input your rent and transaction value — our model calculates daily volume needed, monthly profit, payback period and a 3-year revenue projection.',
-                proof:'Calibrated on 180+ analyses',
+                proof:'Calibrated on 180+ analyses‡',
                 color:'#10B981', colorBg:'rgba(16,185,129,.08)', colorBorder:'rgba(16,185,129,.25)',
               },
               {
@@ -1663,7 +1663,7 @@ export default function LandingPage() {
               </div>
               <div style={{ display:'flex', gap:12, flexShrink:0, flexWrap:'wrap' as const }}>
                 {[
-                  { icon: 'trophy',    label: '94% accuracy',    sub: 'vs post-opening data' },
+                  { icon: 'trophy',    label: '94% accuracy*',   sub: 'vs post-opening data' },
                   { icon: 'globe',     label: 'Australian only', sub: 'Localised benchmarks' },
                   { icon: 'refreshCw', label: 'Updated live',    sub: 'Per-analysis refresh' },
                 ].map(t => (
@@ -1719,9 +1719,9 @@ export default function LandingPage() {
               </div>
             </div>
             {[
-              { value:'$340k+', label:'In lease mistakes avoided' },
-              { value:'180+',   label:'Founders who analysed' },
-              { value:'94%',    label:'Said reports were accurate' },
+              { value:'$340k+', label:'In lease mistakes avoided†' },
+              { value:'180+',   label:'Founders who analysed‡' },
+              { value:'94%',    label:'Said reports were accurate*' },
             ].map(s => (
               <div key={s.label} style={{ textAlign:'center' as const }}>
                 <p style={{ fontSize:22, fontWeight:900, color:L.emerald, letterSpacing:'-.03em', lineHeight:1 }}>{s.value}</p>
@@ -1833,6 +1833,26 @@ export default function LandingPage() {
               <Link href="/auth/signup" style={{ display: 'block', marginTop: 22, textAlign: 'center', padding: 11, border: `1.5px solid ${L.border}`, borderRadius: 11, fontSize: 13, fontWeight: 700, color: L.slate }}>
                 Get started free
               </Link>
+
+              {/* ACCC compliance footnotes */}
+              <p style={{ fontSize: 11, color: '#6B7280', marginTop: '1.5rem', lineHeight: 1.6, maxWidth: 600, margin: '1.5rem auto 0' }}>
+                {'* Based on analyses where our GO/CAUTION/NO verdict matched self-reported business outcomes at 6-month follow-up. '}
+                <a href="/methodology" style={{ color: '#6B7280', textDecoration: 'underline' }}>Full methodology →</a>
+                <br />
+                {'† Estimated: median Australian commercial lease value × number of NO verdicts acted on. Self-reported by users.'}
+                <br />
+                {'‡ As at March 2026.'}
+              </p>
+
+              {/* ACCC compliance footnotes */}
+              <p style={{ fontSize: 11, color: '#6B7280', marginTop: '1.5rem', lineHeight: 1.6, maxWidth: 600, margin: '1.5rem auto 0' }}>
+                {'* Based on analyses where our GO/CAUTION/NO verdict matched self-reported business outcomes at 6-month follow-up. '}
+                <a href="/methodology" style={{ color: '#6B7280', textDecoration: 'underline' }}>Full methodology →</a>
+                <br />
+                {'† Estimated: median Australian commercial lease value × number of NO verdicts acted on. Self-reported by users.'}
+                <br />
+                {'‡ As at March 2026.'}
+              </p>
             </div>
             {/* Monthly */}
             <div style={{ background: L.white, border: `1.5px solid ${L.border}`, borderRadius: 22, padding: 26, boxShadow: '0 4px 20px rgba(0,0,0,.06)' }}>
