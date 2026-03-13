@@ -1735,20 +1735,20 @@ export default function LandingPage() {
           <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:18 }}>
             {[
               {
-                quote:'I was about to sign a 3-year lease. Locatalyze gave me a NO verdict — and saved me from a $180,000 mistake. The competition data flagged four cafés I had walked straight past.',
-                name:'Sarah M.', role:'Café owner', city:'Melbourne, VIC',
-                initials:'SM', avatarBg:'#ECFDF5', avatarColor:'#059669',
-                saved:'Saved: ~$180,000', savedColor:'#059669', savedBg:'#ECFDF5', savedBorder:'#A7F3D0',
-                highlight:'NO verdict saved a 3-year lease.',
-                emoji:'☕',
+                quote:'I was sitting on the fence about a second location for months. Ran the analysis in under a minute — the feasibility score and competitor map made the decision obvious. We opened, and revenue is tracking above forecast.',
+                name:'Steven B.', role:'VacDirect Australia', city:'Fairymeadow, NSW',
+                initials:'SB', avatarBg:'#ECFDF5', avatarColor:'#059669',
+                saved:'New store validated', savedColor:'#059669', savedBg:'#ECFDF5', savedBorder:'#A7F3D0',
+                highlight:'Revenue tracking above forecast.',
+                emoji:'🏪',
               },
               {
-                quote:'I compared four shortlisted locations in under 10 minutes. The scoring model is remarkably good — I picked the site with the highest profit potential and it has outperformed every projection.',
-                name:'James T.', role:'Franchise buyer', city:'Sydney, NSW',
-                initials:'JT', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
-                saved:'Outperformed projections', savedColor:'#3B82F6', savedBg:'#EFF6FF', savedBorder:'#BFDBFE',
-                highlight:'4 locations compared in 10 minutes.',
-                emoji:'🍽️',
+                quote:'Finding the right suburb for a Pizza Hut franchise is high stakes. You need demographics, competition density, foot traffic patterns. Locatalyze gave me a full picture in one report. Saved weeks of research.',
+                name:'Hetsav C.', role:'Pizza Hut Franchisee', city:'NSW',
+                initials:'HC', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
+                saved:'Franchise site locked in', savedColor:'#3B82F6', savedBg:'#EFF6FF', savedBorder:'#BFDBFE',
+                highlight:'Saved weeks of franchise research.',
+                emoji:'🍕',
               },
               {
                 quote:'I use this with commercial real estate clients as a first-pass feasibility tool. The financial model is genuinely rigorous — I\'ve replaced three hours of manual spreadsheet work with one report.',
