@@ -1,18 +1,22 @@
 // lib/placesCache.ts
 // 48-hour cache for Google Places / competitor lookups
-// Reduces repeated API calls for the same location+category
+
+type PlacesCacheRow = {
+  results: unknown
+  created_at: string
+}
 
 export async function getCachedPlaces(
   lat: number,
   lng: number,
   type: string,
-  supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   fetchFn: (lat: number, lng: number, type: string) => Promise<unknown>
 ): Promise<unknown> {
   const key = `${lat.toFixed(4)}_${lng.toFixed(4)}_${type}`
-  const ttlMs = 48 * 60 * 60 * 1000 // 48 hours
+  const ttlMs = 48 * 60 * 60 * 1000
 
-  // Check cache
   const { data, error } = await supabase
     .from('places_cache')
     .select('results, created_at')
@@ -20,18 +24,17 @@ export async function getCachedPlaces(
     .single()
 
   if (!error && data) {
-    const age = Date.now() - new Date(data.created_at).getTime()
+    const row = data as PlacesCacheRow
+    const age = Date.now() - new Date(row.created_at).getTime()
     if (age < ttlMs) {
       console.log('[placesCache] HIT', key)
-      return data.results
+      return row.results
     }
   }
 
-  // Cache miss — fetch fresh data
   console.log('[placesCache] MISS', key)
   const results = await fetchFn(lat, lng, type)
 
-  // Store in cache (upsert handles key conflicts)
   await supabase.from('places_cache').upsert({
     cache_key: key,
     results,
