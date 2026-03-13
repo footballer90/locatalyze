@@ -1,3 +1,6 @@
+import { createClient } from '@supabase/supabase-js'
+import { getCachedPlaces } from './placesCache'
+
 // lib/enrichLocation.ts
 // Fetches real data for an address before passing to Claude
 // Uses: LocationIQ (geocoding) + Geoapify (competitors) + suburb lookup (ABS-based)
@@ -107,16 +110,27 @@ async function fetchCompetitors(lat: number, lng: number, businessType: string, 
     return { count: 5, names: [], intensityLabel: 'MEDIUM', intensityScore: 70 }
   }
 
-  try {
-    const categories = getCategories(businessType)
-    const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lng},${lat},${radiusMetres}&limit=50&apiKey=${key}`
+  // Build supabase client for caching (non-fatal if env vars missing)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const supabase = supabaseUrl && supabaseKey
+    ? createClient(supabaseUrl, supabaseKey)
+    : null
+
+  const rawFetch = async (_lat: number, _lng: number, _type: string) => {
+    const categories = getCategories(_type)
+    const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${_lng},${_lat},${radiusMetres}&limit=50&apiKey=${key}`
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
-    if (!res.ok) {
-      console.error('[Enrich] Geoapify error:', res.status)
-      return { count: 5, names: [], intensityLabel: 'MEDIUM', intensityScore: 70 }
-    }
-    const data = await res.json()
-    const features = data?.features || []
+    if (!res.ok) throw new Error(`Geoapify ${res.status}`)
+    return res.json()
+  }
+
+  try {
+    const data = supabase
+      ? await getCachedPlaces(lat, lng, businessType, supabase, rawFetch)
+      : await rawFetch(lat, lng, businessType)
+
+    const features = (data as any)?.features || []
     const count = features.length
     const names = features.slice(0, 5).map((f: any) => f.properties?.name).filter(Boolean)
 
