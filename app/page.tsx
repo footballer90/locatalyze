@@ -1830,70 +1830,67 @@ export default function LandingPage() {
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>Simple, transparent pricing</h2>
             <p style={{ fontSize: 15, color: L.muted }}>Start free. Upgrade only when you need more.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr 1fr', gap: 16 }}>
             {/* Free */}
-              {/* Free */}
-              <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
-                <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Free</p>
-                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                  <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$0</p>
-                </div>
-                <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>3 reports · no credit card</p>
-                {['3 location reports','GO/CAUTION/NO verdict','Competitor map','Demographic breakdown'].map(f => (
-                  <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
-                ))}
-                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted }}>Start free</Link>
+            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Free</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$0</p>
               </div>
-
-              {/* Pro */}
-              <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
-                <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Pro</p>
-                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                  <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$59</p>
-                  <p style={{ fontSize:13, color:L.muted }}>/month</p>
-                </div>
-                <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>20 reports · ≈ $2.95 each</p>
-                <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Cancel anytime</p>
-                {['20 reports per month','Location comparison','PDF export','Priority support'].map(f => (
-                  <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
-                ))}
-                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.emerald}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.emerald }}>Start Pro</Link>
+              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>3 reports · no credit card</p>
+              {['3 location reports','GO/CAUTION/NO verdict','Competitor map','Demographic breakdown'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
+              ))}
+              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Start free</a>
+            </div>
+            {/* Pro */}
+            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Pro</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$59</p>
+                <p style={{ fontSize:13, color:L.muted }}>/month</p>
               </div>
-
-              {/* Annual */}
-              <div style={{ background:'linear-gradient(135deg,#0F766E 0%,#0891B2 100%)', borderRadius:22, padding:'26px 24px', position:'relative', boxShadow:'0 8px 32px rgba(15,118,110,.25)', marginTop: isMobile ? 16 : 0 }}>
-                <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:L.amber, color:'#fff', borderRadius:100, padding:'4px 14px', fontSize:11, fontWeight:800, whiteSpace:'nowrap' }}>⭐ MOST POPULAR</div>
-                <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.5)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Annual</p>
-                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                  <p style={{ fontSize:34, fontWeight:900, color:'#fff', letterSpacing:'-.03em' }}>$490</p>
-                  <p style={{ fontSize:13, color:'rgba(255,255,255,.5)' }}>/year</p>
-                </div>
-                <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>240 reports · save $218</p>
-                <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>vs $708 monthly</p>
-                {['240 reports per year','Location comparison','PDF export','Priority support'].map(f => (
-                  <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ fontWeight:700 }}>✓</span>{f}</p>
-                ))}
-                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E' }}>Get Annual — $490/yr</Link>
+              <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>20 reports · ≈ $2.95 each</p>
+              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Cancel anytime</p>
+              {['20 reports per month','Location comparison','PDF export','Priority support'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
+              ))}
+              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.emerald}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.emerald, textDecoration:'none' }}>Start Pro</a>
+            </div>
+            {/* Annual */}
+            <div style={{ background:'linear-gradient(135deg,#0F766E 0%,#0891B2 100%)', borderRadius:22, padding:'26px 24px', position:'relative', boxShadow:'0 8px 32px rgba(15,118,110,.25)' }}>
+              <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:L.amber, color:'#fff', borderRadius:100, padding:'4px 14px', fontSize:11, fontWeight:800, whiteSpace:'nowrap' }}>⭐ MOST POPULAR</div>
+              <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.5)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Annual</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                <p style={{ fontSize:34, fontWeight:900, color:'#fff', letterSpacing:'-.03em' }}>$490</p>
+                <p style={{ fontSize:13, color:'rgba(255,255,255,.5)' }}>/year</p>
               </div>
-
-              {/* Business */}
-              <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
-                <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Business</p>
-                <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                  <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$119</p>
-                  <p style={{ fontSize:13, color:L.muted }}>/month</p>
-                </div>
-                <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>60 reports · ≈ $1.98 each</p>
-                <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Agencies & franchisees</p>
-                {['60 reports per month','Location comparison','PDF export','Team sharing (soon)','API access (soon)'].map(f => (
-                  <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
-                ))}
-                <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted }}>Start Business</Link>
+              <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>240 reports · save $218</p>
+              <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>vs $708 monthly</p>
+              {['240 reports per year','Location comparison','PDF export','Priority support'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ fontWeight:700 }}>✓</span>{f}</p>
+              ))}
+              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E', textDecoration:'none' }}>Get Annual — $490/yr</a>
+            </div>
+            {/* Business */}
+            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Business</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$119</p>
+                <p style={{ fontSize:13, color:L.muted }}>/month</p>
               </div>
+              <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>60 reports · ≈ $1.98 each</p>
+              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Agencies & franchisees</p>
+              {['60 reports per month','Location comparison','PDF export','Team sharing (soon)','API access (soon)'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
+              ))}
+              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Start Business</a>
             </div>
           </div>
+        </div>
+      </section>
 
-      {/* FINAL CTA */}
+            {/* FINAL CTA */}
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>
         <div style={{ maxWidth: 560, margin: '0 auto', padding: pad }}>
           <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 14, lineHeight: 1.1 }}>
