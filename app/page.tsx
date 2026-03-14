@@ -1832,37 +1832,6 @@ export default function LandingPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
             {/* Free */}
-            <div style={{ background: L.white, border: `1.5px solid ${L.border}`, borderRadius: 22, padding: 26 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: L.muted, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>Free</p>
-              <p style={{ fontSize: 38, fontWeight: 900, color: L.slate, marginBottom: 4, letterSpacing: '-.03em' }}>$0</p>
-              <p style={{ fontSize: 13, color: L.muted, marginBottom: 22 }}>Forever free</p>
-              {['3 location reports','Full financial model','SWOT analysis','PDF download'].map(f => (
-                <p key={f} style={{ fontSize: 13, color: '#334155', marginBottom: 9, display: 'flex', alignItems: 'center', gap: 7 }}><span style={{ color: L.emerald, fontWeight: 700 }}>✓</span>{f}</p>
-              ))}
-              <Link href="/auth/signup" style={{ display: 'block', marginTop: 22, textAlign: 'center', padding: 11, border: `1.5px solid ${L.border}`, borderRadius: 11, fontSize: 13, fontWeight: 700, color: L.slate }}>
-                Get started free
-              </Link>
-
-              {/* ACCC compliance footnotes */}
-              <p style={{ fontSize: 11, color: '#6B7280', marginTop: '1.5rem', lineHeight: 1.6, maxWidth: 600, margin: '1.5rem auto 0' }}>
-                {'* Based on analyses where our GO/CAUTION/NO verdict matched self-reported business outcomes at 6-month follow-up. '}
-                <a href="/methodology" style={{ color: '#6B7280', textDecoration: 'underline' }}>Full methodology →</a>
-                <br />
-                {'† Estimated: median Australian commercial lease value × number of NO verdicts acted on. Self-reported by users.'}
-                <br />
-                {'‡ As at March 2026.'}
-              </p>
-
-              {/* ACCC compliance footnotes */}
-              <p style={{ fontSize: 11, color: '#6B7280', marginTop: '1.5rem', lineHeight: 1.6, maxWidth: 600, margin: '1.5rem auto 0' }}>
-                {'* Based on analyses where our GO/CAUTION/NO verdict matched self-reported business outcomes at 6-month follow-up. '}
-                <a href="/methodology" style={{ color: '#6B7280', textDecoration: 'underline' }}>Full methodology →</a>
-                <br />
-                {'† Estimated: median Australian commercial lease value × number of NO verdicts acted on. Self-reported by users.'}
-                <br />
-                {'‡ As at March 2026.'}
-              </p>
-            </div>
               {/* Free */}
               <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
                 <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Free</p>
@@ -1920,6 +1889,7 @@ export default function LandingPage() {
                   <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
                 ))}
                 <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted }}>Start Business</Link>
+              </div>
             </div>
           </div>
 
