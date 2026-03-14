@@ -1920,7 +1920,8 @@ export default function LandingPage() {
                   <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:L.emerald, fontWeight:700 }}>✓</span>{f}</p>
                 ))}
                 <Link href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted }}>Start Business</Link>
-              </div>
+            </div>
+          </div>
 
       {/* FINAL CTA */}
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>
