@@ -1863,10 +1863,6 @@ export default function LandingPage() {
                 {'‡ As at March 2026.'}
               </p>
             </div>
-            {/* Monthly */}
-            <div style={{ background: L.white, border: `1.5px solid ${L.border}`, borderRadius: 22, padding: 26, boxShadow: '0 4px 20px rgba(0,0,0,.06)' }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: L.muted, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>Pro Monthly</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
               {/* Free */}
               <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
                 <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Free</p>
