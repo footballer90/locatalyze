@@ -565,7 +565,10 @@ function AssumptionsPanel({ report }: { report: Report }) {
   )
 }
 
-// ─── Polling hook ─────────────────────────────────────────────────────────────
+// ─── Realtime hook — replaces polling entirely ────────────────────────────────
+// Architecture: subscribe to the exact Supabase row for this reportId.
+// n8n writes the completed report back to this same row (status: complete).
+// Supabase pushes the change to us in real time — no polling, no timeouts.
 function useReport(reportId: string) {
   const [report, setReport] = useState<Report | null>(null)
   const [loading, setLoading] = useState(true)
@@ -604,12 +607,11 @@ function useReport(reportId: string) {
     } catch {}
 
     const supabase = createClient()
-    let attempts = 0
-    const MAX = 25
 
-    async function poll(timerRef: { id: ReturnType<typeof setInterval> | null }) {
-      // Single query — report_id OR id match (handles both column naming conventions)
-      // Using .or() avoids two round trips and works even if one column doesn't have the value
+    // ── Step 1: Fetch whatever is in the DB right now ────────────────────────
+    // The report may already be complete (e.g. user refreshed the page).
+    // We do an initial fetch, then subscribe to live updates for anything pending.
+    async function fetchCurrent() {
       const { data, error } = await supabase
         .from('reports')
         .select('*')
@@ -619,45 +621,76 @@ function useReport(reportId: string) {
         .maybeSingle()
 
       if (error) {
-        console.error('[Report] Supabase error:', error.code, error.message)
-        // Don't give up immediately on auth errors — session may not be ready
-        if (error.code === 'PGRST301' || error.message?.includes('JWT')) {
-          // Auth not ready yet — keep trying
-          attempts++
-          if (attempts >= MAX) { setLoading(false); setNotFound(true) }
-          return
-        }
-        // On other errors keep retrying for a bit
-        attempts++
-        if (attempts >= MAX) { setLoading(false); setNotFound(true) }
-        return
+        console.error('[Report] Initial fetch error:', error.code, error.message)
+        return null
       }
-
-      if (!data) {
-        // Row not in DB yet — n8n may still be processing
-        attempts++
-        if (attempts >= MAX) { setLoading(false); setNotFound(true) }
-        return
-      }
-
-      setReport(data as Report)
-      setLoading(false)
-      if (data.verdict) { if (timerRef.id) clearInterval(timerRef.id) }
-      else { attempts++; if (attempts >= MAX && timerRef.id) clearInterval(timerRef.id) }
+      return data
     }
 
-    // Use a ref object so poll() can access the timer before it's assigned
-    const timerRef: { id: ReturnType<typeof setInterval> | null } = { id: null }
+    // ── Step 2: Subscribe to Realtime updates on this exact row ─────────────
+    // Supabase Realtime pushes a notification the moment n8n writes status=complete.
+    // This eliminates the 3s polling delay and works even if n8n takes 90+ seconds.
+    const channel = supabase
+      .channel(`report:${reportId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',           // INSERT or UPDATE
+          schema: 'public',
+          table: 'reports',
+          filter: `report_id=eq.${reportId}`,
+        },
+        (payload) => {
+          const updated = payload.new as Report
+          console.log('[Realtime] Report update:', updated.status, updated.progress_step)
+          setReport(updated)
+          if (updated.status === 'complete' && updated.verdict) {
+            setLoading(false)
+          } else if (updated.status === 'failed') {
+            setLoading(false)
+          }
+        }
+      )
+      .subscribe()
+
+    // ── Step 3: Initial fetch + fallback polling (safety net) ────────────────
+    // Realtime handles live updates. The initial fetch covers the case where
+    // the report completed before our subscription was ready.
+    // Fallback polling (every 8s) covers Realtime connection failures.
+    let pollInterval: ReturnType<typeof setInterval> | null = null
+    let pollAttempts = 0
+    const MAX_POLL = 20 // 20 × 8s = ~160s max wait
+
+    async function checkAndSettle() {
+      pollAttempts++
+      const data = await fetchCurrent()
+
+      if (data) {
+        setReport(data as Report)
+        if ((data.status === 'complete' && data.verdict) || data.status === 'failed') {
+          setLoading(false)
+          if (pollInterval) { clearInterval(pollInterval); pollInterval = null }
+          return
+        }
+      }
+
+      if (pollAttempts >= MAX_POLL) {
+        setLoading(false)
+        if (!data) setNotFound(true)
+        if (pollInterval) { clearInterval(pollInterval); pollInterval = null }
+      }
+    }
 
     // Small delay to let Supabase auth session hydrate
     const startDelay = setTimeout(() => {
-      poll(timerRef)
-      timerRef.id = setInterval(() => poll(timerRef), 3000)
-    }, 400)
+      checkAndSettle()
+      pollInterval = setInterval(checkAndSettle, 8000) // 8s fallback (Realtime handles fast path)
+    }, 300)
 
     return () => {
       clearTimeout(startDelay)
-      if (timerRef.id) clearInterval(timerRef.id)
+      if (pollInterval) clearInterval(pollInterval)
+      supabase.removeChannel(channel)
     }
   }, [reportId])
 
@@ -721,24 +754,109 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const adjVc = verdictCfg(adjCalc.verdict)
   const isChanged = adjCalc.changed
 
-  // ── Loading screen ──
-  if (loading || (report && !report.verdict)) {
-    const steps = ['Resolving coordinates', 'Scanning competitors (500m)', 'Querying ABS demographics', 'Modelling financials', 'Writing report']
+  // ── Loading screen — shows live progress from Supabase Realtime ──
+  if (loading || (report && !report.verdict && report.status !== 'failed')) {
+    const STEPS = [
+      'Queued',
+      'Sending to analysis engine',
+      'Resolving address',
+      'Scanning competitors',
+      'Querying demographics',
+      'Modelling financials',
+      'Writing report',
+      'Finalising',
+    ]
+    const currentStep = report?.progress_step || 'Queued'
+    const currentIdx  = STEPS.indexOf(currentStep)
+    const isFailed    = report?.status === 'failed'
+
     return (
       <div style={{ minHeight: '100vh', background: S.headerBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: S.font }}>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
-        <div style={{ textAlign: 'center', maxWidth: 360, padding: 32 }}>
-          <div style={{ width: 40, height: 40, borderRadius: '50%', border: `2px solid rgba(255,255,255,0.1)`, borderTopColor: S.brandLight, margin: '0 auto 28px', animation: 'spin 0.9s linear infinite' }} />
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 8 }}>Analysing location</h2>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 28 }}>This takes about 25 seconds</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {steps.map((step, i) => (
-              <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 10, animation: `pulse 2s ease ${i * 0.3}s infinite` }}>
-                <div style={{ width: 5, height: 5, borderRadius: '50%', background: S.brandLight, flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{step}</span>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}`}</style>
+        <div style={{ textAlign: 'center', maxWidth: 400, padding: 40 }}>
+          {isFailed ? (
+            <>
+              <div style={{ fontSize: 36, marginBottom: 20 }}>⚠️</div>
+              <h2 style={{ fontSize: 18, fontWeight: 800, color: S.white, marginBottom: 8 }}>Analysis failed</h2>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 24 }}>
+                {report?.progress_step || 'The analysis engine could not be reached. Please try again.'}
+              </p>
+              <button
+                onClick={() => window.history.back()}
+                style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}
+              >
+                ← Try again
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.08)', borderTopColor: S.brandLight, margin: '0 auto 28px', animation: 'spin 0.9s linear infinite' }} />
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 6 }}>
+                Analysing your location
+              </h2>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 32 }}>
+                Usually ready in 20–40 seconds
+              </p>
+
+              {/* Live step list — each step lights up as n8n progresses */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
+                {STEPS.filter(s => s !== 'Queued').map((step, i) => {
+                  const stepIdx   = STEPS.indexOf(step)
+                  const isDone    = currentIdx > stepIdx
+                  const isActive  = currentIdx === stepIdx
+                  const isPending = currentIdx < stepIdx
+
+                  return (
+                    <div
+                      key={step}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        padding: '10px 14px',
+                        background: isActive ? 'rgba(20,184,166,0.1)' : isDone ? 'rgba(255,255,255,0.03)' : 'transparent',
+                        borderRadius: 10,
+                        border: isActive ? '1px solid rgba(20,184,166,0.25)' : '1px solid transparent',
+                        transition: 'all 0.3s ease',
+                        animation: isActive ? 'fadeIn 0.3s ease' : 'none',
+                      }}
+                    >
+                      {/* Status indicator */}
+                      <div style={{ flexShrink: 0, width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {isDone ? (
+                          <div style={{ width: 18, height: 18, borderRadius: '50%', background: S.emerald, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ color: '#fff', fontSize: 10, fontWeight: 900 }}>✓</span>
+                          </div>
+                        ) : isActive ? (
+                          <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: S.brandLight, animation: 'spin 0.8s linear infinite' }} />
+                        ) : (
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                        )}
+                      </div>
+
+                      {/* Step label */}
+                      <span style={{
+                        fontSize: 13,
+                        fontWeight: isActive ? 700 : isDone ? 600 : 400,
+                        color: isActive ? S.brandLight : isDone ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)',
+                        transition: 'color 0.3s ease',
+                      }}>
+                        {step}
+                      </span>
+
+                      {isActive && (
+                        <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(20,184,166,0.6)', animation: 'pulse 1.5s ease infinite' }}>
+                          Running…
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-            ))}
-          </div>
+
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 28 }}>
+                Live updates via Supabase Realtime
+              </p>
+            </>
+          )}
         </div>
       </div>
     )

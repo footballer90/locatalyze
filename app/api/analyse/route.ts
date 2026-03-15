@@ -12,7 +12,8 @@ try {
   }
 } catch {}
 
-export const maxDuration = 60
+// KEY CHANGE: maxDuration dropped to 10s — we return in <1s now
+export const maxDuration = 10
 
 const FREE_LIMIT = 3
 
@@ -78,30 +79,19 @@ export async function POST(request: NextRequest) {
 
   // ── Webhook URL check ──────────────────────────────────────────────────────
   const webhookUrl = process.env.N8N_WEBHOOK_URL
-  if (!webhookUrl) {
-    return errorResponse('Analysis service not configured — N8N_WEBHOOK_URL is missing from Vercel env vars.', 503)
-  }
-  // Catch the #1 most common mistake: using the test URL instead of production
-  if (webhookUrl.includes('/webhook-test/')) {
-    return errorResponse(
-      'n8n webhook is using a TEST URL. In n8n, click the webhook node → copy the Production URL (/webhook/ not /webhook-test/) → update N8N_WEBHOOK_URL in Vercel.',
-      503
-    )
-  }
+  if (!webhookUrl) return errorResponse('Analysis service not configured — N8N_WEBHOOK_URL missing.', 503)
+  if (webhookUrl.includes('/webhook-test/')) return errorResponse('n8n using TEST URL. Use Production URL (/webhook/ not /webhook-test/).', 503)
+
+  const userId = data.userId || request.headers.get('x-user-id')
+  const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
   // ── Quota check ─────────────────────────────────────────────────────────────
-  const userId = data.userId || request.headers.get('x-user-id')
   if (userId) {
     try {
-      const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
       const { data: profile } = await sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
       const plan = profile?.plan || 'free'
       const used = profile?.total_analyses_used ?? 0
-      // Skip quota check for admin
-      if (profile?.plan === 'admin') {
-        // allow through
-      }
-      if (plan === 'free' && used >= FREE_LIMIT) {
+      if (plan !== 'admin' && plan === 'free' && used >= FREE_LIMIT) {
         return errorResponse(`You've used all ${FREE_LIMIT} free analyses. Upgrade to Pro for unlimited reports.`, 402)
       }
       if (!profile) {
@@ -110,145 +100,133 @@ export async function POST(request: NextRequest) {
     } catch (qErr: any) { console.error('[Analyse] Quota check failed:', qErr.message) }
   }
 
-  // ── Call n8n ────────────────────────────────────────────────────────────────
-  // n8n owns the full pipeline: geocoding, competitors, demographics, scoring, GPT.
-  // We just pass the raw inputs and wait for the assembled report.
-  console.log('[Analyse] Calling n8n:', webhookUrl.replace(/webhook.*/, 'webhook/...'))
+  // ── Generate report ID & save PENDING row immediately ─────────────────────
+  // This is the key architectural change: we create the DB row NOW with
+  // status='pending', return the reportId to the frontend, then fire n8n
+  // asynchronously. The frontend subscribes to this row via Supabase Realtime
+  // and gets notified the moment n8n writes the completed report.
+  const reportId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 50000) // 50s — leaves buffer for Vercel's 60s limit
-
-  let result: any
-  try {
-    const response = await fetch(webhookUrl, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Locatalyze/1.0' },
-      body:    JSON.stringify({
-        businessType:  data.businessType,
-        address:       data.address,
-        monthlyRent:   data.monthlyRent,
-        setupBudget:   data.setupBudget,
-        avgTicketSize: data.avgTicketSize,
-        userId:        userId || 'anonymous',
-      }),
-      signal: controller.signal,
-    })
-    clearTimeout(timeout)
-
-    const text = await response.text()
-    console.log('[Analyse] n8n status:', response.status, '| length:', text.length, '| preview:', text.slice(0, 200))
-
-    if (!text || text.trim() === '') {
-      return errorResponse(
-        'n8n returned an empty response. Check: (1) workflow Active toggle is ON, (2) N8N_WEBHOOK_URL uses the Production URL (/webhook/ not /webhook-test/).',
-        502
-      )
-    }
-
-    try { result = JSON.parse(text) } catch {
-      console.error('[Analyse] n8n returned invalid JSON:', text.slice(0, 300))
-      return errorResponse('n8n returned an unexpected response format. Check the n8n execution log for errors.', 502)
-    }
-
-    // n8n async mode: {"message":"Workflow was started"} means Response Mode is wrong
-    if (result?.message === 'Workflow was started') {
-      return errorResponse(
-        'n8n webhook is in async mode. Fix: in n8n, click the "01 | Webhook" node → set Response Mode to "Using Respond to Webhook Node" → Save.',
-        502
-      )
-    }
-
-    if (!result?.report) {
-      console.error('[Analyse] n8n missing report. Keys:', Object.keys(result || {}).join(','))
-      return errorResponse(
-        'n8n workflow ran but did not return a report. Open the n8n execution log and check which node failed.',
-        502
-      )
-    }
-  } catch (err: any) {
-    clearTimeout(timeout)
-    const isTimeout = err.name === 'AbortError'
-    console.error('[Analyse] n8n fetch error:', err.message)
-    return errorResponse(
-      isTimeout
-        ? 'n8n timed out (>50s). The GPT step may be slow — check n8n execution log. Consider adding a timeout to node 14.'
-        : 'Could not reach n8n. Check that N8N_WEBHOOK_URL is correct and n8n is running.',
-      502
-    )
+  const pendingRow = {
+    report_id:    reportId,
+    submission_id: reportId,
+    user_id:      userId || null,
+    status:       'pending',
+    progress_step: 'Queued',
+    business_type: data.businessType,
+    address:      data.address,
+    monthly_rent: data.monthlyRent,
+    input_data: {
+      businessType: data.businessType,
+      address:      data.address,
+      monthlyRent:  data.monthlyRent,
+      setupBudget:  data.setupBudget,
+      avgTicketSize: data.avgTicketSize,
+    },
   }
 
-  // ── Save to Supabase ────────────────────────────────────────────────────────
-  // Node 16 in n8n is disabled — we own the Supabase save here.
-  const rpt = result.report
-  if (rpt?.reportId) {
-    try {
-      const sb = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      )
+  const { error: insertErr } = await sb.from('reports').upsert(pendingRow, { onConflict: 'report_id' })
+  if (insertErr) {
+    console.error('[Analyse] Failed to create pending row:', insertErr.message)
+    return errorResponse('Failed to initialise report. Please try again.', 500)
+  }
 
-      const row = {
-        report_id:           rpt.reportId,
-        submission_id:       rpt.submissionId || rpt.reportId,
-        user_id:             userId || null,
-        verdict:             rpt.verdict,
-        overall_score:       rpt.overall_score,
-        score_competition:   rpt.score_competition,
-        score_rent:          rpt.score_rent,
-        score_demand:        rpt.score_demand,
-        score_cost:          rpt.score_cost,
-        score_profitability: rpt.score_profitability,
-        recommendation:      rpt.recommendation        || '',
-        competitor_analysis: rpt.competitor_analysis   || '',
-        rent_analysis:       rpt.rent_analysis         || '',
-        market_demand:       rpt.market_demand         || '',
-        cost_analysis:       rpt.cost_analysis         || '',
-        profitability:       rpt.profitability         || '',
-        pl_summary:          rpt.pl_summary            || '',
-        three_year_projection: rpt.three_year_projection || '',
-        sensitivity_analysis:  rpt.sensitivity_analysis  || '',
-        swot_analysis:       rpt.swot_analysis         || '',
-        breakeven_monthly:   rpt.breakeven_monthly,
-        breakeven_daily:     rpt.breakeven_daily,
-        breakeven_months:    rpt.breakeven_months,
-        full_report_markdown: JSON.stringify(rpt.financials || {}),
-        location_name:       rpt.location?.formattedAddress || data.address,
-        business_type:       data.businessType,
-        monthly_rent:        data.monthlyRent,
-        address:             data.address,
-        result_data:         rpt,          // full structured report — report page reads from here
-        input_data:          rpt.input_data || {
-          businessType: data.businessType, address: data.address,
-          monthlyRent: data.monthlyRent, setupBudget: data.setupBudget, avgTicketSize: data.avgTicketSize,
-        },
-        status: 'complete',
-      }
+  // ── Fire n8n WITHOUT awaiting — this is the async handoff ────────────────
+  // n8n will process the full pipeline (geocoding → competitors → AI → financials)
+  // and write the completed report back to Supabase directly.
+  // n8n MUST: upsert to reports table with the same report_id and status='complete'
+  sb.from('reports')
+    .update({ progress_step: 'Sending to analysis engine' })
+    .eq('report_id', reportId)
+    .then(() => {})
+    .catch(() => {})
 
-      const { error: dbErr } = await sb.from('reports').upsert(row, { onConflict: 'report_id' })
-      if (dbErr) {
-        console.error('[Analyse] Supabase save failed:', dbErr.message)
-      } else {
-        console.log('[Analyse] Saved report:', rpt.reportId)
-
-        // Increment permanent usage counter (never decremented when report deleted)
-        if (userId) {
-          try {
-            await sb.rpc('increment_analyses_used', { uid: userId })
-          } catch {
-            // RPC not yet created — fallback read-then-write
-            const { data: prof } = await sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
-            await sb.from('profiles').upsert(
-              { id: userId, total_analyses_used: (prof?.total_analyses_used ?? 0) + 1, plan: prof?.plan ?? 'free' },
-              { onConflict: 'id' }
-            )
+  fetch(webhookUrl, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'User-Agent': 'Locatalyze/1.0' },
+    body: JSON.stringify({
+      reportId,           // n8n uses this to upsert back to the same row
+      businessType:  data.businessType,
+      address:       data.address,
+      monthlyRent:   data.monthlyRent,
+      setupBudget:   data.setupBudget,
+      avgTicketSize: data.avgTicketSize,
+      userId:        userId || 'anonymous',
+    }),
+  })
+  .then(async res => {
+    // n8n responded synchronously (old mode) — save the result
+    if (res.ok) {
+      const text = await res.text().catch(() => '')
+      if (text && text.trim()) {
+        try {
+          const result = JSON.parse(text)
+          if (result?.report) {
+            const rpt = result.report
+            await sb.from('reports').upsert({
+              report_id:           rpt.reportId || reportId,
+              submission_id:       rpt.submissionId || reportId,
+              user_id:             userId || null,
+              verdict:             rpt.verdict,
+              overall_score:       rpt.overall_score,
+              score_competition:   rpt.score_competition,
+              score_rent:          rpt.score_rent,
+              score_demand:        rpt.score_demand,
+              score_cost:          rpt.score_cost,
+              score_profitability: rpt.score_profitability,
+              recommendation:      rpt.recommendation      || '',
+              competitor_analysis: rpt.competitor_analysis || '',
+              rent_analysis:       rpt.rent_analysis       || '',
+              market_demand:       rpt.market_demand       || '',
+              cost_analysis:       rpt.cost_analysis       || '',
+              profitability:       rpt.profitability       || '',
+              pl_summary:          rpt.pl_summary          || '',
+              three_year_projection: rpt.three_year_projection || '',
+              sensitivity_analysis:  rpt.sensitivity_analysis  || '',
+              swot_analysis:       rpt.swot_analysis       || '',
+              breakeven_monthly:   rpt.breakeven_monthly,
+              breakeven_daily:     rpt.breakeven_daily,
+              breakeven_months:    rpt.breakeven_months,
+              full_report_markdown: JSON.stringify(rpt.financials || {}),
+              location_name:       rpt.location?.formattedAddress || data.address,
+              business_type:       data.businessType,
+              monthly_rent:        data.monthlyRent,
+              address:             data.address,
+              result_data:         rpt,
+              input_data:          rpt.input_data || pendingRow.input_data,
+              status:              'complete',
+              progress_step:       'Complete',
+            }, { onConflict: 'report_id' })
+            .then(() => {
+              // Increment usage counter
+              if (userId) {
+                sb.rpc('increment_analyses_used', { uid: userId }).catch(() => {
+                  sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
+                    .then(({ data: prof }) => {
+                      sb.from('profiles').upsert(
+                        { id: userId, total_analyses_used: (prof?.total_analyses_used ?? 0) + 1, plan: prof?.plan ?? 'free' },
+                        { onConflict: 'id' }
+                      )
+                    })
+                })
+              }
+            })
           }
-        }
+        } catch { /* n8n returned non-JSON — it will write to DB itself */ }
       }
-    } catch (dbEx: any) {
-      // Non-fatal — report still returned to client
-      console.error('[Analyse] Supabase save exception:', dbEx.message)
     }
-  }
+  })
+  .catch(err => {
+    // n8n unreachable — mark as failed so dashboard shows error
+    console.error('[Analyse] n8n fire-and-forget error:', err.message)
+    sb.from('reports')
+      .update({ status: 'failed', progress_step: 'Analysis engine unreachable' })
+      .eq('report_id', reportId)
+      .then(() => {})
+      .catch(() => {})
+  })
 
-  return NextResponse.json(result)
+  // ── Return immediately — frontend navigates to dashboard and subscribes ───
+  console.log('[Analyse] Queued report:', reportId)
+  return NextResponse.json({ success: true, reportId })
 }
