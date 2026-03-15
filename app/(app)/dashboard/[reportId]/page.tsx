@@ -613,6 +613,10 @@ function useReport(reportId: string) {
     // The report may already be complete (e.g. user refreshed the page).
     // We do an initial fetch, then subscribe to live updates for anything pending.
     async function fetchCurrent() {
+      // ── IDOR protection: only return report if owned by current user OR marked public ──
+      const { data: { user } } = await supabase.auth.getUser()
+      const userId = user?.id
+
       const { data, error } = await supabase
         .from('reports')
         .select('*')
@@ -620,6 +624,13 @@ function useReport(reportId: string) {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
+
+      // Block access if report belongs to a different user and is not public
+      if (data && data.user_id && userId && data.user_id !== userId && !data.is_public) {
+        setLoading(false)
+        setNotFound(true)
+        return
+      }
 
       if (error) {
         console.error('[Report] Initial fetch error:', error.code, error.message)
