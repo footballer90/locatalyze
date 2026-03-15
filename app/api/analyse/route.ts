@@ -135,11 +135,9 @@ export async function POST(request: NextRequest) {
   // n8n will process the full pipeline (geocoding → competitors → AI → financials)
   // and write the completed report back to Supabase directly.
   // n8n MUST: upsert to reports table with the same report_id and status='complete'
-  sb.from('reports')
+  void sb.from('reports')
     .update({ progress_step: 'Sending to analysis engine' })
     .eq('report_id', reportId)
-    .then(() => {})
-    .catch(() => {})
 
   fetch(webhookUrl, {
     method:  'POST',
