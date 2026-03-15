@@ -9,6 +9,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4', n400: '#A8A29E',
   n500: '#78716C', n700: '#44403C', n800: '#292524', n900: '#1C1917',
   white: '#FFFFFF', red: '#DC2626', redBg: '#FEF2F2', redBorder: '#FECACA',
+  amber: '#92400E', amberBg: '#FFFBEB', amberBorder: '#FDE68A',
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBorder: '#A7F3D0',
 }
 
@@ -18,27 +19,47 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [errorType, setErrorType] = useState<'error' | 'existing' | null>(null)
   const [done, setDone] = useState(false)
 
   async function handleSubmit() {
-    if (!email || !password) { setError('Please enter your email and password'); return }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return }
-    setLoading(true); setError(null)
+    if (!email || !password) { setError('Please enter your email and password'); setErrorType('error'); return }
+    if (password.length < 6) { setError('Password must be at least 6 characters'); setErrorType('error'); return }
+    setLoading(true); setError(null); setErrorType(null)
     const supabase = createClient()
-    const { error: err } = await supabase.auth.signUp({
+    const { data, error: err } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     })
     setLoading(false)
-    if (err) { setError(err.message); return }
 
-    // ── Send welcome email (fire and forget) ──
-    fetch('/api/email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'welcome', to: email.trim().toLowerCase() }),
-    }).catch(() => {})
+    if (err) {
+      // Supabase error codes for existing email (varies by config)
+      const msg = err.message.toLowerCase()
+      if (
+        msg.includes('already registered') ||
+        msg.includes('already been registered') ||
+        msg.includes('user already exists') ||
+        msg.includes('email already') ||
+        err.status === 422
+      ) {
+        setErrorType('existing')
+        setError('An account with this email already exists.')
+      } else {
+        setErrorType('error')
+        setError(err.message)
+      }
+      return
+    }
+
+    // Supabase with email confirmation ON returns a user but with no session
+    // identities array is empty = email already exists (confirmed user)
+    if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
+      setErrorType('existing')
+      setError('An account with this email already exists.')
+      return
+    }
 
     setDone(true)
   }
@@ -73,7 +94,6 @@ export default function SignUpPage() {
         <div style={{ width: '100%', maxWidth: 420 }}>
 
           {done ? (
-            /* Success state */
             <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.06)', padding: 32, textAlign: 'center' }}>
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: S.emeraldBg, border: `2px solid ${S.emeraldBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24 }}>✓</div>
               <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 10 }}>Check your email</h2>
@@ -85,26 +105,40 @@ export default function SignUpPage() {
             </div>
           ) : (
             <>
-              {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: 28 }}>
                 <div style={{ width: 48, height: 48, borderRadius: 14, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 20, margin: '0 auto 16px', boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}>L</div>
                 <h1 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 6 }}>Start for free</h1>
                 <p style={{ fontSize: 14, color: S.n500 }}>Analyse your first location in under 60 seconds</p>
               </div>
 
-              {/* Benefits */}
               <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 28, flexWrap: 'wrap' }}>
                 {['📍 Real competitor data', '📊 Break-even calculator', '🎯 GO / CAUTION / NO score'].map(b => (
                   <span key={b} style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>{b}</span>
                 ))}
               </div>
 
-              {/* Card */}
               <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.06)', padding: 28 }}>
 
-                {error && (
+                {/* Error — generic */}
+                {error && errorType === 'error' && (
                   <div style={{ marginBottom: 18, padding: '12px 14px', background: S.redBg, border: `1px solid ${S.redBorder}`, borderRadius: 10 }}>
                     <p style={{ fontSize: 13, color: S.red }}>{error}</p>
+                  </div>
+                )}
+
+                {/* Error — existing account */}
+                {error && errorType === 'existing' && (
+                  <div style={{ marginBottom: 18, padding: '14px 16px', background: S.amberBg, border: `1px solid ${S.amberBorder}`, borderRadius: 10 }}>
+                    <p style={{ fontSize: 13, color: S.amber, fontWeight: 600, marginBottom: 6 }}>You already have an account</p>
+                    <p style={{ fontSize: 13, color: S.amber, marginBottom: 10 }}>
+                      <strong>{email}</strong> is already registered with Locatalyze.
+                    </p>
+                    <Link
+                      href={`/auth/login?email=${encodeURIComponent(email)}`}
+                      style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: S.white, background: S.brand, borderRadius: 8, padding: '8px 16px', textDecoration: 'none' }}
+                    >
+                      Sign in instead →
+                    </Link>
                   </div>
                 )}
 
@@ -113,7 +147,7 @@ export default function SignUpPage() {
                     <label style={labelStyle}>Email address</label>
                     <input
                       type="email" value={email} onChange={e => setEmail(e.target.value)}
-                      placeholder="you@example.com" style={inputStyle}
+                      placeholder="your@email.com" style={inputStyle}
                       onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                     />
                   </div>
@@ -151,7 +185,7 @@ export default function SignUpPage() {
               </div>
 
               <p style={{ textAlign: 'center', fontSize: 12, color: S.n400, marginTop: 16 }}>
-                No credit card required · Free plan includes 3 full reports
+                No credit card required · Free plan includes 3 reports
               </p>
             </>
           )}
