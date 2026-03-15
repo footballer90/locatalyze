@@ -456,6 +456,7 @@ function MapPanel({ address, lat, lng, businessType, competitorNames, competitor
   const [resolvedCoords, setResolvedCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [geoLoading, setGeoLoading] = useState(false)
   const [competitors, setCompetitors] = useState<Array<{ lat: number; lng: number; name: string }>>([])
+  const [mapActive, setMapActive] = useState(false)  // tap-to-activate on mobile
 
   // Use coords from report if available, otherwise geocode
   useEffect(() => {
@@ -566,14 +567,40 @@ function MapPanel({ address, lat, lng, businessType, competitorNames, competitor
       </div>
 
       {/* Map */}
-      <div style={{ height: 260, background: S.n100 }}>
+      <div style={{ height: 260, background: S.n100, position: 'relative' }}>
         {mapHtml ? (
-          <iframe
-            srcDoc={mapHtml}
-            title="Location map with competitors"
-            style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-            sandbox="allow-scripts"
-          />
+          <>
+            <iframe
+              srcDoc={mapHtml}
+              title="Location map with competitors"
+              style={{
+                width: '100%', height: '100%', border: 'none', display: 'block',
+                // pointer-events controlled by overlay on mobile
+                pointerEvents: mapActive ? 'auto' : 'none',
+              }}
+              sandbox="allow-scripts allow-same-origin"
+            />
+            {/* Mobile tap-to-activate overlay — prevents map trapping page scroll */}
+            {!mapActive && (
+              <div
+                onClick={() => setMapActive(true)}
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(0,0,0,0.04)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', zIndex: 10,
+                }}
+              >
+                <div style={{
+                  background: 'rgba(0,0,0,0.6)', borderRadius: 20,
+                  padding: '7px 16px', display: 'flex', alignItems: 'center', gap: 7,
+                }}>
+                  <span style={{ fontSize: 13 }}>👆</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>Tap to interact with map</span>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
             {loading
