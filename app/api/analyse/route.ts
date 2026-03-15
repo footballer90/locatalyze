@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
             .then(() => {
               // Increment usage counter
               if (userId) {
-                sb.rpc('increment_analyses_used', { uid: userId }).catch(() => {
+                Promise.resolve(sb.rpc('increment_analyses_used', { uid: userId })).catch(() => {
                   sb.from('profiles').select('total_analyses_used,plan').eq('id', userId).maybeSingle()
                     .then(({ data: prof }) => {
                       sb.from('profiles').upsert(
