@@ -1076,7 +1076,6 @@ export const POSTS: Record<string, BlogPost> = {
       { type: 'p', text: 'Main road locations offer visibility and walk-past traffic but typically carry higher rent and through-traffic character. Side street locations often have lower rent, a more local customer base, and a more intimate atmosphere that suits casual and fine dining.' },
     ],
   },
-  }
 };
 
 export const POST_LIST = Object.values(POSTS).map(p => ({
