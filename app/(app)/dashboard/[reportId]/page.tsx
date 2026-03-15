@@ -58,6 +58,7 @@ interface Report {
   result_data: any | null
   input_data?: any | null
   status?: string | null
+  progress_step?: string | null
   created_at: string
   user_id?: string | null
   is_public?: boolean | null
