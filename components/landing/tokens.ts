@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity } from 'lucide-react'
 
 export const L = {
@@ -47,7 +47,7 @@ const LI_MAP: Record<string, any> = {
 }
 
 export function LI({ n, size = 18, color = 'currentColor', sw = 2 }: { n: string; size?: number; color?: string; sw?: number }) {
-  const C = LI_MAP[n]
+  const C = LI_MAP[n] as React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>
   if (!C) return null
   return <C size={size} color={color} strokeWidth={sw}/>
 }
