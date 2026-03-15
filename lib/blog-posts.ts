@@ -885,8 +885,6 @@ export const POSTS: Record<string, BlogPost> = {
       { type: 'callout', icon: '✅', title: 'The final sign-off test', body: 'Before signing: \n1. Does the rent-to-revenue ratio work? (under 12%)\n2. Does the competition-to-demand ratio work?\n3. Have you visited at your key trading time?\n4. Has a solicitor reviewed the lease?\n5. Do you have sufficient working capital for a 12-month ramp-up?\n\nIf any of these is no — do not sign yet.', variant: 'green' },
     ],
   },
-}
-
   },
 
 // ─── POST 31 ─────────────────────────────────────────────────────────────────
