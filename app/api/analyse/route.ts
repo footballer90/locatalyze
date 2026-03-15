@@ -217,11 +217,10 @@ export async function POST(request: NextRequest) {
   .catch(err => {
     // n8n unreachable — mark as failed so dashboard shows error
     console.error('[Analyse] n8n fire-and-forget error:', err.message)
-    sb.from('reports')
+    void sb.from('reports')
       .update({ status: 'failed', progress_step: 'Analysis engine unreachable' })
       .eq('report_id', reportId)
-      .then(() => {})
-      .catch(() => {})
+      
   })
 
   // ── Return immediately — frontend navigates to dashboard and subscribes ───
