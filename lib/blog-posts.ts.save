@@ -1,4 +1,12 @@
-// lib/blog-posts.ts
+'post-30': {
+  slug: 'post-30',
+  title: 'Some title',
+  seoTitle: 'Some SEO title',
+},  // ← THIS COMMA IS REQUIRED'post-30': {
+  slug: 'post-30',
+  title: 'Some title',
+  seoTitle: 'Some SEO title',
+},  // ← THIS COMMA IS REQUIRED// lib/blog-posts.ts
 // 30 long-form SEO blog posts for Locatalyze
 
 export type Section =
@@ -886,8 +894,6 @@ export const POSTS: Record<string, BlogPost> = {
     ],
   },
 }
-
-  },
 
 // ─── POST 31 ─────────────────────────────────────────────────────────────────
   'how-to-choose-cafe-location-australia': {
