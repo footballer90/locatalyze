@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import ShareButton from '@/components/ShareButton'
 import ExportPDFButton from '@/components/ExportPDFButton'
 import { use, useCallback, useEffect, useMemo, useState, useRef } from 'react'
@@ -134,13 +135,86 @@ function SectionHeading({ children }: { children: string }) {
 }
 
 // ─── Score bar ────────────────────────────────────────────────────────────────
+// Score explanation logic — tells users exactly how each component was calculated
+const SCORE_EXPLANATIONS: Record<string, (score: number) => string> = {
+  'Rent Affordability': (s) => {
+    if (s >= 90) return 'Rent is ≤12% of projected revenue — excellent cost structure.'
+    if (s >= 70) return 'Rent is 12–20% of projected revenue — manageable but watch margins.'
+    if (s >= 40) return 'Rent is 20–30% of projected revenue — high pressure on profitability.'
+    return 'Rent exceeds 30% of projected revenue — very high risk, viability is in question.'
+  },
+  'Profitability': (s) => {
+    if (s >= 90) return 'Net profit projected above $2,000/month at baseline demand.'
+    if (s >= 70) return 'Net profit projected $1,000–$2,000/month — healthy but thin.'
+    if (s >= 50) return 'Net profit projected $1–$999/month — marginally viable.'
+    return 'Net profit is negative at baseline demand — business does not cover costs.'
+  },
+  'Competition': (s) => {
+    if (s >= 80) return '2–5 competitors within 500m — healthy market with proven demand.'
+    if (s >= 60) return '6–9 competitors within 500m — moderate saturation, differentiation needed.'
+    if (s >= 40) return '10–14 competitors within 500m — high saturation, difficult market entry.'
+    return '15+ competitors within 500m — very high saturation, market is crowded.'
+  },
+  'Area Demographics': (s) => {
+    if (s >= 80) return 'Median income $100k+ — strong spending power for your ticket size.'
+    if (s >= 60) return 'Median income $70k–$100k — moderate spending power, price sensitivity likely.'
+    if (s >= 40) return 'Median income $55k–$70k — lower spending power, value positioning important.'
+    return 'Median income below $55k — budget market, premium pricing will be challenged.'
+  },
+}
+
 function ScoreBar({ label, score, weight }: { label: string; score: number | null; weight: string }) {
   const s = score ?? 0
   const color = scoreColor(s)
+  const [showTip, setShowTip] = React.useState(false)
+  const explain = SCORE_EXPLANATIONS[label]?.(s) ?? ''
+  const tier = s >= 70 ? 'Strong' : s >= 45 ? 'Moderate' : 'Weak'
+
   return (
     <div style={{ marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-        <span style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>{label}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>{label}</span>
+          {/* Tooltip trigger */}
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <button
+              onMouseEnter={() => setShowTip(true)}
+              onMouseLeave={() => setShowTip(false)}
+              onFocus={() => setShowTip(true)}
+              onBlur={() => setShowTip(false)}
+              style={{
+                width: 14, height: 14, borderRadius: '50%',
+                background: S.n200, border: 'none', cursor: 'pointer',
+                fontSize: 9, fontWeight: 800, color: S.n500,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: S.font, padding: 0,
+              }}
+              aria-label={`Explanation for ${label} score`}
+            >?</button>
+            {showTip && (
+              <div style={{
+                position: 'absolute', left: 20, top: -4,
+                background: S.n900, color: S.white,
+                borderRadius: 8, padding: '8px 12px',
+                fontSize: 11, lineHeight: 1.6,
+                width: 220, zIndex: 100,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                pointerEvents: 'none',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                  <span style={{ fontWeight: 700, color, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {tier} · {s}/100
+                  </span>
+                </div>
+                <span style={{ color: 'rgba(255,255,255,0.75)' }}>{explain}</span>
+                <div style={{ marginTop: 6, paddingTop: 5, borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>
+                  Weight: {weight} of overall score
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>{weight}</span>
           <span style={{ fontSize: 12, fontWeight: 800, color, fontFamily: S.mono, minWidth: 24, textAlign: 'right' }}>{s}</span>
