@@ -1,0 +1,255 @@
+{
+  "success": true,
+  "reportId": "loc_20260325_143201_ab9cd",
+  "mode": "full",
+  "verdict": "go",
+  "score": 74,
+  "execution_ms": 72300,
+  "agent_status": {
+    "a1": "ok",
+    "a2": "ok",
+    "a3": "ok",
+    "a4": "ok",
+    "a5": "ok",
+    "a6": "ok",
+    "a7": "ok",
+    "a8": "ok"
+  },
+  "report": {
+    "meta": {
+      "report_id": "loc_20260325_143201_ab9cd",
+      "generated_at": "2026-03-25T14:32:01.000Z",
+      "mode": "full",
+      "business_type": "Caf\u00e9",
+      "industry_category": "Food & Beverage",
+      "location": {
+        "locality": "Fitzroy",
+        "area": "Smith Street",
+        "city": "Melbourne",
+        "country": "Australia"
+      }
+    },
+    "scores": {
+      "overall": 74,
+      "verdict": "go",
+      "competition_viability": 42,
+      "market_demand": 74,
+      "profitability": 71,
+      "footfall": 79,
+      "demographics": 82,
+      "benchmark": 68,
+      "economic_health": 72,
+      "cost_feasibility": 85
+    },
+    "confidence": {
+      "rent": "high",
+      "footfall": "medium",
+      "overall_data_quality": "medium"
+    },
+    "real_estate": {
+      "median_rent_monthly": 4800,
+      "median_rent_annual": 57600,
+      "rent_range_monthly": {
+        "min": 3800,
+        "max": 6200
+      },
+      "listings_sampled": 14,
+      "data_quality": "high",
+      "within_budget_count": 7,
+      "rent_viability_score": 80,
+      "top_properties": [
+        {
+          "rank": 1,
+          "address": "242 Smith St Fitzroy",
+          "price_monthly": 4200,
+          "sqm": 85,
+          "within_budget": true,
+          "score": 88
+        }
+      ]
+    },
+    "market": {
+      "saturation_level": "High",
+      "total_competitors_found": 28,
+      "competitors_within_500m": 11,
+      "demand_trend": "Growing",
+      "top_opportunities": [
+        "Inner-city density",
+        "Tourism corridor growth"
+      ],
+      "top_risks": [
+        "High saturation",
+        "Rising rents"
+      ]
+    },
+    "financials": {
+      "revenue_monthly": {
+        "min": 28000,
+        "base": 38500,
+        "max": 52000
+      },
+      "revenue_annual_base": 462000,
+      "monthly_opex": 31200,
+      "setup_cost": {
+        "min": 95000,
+        "recommended": 112000,
+        "max": 145000
+      },
+      "setup_budget_user": 120000,
+      "budget_gap": -8000,
+      "net_profit_monthly_base": 7300,
+      "profit_margin_base_pct": 19.0,
+      "break_even_months": 14,
+      "break_even_daily_customers": 42,
+      "roi_12_months_pct": 18.5,
+      "roi_24_months_pct": 48.2,
+      "roi_36_months_pct": 82.1,
+      "revenue_channels": [
+        {
+          "channel": "Dine-in coffee",
+          "pct": 55
+        },
+        {
+          "channel": "Food / brunch",
+          "pct": 28
+        },
+        {
+          "channel": "Takeaway",
+          "pct": 17
+        }
+      ],
+      "sensitivity_analysis": {
+        "scenario_low": {
+          "revenue": 28000,
+          "profit": -3200,
+          "note": "Bear: 30% lower foot traffic"
+        },
+        "scenario_base": {
+          "revenue": 38500,
+          "profit": 7300,
+          "note": "Base case"
+        },
+        "scenario_high": {
+          "revenue": 52000,
+          "profit": 20800,
+          "note": "Bull: strong summer trade"
+        }
+      }
+    },
+    "demand_demographics": {
+      "footfall": {
+        "final_score": 79,
+        "final_confidence": "medium",
+        "sources": {
+          "a2_food_retail_pois": 42,
+          "a2_transit_stops": 6,
+          "a6_foot_traffic_score": 81,
+          "a6_daily_customers_base": 185
+        }
+      },
+      "demographics": {
+        "demographics_score": 82,
+        "income_label": "Upper Middle",
+        "median_monthly_income": 5800,
+        "area_type": "Inner Urban \u2013 Gentrified",
+        "is_premium_area": true,
+        "consumer_affordability_index": 74
+      }
+    },
+    "benchmark": {
+      "benchmark_score": 68,
+      "ato_citation": "ATO Small Business Benchmarks 2024\u201325 \u2013 Caf\u00e9s & Coffee Shops",
+      "rent_burden_pct": 12.5,
+      "rent_burden_label": "Healthy",
+      "break_even_category_avg_months": 16,
+      "performance_percentile": 62,
+      "capitalisation_assessment": {
+        "assessment": "Adequately Capitalised",
+        "minimum_recommended": 95000
+      },
+      "recommendations": [
+        "Maintain rent below 12% of revenue",
+        "Target 18-month break-even or better"
+      ]
+    },
+    "economy": {
+      "economic_health_score": 72,
+      "economic_verdict": "Stable",
+      "major_anchor_present": true,
+      "anchors_found": [
+        "Woolworths Fitzroy"
+      ],
+      "wage_growth_pct": 3.8,
+      "food_cpi_yoy_pct": 4.1,
+      "consumer_sentiment_label": "Cautiously Optimistic",
+      "state_regulations": {
+        "state": "VIC",
+        "food_registration": "Required \u2013 City of Yarra Food Safety permit"
+      }
+    },
+    "rankings": {
+      "top_competitors": [
+        {
+          "name": "Seven Seeds",
+          "competitor_type": "Specialty Caf\u00e9",
+          "within_500m": true,
+          "rating": 4.7,
+          "review_count": 1840,
+          "estimated_pricing": "$$",
+          "address": "114 Berkeley St, Carlton",
+          "maps_url": "https://maps.google.com/?cid=..."
+        },
+        {
+          "name": "Proud Mary Coffee",
+          "competitor_type": "Specialty Caf\u00e9",
+          "within_500m": true,
+          "rating": 4.6,
+          "review_count": 2140,
+          "estimated_pricing": "$$"
+        },
+        {
+          "name": "Industry Beans",
+          "competitor_type": "Specialty Caf\u00e9",
+          "within_500m": false,
+          "rating": 4.5,
+          "review_count": 980,
+          "estimated_pricing": "$$$"
+        }
+      ],
+      "top_properties": [
+        {
+          "rank": 1,
+          "address": "242 Smith St Fitzroy",
+          "price_monthly": 4200,
+          "sqm": 85,
+          "within_budget": true,
+          "score": 88
+        }
+      ]
+    },
+    "risks": [
+      {
+        "risk": "competition_density",
+        "severity": "high",
+        "value": 58,
+        "source": "A1"
+      },
+      {
+        "risk": "rent_burden",
+        "severity": "medium",
+        "value": 12.5,
+        "source": "A2+A5"
+      }
+    ],
+    "flags": [],
+    "assumptions": {
+      "mode": "full",
+      "all_agents_ran": true,
+      "revenue_source": "A5 AI projection + A1 competitor data + A6 demographics",
+      "wage_data_source": "ABS Labour Price Index Q4 2025",
+      "cpi_source": "ABS CPI Food Group \u2013 Dec 2025 quarter",
+      "rba_sentiment_source": "Westpac-Melbourne Institute Consumer Sentiment Index \u2013 Feb 2026",
+      "ato_benchmark_source": "ATO Small Business Benchmarks 2024\u201325"
+    }
+  }
+}

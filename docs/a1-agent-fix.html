@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1 Competitor Intelligence — n8n Fix Guide</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 24px; color: #1C1917; line-height: 1.6; }
+  h1 { font-size: 24px; font-weight: 800; border-bottom: 3px solid #0F766E; padding-bottom: 12px; color: #0F766E; }
+  h2 { font-size: 18px; font-weight: 700; margin-top: 36px; color: #292524; border-left: 4px solid #0F766E; padding-left: 12px; }
+  h3 { font-size: 15px; font-weight: 700; margin-top: 24px; color: #44403C; }
+  h4 { font-size: 13px; font-weight: 700; margin-top: 16px; color: #78716C; text-transform: uppercase; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { background: #0F766E; color: white; padding: 8px 12px; text-align: left; font-weight: 700; }
+  td { padding: 8px 12px; border-bottom: 1px solid #E7E5E4; }
+  tr:nth-child(even) td { background: #FAFAF9; }
+  pre { background: #1C1917; color: #F5F5F4; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.5; margin: 16px 0; }
+  code { font-family: 'Menlo', 'Monaco', 'Consolas', monospace; }
+  p code, li code { background: #F5F5F4; border: 1px solid #E7E5E4; padding: 1px 5px; border-radius: 3px; font-size: 12px; color: #0F766E; }
+  .bug-box { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+  .bug-box strong { color: #DC2626; }
+  .note { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: 13px; color: #9A3412; }
+  .step { background: #F0FDFA; border: 1px solid #99F6E4; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
+  .step-num { display: inline-block; background: #0F766E; color: white; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px; font-size: 13px; font-weight: 800; margin-right: 8px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 4px 0; font-size: 14px; }
+  .test-box { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<h1>A1 Competitor Intelligence — n8n Manual Fix Guide</h1>
+
+<div class="bug-box">
+  <strong>Root Cause Confirmed:</strong> Wembley, Perth gym search returns 0 competitors.
+  Three bugs in the active A1 workflow are responsible.
+</div>
+
+<h2>Why This Is Broken</h2>
+
+<table>
+  <tr><th>Bug</th><th>Impact</th></tr>
+  <tr><td>Hardcoded <code>radius=500</code> on all business types</td><td>Gyms need 1500m; 500m misses most competitors</td></tr>
+  <tr><td>Single <code>type=gym</code> query only</td><td>Google Places tags many gyms as <code>health</code>, <code>spa</code>, or <code>establishment</code> — <code>type=gym</code> alone misses them</td></tr>
+  <tr><td>Does not pass <code>google_types[]</code> to output</td><td>The compute engine can't use API type matching to validate competitors</td></tr>
+</table>
+
+<p>Open the workflow: <strong>Locatalyze v2 – A1 Competitor Intelligence (Nearbysearch 500m Fixed)</strong></p>
+
+<hr>
+
+<h2>Change 1 — Replace the Parse / Set Variables Code Node</h2>
+
+<p>Find the Code node near the start that reads the webhook body and sets variables. Replace its JavaScript entirely with:</p>
+
+<pre><code>// ── Parse & validate input from Master Orchestrator ──────────────────────────
+const body = $input.first().json.body || $input.first().json;
+
+const lat          = parseFloat(body.lat  || body.latitude  || 0);
+const lng          = parseFloat(body.lng  || body.longitude || 0);
+const businessType = String(body.businessType || body.business_type || 'other').toLowerCase();
+const area         = String(body.area   || body.suburb || '');
+const city         = String(body.city   || '');
+const reportId     = String(body.reportId || body.report_id || '');
+
+// ── Radius lookup (metres) — matches lib/compute/benchmarks.ts ───────────────
+const RADIUS_MAP = {
+  gym:        1500,
+  fitness:    1500,
+  cafe:       600,
+  restaurant: 600,
+  bakery:     600,
+  bar:        600,
+  salon:      600,
+  retail:     500,
+  takeaway:   500,
+  pharmacy:   800,
+};
+
+function resolveKey(bt) {
+  const keys = Object.keys(RADIUS_MAP);
+  for (let i = 0; i &lt; keys.length; i++) {
+    if (bt.indexOf(keys[i]) !== -1) return keys[i];
+  }
+  return 'other';
+}
+
+const bizKey = resolveKey(businessType);
+const radius = RADIUS_MAP[bizKey] || 600;
+
+// ── Google Places primary type ────────────────────────────────────────────────
+const TYPE_MAP = {
+  gym:        'gym',
+  fitness:    'gym',
+  cafe:       'cafe',
+  restaurant: 'restaurant',
+  bakery:     'bakery',
+  bar:        'bar',
+  salon:      'beauty_salon',
+  retail:     'clothing_store',
+  takeaway:   'meal_takeaway',
+  pharmacy:   'pharmacy',
+};
+
+// ── Keyword searches (broader — catches non-standard API type tags) ───────────
+const KEYWORD_MAP = {
+  gym:        ['fitness centre', 'health club', 'yoga studio', 'pilates', 'crossfit'],
+  fitness:    ['fitness centre', 'health club', 'yoga studio', 'pilates'],
+  cafe:       ['coffee shop', 'espresso bar', 'brunch cafe'],
+  restaurant: ['restaurant', 'dining'],
+  bakery:     ['bakery', 'patisserie'],
+  bar:        ['bar', 'pub', 'tavern'],
+  salon:      ['hair salon', 'barber', 'beauty salon'],
+  retail:     ['clothing store', 'boutique'],
+  takeaway:   ['takeaway', 'fast food'],
+  pharmacy:   ['pharmacy', 'chemist'],
+};
+
+const primaryType = TYPE_MAP[bizKey] || null;
+const keywords    = (KEYWORD_MAP[bizKey] || []).slice(0, 2);
+
+if (!lat || !lng) {
+  throw new Error('A1: lat/lng missing — check Master Orchestrator coordinate passing');
+}
+
+return [{
+  json: {
+    lat, lng, bizKey, businessType, area, city, reportId,
+    radius, primaryType, keywords,
+    locationString: lat + ',' + lng,
+  }
+}];</code></pre>
+
+<hr>
+
+<h2>Change 2 — Add Two More NearbySearch HTTP Request Nodes</h2>
+
+<p>Currently the workflow has one NearbySearch call. You need three running in parallel.</p>
+
+<div class="step">
+  <span class="step-num">A</span>
+  <strong>Keep / update existing node → "Google Places — Type Search"</strong>
+  <table style="margin-top:12px">
+    <tr><th>Query param</th><th>Value</th></tr>
+    <tr><td><code>location</code></td><td><code>{{ $json.locationString }}</code></td></tr>
+    <tr><td><code>radius</code></td><td><code>{{ $json.radius }}</code></td></tr>
+    <tr><td><code>type</code></td><td><code>{{ $json.primaryType }}</code></td></tr>
+    <tr><td><code>key</code></td><td><em>your Google API key credential</em></td></tr>
+  </table>
+</div>
+
+<div class="step">
+  <span class="step-num">B</span>
+  <strong>Add new node → "Google Places — Keyword 1"</strong>
+  <p>Same URL and auth. Change <code>type</code> param to <code>keyword</code>:</p>
+  <table style="margin-top:12px">
+    <tr><th>Query param</th><th>Value</th></tr>
+    <tr><td><code>location</code></td><td><code>{{ $json.locationString }}</code></td></tr>
+    <tr><td><code>radius</code></td><td><code>{{ $json.radius }}</code></td></tr>
+    <tr><td><code>keyword</code></td><td><code>{{ $json.keywords[0] }}</code></td></tr>
+    <tr><td><code>key</code></td><td><em>your Google API key credential</em></td></tr>
+  </table>
+  <p>Connect the Parse node → this node in parallel with Node A.</p>
+</div>
+
+<div class="step">
+  <span class="step-num">C</span>
+  <strong>Add new node → "Google Places — Keyword 2"</strong>
+  <p>Same as B but keyword is <code>{{ $json.keywords[1] }}</code>.</p>
+</div>
+
+<p>Then connect A, B, C → <strong>Merge node (mode: Append, inputs: 3)</strong>.</p>
+
+<hr>
+
+<h2>Change 3 — Replace the "Format Output" Code Node</h2>
+
+<p>Find the Code node that builds the final competitor list. Replace its JavaScript with:</p>
+
+<pre><code>// ── Collect results from all 3 NearbySearch calls ────────────────────────────
+const allPlaces = [];
+
+for (let i = 0; i &lt; $input.all().length; i++) {
+  const item = $input.all()[i].json;
+  const results = item.results || item.result || [];
+  for (let j = 0; j &lt; results.length; j++) {
+    allPlaces.push(results[j]);
+  }
+}
+
+// ── Deduplicate by place_id ───────────────────────────────────────────────────
+const seen = {};
+const unique = [];
+for (let i = 0; i &lt; allPlaces.length; i++) {
+  const p = allPlaces[i];
+  const key = p.place_id || p.name || ('idx-' + i);
+  if (!seen[key]) {
+    seen[key] = true;
+    unique.push(p);
+  }
+}
+
+// ── Haversine distance from search origin ─────────────────────────────────────
+const originLat = parseFloat($('Parse Input').first().json.lat);
+const originLng = parseFloat($('Parse Input').first().json.lng);
+
+function haversineM(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2)
+    + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180)
+    * Math.sin(dLng/2) * Math.sin(dLng/2);
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+
+// ── Map to standard competitor shape ─────────────────────────────────────────
+const competitors = unique.map(function(p) {
+  const loc = p.geometry &amp;&amp; p.geometry.location ? p.geometry.location : {};
+  const distM = (loc.lat &amp;&amp; loc.lng)
+    ? haversineM(originLat, originLng, loc.lat, loc.lng)
+    : null;
+
+  return {
+    name:            p.name || 'Unknown',
+    address:         p.vicinity || p.formatted_address || null,
+    rating:          p.rating || null,
+    review_count:    p.user_ratings_total || null,
+    // CRITICAL: pass google_types[] for compute engine type-based matching
+    google_types:    p.types || [],
+    place_id:        p.place_id || null,
+    distance_m:      distM,
+    // Tag as direct so engine trusts without re-checking keywords
+    competitor_type: 'direct',
+    business_status: p.business_status || null,
+  };
+}).filter(function(c) {
+  return c.business_status !== 'PERMANENTLY_CLOSED';
+});
+
+// ── Final output ──────────────────────────────────────────────────────────────
+const bizKey = $('Parse Input').first().json.bizKey;
+const radius = $('Parse Input').first().json.radius;
+const area   = $('Parse Input').first().json.area;
+const city   = $('Parse Input').first().json.city;
+
+const withinRadius = competitors.filter(function(c) {
+  return c.distance_m !== null &amp;&amp; c.distance_m &lt;= radius;
+});
+
+return [{
+  json: {
+    // Primary key — what computeEngine reads
+    competitors: competitors,
+
+    // Metadata
+    total_found:             allPlaces.length,
+    unique_found:            unique.length,
+    validated_count:         competitors.length,
+    search_radius_m:         radius,
+    biz_key:                 bizKey,
+    area:                    area,
+    city:                    city,
+    data_source:             'google_places_nearbysearch',
+    searched_at:             new Date().toISOString(),
+
+    // Legacy fields for backward compat
+    competitors_within_500m:   competitors.filter(function(c) { return c.distance_m !== null &amp;&amp; c.distance_m &lt;= 500; }).length,
+    competitors_within_radius: withinRadius.length,
+    saturation_level: competitors.length === 0 ? 'unknown'
+                    : competitors.length &lt;= 3  ? 'low'
+                    : competitors.length &lt;= 8  ? 'moderate'
+                    : 'high',
+  }
+}];</code></pre>
+
+<div class="note">
+  ⚠️ Replace <code>$('Parse Input')</code> with the actual name of your Parse node if it's named differently (e.g. <code>$('Set Variables')</code> or <code>$('Code')</code>).
+</div>
+
+<hr>
+
+<h2>Test After Applying</h2>
+
+<div class="test-box">
+  <strong>Test payload (run via n8n Test Webhook):</strong>
+  <pre style="margin:8px 0 0"><code>{
+  "lat": -31.9295,
+  "lng": 115.8186,
+  "businessType": "Gym / Fitness",
+  "area": "Wembley",
+  "city": "Perth",
+  "state": "WA",
+  "reportId": "test-wembley-001"
+}</code></pre>
+  <p style="margin:8px 0 0"><strong>Expected result:</strong> <code>competitors</code> array with ≥ 3 entries, each with <code>google_types</code> populated and <code>distance_m</code> set.</p>
+</div>
+
+<hr>
+
+<h2>What the Compute Engine Now Does With This Data</h2>
+
+<ol>
+  <li>Reads <code>a1.competitors</code> first, plus 9 other field name variants as fallback</li>
+  <li>Calls <code>isValidCompetitor(place, bizKey)</code> which checks <code>google_types[]</code> against known API types before keyword scan</li>
+  <li>Since all results are tagged <code>competitor_type: 'direct'</code>, they pass validation immediately</li>
+  <li>Sets <code>competitorDataQuality = 'live_verified'</code> when ≥1 competitor found</li>
+  <li>Only awards competition score 85+ (blue ocean) when data quality is <code>live_verified</code> AND count is 0 — so a data failure can never masquerade as an opportunity</li>
+</ol>
+
+</body>
+</html>

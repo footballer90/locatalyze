@@ -1,0 +1,475 @@
+{
+  "name": "locatalyze-v2-A4-cost",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a4-cost",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "af354a66-fb19-46c9-a033-643ef023ebcc",
+      "name": "Webhook \u2013 Receive Inputs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        64
+      ],
+      "webhookId": "locatalyze-a4-cost-agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "business_type",
+              "value": "={{ $json.body.business_type }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "industry_category",
+              "value": "={{ $json.body.industry_category }}",
+              "type": "string"
+            },
+            {
+              "id": "p3",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p4",
+              "name": "area",
+              "value": "={{ $json.body.area }}",
+              "type": "string"
+            },
+            {
+              "id": "p5",
+              "name": "country",
+              "value": "={{ $json.body.country ?? 'India' }}",
+              "type": "string"
+            },
+            {
+              "id": "p6",
+              "name": "currency",
+              "value": "={{ $json.body.currency ?? '\u20b9' }}",
+              "type": "string"
+            },
+            {
+              "id": "p7",
+              "name": "space_size_range",
+              "value": "={{ $json.body.space_size_range }}",
+              "type": "string"
+            },
+            {
+              "id": "p8",
+              "name": "preferred_sqft",
+              "value": "={{ $json.body.preferred_sqft ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p9",
+              "name": "monthly_rent_budget_max",
+              "value": "={{ $json.body.monthly_rent_budget_max }}",
+              "type": "string"
+            },
+            {
+              "id": "p10",
+              "name": "staff_count_range",
+              "value": "={{ $json.body.staff_count_range }}",
+              "type": "string"
+            },
+            {
+              "id": "p11",
+              "name": "setup_budget",
+              "value": "={{ $json.body.setup_budget }}",
+              "type": "string"
+            },
+            {
+              "id": "p12",
+              "name": "business_model",
+              "value": "={{ $json.body.business_model ?? 'Independent' }}",
+              "type": "string"
+            },
+            {
+              "id": "p13",
+              "name": "lease_term_years",
+              "value": "={{ $json.body.lease_term_years ?? '2' }}",
+              "type": "string"
+            },
+            {
+              "id": "p14",
+              "name": "equipment_owned",
+              "value": "={{ $json.body.equipment_owned ?? 'None' }}",
+              "type": "string"
+            },
+            {
+              "id": "p15",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "p16",
+              "name": "a1_competitor_data",
+              "value": "={{ JSON.stringify($json.body.a1_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p17",
+              "name": "a2_rent_data",
+              "value": "={{ JSON.stringify($json.body.a2_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p18",
+              "name": "a3_market_data",
+              "value": "={{ JSON.stringify($json.body.a3_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p19",
+              "name": "serp_query_costs",
+              "value": "={{ encodeURIComponent($json.body.industry_category + ' setup cost ' + $json.body.city + ' ' + $json.body.business_type + ' investment 2024 2025') }}",
+              "type": "string"
+            },
+            {
+              "id": "p20",
+              "name": "serp_query_salary",
+              "value": "={{ encodeURIComponent('staff salary ' + $json.body.industry_category + ' ' + $json.body.city + ' per month 2024') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2b688a94-0d9b-4a47-8806-a91343f587ea",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.serp_query_costs }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $json.country === 'Australia' ? 'au' : $json.country === 'UK' ? 'gb' : 'in' }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "dfc494c8-7e3e-4b08-a616-45315ae636a0",
+      "name": "SerpApi \u2013 Setup Cost Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_salary }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $('Parse & Validate Inputs').item.json.country === 'Australia' ? 'au' : $('Parse & Validate Inputs').item.json.country === 'UK' ? 'gb' : 'in' }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "5a1cdcdc-e1f7-4d3f-914b-1a32fa0a2178",
+      "name": "SerpApi \u2013 Salary Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {},
+      "id": "9dbf69da-3f6a-4cec-9f27-055db0335c92",
+      "name": "Merge Search Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        240,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all = $input.all();\nconst inputs = $('Parse & Validate Inputs').item.json;\n\n// \u2500\u2500 PARSE SERP RESULTS \u2500\u2500\nlet costArticles = [];\nlet salaryArticles = [];\nfor (const item of all) {\n  const j = item.json;\n  if (j?.organic_results && Array.isArray(j.organic_results)) {\n    if (costArticles.length === 0) costArticles = j.organic_results;\n    else salaryArticles = j.organic_results;\n  }\n}\n\nconst costText = costArticles.slice(0, 6).map((r, i) =>\n  `${i+1}. ${r.title||''}\\n   ${(r.snippet||'').slice(0,200)}\\n   Source: ${r.displayed_link||''}`\n).join('\\n\\n');\n\nconst salaryText = salaryArticles.slice(0, 6).map((r, i) =>\n  `${i+1}. ${r.title||''}\\n   ${(r.snippet||'').slice(0,200)}\\n   Source: ${r.displayed_link||''}`\n).join('\\n\\n');\n\n// \u2500\u2500 PARSE A1 DATA \u2500\u2500\nlet a1 = {};\ntry { a1 = JSON.parse(inputs.a1_competitor_data || '{}')?.outputs || {}; } catch(e) {}\n\n// \u2500\u2500 PARSE A2 DATA \u2500\u2500\nlet a2 = {};\ntry { a2 = JSON.parse(inputs.a2_rent_data || '{}')?.outputs || {}; } catch(e) {}\n\n// \u2500\u2500 PARSE A3 DATA \u2500\u2500\nlet a3 = {};\ntry { a3 = JSON.parse(inputs.a3_market_data || '{}')?.outputs || {}; } catch(e) {}\n\n// \u2500\u2500 BUILD CONTEXT STRINGS \u2500\u2500\nconst a1Context = Object.keys(a1).length > 0\n  ? `Competitor Density: ${a1.competitor_density_score||'N/A'}/100\\nSaturation: ${a1.saturation_level||'N/A'}\\nOpportunity Gaps: ${(a1.opportunity_gaps||[]).join('; ')}`\n  : 'Not provided';\n\nconst a2Context = Object.keys(a2).length > 0\n  ? `Actual Rent Range: ${a2.rent_range_actual?.min||'N/A'} \u2013 ${a2.rent_range_actual?.max||'N/A'}\\nMedian Rent: ${a2.rent_range_actual?.median||'N/A'}\\nDeposit Estimate: ${a2.deposit_estimate||'N/A'}\\nTransport Score: ${a2.transport_access_score||'N/A'}/10\\nLocation Verdict: ${a2.overall_location_verdict||'N/A'}`\n  : 'Not provided';\n\nconst a3Context = Object.keys(a3).length > 0\n  ? `Demand Trend: ${a3.demand_trend||'N/A'}\\nMarket Maturity: ${a3.market_maturity_stage||'N/A'}\\nCompetitor Threat: ${a3.competitor_threat_level||'N/A'}\\nRegulatory Flags: ${(a3.regulatory_flags||[]).map(r => r.license_name + ' (' + r.estimated_cost + ')').join('; ')||'None listed'}`\n  : 'Not provided';\n\n// \u2500\u2500 MARKETING BUDGET SIGNAL FROM A1 \u2500\u2500\n// High saturation = needs higher marketing spend to cut through\nconst marketingMultiplier = a1.saturation_level === 'High' ? 'HIGH \u2014 saturated market requires aggressive marketing'\n  : a1.saturation_level === 'Medium' ? 'MEDIUM \u2014 moderate marketing needed'\n  : 'LOW \u2014 low competition means organic growth likely';\n\n// \u2500\u2500 CONTINGENCY SIGNAL FROM A3 \u2500\u2500\nconst contingencySignal = a3.demand_trend === 'Falling' ? 'HIGH \u2014 falling demand requires larger buffer'\n  : a3.competitor_threat_level === 'High' ? 'MEDIUM-HIGH \u2014 strong competition increases risk'\n  : 'STANDARD \u2014 normal contingency applies';\n\nreturn [{ json: {\n  // Pass-through\n  business_type:           inputs.business_type,\n  industry_category:       inputs.industry_category,\n  city:                    inputs.city,\n  area:                    inputs.area,\n  country:                 inputs.country,\n  currency:                inputs.currency,\n  space_size_range:        inputs.space_size_range,\n  preferred_sqft:          inputs.preferred_sqft,\n  monthly_rent_budget_max: inputs.monthly_rent_budget_max,\n  staff_count_range:       inputs.staff_count_range,\n  setup_budget:            inputs.setup_budget,\n  business_model:          inputs.business_model,\n  lease_term_years:        inputs.lease_term_years,\n  equipment_owned:         inputs.equipment_owned,\n  email:                   inputs.email,\n  // Context for AI\n  cost_articles_text:      costText || 'No cost data found.',\n  salary_articles_text:    salaryText || 'No salary data found.',\n  a1_context:              a1Context,\n  a2_context:              a2Context,\n  a3_context:              a3Context,\n  marketing_multiplier:    marketingMultiplier,\n  contingency_signal:      contingencySignal,\n  // Raw for HTML\n  a2_rent_median:          a2.rent_range_actual?.median || null,\n  a2_deposit:              a2.deposit_estimate || null,\n  a3_regulatory_flags:     a3.regulatory_flags || [],\n  data_sources: {\n    cost_articles:   costArticles.length,\n    salary_articles: salaryArticles.length,\n    a1_integrated:   Object.keys(a1).length > 0,\n    a2_integrated:   Object.keys(a2).length > 0,\n    a3_integrated:   Object.keys(a3).length > 0\n  }\n}}];\n"
+      },
+      "id": "e23f9327-3e45-4a68-bb2c-2a0fd0578864",
+      "name": "Process & Merge All Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n'Generate a detailed cost projection for a new ' + $json.business_type + ' (' + $json.industry_category + ') at ' + $json.area + ', ' + $json.city + ', ' + $json.country + '.\\n\\n' +\n'BUSINESS DETAILS:\\n' +\n'- Model: ' + $json.business_model + '\\n' +\n'- Space: ' + $json.space_size_range + ($json.preferred_sqft ? ' (preferred: ' + $json.preferred_sqft + ' sqft)' : '') + '\\n' +\n'- Staff: ' + $json.staff_count_range + '\\n' +\n'- Setup Budget (owner): ' + $json.currency + $json.setup_budget + '\\n' +\n'- Max Rent Budget: ' + $json.currency + $json.monthly_rent_budget_max + '/mo\\n' +\n'- Lease Term: ' + $json.lease_term_years + ' years\\n' +\n'- Equipment Already Owned: ' + $json.equipment_owned + '\\n' +\n'- Currency: ' + $json.currency + '\\n\\n' +\n'\u2500\u2500 LIVE COST RESEARCH (SerpApi) \u2500\u2500\\n' + $json.cost_articles_text + '\\n\\n' +\n'\u2500\u2500 LIVE SALARY RESEARCH (SerpApi) \u2500\u2500\\n' + $json.salary_articles_text + '\\n\\n' +\n'\u2500\u2500 A1 COMPETITOR INTELLIGENCE \u2500\u2500\\n' + $json.a1_context + '\\n' +\n'Marketing spend signal: ' + $json.marketing_multiplier + '\\n\\n' +\n'\u2500\u2500 A2 RENT & LOCATION DATA \u2500\u2500\\n' + $json.a2_context + '\\n\\n' +\n'\u2500\u2500 A3 MARKET & REGULATORY DATA \u2500\u2500\\n' + $json.a3_context + '\\n' +\n'Contingency signal: ' + $json.contingency_signal + '\\n\\n' +\n'Use A2 median rent as the rent line item if available. Include A3 regulatory license costs in setup. Adjust marketing budget using A1 saturation signal. Adjust contingency using A3 demand trend.'\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Cost Projection Agent \u2014 an expert CFO-level analyst specialising in startup cost modelling for retail, F&B, and service businesses globally.\n\nYou receive live SerpApi cost/salary research, and integrated A1/A2/A3 agent data to produce a grounded, itemised cost projection.\n\nCRITICAL RULES:\n1. Use A2 median rent as the monthly rent figure if provided \u2014 do not use the user's budget max as the actual rent.\n2. Include A3 regulatory license costs (summed) as a line item in setup_cost_breakdown under 'Licenses & Permits'.\n3. Use A1 saturation signal to scale marketing budget \u2014 High saturation = allocate 15-20% of monthly costs to marketing; Low = 5-8%.\n4. Use A3 demand trend to set contingency \u2014 Falling trend = 20% buffer; Stable = 15%; Rising = 10%.\n5. All currency values must use the currency symbol provided (\u20b9 for India, $ for Australia, \u00a3 for UK).\n6. Break-even must be calculated as: setup_cost_total / (estimated_monthly_revenue - monthly_operating_cost_total). State your revenue assumption clearly.\n7. ROI at 12/24/36 months = ((cumulative_profit / setup_cost_total) * 100)%. Show workings.\n8. Burn rate = monthly_operating_cost_total. Runway = setup_budget / burn_rate (in months).\n9. cost_risk_flags must be specific \u2014 reference actual data from A1/A2/A3 where available.\n10. Never fabricate specific addresses or business names not provided in the data.\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown fences:\n{\n  \"setup_cost_breakdown\": {\n    \"fitout_interior\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<what's included>\" },\n    \"equipment_machinery\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<what's included, what's excluded if owned>\" },\n    \"technology\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<POS, software, CCTV, WiFi etc>\" },\n    \"licenses_permits\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<list key licenses from A3>\" },\n    \"marketing_launch\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<launch campaign, signage, social>\" },\n    \"working_capital_buffer\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<X months of operating costs>\" },\n    \"deposit\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<from A2 deposit estimate or calculated>\" },\n    \"miscellaneous\": { \"min\": \"<amount>\", \"max\": \"<amount>\", \"notes\": \"<contingency, unexpected costs>\" }\n  },\n  \"setup_cost_estimate\": {\n    \"total_min\": \"<e.g. \u20b94,50,000>\",\n    \"total_max\": \"<e.g. \u20b97,20,000>\",\n    \"recommended\": \"<e.g. \u20b95,80,000>\",\n    \"vs_user_budget\": \"Within Budget\" | \"Tight\" | \"Over Budget\",\n    \"budget_gap\": \"<e.g. \u20b980,000 shortfall or \u20b91,20,000 surplus>\"\n  },\n  \"monthly_operating_cost\": {\n    \"rent\": { \"amount\": \"<amount/mo>\", \"source\": \"A2 data\" | \"User estimate\" },\n    \"staff_salaries\": { \"amount\": \"<amount/mo>\", \"headcount\": \"<e.g. 3 staff>\", \"notes\": \"<role breakdown>\" },\n    \"utilities\": { \"amount\": \"<amount/mo>\", \"notes\": \"<electricity, water, internet>\" },\n    \"technology_subscriptions\": { \"amount\": \"<amount/mo>\", \"notes\": \"<POS, Zomato/Swiggy fees, accounting SW>\" },\n    \"marketing_ongoing\": { \"amount\": \"<amount/mo>\", \"notes\": \"<based on A1 saturation signal>\" },\n    \"consumables_inventory\": { \"amount\": \"<amount/mo>\", \"notes\": \"<raw materials, packaging>\" },\n    \"miscellaneous\": { \"amount\": \"<amount/mo>\", \"notes\": \"<maintenance, petty cash>\" },\n    \"total_monthly\": \"<amount/mo>\"\n  },\n  \"financial_projections\": {\n    \"estimated_monthly_revenue\": \"<amount>\",\n    \"revenue_assumption\": \"<explain how you estimated revenue \u2014 footfall, avg ticket, occupancy etc>\",\n    \"gross_margin_pct\": \"<e.g. 55%>\",\n    \"monthly_profit_at_capacity\": \"<amount>\",\n    \"break_even_months\": <number>,\n    \"break_even_reasoning\": \"<show calculation>\",\n    \"burn_rate_monthly\": \"<amount>\",\n    \"runway_months\": <number>,\n    \"runway_reasoning\": \"<setup_budget / burn_rate>\",\n    \"roi_12_months\": \"<e.g. -15% (still in payback)>\",\n    \"roi_24_months\": \"<e.g. +22%>\",\n    \"roi_36_months\": \"<e.g. +61%>\",\n    \"roi_reasoning\": \"<show cumulative profit workings>\"\n  },\n  \"cost_risk_flags\": [\n    {\n      \"risk\": \"<specific risk name>\",\n      \"severity\": \"High\" | \"Medium\" | \"Low\",\n      \"description\": \"<specific description referencing A1/A2/A3 data>\",\n      \"mitigation\": \"<concrete action to reduce this risk>\"\n    }\n  ],\n  \"cost_optimisation_tips\": [\n    \"<specific tip 1 \u2014 e.g. lease equipment instead of buying>\",\n    \"<specific tip 2>\",\n    \"<specific tip 3>\"\n  ],\n  \"overall_financial_verdict\": \"Financially Viable\" | \"Viable with Cost Control\" | \"High Risk\" | \"Not Viable\",\n  \"agent_notes\": \"<data sources used, A1/A2/A3 integration notes, assumptions made>\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "5c7ab559-68cd-44af-bcc0-6ba5ab0ea9d1",
+      "name": "AI Agent \u2013 Cost Projection",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        720,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 3500,
+          "temperature": 0.2
+        }
+      },
+      "id": "6817b0d2-0aff-4f76-ba45-a7ece741fad0",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        240
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output || '';\nlet analysis;\ntry {\n  const cleaned = rawText.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error: true, raw_response: rawText };\n}\n\nconst d = $('Process & Merge All Data').item.json;\n\nreturn [{\n  json: {\n    agent_id:   'A4',\n    agent_name: 'Cost Projection',\n    status:     analysis.parse_error ? 'error' : 'success',\n    timestamp:  new Date().toISOString(),\n    email:      d.email,\n    inputs_used: {\n      location:                `${d.area}, ${d.city}, ${d.country}`,\n      industry:                d.industry_category,\n      business_model:          d.business_model,\n      space_size_range:        d.space_size_range,\n      staff_count_range:       d.staff_count_range,\n      setup_budget:            `${d.currency}${d.setup_budget}`,\n      monthly_rent_budget_max: `${d.currency}${d.monthly_rent_budget_max}`,\n      currency:                d.currency\n    },\n    data_sources: d.data_sources,\n    a3_regulatory_flags: d.a3_regulatory_flags,\n    outputs: {\n      setup_cost_breakdown:    analysis.setup_cost_breakdown,\n      setup_cost_estimate:     analysis.setup_cost_estimate,\n      monthly_operating_cost:  analysis.monthly_operating_cost,\n      financial_projections:   analysis.financial_projections,\n      cost_risk_flags:         analysis.cost_risk_flags,\n      cost_optimisation_tips:  analysis.cost_optimisation_tips,\n      overall_financial_verdict: analysis.overall_financial_verdict,\n      agent_notes:             analysis.agent_notes\n    }\n  }\n}];\n\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "b2549ef4-75f0-4413-a5c8-68958b2b5586",
+      "name": "Format Agent Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1440,
+        80
+      ],
+      "id": "893bdd13-e569-442e-906f-c02cd72f67fa",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 Receive Inputs": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "SerpApi \u2013 Setup Cost Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Salary Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Setup Cost Research": {
+      "main": [
+        [
+          {
+            "node": "Merge Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Salary Research": {
+      "main": [
+        [
+          {
+            "node": "Merge Search Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Search Results": {
+      "main": [
+        [
+          {
+            "node": "Process & Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2013 Cost Projection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2013 Cost Projection": {
+      "main": [
+        [
+          {
+            "node": "Format Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2013 Cost Projection",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ec799937-2d14-4d31-8181-b6352df231a1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "0s4jbb9WRnW6gmik",
+  "tags": []
+}

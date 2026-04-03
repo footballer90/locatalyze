@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='utf-8'/>
+  <meta content='width=device-width, initial-scale=1' name='viewport'/>
+  <meta expr:content='data:blog.metaDescription' name='description'/>
+  <title><data:view.title.escaped/></title>
+  <b:include data='blog' name='all-head-content'/>
+  <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap' rel='stylesheet'/>
+
+  <b:skin><![CDATA[
+  /* MYTEN.IN – LIVE ENGINE 2026
+     Fixes: Clickability, new posts visibility, grid layout
+  */
+  :root {
+    --accent: #e1a66c;
+    --dark: #111827;
+    --gray: #6b7280;
+    --border: #f3f4f6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    background: #fafafa;
+    color: var(--dark);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+  }
+
+  header {
+    background: #fff;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .logo {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--dark);
+    text-decoration: none;
+    letter-spacing: -1px;
+  }
+
+  .search-wrapper { display: flex; align-items: center; }
+  .search-container {
+    display: flex;
+    align-items: center;
+    background: #f3f4f6;
+    border-radius: 50px;
+    padding: 6px 14px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .search-container:focus-within {
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(225,166,108,0.12);
+  }
+  .search-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 6px 8px;
+    font-size: 14px;
+    width: 160px;
+    transition: width 0.2s ease;
+  }
+  .search-input:focus { width: 220px; }
+  .search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .search-button svg { width: 18px; height: 18px; }
+  @media (max-width: 600px) {
+    .search-input { width: 100px; }
+    .search-input:focus { width: 140px; }
+  }
+
+  .feed-wrapper {
+    max-width: 1100px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+
+  .post-outer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .item-post {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-post:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+  }
+
+  .item-post a.main-url {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 5;
+    text-indent: -9999px;
+  }
+
+  .post-thumb {
+    width: 100%;
+    height: 200px;
+    background: #eee;
+    object-fit: cover;
+    display: block;
+  }
+
+  .post-thumb-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .post-info { padding: 20px; }
+  .post-info h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    line-height: 1.4;
+    color: var(--dark);
+  }
+  .post-info p {
+    font-size: 14px;
+    color: var(--gray);
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blog-pager-wrap {
+    margin-top: 36px;
+    text-align: center;
+  }
+  .blog-pager-wrap a {
+    display: inline-block;
+    padding: 10px 22px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--dark);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .blog-pager-wrap a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .post-body { font-size: 16px; line-height: 1.75; }
+  ]]></b:skin>
+</head>
+<body>
+  <header>
+    <div class='nav-container'>
+      <a class='logo' expr:href='data:blog.homepageUrl'><data:blog.title/></a>
+      <div class='search-wrapper'>
+        <form expr:action='data:blog.searchUrl' method='get'>
+          <div class='search-container'>
+            <input class='search-input' name='q' placeholder='Search lists...' type='text'/>
+            <button class='search-button' type='submit' aria-label='Search'>
+              <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class='feed-wrapper'>
+    <b:section id='main' showaddelement='yes'>
+      <b:widget id='Blog1' locked='false' title='Blog Posts' type='Blog'>
+        <b:widget-settings>
+          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+          <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+          <b:widget-setting name='showAuthor'>true</b:widget-setting>
+          <b:widget-setting name='showLabels'>true</b:widget-setting>
+          <b:widget-setting name='postsPerAd'>1</b:widget-setting>
+          <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:loop values='data:posts' var='post'>
+            <article class='item-post'>
+              <a class='main-url' expr:href='data:post.url' expr:title='data:post.title'><data:post.title/></a>
+              <b:if cond='data:post.firstImageUrl'>
+                <img class='post-thumb' expr:alt='data:post.title' expr:src='data:post.firstImageUrl'/>
+              <b:else/>
+                <div class='post-thumb-placeholder'>MYTEN.IN</div>
+              </b:if>
+              <div class='post-info'>
+                <h2><data:post.title/></h2>
+                <p><data:post.snippet/></p>
+              </div>
+            </article>
+          </b:loop>
+          <b:if cond='data:olderPageUrl'>
+            <div class='blog-pager-wrap'>
+              <a expr:href='data:olderPageUrl'><data:messages.morePosts/></a>
+            </div>
+          </b:if>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</body>
+</html>

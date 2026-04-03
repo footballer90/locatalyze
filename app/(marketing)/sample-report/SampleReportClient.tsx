@@ -1,0 +1,569 @@
+'use client'
+
+// SampleReportClient.tsx — interactive tabbed sample report
+// Split from page.tsx so metadata stays in the Server Component
+
+import Link from 'next/link'
+import { useState } from 'react'
+
+const S = {
+  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
+  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
+  amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
+  red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
+  blue: '#2563EB', blueBg: '#EFF6FF', blueBdr: '#BFDBFE',
+  n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4',
+  n400: '#A8A29E', n500: '#78716C', n700: '#44403C',
+  n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
+  headerBg: '#111827', mono: "'JetBrains Mono','Fira Mono',monospace",
+  font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
+}
+
+function ScoreBar({ label, score, weight }: { label: string; score: number; weight: string }) {
+  const color = score >= 70 ? S.emerald : score >= 45 ? S.amber : S.red
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+        <span style={{ fontSize: 12, color: S.n500 }}>{label}</span>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <span style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>{weight}</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color, fontFamily: S.mono }}>{score}</span>
+        </div>
+      </div>
+      <div style={{ height: 5, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${score}%`, background: color, borderRadius: 100 }} />
+      </div>
+    </div>
+  )
+}
+
+function Tile({ label, value, sub, color, mono }: { label: string; value: string; sub?: string; color?: string; mono?: boolean }) {
+  return (
+    <div style={{ background: S.n50, borderRadius: 10, border: `1px solid ${S.n200}`, padding: '12px 14px' }}>
+      <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{label}</p>
+      <p style={{ fontSize: 18, fontWeight: 900, color: color || S.n900, letterSpacing: '-0.02em', lineHeight: 1, fontFamily: mono ? S.mono : S.font }}>{value}</p>
+      {sub && <p style={{ fontSize: 10, color: S.n400, marginTop: 4 }}>{sub}</p>}
+    </div>
+  )
+}
+
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+      <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
+      <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{children}</span>
+    </div>
+  )
+}
+
+function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div style={{
+      background: S.white, borderRadius: 12, border: `1px solid ${S.n200}`,
+      padding: '20px 22px', marginBottom: 12, ...style,
+    }}>
+      {children}
+    </div>
+  )
+}
+
+// Fake competitor map placeholder — real reports use Leaflet with live data
+function MapPlaceholder() {
+  return (
+    <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: `1px solid ${S.n200}` }}>
+      <div style={{ background: S.n900, padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: S.brand, border: '2px solid #fff' }} />
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>Your location</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FCA5A5', border: '2px solid #DC2626' }} />
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>4 competitors within 500m</span>
+        </div>
+      </div>
+      <div style={{
+        height: 240, background: '#E8EDF2',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flexDirection: 'column', gap: 10, position: 'relative',
+      }}>
+        {/* Fake map grid */}
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
+          {[0,1,2,3,4].map(i => (
+            <div key={i} style={{ position: 'absolute', left: `${i * 25}%`, top: 0, bottom: 0, width: 1, background: '#CBD5E1' }} />
+          ))}
+          {[0,1,2,3,4].map(i => (
+            <div key={i} style={{ position: 'absolute', top: `${i * 25}%`, left: 0, right: 0, height: 1, background: '#CBD5E1' }} />
+          ))}
+        </div>
+        {/* Centre pin */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ width: 18, height: 18, borderRadius: '50%', background: S.brand, border: '3px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }} />
+        </div>
+        {/* Radius circle hint */}
+        <div style={{
+          position: 'absolute', width: 120, height: 120, borderRadius: '50%',
+          border: `1.5px dashed ${S.brand}`, opacity: 0.4,
+          top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        }} />
+        {/* Competitor dots */}
+        {[
+          { top: '28%', left: '38%' }, { top: '55%', left: '62%' },
+          { top: '40%', left: '58%' }, { top: '65%', left: '44%' },
+        ].map((pos, i) => (
+          <div key={i} style={{
+            position: 'absolute', width: 12, height: 12, borderRadius: '50%',
+            background: '#FCA5A5', border: '2px solid #DC2626',
+            top: pos.top, left: pos.left, zIndex: 2,
+          }} />
+        ))}
+        <div style={{
+          position: 'absolute', bottom: 10, right: 10, zIndex: 3,
+          background: 'rgba(255,255,255,0.9)', borderRadius: 8,
+          padding: '6px 10px', fontSize: 11, color: S.n700, fontWeight: 600,
+        }}>
+          Live map in full report
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function SampleReportClient() {
+  const [activeTab, setActiveTab] = useState('overview')
+
+  return (
+    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
+
+      {/* Sample banner */}
+      <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+          This is a sample report for a fictional address. Every real report is generated live from your address.{' '}
+          <Link href="/onboarding" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
+            Run yours free →
+          </Link>
+        </p>
+      </div>
+
+      {/* Dark header */}
+      <div style={{ background: S.headerBg, borderBottom: '1px solid #1F2937' }}>
+
+        {/* Nav */}
+        <nav style={{ padding: '0 24px', height: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1F2937' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
+              <div style={{ width: 26, height: 26, borderRadius: 7, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}>L</div>
+              <span style={{ fontWeight: 800, fontSize: 14, color: '#fff', letterSpacing: '-0.02em' }}>Locatalyze</span>
+            </Link>
+            <span style={{ color: '#374151' }}>›</span>
+            <span style={{ fontSize: 12, color: '#6B7280' }}>Sample Report</span>
+          </div>
+          <Link href="/onboarding" style={{ background: S.brand, color: '#fff', borderRadius: 8, padding: '7px 16px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+            Run my report free →
+          </Link>
+        </nav>
+
+        {/* Verdict hero */}
+        <div style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start', marginBottom: 24 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Sample report</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: S.mono }}>214 Oxford Street, Leederville WA 6007</span>
+              </div>
+              <h1 style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
+                Specialty Café
+              </h1>
+              {/* Verdict badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(5,150,105,0.15)', border: '1.5px solid rgba(5,150,105,0.4)', borderRadius: 8, padding: '8px 16px', marginBottom: 16 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: S.emerald, boxShadow: `0 0 8px ${S.emerald}` }} />
+                <span style={{ fontSize: 14, fontWeight: 900, color: S.emerald, letterSpacing: '0.06em' }}>GO</span>
+                <span style={{ width: 1, height: 14, background: 'rgba(5,150,105,0.3)' }} />
+                <span style={{ fontSize: 11, color: 'rgba(5,150,105,0.7)', fontWeight: 600 }}>LOW RISK</span>
+              </div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 480 }}>
+                Leederville's Oxford Street is one of Perth's strongest café corridors. The rent-to-revenue ratio of 8.4% is well within the healthy range, foot traffic density is high, and competition is manageable. The demographic profile — median income $96,000, age skew 25–44 — aligns closely with consistent specialty coffee spend.
+              </p>
+            </div>
+            {/* Score ring */}
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ position: 'relative', width: 90, height: 90 }}>
+                <svg width="90" height="90" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
+                  <circle cx="45" cy="45" r="36" fill="none" stroke={S.emerald} strokeWidth="8" strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 36}`}
+                    strokeDashoffset={`${2 * Math.PI * 36 * (1 - 84 / 100)}`}
+                  />
+                </svg>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 22, fontWeight: 900, color: S.emerald, lineHeight: 1, fontFamily: S.mono }}>84</span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>/100</span>
+                </div>
+              </div>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Score</p>
+            </div>
+          </div>
+
+          {/* Key metrics strip */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
+            {[
+              { l: 'Monthly Revenue',  v: '$91,200',   s: 'estimated' },
+              { l: 'Net Profit / Mo',  v: '$18,400',   s: '20.2% margin' },
+              { l: 'Break-even Daily', v: '38 cust.',  s: 'to cover costs' },
+              { l: 'Payback Period',   v: '8 months',  s: 'from opening' },
+            ].map(m => (
+              <div key={m.l} style={{ padding: '14px 16px', background: '#161D27' }}>
+                <p style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{m.l}</p>
+                <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: S.mono }}>{m.v}</p>
+                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>{m.s}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 32px 80px' }}>
+        <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
+
+          {/* Main content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 10, padding: 4, marginBottom: 14 }}>
+              {['Overview', 'Financials', 'Analysis', 'Projections'].map((t) => {
+                const id = t.toLowerCase()
+                return (
+                  <div key={t} onClick={() => setActiveTab(id)}
+                    style={{
+                      flex: 1, padding: '8px 6px', borderRadius: 7,
+                      background: activeTab === id ? S.headerBg : 'transparent',
+                      color: activeTab === id ? '#fff' : S.n500,
+                      fontSize: 12, fontWeight: 700, textAlign: 'center', cursor: 'pointer',
+                      letterSpacing: '-0.01em',
+                    }}>
+                    {t}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Overview tab */}
+            {activeTab === 'overview' && (
+              <>
+                {/* Map + Rent ratio */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  <Card style={{ padding: 16 }}>
+                    <SectionLabel>Location Map</SectionLabel>
+                    <MapPlaceholder />
+                  </Card>
+                  <Card style={{ padding: 16 }}>
+                    <SectionLabel>Rent Analysis</SectionLabel>
+                    {/* Rent ratio panel */}
+                    <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 12, padding: '16px 18px', marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                        <div>
+                          <p style={{ fontSize: 10, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Rent-to-Revenue Ratio</p>
+                          <p style={{ fontSize: 11, color: S.emerald, opacity: 0.75 }}>Benchmark: under 12% healthy</p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: 32, fontWeight: 900, color: S.emerald, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>8.4%</div>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.emerald }} />
+                            <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.06em' }}>HEALTHY</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ height: 7, background: 'rgba(255,255,255,0.5)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: '34%', background: S.emerald, borderRadius: 4, opacity: 0.8 }} />
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                      <Tile label="Monthly Rent" value="$7,600" mono />
+                      <Tile label="Rating" value="Excellent" color={S.emerald} />
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Score breakdown */}
+                <Card>
+                  <SectionLabel>Score Breakdown</SectionLabel>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24, alignItems: 'center' }}>
+                    <div>
+                      <ScoreBar label="Rent Affordability" score={88} weight="30%" />
+                      <ScoreBar label="Profitability"       score={82} weight="25%" />
+                      <ScoreBar label="Competition"         score={79} weight="25%" />
+                      <ScoreBar label="Area Demographics"   score={86} weight="20%" />
+                    </div>
+                    {/* Simple radar placeholder */}
+                    <div style={{ textAlign: 'center' }}>
+                      <svg width="180" height="180" viewBox="0 0 220 220">
+                        {[0.25,0.5,0.75,1].map(l => {
+                          const pts = [0,1,2,3,4].map(i => {
+                            const a = (i/5)*2*Math.PI - Math.PI/2
+                            return `${110+80*l*Math.cos(a)},${110+80*l*Math.sin(a)}`
+                          }).join(' ')
+                          return <polygon key={l} points={pts} fill="none" stroke="#E7E5E4" strokeWidth="1" />
+                        })}
+                        {[0,1,2,3,4].map(i => {
+                          const a = (i/5)*2*Math.PI - Math.PI/2
+                          return <line key={i} x1={110} y1={110} x2={110+80*Math.cos(a)} y2={110+80*Math.sin(a)} stroke="#E7E5E4" strokeWidth="1" />
+                        })}
+                        {(() => {
+                          const scores = [88,82,79,86,80]
+                          const pts = scores.map((s,i) => {
+                            const a = (i/5)*2*Math.PI - Math.PI/2
+                            const v = s/100
+                            return `${110+80*v*Math.cos(a)},${110+80*v*Math.sin(a)}`
+                          }).join(' ')
+                          return <polygon points={pts} fill={S.emerald} fillOpacity="0.12" stroke={S.emerald} strokeWidth="2" strokeLinejoin="round" />
+                        })()}
+                      </svg>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Competition + Demographics */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  <Card style={{ marginBottom: 0 }}>
+                    <SectionLabel>Competition</SectionLabel>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                      <div style={{ flex: 1, background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}`, textAlign: 'center' }}>
+                        <p style={{ fontSize: 24, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>4</p>
+                        <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>within 500m</p>
+                      </div>
+                      <div style={{ flex: 1, background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}`, textAlign: 'center' }}>
+                        <p style={{ fontSize: 14, fontWeight: 900, color: S.amber }}>MEDIUM</p>
+                        <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>intensity</p>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>Four café operators within 500m is manageable for a specialty concept with clear positioning. Two of the four score below 4.0 on Google Maps — indicating an unmet quality ceiling in the precinct.</p>
+                  </Card>
+
+                  <Card style={{ marginBottom: 0 }}>
+                    <SectionLabel>Area Demographics</SectionLabel>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                      <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
+                        <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Median Income</p>
+                        <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, fontFamily: S.mono }}>$96,000<span style={{ fontSize: 10, fontWeight: 500, color: S.n400, fontFamily: S.font }}>/yr</span></p>
+                      </div>
+                      <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
+                        <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Affordability</p>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald }}>HIGH</p>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>Leederville's median household income of $96,000 is 21% above the Perth metro average. The 25–44 age cohort represents 48% of the residential population.</p>
+                  </Card>
+                </div>
+
+                {/* SWOT */}
+                <Card>
+                  <SectionLabel>SWOT Analysis</SectionLabel>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    {[
+                      { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 8.4% — well below the 12% danger threshold', 'Demographics align strongly: 25–44, $96K median income'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
+                      { key: 'Weaknesses', items: ['4 existing café competitors require clear positioning', 'Parking on Oxford Street is limited', 'Weekend foot traffic lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
+                      { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Apartment development expanding catchment', 'Wholesale supply to nearby offices is adjacent revenue'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
+                      { key: 'Threats', items: ['Rent review clause could push costs above 12% at renewal', 'New entrant risk if concept succeeds', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
+                    ].map(s => (
+                      <div key={s.key} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: '13px 15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+                          <div style={{ width: 5, height: 5, borderRadius: '50%', background: s.dot }} />
+                          <p style={{ fontSize: 10, fontWeight: 800, color: s.color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.key}</p>
+                        </div>
+                        {s.items.map((item, i) => (
+                          <p key={i} style={{ fontSize: 11, color: s.color, opacity: 0.85, lineHeight: 1.6, marginBottom: i < s.items.length - 1 ? 5 : 0 }}>· {item}</p>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </>
+            )}
+
+            {/* Financials tab */}
+            {activeTab === 'financials' && <>
+              <Card>
+                <SectionLabel>Monthly P&L</SectionLabel>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
+                  <Tile label="Revenue"         value="$91,200"  sub="estimated monthly" mono />
+                  <Tile label="Operating Costs" value="$72,800"  color={S.red}     sub="rent + labour + COGS" mono />
+                  <Tile label="Gross Profit"    value="$56,544"  color={S.blue}    sub="62% gross margin" mono />
+                  <Tile label="Net Profit"      value="$18,400"  color={S.emerald} sub="20.2% net margin" mono />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 }}>
+                  <Tile label="Monthly Rent"    value="$7,600"   mono />
+                  <Tile label="Rent-to-Revenue" value="8.4%"     color={S.emerald} />
+                  <Tile label="Payback Period"  value="8 months" color={S.brand} />
+                </div>
+                <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 12 }}>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 240 daily customers at $13 average spend over 26 trading days, monthly revenue of $91,200 gives a rent-to-revenue ratio of 8.4% — well inside the healthy threshold. The model assumes standard hospitality COGS of 38% and labour at 35% of revenue.</p>
+                </div>
+              </Card>
+              <Card>
+                <SectionLabel>Break-even Analysis</SectionLabel>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
+                  <Tile label="Break-even / Day"   value="38 cust."   mono />
+                  <Tile label="Modelled / Day"     value="240 cust."  color={S.emerald} mono />
+                  <Tile label="Surplus"            value="+202 cust." color={S.emerald} mono />
+                </div>
+                <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 16px' }}>
+                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>The modelled daily customer count of 240 is 6.3× the break-even threshold of 38. Even at 50% of projected demand (120 customers/day), the location remains comfortably above break-even. This gives significant downside protection in the ramp-up period.</p>
+                </div>
+              </Card>
+              <Card>
+                <SectionLabel>Risk Scenarios</SectionLabel>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                  {[
+                    { label: 'Best Case',  pct: '130% demand', rev: '$118,560', profit: '$31,760', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
+                    { label: 'Base Case', pct: '100% demand', rev: '$91,200',  profit: '$18,400', bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
+                    { label: 'Worst Case', pct: '70% demand',  rev: '$63,840',  profit: '$4,240',  bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
+                  ].map(sc => (
+                    <div key={sc.label} style={{ background: sc.bg, border: `1px solid ${sc.border}`, borderRadius: 10, padding: '14px 15px' }}>
+                      <p style={{ fontSize: 9, fontWeight: 800, color: sc.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>{sc.label}</p>
+                      <p style={{ fontSize: 10, color: sc.color, opacity: 0.7, marginBottom: 8 }}>{sc.pct}</p>
+                      <p style={{ fontSize: 9, color: sc.color, opacity: 0.6, marginBottom: 2 }}>Revenue</p>
+                      <p style={{ fontSize: 15, fontWeight: 900, color: sc.color, marginBottom: 6, fontFamily: S.mono }}>{sc.rev}</p>
+                      <p style={{ fontSize: 9, color: sc.color, opacity: 0.6, marginBottom: 2 }}>Net Profit</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: sc.color, fontFamily: S.mono }}>{sc.profit}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </>}
+
+            {/* Analysis tab */}
+            {activeTab === 'analysis' && <>
+              {[
+                { title: 'Recommendation', content: 'Oxford Street Leederville is a strong location for a specialty café. The rent-to-revenue ratio of 8.4% is the healthiest in this analysis — it gives significant headroom if revenue tracks below projection in the first 6 months. The demographic profile (25–44, $96K median income) is the primary specialty coffee cohort. Proceed with lease negotiation. Push for a 5-year term with CPI-capped annual rent reviews and a 12-month break clause at month 24.' },
+                { title: 'Competitor Analysis', content: 'Four café operators within 500m is manageable for a specialty concept with a clear point of difference. The existing operators are predominantly mid-market — The Grind Co. and Blend & Co. both have Google ratings under 4.0 and are not competing on coffee quality. A specialty roaster-focused concept at the premium end ($6.50+ flat white) has clear market differentiation. The risk is a fifth entrant validating the market — a 5-year lease locks your position.' },
+                { title: 'Rent Analysis', content: 'The submitted rent of $7,600/month represents 8.4% of projected monthly revenue. This is the best-case scenario for an inner Perth café location — Oxford Street commands higher rents than comparable Perth strips but the foot traffic density justifies it. At lease renewal, push to cap rent increases at CPI rather than market review — the latter could push rent above 12% if the precinct continues to gentrify.' },
+                { title: 'Market Demand', content: 'Leederville\'s daytime population exceeds its residential population by approximately 40% on weekdays — office workers, students from nearby institutions, and workers from the nearby hospital cluster create a dense daytime customer pool. Saturday morning foot traffic on Oxford Street is among the strongest of any Perth inner suburb. The 25–44 demographic skew is ideal: this cohort has the disposable income for daily coffee habits and is least likely to defect to home brewing.' },
+              ].map(s => (
+                <Card key={s.title}>
+                  <SectionLabel>{s.title}</SectionLabel>
+                  <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.85 }}>{s.content}</p>
+                </Card>
+              ))}
+            </>}
+
+            {/* Projections tab */}
+            {activeTab === 'projections' && <>
+              <Card>
+                <SectionLabel>3-Year Financial Projection</SectionLabel>
+                <div style={{ overflowX: 'auto', marginBottom: 16 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ borderBottom: `2px solid ${S.n100}` }}>
+                        {['Metric', 'Year 1', 'Year 2', 'Year 3'].map((h, i) => (
+                          <th key={h} style={{ textAlign: i === 0 ? 'left' : 'right', padding: '8px 0', fontSize: 10, fontWeight: 800, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { label: 'Revenue',    y1: '$1,094,400', y2: '$1,203,840', y3: '$1,324,224', color: S.n800 },
+                        { label: 'Costs',      y1: '$873,600',   y2: '$927,360',   y3: '$983,801',   color: S.red },
+                        { label: 'Net Profit', y1: '$220,800',   y2: '$276,480',   y3: '$340,423',   color: S.emerald },
+                        { label: 'Margin',     y1: '20.2%',      y2: '23.0%',      y3: '25.7%',      color: S.emerald },
+                      ].map(row => (
+                        <tr key={row.label} style={{ borderBottom: `1px solid ${S.n100}` }}>
+                          <td style={{ padding: '11px 0', fontSize: 12, color: S.n500 }}>{row.label}</td>
+                          {[row.y1, row.y2, row.y3].map((v, i) => (
+                            <td key={i} style={{ padding: '11px 0', textAlign: 'right', fontSize: 13, fontWeight: 800, color: row.color, fontFamily: S.mono }}>{v}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px' }}>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>Projections assume 10% annual revenue growth from repeat customer base expansion and menu development. Costs grow at 6.5% annually — lower than revenue growth as fixed costs (rent) are stable on a 5-year lease. Year 3 net profit of $340,423 represents a 54% increase on Year 1, demonstrating the operational leverage of a well-located hospitality business on a fixed-cost lease.</p>
+                </div>
+              </Card>
+              <Card>
+                <SectionLabel>Sensitivity Analysis</SectionLabel>
+                <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px', marginBottom: 12 }}>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Downside scenario — 70% of projected demand</p>
+                  <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.75 }}>At 70% of projected demand (168 customers/day instead of 240), monthly revenue falls to $63,840 and net profit to $4,240. The business remains profitable but has minimal margin. A 6-month cash reserve of $50,000 covers this scenario comfortably.</p>
+                </div>
+                <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 16px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Rent increase scenario — 15% at review</p>
+                  <p style={{ fontSize: 13, color: '#065F46', lineHeight: 1.75 }}>If rent increases 15% at the 3-year review (from $7,600 to $8,740), the rent-to-revenue ratio rises to 9.6% on Year 1 revenue — still healthy. On Year 3 revenue, it falls to 7.9%. Negotiate a CPI cap now to prevent this scenario entirely.</p>
+                </div>
+              </Card>
+            </>}
+
+          </div>
+
+          {/* Sidebar */}
+          <aside style={{ width: 240, flexShrink: 0, position: 'sticky', top: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+            {/* Verdict summary */}
+            <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 14, padding: '16px 18px' }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Verdict</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 28, fontWeight: 900, color: S.emerald, lineHeight: 1 }}>84</span>
+                <div>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: S.emerald }}>GO</p>
+                  <p style={{ fontSize: 11, color: S.n500 }}>out of 100</p>
+                </div>
+              </div>
+              <p style={{ fontSize: 11, color: S.n700, lineHeight: 1.55 }}>Strong location fundamentals. Proceed with lease negotiation — push for a 5-year term with CPI-capped rent reviews and a 12-month break clause.</p>
+            </div>
+
+            {/* Key numbers */}
+            <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '16px 18px' }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
+              {[
+                { label: 'Monthly Revenue',  value: '$91,200',  color: S.n900 },
+                { label: 'Net Profit / Mo',  value: '$18,400',  color: S.emerald },
+                { label: 'Rent-to-Revenue',  value: '8.4%',     color: S.emerald },
+                { label: 'Break-even / Day', value: '38 cust.', color: S.n900 },
+                { label: 'Payback Period',   value: '8 months', color: S.n900 },
+              ].map(item => (
+                <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
+                  <span style={{ fontSize: 12, color: S.n500 }}>{item.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div style={{ background: S.headerBg, borderRadius: 14, padding: '18px' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB', marginBottom: 8, lineHeight: 1.4 }}>Ready to analyse your address?</p>
+              <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>Your report is generated live from real data. 3 free reports, no credit card.</p>
+              <Link href="/onboarding" style={{ display: 'block', textAlign: 'center', background: S.brand, color: '#fff', borderRadius: 8, padding: '11px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                Run my free report →
+              </Link>
+            </div>
+
+            {/* Data sources */}
+            <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Data sources</p>
+              {['OpenStreetMap · Geoapify', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks', 'REIWA commercial rents'].map(src => (
+                <p key={src} style={{ fontSize: 11, color: S.n500, padding: '4px 0', borderBottom: `1px solid ${S.n100}` }}>{src}</p>
+              ))}
+            </div>
+
+          </aside>
+        </div>
+
+        {/* Bottom CTA */}
+        <div style={{ background: `linear-gradient(135deg, #064E3B, ${S.brand})`, borderRadius: 20, padding: '44px 40px', textAlign: 'center', marginTop: 32 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(167,243,208,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Your address. Your numbers.</p>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F0FDF4', letterSpacing: '-0.03em', marginBottom: 10, lineHeight: 1.2 }}>This is what your report will look like</h2>
+          <p style={{ fontSize: 15, color: 'rgba(167,243,208,0.65)', maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.75 }}>
+            Paste any Australian address. Choose your business type. Get a full GO/CAUTION/NO verdict with competitor map, financial model and 3-year projection in 60 seconds.
+          </p>
+          <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
+            Run my free analysis →
+          </Link>
+          <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · 3 reports · 60 seconds</p>
+        </div>
+      </div>
+    </div>
+  )
+}

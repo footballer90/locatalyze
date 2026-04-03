@@ -1,0 +1,228 @@
+{
+  "success": true,
+  "reportId": "loc_20260325_143201_xk7pq",
+  "mode": "light",
+  "verdict": "caution",
+  "score": 62,
+  "execution_ms": 38400,
+  "agent_status": {
+    "a1": "ok",
+    "a2": "ok",
+    "a3": "ok",
+    "a4": "skipped",
+    "a5": "ok",
+    "a6": "skipped",
+    "a7": "skipped",
+    "a8": "skipped"
+  },
+  "report": {
+    "meta": {
+      "report_id": "loc_20260325_143201_xk7pq",
+      "generated_at": "2026-03-25T14:32:01.000Z",
+      "mode": "light",
+      "business_type": "Caf\u00e9",
+      "industry_category": "Food & Beverage",
+      "location": {
+        "locality": "Fitzroy",
+        "area": "Smith Street",
+        "city": "Melbourne",
+        "country": "Australia"
+      },
+      "input_data": {
+        "business_type": "Caf\u00e9",
+        "city": "Melbourne",
+        "area": "Smith Street",
+        "locality": "Fitzroy",
+        "currency": "A$",
+        "setup_budget": "120000",
+        "monthly_rent_budget_max": "5000",
+        "avg_ticket_min": "8",
+        "avg_ticket_max": "22",
+        "target_customer_segments": [
+          "Gen Z",
+          "Millennials",
+          "Work-from-home professionals"
+        ]
+      }
+    },
+    "scores": {
+      "overall": 62,
+      "verdict": "caution",
+      "competition_viability": 42,
+      "market_demand": 74,
+      "profitability": 65,
+      "footfall": null,
+      "demographics": null,
+      "benchmark": null,
+      "economic_health": null,
+      "cost_feasibility": null
+    },
+    "confidence": {
+      "rent": "high",
+      "footfall": "low",
+      "overall_data_quality": "low",
+      "_note": "Light mode \u2014 A4/A6/A7/A8 skipped. Run full mode for complete confidence."
+    },
+    "real_estate": {
+      "median_rent_monthly": 4800,
+      "median_rent_annual": 57600,
+      "rent_range_monthly": {
+        "min": 3800,
+        "max": 6200
+      },
+      "listings_sampled": 14,
+      "data_quality": "high",
+      "within_budget_count": 7,
+      "rent_viability_score": 80,
+      "top_properties": [
+        {
+          "rank": 1,
+          "address": "242 Smith St Fitzroy",
+          "price_monthly": 4200,
+          "sqm": 85,
+          "within_budget": true,
+          "score": 88,
+          "listing_url": "https://commercialrealestate.com.au/...",
+          "vs_area_median": "12% below median"
+        },
+        {
+          "rank": 2,
+          "address": "178 Smith St Fitzroy",
+          "price_monthly": 4750,
+          "sqm": 95,
+          "within_budget": true,
+          "score": 79,
+          "listing_url": "https://realestate.com.au/...",
+          "vs_area_median": "at median"
+        },
+        {
+          "rank": 3,
+          "address": "310 Brunswick St Fitzroy",
+          "price_monthly": 5100,
+          "sqm": 110,
+          "within_budget": false,
+          "score": 71,
+          "listing_url": null,
+          "vs_area_median": "6% above median"
+        }
+      ],
+      "area_context": {
+        "food_retail_pois": 42,
+        "transit_stops": 6,
+        "major_supermarkets": 1,
+        "footfall_signal": "High",
+        "road_type": "Main Road",
+        "commercial_zoning": "Commercial 1"
+      }
+    },
+    "market": {
+      "saturation_level": "High",
+      "total_competitors_found": 28,
+      "competitors_within_500m": 11,
+      "competitors_within_1500m": 17,
+      "opportunity_gaps": [
+        "Specialty single-origin pour-over",
+        "Allergen-free menu focus",
+        "Late-night caf\u00e9 (after 8pm)"
+      ],
+      "differentiation_suggestions": [
+        "Target WFH professionals with reliable WiFi + power points",
+        "Allergen-free / vegan-first menu"
+      ],
+      "demand_trend": "Growing",
+      "best_entry_timing": "Q3 2026 (post-winter)",
+      "top_opportunities": [
+        "Inner-city density supports caf\u00e9 culture",
+        "Growing tourism in Fitzroy corridor"
+      ],
+      "top_risks": [
+        "High competition density",
+        "Rising commercial rents in Smith St precinct"
+      ]
+    },
+    "financials": {
+      "revenue_monthly": {
+        "min": 28000,
+        "base": 38500,
+        "max": 52000
+      },
+      "revenue_annual_base": 462000,
+      "monthly_opex": null,
+      "setup_cost": {
+        "min": null,
+        "recommended": null,
+        "max": null
+      },
+      "setup_budget_user": 120000,
+      "budget_gap": null,
+      "net_profit_monthly_base": null,
+      "profit_margin_base_pct": null,
+      "break_even_months": 14,
+      "break_even_daily_customers": 42,
+      "_note": "Cost agent (A4) skipped in light mode. Upgrade to full mode for P&L breakdown."
+    },
+    "rankings": {
+      "top_competitors": [
+        {
+          "name": "Seven Seeds",
+          "competitor_type": "Specialty Caf\u00e9",
+          "within_500m": true,
+          "rating": 4.7,
+          "review_count": 1840,
+          "estimated_pricing": "$$"
+        },
+        {
+          "name": "Proud Mary Coffee",
+          "competitor_type": "Specialty Caf\u00e9",
+          "within_500m": true,
+          "rating": 4.6,
+          "review_count": 2140,
+          "estimated_pricing": "$$"
+        },
+        {
+          "name": "Industry Beans Fitzroy",
+          "competitor_type": "Specialty Caf\u00e9",
+          "within_500m": false,
+          "rating": 4.5,
+          "review_count": 980,
+          "estimated_pricing": "$$$"
+        }
+      ],
+      "top_properties": []
+    },
+    "risks": [
+      {
+        "risk": "competition_density",
+        "severity": "high",
+        "value": 58,
+        "source": "A1"
+      },
+      {
+        "risk": "footfall_conflict",
+        "severity": "medium",
+        "value": null,
+        "source": "A2",
+        "_note": "Only A2 data available in light mode"
+      }
+    ],
+    "flags": [
+      "light_mode_partial_data",
+      "a4_cost_skipped",
+      "a6_demographics_skipped",
+      "a7_benchmark_skipped",
+      "a8_economy_skipped"
+    ],
+    "assumptions": {
+      "mode": "light",
+      "skipped_agents": [
+        "A4 \u2013 Cost Projection",
+        "A6 \u2013 Demographics",
+        "A7 \u2013 Industry Benchmarks",
+        "A8 \u2013 Economic Context"
+      ],
+      "revenue_source": "A5 AI projection based on competitor pricing + capacity",
+      "footfall_score": "Derived from A2 POI/transit data only (no A6 census data)",
+      "note": "Upgrade to full mode for: cost breakdown, ATO benchmarks, RBA economic context, and ABS demographic analysis"
+    }
+  }
+}

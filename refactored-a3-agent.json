@@ -1,0 +1,775 @@
+{
+  "name": "Locatalyze v2 \u2013 A3 Market Growth & Demand",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a3-market",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "53b50b48-7a9d-4e0a-9b7c-db8c4e9f5937",
+      "name": "Webhook \u2013 Receive Inputs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        4096,
+        640
+      ],
+      "webhookId": "locatalyze-a3-market-agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "business_type",
+              "value": "={{ $json.body.business_type }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "industry_category",
+              "value": "={{ $json.body.industry_category }}",
+              "type": "string"
+            },
+            {
+              "id": "p3",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p4",
+              "name": "area",
+              "value": "={{ $json.body.area }}",
+              "type": "string"
+            },
+            {
+              "id": "p5",
+              "name": "locality",
+              "value": "={{ $json.body.locality }}",
+              "type": "string"
+            },
+            {
+              "id": "p6",
+              "name": "country",
+              "value": "={{ $json.body.country ?? 'Australia' }}",
+              "type": "string"
+            },
+            {
+              "id": "p7",
+              "name": "target_customer_segments",
+              "value": "={{ JSON.stringify($json.body.target_customer_segments ?? []) }}",
+              "type": "string"
+            },
+            {
+              "id": "p8",
+              "name": "business_stage",
+              "value": "={{ $json.body.business_stage ?? 'pre-launch' }}",
+              "type": "string"
+            },
+            {
+              "id": "p9",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "p10",
+              "name": "a1_competitor_data",
+              "value": "={{ JSON.stringify($json.body.a1_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p11",
+              "name": "a2_rent_data",
+              "value": "={{ JSON.stringify($json.body.a2_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p12",
+              "name": "serp_query_news",
+              "value": "={{ $json.body.industry_category + ' market growth demand ' + $json.body.city + ' ' + $json.body.area + ' 2024 2025' }}",
+              "type": "string"
+            },
+            {
+              "id": "p13",
+              "name": "serp_query_trends",
+              "value": "={{ $json.body.industry_category + ' consumer demand trend Australia 2025 ' + $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p14",
+              "name": "serp_query_google_trends",
+              "value": "={{ $json.body.industry_category + ' ' + $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p15",
+              "name": "maps_query_competitors",
+              "value": "={{ $json.body.industry_category + ' near ' + $json.body.locality + ' ' + $json.body.area + ' ' + $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p16",
+              "name": "gl_code",
+              "value": "={{ $json.body.country === 'Australia' ? 'au' : $json.body.country === 'UK' ? 'gb' : 'au' }}",
+              "type": "string"
+            },
+            {
+              "id": "p17",
+              "name": "trends_geo",
+              "value": "={{ $json.body.country === 'Australia' ? 'AU' : $json.body.country === 'UK' ? 'GB' : 'AU' }}",
+              "type": "string"
+            },
+            {
+              "id": "p18",
+              "name": "abs_series_key",
+              "value": "={{ ({'Food & Beverage':'1.20.4.20.Q','Cafe':'1.20.4.20.Q','Restaurant':'1.20.4.20.Q','Retail':'1.1.4.20.Q','Clothing':'1.5.4.20.Q','Pharmacy':'1.8.4.20.Q','Gym':'1.1.4.20.Q','Fitness':'1.1.4.20.Q','Salon':'1.1.4.20.Q','Beauty':'1.1.4.20.Q'}[$json.body.industry_category] || '1.20.4.20.Q') }}",
+              "type": "string"
+            },
+            {
+              "id": "p19",
+              "name": "serp_query_fallback",
+              "value": "={{ $json.body.business_type + ' cafe business opening ' + $json.body.area + ' ' + $json.body.city + ' Australia' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "708a7d03-642c-4471-8a88-1a85fdb54dde",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4336,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.serp_query_news }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $json.gl_code }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "74f435ef-d0e8-4bb1-97d6-83c87e62982c",
+      "name": "SerpApi \u2013 Market News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        192
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_trends }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $('Parse & Validate Inputs').item.json.gl_code }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "a70d23a8-f2a2-4881-962d-c602df2aea32",
+      "name": "SerpApi \u2013 Industry Trends",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        384
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_trends"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_google_trends }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "date",
+              "value": "today 12-m"
+            },
+            {
+              "name": "geo",
+              "value": "={{ $('Parse & Validate Inputs').item.json.trends_geo }}"
+            },
+            {
+              "name": "data_type",
+              "value": "TIMESERIES"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "3f21abc1-ff49-4761-ae35-56f4289ee4be",
+      "name": "SerpApi \u2013 Google Trends",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        576
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/place/textsearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $('Parse & Validate Inputs').item.json.maps_query_competitors }}"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94"
+            },
+            {
+              "name": "radius",
+              "value": "1000"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "c2df375f-2218-478b-bfc6-53681e5a8d90",
+      "name": "Google Maps \u2013 Business Density",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        768
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://data.api.abs.gov.au/rest/data/ABS,RT,1.0.0/{{ $('Parse & Validate Inputs').item.json.abs_series_key }}/all?format=jsondata&detail=dataonly&lastNObservations=8",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "67c6a923-3bff-45ba-aef7-ad267f478023",
+      "name": "ABS \u2013 Retail Trade Live",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        960
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_fallback }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $('Parse & Validate Inputs').item.json.gl_code }}"
+            },
+            {
+              "name": "tbs",
+              "value": "qdr:y"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "84bbeceb-67f7-4795-af56-016022e1c650",
+      "name": "SerpApi \u2013 Local Business News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        1152
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "id": "d8a3c545-dccb-4be9-bf9a-1780a92d6ff1",
+      "name": "Merge All Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4832,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all = $input.all();\nconst inputs = $('Parse & Validate Inputs').item.json;\n\nlet serpResults = [];\nlet googleTrendsData = null;\nlet mapsData = [];\nlet absRawData = null;\n\nfor (const item of all) {\n  const j = item.json;\n  if (!j) continue;\n  if (j?.data?.dataSets || j?.structure?.dimensions) { absRawData = j; continue; }\n  if (j?.results && Array.isArray(j.results) && j.results[0]?.place_id !== undefined) { mapsData = j.results; continue; }\n  if (j?.interest_over_time) { googleTrendsData = j.interest_over_time; continue; }\n  if (j?.organic_results && Array.isArray(j.organic_results)) {\n    serpResults = serpResults.concat(j.organic_results);\n  }\n}\n\nconst seenTitles = new Set();\nconst allArticles = serpResults.filter(r => {\n  const t = (r.title || '').toLowerCase().trim();\n  if (seenTitles.has(t)) return false;\n  seenTitles.add(t);\n  return true;\n}).slice(0, 12);\n\nlet absRetailData = null;\nlet absRetailTrend = 'Unknown';\nlet absRetailLabel = 'ABS data unavailable';\nlet absDataSource  = 'Not fetched';\nlet absMomChange   = null;\nlet absYoyChange   = null;\n\nif (absRawData) {\n  try {\n    const datasets = absRawData?.data?.dataSets || [];\n    const seriesObj = datasets?.[0]?.series || {};\n    const seriesKeys = Object.keys(seriesObj);\n    if (seriesKeys.length > 0) {\n      const obs = seriesObj[seriesKeys[0]]?.observations || {};\n      const values = Object.entries(obs)\n        .sort((a,b) => parseInt(a[0]) - parseInt(b[0]))\n        .map(([,v]) => parseFloat(Array.isArray(v) ? v[0] : v))\n        .filter(v => !isNaN(v) && v > 0);\n      if (values.length >= 2) {\n        const latest  = values[values.length - 1];\n        const prev    = values[values.length - 2];\n        const yoyBase = values.length >= 5 ? values[values.length - 5] : null;\n        absMomChange  = parseFloat(((latest - prev) / prev * 100).toFixed(1));\n        absYoyChange  = yoyBase ? parseFloat(((latest - yoyBase) / yoyBase * 100).toFixed(1)) : null;\n        absRetailData = { latest_value: Math.round(latest), prev_value: Math.round(prev), mom_change_pct: absMomChange, yoy_change_pct: absYoyChange, series_points: values.length, series_key: inputs.abs_series_key, unit: 'A$m (seasonally adjusted turnover)' };\n        absRetailTrend = absYoyChange === null ? 'Unknown' : absYoyChange > 5 ? 'Strong Growth' : absYoyChange > 2 ? 'Moderate Growth' : absYoyChange > 0 ? 'Slight Growth' : absYoyChange > -2 ? 'Flat' : absYoyChange > -5 ? 'Slight Decline' : 'Declining';\n        const qStr = absMomChange > 0 ? `+${absMomChange}%` : `${absMomChange}%`;\n        const yoyStr = absYoyChange !== null ? (absYoyChange > 0 ? `+${absYoyChange}%` : `${absYoyChange}%`) + ' YoY' : 'YoY N/A';\n        absRetailLabel = `ABS Retail Trade RT (live, seasonally adjusted): ${qStr} QoQ, ${yoyStr} \u2014 Trend: ${absRetailTrend}`;\n        absDataSource  = `ABS Retail Trade API \u2014 Series ${inputs.abs_series_key} \u2014 Cafes, Restaurants & Takeaway (ANZSIC 451+452, Australia, SA)`;\n      } else {\n        absRetailLabel = `ABS API responded but insufficient data points (${values.length} found, need 2+)`;\n        absDataSource  = 'ABS RT API \u2014 partial data';\n      }\n    } else {\n      absRetailLabel = 'ABS RT API returned empty series object \u2014 series key may be invalid';\n      absDataSource  = 'ABS RT API \u2014 empty';\n    }\n  } catch(e) {\n    absRetailLabel = 'ABS parse error: ' + e.message;\n    absDataSource  = 'ABS RT API \u2014 parse error';\n  }\n}\n\nlet a1 = {};\ntry { a1 = (JSON.parse(inputs.a1_competitor_data || '{}')).outputs || {}; } catch(e) {}\nlet a2 = {};\ntry { a2 = (JSON.parse(inputs.a2_rent_data || '{}')).outputs || {}; } catch(e) {}\nlet targetSegments = [];\ntry { targetSegments = JSON.parse(inputs.target_customer_segments || '[]'); } catch(e) {}\n\nconst competitorBusinesses = mapsData.slice(0, 15).map(p => ({ name: p.name, type: (p.types || []).slice(0, 3).join(', '), rating: p.rating ?? 'N/A', reviews: p.user_ratings_total ?? 0, address: p.formatted_address, place_id: p.place_id }));\nconst totalCompetitors = competitorBusinesses.length;\nconst ratedCompetitors = competitorBusinesses.filter(b => typeof b.rating === 'number');\nconst avgRating = ratedCompetitors.length > 0 ? (ratedCompetitors.reduce((s,b) => s + b.rating, 0) / ratedCompetitors.length).toFixed(1) : 'N/A';\nconst totalReviews = competitorBusinesses.reduce((s,b) => s + (b.reviews || 0), 0);\nconst highRatedCount = ratedCompetitors.filter(b => b.rating >= 4.4).length;\n\nlet trendDirection = 'Unknown', trendAvgRecent = null, trendAvgOld = null;\nif (googleTrendsData?.timeline_data) {\n  const values = googleTrendsData.timeline_data.map(t => t.values?.[0]?.extracted_value || 0).filter(v => v > 0);\n  if (values.length >= 4) {\n    const mid = Math.floor(values.length / 2);\n    trendAvgOld    = Math.round(values.slice(0, mid).reduce((a,b) => a+b,0) / mid);\n    trendAvgRecent = Math.round(values.slice(mid).reduce((a,b) => a+b,0) / (values.length - mid));\n    trendDirection = trendAvgRecent > trendAvgOld * 1.1 ? 'Rising' : trendAvgRecent < trendAvgOld * 0.9 ? 'Falling' : 'Stable';\n  }\n}\n\nconst articleSummaries = allArticles.slice(0, 10).map(r => ({ title: r.title || '', snippet: (r.snippet || '').slice(0, 200), source: r.displayed_link || '', link: r.link || '' }));\nconst articleText = articleSummaries.length > 0 ? articleSummaries.map((a,i) => `${i+1}. ${a.title}\\n   ${a.snippet}\\n   Source: ${a.source}`).join('\\n\\n') : 'No articles found.';\nconst trendsContext = googleTrendsData ? `Google Trends (12m, ${inputs.country}): Direction=${trendDirection}, Recent avg=${trendAvgRecent}, Older avg=${trendAvgOld}` : 'Google Trends: No data returned';\nconst mapsContext = `${totalCompetitors} similar businesses found within 1km.\\nAvg rating: ${avgRating}. Total reviews: ${totalReviews}. High-rated (\u22654.4): ${highRatedCount}.\\n` + competitorBusinesses.slice(0, 10).map((b,i) => `${i+1}. ${b.name} (${b.type}) \u2014 Rating: ${b.rating}, Reviews: ${b.reviews}`).join('\\n');\nconst a1Context = Object.keys(a1).length > 0 ? `Density Score: ${a1.competitor_density_score||'N/A'} | Saturation: ${a1.saturation_level||'N/A'}\\nOpportunity Gaps: ${(a1.opportunity_gaps||[]).join('; ')}\\nWithin 500m: ${a1.competitors_within_500m??'N/A'} competitors\\nLocality: ${a1.locality_context||'N/A'}` : 'No A1 competitor data provided.';\nconst a2Context = Object.keys(a2).length > 0 ? `Rent Feasibility: ${a2.rent_feasibility_score||'N/A'}/100 | Range: ${a2.rent_range_actual?.min}\u2013${a2.rent_range_actual?.max}\\nAnchor Businesses: ${(a2.anchor_businesses_nearby||[]).map(b=>b.name).join(', ')}\\nTransport: ${a2.transport_access_score||'N/A'}/10 | Verdict: ${a2.overall_location_verdict||'N/A'}` : 'No A2 rent data provided.';\n\nreturn [{ json: { business_type: inputs.business_type, industry_category: inputs.industry_category, city: inputs.city, area: inputs.area, locality: inputs.locality, country: inputs.country, business_stage: inputs.business_stage, target_customer_segments: targetSegments, email: inputs.email, abs_retail_data: absRetailData, abs_retail_trend: absRetailTrend, abs_retail_label: absRetailLabel, abs_data_source: absDataSource, abs_mom_change: absMomChange, abs_yoy_change: absYoyChange, competitor_businesses: competitorBusinesses, total_competitors_1km: totalCompetitors, avg_competitor_rating: avgRating, high_rated_count: highRatedCount, total_reviews: totalReviews, trends_direction: trendDirection, trends_recent_avg: trendAvgRecent, trends_older_avg: trendAvgOld, article_summaries: articleSummaries, article_text: articleText, trends_context: trendsContext, maps_context: mapsContext, a1_context: a1Context, a2_context: a2Context, segments_text: targetSegments.length > 0 ? targetSegments.join(', ') : 'General consumers', data_sources: { news_articles: serpResults.filter(r => !r.organic_results).length, total_articles_deduped: allArticles.length, google_trends: googleTrendsData ? 'Available' : 'Unavailable', maps_competitors: totalCompetitors, abs_retail_trade: absDataSource } }}];"
+      },
+      "id": "d1e6f17d-f7d4-41ba-93bc-01a539d0f6a3",
+      "name": "Process & Merge All Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5072,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n'Produce a master business viability assessment for a new ' + $json.business_type + ' (' + $json.industry_category + ') at ' + $json.locality + ', ' + $json.area + ', ' + $json.city + '.\\n\\n' +\n'BUSINESS STAGE: ' + $json.business_stage + '\\n' +\n'TARGET SEGMENTS: ' + $json.segments_text + '\\n\\n' +\n'\u2500\u2500 ABS RETAIL TRADE (LIVE GOVERNMENT DATA \u2014 CITE THIS) \u2500\u2500\\n' +\n'Source: ' + $json.abs_data_source + '\\n' +\n$json.abs_retail_label + '\\n' +\n($json.abs_yoy_change !== null ? 'YoY change: ' + ($json.abs_yoy_change > 0 ? '+' : '') + $json.abs_yoy_change + '% (ANZSIC 451+452 \u2014 Cafes, Restaurants & Takeaway)\\n' : 'YoY: Not available\\n') +\n($json.abs_mom_change !== null ? 'QoQ change: ' + ($json.abs_mom_change > 0 ? '+' : '') + $json.abs_mom_change + '%\\n' : '') +\n'ABS trend classification: ' + $json.abs_retail_trend + '\\n\\n' +\n'\u2500\u2500 GOOGLE TRENDS (12-month signal) \u2500\u2500\\n' + $json.trends_context + '\\n\\n' +\n'\u2500\u2500 MAPS: COMPETITOR BUSINESS DENSITY (1km radius) \u2500\u2500\\n' + $json.maps_context + '\\n\\n' +\n'\u2500\u2500 RECENT NEWS & INDUSTRY ARTICLES \u2500\u2500\\n' + $json.article_text + '\\n\\n' +\n'\u2500\u2500 A1 COMPETITOR INTELLIGENCE \u2500\u2500\\n' + $json.a1_context + '\\n\\n' +\n'\u2500\u2500 A2 RENT & LOCATION DATA \u2500\u2500\\n' + $json.a2_context + '\\n\\n' +\n'IMPORTANT: If ABS data was unavailable, clearly state this and use Maps density + article sentiment as fallback. Never fabricate ABS figures. CAGR must be grounded in ABS YoY if available, or labelled as estimate if not.'\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Market Growth & Demand Agent \u2014 an expert in Australian retail market analysis.\n\nYou receive ABS Retail Trade live data, Google Trends, Maps business density, SerpApi articles, and A1/A2 agent context.\n\nCRITICAL RULES:\n1. ABS Retail Trade data is live government data \u2014 ALWAYS cite it as 'ABS Retail Trade (live)' and use it as the primary source. If ABS shows declining trend, downgrade market score. If ABS unavailable, explicitly state this.\n2. Google Trends direction (Rising/Stable/Falling) is a secondary signal \u2014 use to corroborate ABS.\n3. Use Maps competitor count and high-rated count to assess market maturity.\n4. All regulatory_flags must be Australian state-specific. Victoria: Food Act 1984, Liquor Control Reform Act 1998. NSW: Food Regulation 2015.\n5. All currency is AUD ($). Never use \u20b9.\n6. CAGR: if ABS YoY available, anchor to it. If not, label estimate clearly as 'Estimated (ABS unavailable)'.\n7. competitor_threat_reasoning must name specific businesses from Maps data.\n8. Never fabricate data. If a data source returned nothing, say so explicitly.\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown fences:\n{\n  \"growth_score\": <0-100>,\n  \"market_maturity_stage\": \"Emerging|Growing|Mature|Declining\",\n  \"demand_trend\": \"Rising|Stable|Falling\",\n  \"demand_trend_reasoning\": \"<2-3 sentences citing ABS and/or Google Trends specifically \u2014 flag if data was unavailable>\",\n  \"abs_data_summary\": {\n    \"source\": \"<cite exactly>\",\n    \"mom_change_pct\": <number or null>,\n    \"yoy_change_pct\": <number or null>,\n    \"trend\": \"<ABS trend classification>\",\n    \"implication\": \"<1 sentence on what this means for this business>\"\n  },\n  \"five_year_forecast\": {\n    \"narrative\": \"<3-4 sentences specific to this Australian city and industry>\",\n    \"estimated_cagr\": \"<e.g. 3-5% p.a. \u2014 based on ABS YoY of X% OR Estimated (ABS unavailable)>\",\n    \"key_growth_drivers\": [\"<driver 1>\", \"<driver 2>\", \"<driver 3>\"]\n  },\n  \"seasonal_demand_patterns\": [\n    {\"period\": \"Nov-Jan\", \"level\": \"Peak|High|Medium|Low\", \"reason\": \"<AU-specific>\"},\n    {\"period\": \"Feb-Apr\", \"level\": \"Peak|High|Medium|Low\", \"reason\": \"<AU-specific>\"},\n    {\"period\": \"May-Aug\", \"level\": \"Peak|High|Medium|Low\", \"reason\": \"<AU-specific>\"},\n    {\"period\": \"Sep-Oct\", \"level\": \"Peak|High|Medium|Low\", \"reason\": \"<AU-specific>\"}\n  ],\n  \"target_customer_segments\": [\n    {\"segment_name\": \"<name>\", \"estimated_size\": \"<N in catchment>\", \"spend_profile\": \"<$X-$Y/visit AUD>\", \"demand_fit\": \"High|Medium|Low\", \"how_to_reach\": \"<tactic>\"}\n  ],\n  \"competitor_threat_level\": \"Low|Medium|High\",\n  \"competitor_threat_reasoning\": \"<name specific businesses>\",\n  \"regulatory_flags\": [\n    {\"license_name\": \"<name>\", \"authority\": \"<body>\", \"mandatory\": true, \"estimated_cost\": \"<$AUD>\", \"processing_time\": \"<days>\", \"notes\": \"<caveat>\"}\n  ],\n  \"market_entry_window\": \"Open|Closing|Closed\",\n  \"best_entry_timing\": \"Immediate|Wait 3-6 months|Wait 6-12 months|Wait 12+ months\",\n  \"entry_timing_reasoning\": \"<cite ABS trend, Google Trends, season, competitor gaps>\",\n  \"opportunity_score\": <0-100>,\n  \"top_opportunities\": [\"<opp 1>\", \"<opp 2>\", \"<opp 3>\"],\n  \"top_risks\": [\"<risk 1>\", \"<risk 2>\", \"<risk 3>\"],\n  \"overall_market_verdict\": \"Strong Opportunity|Moderate Opportunity|Proceed with Caution|Not Recommended\",\n  \"agent_notes\": \"<ABS data quality, Google Trends availability, data sources used, any caveats>\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "2947e3ba-8c1f-4551-a544-a611709ab34b",
+      "name": "AI Agent \u2013 Market Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        5312,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 3000,
+          "temperature": 0.2
+        }
+      },
+      "id": "8e7dc653-9b5f-4bb7-accc-3f56a7ba7db8",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        5312,
+        912
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputJson = $input.first().json;\nconst rawText = inputJson.output || inputJson.text || inputJson.response || JSON.stringify(inputJson);\nlet analysis;\ntry {\n  let cleaned = rawText.trim().replace(/^```json\\s*/i,'').replace(/^```\\s*/i,'').replace(/```\\s*$/i,'').trim();\n  const start = cleaned.indexOf('{'), end = cleaned.lastIndexOf('}');\n  if (start !== -1 && end > start) cleaned = cleaned.slice(start, end + 1);\n  cleaned = cleaned.replace(/(:\\s*)(\\d{1,3}(?:,\\d{3})+)([,\\}\\]\\s\\n])/g,(m,pre,num,post)=>pre+num.replace(/,/g,'')+post);\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error: true, raw_response: rawText.slice(0,800), error_message: e.message };\n}\nconst d = $('Process & Merge All Data').item.json;\nreturn [{ json: { agent_id: 'A3', agent_name: 'Market Growth & Demand (ABS Live)', status: analysis.parse_error ? 'error' : 'success', timestamp: new Date().toISOString(), email: d.email, inputs_used: { location: `${d.locality}, ${d.area}, ${d.city}`, industry: d.industry_category, business_stage: d.business_stage, segments: d.target_customer_segments }, competitor_businesses: d.competitor_businesses, data_sources: { ...d.data_sources, abs_yoy_change: d.abs_yoy_change, abs_mom_change: d.abs_mom_change }, outputs: { growth_score: analysis.growth_score ?? null, market_maturity_stage: analysis.market_maturity_stage || null, demand_trend: analysis.demand_trend || null, demand_trend_reasoning: analysis.demand_trend_reasoning || null, abs_data_summary: analysis.abs_data_summary || { source: d.abs_data_source, mom_change_pct: d.abs_mom_change, yoy_change_pct: d.abs_yoy_change, trend: d.abs_retail_trend }, five_year_forecast: analysis.five_year_forecast || null, seasonal_demand_patterns: analysis.seasonal_demand_patterns || [], target_customer_segments: analysis.target_customer_segments || [], competitor_threat_level: analysis.competitor_threat_level || null, competitor_threat_reasoning: analysis.competitor_threat_reasoning || null, regulatory_flags: analysis.regulatory_flags || [], market_entry_window: analysis.market_entry_window || null, best_entry_timing: analysis.best_entry_timing || null, entry_timing_reasoning: analysis.entry_timing_reasoning || null, opportunity_score: analysis.opportunity_score ?? null, top_opportunities: analysis.top_opportunities || [], top_risks: analysis.top_risks || [], overall_market_verdict: analysis.overall_market_verdict || null, agent_notes: analysis.agent_notes || null } }}];\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "5ca6c6ef-e1e3-4283-adf0-d17d4fb7a19a",
+      "name": "Format Agent Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5680,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        5984,
+        720
+      ],
+      "id": "f4c9f9b4-748c-49ec-a618-a2d541b2666b",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 Receive Inputs": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "SerpApi \u2013 Market News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Industry Trends",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Google Trends",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Maps \u2013 Business Density",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ABS \u2013 Retail Trade Live",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Local Business News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Market News": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Industry Trends": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Google Trends": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Google Maps \u2013 Business Density": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "ABS \u2013 Retail Trade Live": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 4
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Local Business News": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 5
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Merge All Results": {
+      "main": [
+        [
+          {
+            "node": "Process & Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2013 Market Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2013 Market Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2013 Market Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fe2f885b-244e-474c-a355-6eecbba18130",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o-mini, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "qP0Hk87vAhoDTLUz",
+  "tags": []
+}

@@ -1,0 +1,30 @@
+// Shared colour tokens for /analyse pages
+// Light theme matching existing site design
+
+export const C = {
+  brand: '#0891B2',
+  brandLight: '#06B6D4',
+  brandDark: '#0E7490',
+  emerald: '#059669',
+  emeraldBg: '#ECFDF5',
+  emeraldBdr: '#A7F3D0',
+  amber: '#D97706',
+  amberBg: '#FFFBEB',
+  amberBdr: '#FDE68A',
+  red: '#DC2626',
+  redBg: '#FEF2F2',
+  redBdr: '#FECACA',
+  muted: '#475569',
+  mutedLight: '#94A3B8',
+  border: '#E2E8F0',
+  borderDark: '#CBD5E1',
+  n50: '#F8FAFC',
+  n100: '#F1F5F9',
+  n200: '#E2E8F0',
+  n700: '#334155',
+  n800: '#1E293B',
+  n900: '#0F172A',
+  white: '#FFFFFF',
+  purple: '#7C3AED',
+  purpleBg: '#F5F3FF',
+} as const

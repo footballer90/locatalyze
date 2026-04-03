@@ -1,0 +1,564 @@
+{
+  "name": "Locatalyze v2 \u2013 A5 Revenue & Profitability (AU fixed)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a5-revenue",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a08aa49a-b551-470a-b64f-2b86eda65751",
+      "name": "Webhook \u2013 Receive Inputs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        5344,
+        -752
+      ],
+      "webhookId": "locatalyze-a5-revenue-agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "business_type",
+              "value": "={{ $json.body.business_type }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "industry_category",
+              "value": "={{ $json.body.industry_category }}",
+              "type": "string"
+            },
+            {
+              "id": "p3",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p4",
+              "name": "area",
+              "value": "={{ $json.body.area }}",
+              "type": "string"
+            },
+            {
+              "id": "p5",
+              "name": "country",
+              "value": "={{ $json.body.country ?? 'Australia' }}",
+              "type": "string"
+            },
+            {
+              "id": "p6",
+              "name": "currency",
+              "value": "={{ $json.body.currency ?? 'A$' }}",
+              "type": "string"
+            },
+            {
+              "id": "p7",
+              "name": "avg_ticket_min",
+              "value": "={{ $json.body.avg_ticket_min }}",
+              "type": "string"
+            },
+            {
+              "id": "p8",
+              "name": "avg_ticket_max",
+              "value": "={{ $json.body.avg_ticket_max }}",
+              "type": "string"
+            },
+            {
+              "id": "p9",
+              "name": "pricing_positioning",
+              "value": "={{ $json.body.pricing_positioning ?? 'Mid-range' }}",
+              "type": "string"
+            },
+            {
+              "id": "p10",
+              "name": "operating_hours",
+              "value": "={{ $json.body.operating_hours ?? '10' }}",
+              "type": "string"
+            },
+            {
+              "id": "p11",
+              "name": "seating_or_daily_capacity",
+              "value": "={{ $json.body.seating_or_daily_capacity ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p12",
+              "name": "business_model",
+              "value": "={{ $json.body.business_model ?? 'Independent' }}",
+              "type": "string"
+            },
+            {
+              "id": "p13",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "p14",
+              "name": "a1_competitor_data",
+              "value": "={{ JSON.stringify($json.body.a1_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p15",
+              "name": "a2_rent_data",
+              "value": "={{ JSON.stringify($json.body.a2_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p16",
+              "name": "a3_market_data",
+              "value": "={{ JSON.stringify($json.body.a3_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p17",
+              "name": "a4_cost_data",
+              "value": "={{ JSON.stringify($json.body.a4_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "p18",
+              "name": "serp_query_pricing",
+              "value": "={{ encodeURIComponent($json.body.industry_category + ' pricing menu rates ' + $json.body.city + ' ' + $json.body.area + ' 2024 2025') }}",
+              "type": "string"
+            },
+            {
+              "id": "p19",
+              "name": "serp_query_revenue",
+              "value": "={{ encodeURIComponent($json.body.industry_category + ' monthly revenue profit Australia small business 2024 2025') }}",
+              "type": "string"
+            },
+            {
+              "id": "p20",
+              "name": "maps_query_competitors",
+              "value": "={{ $json.body.industry_category + ' near ' + $json.body.area + ' ' + $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p21",
+              "name": "gl_code",
+              "value": "={{ $json.body.country === 'Australia' ? 'au' : $json.body.country === 'UK' ? 'gb' : 'au' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7920914-e4ab-4014-be8e-c932b84fec98",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5584,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.serp_query_pricing }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $json.gl_code }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "147b8175-540b-4a4a-902d-2ceac17ead19",
+      "name": "SerpApi \u2013 Competitor Pricing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5824,
+        -928
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_revenue }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "={{ $('Parse & Validate Inputs').item.json.gl_code }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "b7d797ff-7c67-46c5-8922-4aae0b8d77f3",
+      "name": "SerpApi \u2013 Revenue Benchmarks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5824,
+        -768
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/place/textsearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $('Parse & Validate Inputs').item.json.maps_query_competitors }}"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94"
+            },
+            {
+              "name": "radius",
+              "value": "1000"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "19b0a072-5888-4258-a34d-5b6bb40a422e",
+      "name": "Google Maps \u2013 Competitor Ratings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5824,
+        -608
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "b5eab608-5f14-402a-8cdc-61415a1f2b07",
+      "name": "Merge All Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        6064,
+        -768
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all = $input.all();\nconst inputs = $('Parse & Validate Inputs').item.json;\n\nlet pricingArticles = [];\nlet revenueArticles = [];\nlet mapsData = [];\n\nfor (const item of all) {\n  const j = item.json;\n  if (j?.results && Array.isArray(j.results) && j.results[0]?.place_id !== undefined) {\n    mapsData = j.results;\n  } else if (j?.organic_results && Array.isArray(j.organic_results)) {\n    if (pricingArticles.length === 0) pricingArticles = j.organic_results;\n    else revenueArticles = j.organic_results;\n  }\n}\n\n// \u2500\u2500 PARSE AGENT OUTPUTS \u2500\u2500\nlet a1 = {}; try { a1 = JSON.parse(inputs.a1_competitor_data||'{}')?.outputs||{}; } catch(e){}\nlet a2 = {}; try { a2 = JSON.parse(inputs.a2_rent_data||'{}')?.outputs||{}; } catch(e){}\nlet a3 = {}; try { a3 = JSON.parse(inputs.a3_market_data||'{}')?.outputs||{}; } catch(e){}\nlet a4 = {}; try { a4 = JSON.parse(inputs.a4_cost_data||'{}')?.outputs||{}; } catch(e){}\n\n// \u2500\u2500 COMPETITOR RATINGS FROM MAPS \u2500\u2500\nconst competitors = mapsData.slice(0, 10).map(p => ({\n  name:         p.name,\n  rating:       p.rating ?? 'N/A',\n  reviews:      p.user_ratings_total ?? 0,\n  address:      p.formatted_address,\n  pricing_tier: p.price_level === 1 ? 'Budget' : p.price_level === 2 ? 'Mid-range' : p.price_level === 3 ? 'Premium' : 'Unknown'\n}));\n\nconst avgRating = competitors.length > 0\n  ? (competitors.reduce((s,c) => s + (parseFloat(c.rating)||0), 0) / competitors.length).toFixed(1)\n  : 'N/A';\n\nconst totalCompetitorReviews = competitors.reduce((s,c) => s + (c.reviews||0), 0);\n\n// \u2500\u2500 ARTICLE SUMMARIES \u2500\u2500\nconst pricingText = pricingArticles.slice(0,6).map((r,i) =>\n  `${i+1}. ${r.title||''}\\n   ${(r.snippet||'').slice(0,200)}\\n   Source: ${r.displayed_link||''}`\n).join('\\n\\n');\n\nconst revenueText = revenueArticles.slice(0,6).map((r,i) =>\n  `${i+1}. ${r.title||''}\\n   ${(r.snippet||'').slice(0,200)}\\n   Source: ${r.displayed_link||''}`\n).join('\\n\\n');\n\nconst competitorText = competitors.slice(0,8).map((c,i) =>\n  `${i+1}. ${c.name} | Rating: ${c.rating} (${c.reviews} reviews) | Pricing: ${c.pricing_tier}`\n).join('\\n');\n\n// \u2500\u2500 CONTEXT STRINGS FROM PRIOR AGENTS \u2500\u2500\nconst a1Context = Object.keys(a1).length > 0\n  ? `Saturation: ${a1.saturation_level||'N/A'} | Density: ${a1.competitor_density_score||'N/A'}/100\\nWithin 500m: ${a1.competitors_within_500m??'N/A'} competitors\\nOpportunity Gaps: ${(a1.opportunity_gaps||[]).join('; ')}\\nLocality: ${a1.locality_context||'N/A'}`\n  : 'Not provided';\n\nconst a2Context = Object.keys(a2).length > 0\n  ? `Transport Score: ${a2.transport_access_score||'N/A'}/10 | Location Verdict: ${a2.overall_location_verdict||'N/A'}\\nAnchor Businesses: ${(a2.anchor_businesses_nearby||[]).map(b=>b.name).join(', ')||'N/A'}\\nMajor Anchor Effect: ${a2.major_anchor_effect||'N/A'}\\nRent Range: ${a2.rent_range_actual?.min||'N/A'} \u2013 ${a2.rent_range_actual?.max||'N/A'}`\n  : 'Not provided';\n\nconst a3Context = Object.keys(a3).length > 0\n  ? `Demand Trend: ${a3.demand_trend||'N/A'} | Market Stage: ${a3.market_maturity_stage||'N/A'}\\nGrowth Score: ${a3.growth_score||'N/A'}/100 | ABS Retail: ${a3.abs_data_summary?.trend||'N/A'} (YoY: ${a3.abs_data_summary?.yoy_change_pct||'N/A'}%)\\nBest Entry Timing: ${a3.best_entry_timing||'N/A'}\\nTarget Segments: ${(a3.target_customer_segments||[]).map(s=>`${s.segment_name} (spend: ${s.spend_profile}, fit: ${s.demand_fit})`).join('; ')||'N/A'}`\n  : 'Not provided';\n\nconst a4Context = Object.keys(a4).length > 0\n  ? `Monthly Operating Cost (A4): ${a4.monthly_operating_cost?.total_monthly||'N/A'} \u2014 USE THIS AS EXACT COST BASE\\nSetup Cost Recommended: ${a4.setup_cost_estimate?.recommended||'N/A'}\\nBurn Rate: ${a4.financial_projections?.burn_rate_monthly||'N/A'} | Runway: ${a4.financial_projections?.runway_months||'N/A'} months\\nBreak-even (A4 estimate): ${a4.financial_projections?.break_even_months||'N/A'} months`\n  : 'Not provided \u2014 estimate costs independently';\n\n// \u2500\u2500 DEMAND & PRICING SIGNALS \u2500\u2500\nconst demandMultiplier = a3.demand_trend === 'Rising'\n  ? 'RISING \u2014 model faster ramp, higher capacity utilisation by Month 6'\n  : a3.demand_trend === 'Falling'\n  ? 'FALLING \u2014 model conservative ramp, lower utilisation'\n  : 'STABLE \u2014 model standard ramp curve';\n\nconst pricingPowerSignal = a1.saturation_level === 'Low'\n  ? 'LOW COMPETITION \u2014 pricing power HIGH, premium positioning viable'\n  : a1.saturation_level === 'High'\n  ? 'HIGH COMPETITION \u2014 pricing power LIMITED, must price competitively'\n  : 'MEDIUM COMPETITION \u2014 mid-range pricing most sustainable';\n\n// \u2500\u2500 TRANSPORT SCORE \u2192 FOOTFALL ESTIMATE \u2500\u2500\nconst transportScore = parseFloat(a2.transport_access_score) || 5;\nconst footfallEstimate = transportScore >= 8 ? '60-80 customers/day potential'\n  : transportScore >= 5 ? '30-60 customers/day potential'\n  : 'under 30 customers/day \u2014 low footfall location';\n\nreturn [{ json: {\n  business_type:              inputs.business_type,\n  industry_category:          inputs.industry_category,\n  city:                       inputs.city,\n  area:                       inputs.area,\n  country:                    inputs.country,\n  currency:                   inputs.currency,\n  avg_ticket_min:             inputs.avg_ticket_min,\n  avg_ticket_max:             inputs.avg_ticket_max,\n  pricing_positioning:        inputs.pricing_positioning,\n  operating_hours:            inputs.operating_hours,\n  seating_or_daily_capacity:  inputs.seating_or_daily_capacity,\n  business_model:             inputs.business_model,\n  email:                      inputs.email,\n  competitor_businesses:      competitors,\n  avg_competitor_rating:      avgRating,\n  total_competitor_reviews:   totalCompetitorReviews,\n  pricing_articles_text:      pricingText || 'No pricing data found.',\n  revenue_articles_text:      revenueText || 'No revenue benchmark data found.',\n  competitor_text:            competitorText || 'No competitor data found.',\n  a1_context:                 a1Context,\n  a2_context:                 a2Context,\n  a3_context:                 a3Context,\n  a4_context:                 a4Context,\n  demand_multiplier:          demandMultiplier,\n  pricing_power_signal:       pricingPowerSignal,\n  footfall_estimate:          footfallEstimate,\n  transport_score:            transportScore,\n  a4_monthly_opex:            a4.monthly_operating_cost?.total_monthly || null,\n  a4_setup_cost:              a4.setup_cost_estimate?.recommended || null,\n  a3_segments:                a3.target_customer_segments || [],\n  data_sources: {\n    pricing_articles:  pricingArticles.length,\n    revenue_articles:  revenueArticles.length,\n    maps_competitors:  competitors.length,\n    a1_integrated:     Object.keys(a1).length > 0,\n    a2_integrated:     Object.keys(a2).length > 0,\n    a3_integrated:     Object.keys(a3).length > 0,\n    a4_integrated:     Object.keys(a4).length > 0\n  }\n}}];\n"
+      },
+      "id": "914acc6d-9a50-4677-97c6-0cbca274c269",
+      "name": "Process & Merge All Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6304,
+        -768
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n'Generate a complete revenue and profitability analysis for a new ' + $json.business_type + ' (' + $json.industry_category + ') at ' + $json.area + ', ' + $json.city + ', Australia.\\n\\n' +\n'BUSINESS DETAILS:\\n' +\n'- Model: ' + $json.business_model + '\\n' +\n'- Avg Ticket: ' + $json.currency + $json.avg_ticket_min + ' \u2013 ' + $json.currency + $json.avg_ticket_max + '\\n' +\n'- Pricing Position: ' + $json.pricing_positioning + '\\n' +\n'- Operating Hours/Day: ' + $json.operating_hours + ' hours\\n' +\n($json.seating_or_daily_capacity ? '- Seating/Capacity: ' + $json.seating_or_daily_capacity + '\\n' : '') +\n'- Currency: AUD ($)\\n\\n' +\n'\u2500\u2500 FOOTFALL ESTIMATE (from A2 Transport Score ' + $json.transport_score + '/10) \u2500\u2500\\n' +\n$json.footfall_estimate + '\\n\\n' +\n'\u2500\u2500 COMPETITOR PRICING (SerpApi AU) \u2500\u2500\\n' + $json.pricing_articles_text + '\\n\\n' +\n'\u2500\u2500 REVENUE BENCHMARKS (SerpApi AU) \u2500\u2500\\n' + $json.revenue_articles_text + '\\n\\n' +\n'\u2500\u2500 LIVE COMPETITOR RATINGS (Google Maps) \u2500\u2500\\n' + $json.competitor_text + '\\n\\n' +\n'\u2500\u2500 A1 COMPETITOR INTELLIGENCE \u2500\u2500\\n' + $json.a1_context + '\\nPricing power: ' + $json.pricing_power_signal + '\\n\\n' +\n'\u2500\u2500 A2 LOCATION & FOOTFALL \u2500\u2500\\n' + $json.a2_context + '\\n\\n' +\n'\u2500\u2500 A3 MARKET & SEGMENT DATA \u2500\u2500\\n' + $json.a3_context + '\\nDemand signal: ' + $json.demand_multiplier + '\\n\\n' +\n'\u2500\u2500 A4 COST DATA (use as EXACT cost base) \u2500\u2500\\n' + $json.a4_context\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Revenue & Profitability Agent for the Australian market.\n\nYou receive live competitor pricing (SerpApi gl=au), Google Maps competitor ratings, and fully integrated A1/A2/A3/A4 agent context.\n\nCRITICAL RULES:\n1. ALL currency is AUD ($). Never use \u20b9 or other currencies.\n2. Use A4 monthly operating cost as the EXACT cost base \u2014 do not re-estimate costs already calculated by A4.\n3. Use A2 transport score footfall estimate as your customer volume anchor \u2014 this is grounded in real transit data.\n4. Use A3 target segment spend profiles to VALIDATE the user's avg ticket \u2014 flag if misaligned.\n5. Use A1 saturation to set pricing aggressiveness. Brunswick St, Fitzroy = High saturation = competitive pricing.\n6. Model ALL revenue channels (walk-in, delivery/Uber Eats/DoorDash, catering/events, B2B) \u2014 not just walk-in.\n7. Year 1 ramp: Start Month 1 at 20-25% capacity, grow realistically. Stable demand = standard ramp.\n8. Sensitivity: Worst=60% base, Base=modelled, Best=140% base.\n9. Break-even must use A4 opex: setup_cost / (monthly_revenue - monthly_opex).\n10. Profitability score 0-100: penalise heavily for break-even > 24 months.\n11. Reference Australian benchmarks: Fair Work minimum wages, delivery commission rates (Uber Eats ~30%), GST implications.\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown fences:\n{\n  \"revenue_range\": {\n    \"monthly_min\": \"<e.g. A$38,000>\",\n    \"monthly_base\": \"<e.g. A$63,000>\",\n    \"monthly_max\": \"<e.g. A$88,000>\",\n    \"annual_base\": \"<e.g. A$756,000>\"\n  },\n  \"profitability_score\": <0-100>,\n  \"profitability_reasoning\": \"<2-3 sentences citing A4 opex and A2 footfall>\",\n  \"pricing_strategies\": [\n    { \"strategy\": \"Budget\",    \"avg_ticket\": \"<A$X>\", \"daily_customers_needed\": <n>, \"monthly_revenue\": \"<A$X>\", \"monthly_profit\": \"<A$X>\", \"pros\": \"<>\", \"cons\": \"<>\", \"recommended\": false },\n    { \"strategy\": \"Mid-range\", \"avg_ticket\": \"<A$X>\", \"daily_customers_needed\": <n>, \"monthly_revenue\": \"<A$X>\", \"monthly_profit\": \"<A$X>\", \"pros\": \"<>\", \"cons\": \"<>\", \"recommended\": true },\n    { \"strategy\": \"Premium\",   \"avg_ticket\": \"<A$X>\", \"daily_customers_needed\": <n>, \"monthly_revenue\": \"<A$X>\", \"monthly_profit\": \"<A$X>\", \"pros\": \"<>\", \"cons\": \"<>\", \"recommended\": false }\n  ],\n  \"revenue_channels\": [\n    { \"channel\": \"Walk-in / dine-in\",    \"revenue_split_pct\": <n>, \"monthly_revenue\": \"<A$X>\", \"rationale\": \"<>\" },\n    { \"channel\": \"Delivery (Uber Eats/DoorDash)\", \"revenue_split_pct\": <n>, \"monthly_revenue\": \"<A$X>\", \"rationale\": \"<note 30% commission impact>\" },\n    { \"channel\": \"Catering / events\",    \"revenue_split_pct\": <n>, \"monthly_revenue\": \"<A$X>\", \"rationale\": \"<>\" },\n    { \"channel\": \"B2B / bulk orders\",    \"revenue_split_pct\": <n>, \"monthly_revenue\": \"<A$X>\", \"rationale\": \"<>\" }\n  ],\n  \"customer_volume\": {\n    \"daily_customers_base\": <n>,\n    \"daily_customers_needed_breakeven\": <n>,\n    \"monthly_transactions_base\": <n>,\n    \"footfall_source\": \"<cite A2 transport score and A3 segment data>\",\n    \"capacity_utilisation_pct\": \"<e.g. 65%>\"\n  },\n  \"year1_monthly_ramp\": [\n    { \"month\": 1,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<20%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 2,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<25%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 3,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<30%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 4,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<38%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 5,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<45%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 6,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<52%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 7,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<58%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 8,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<63%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 9,  \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<68%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 10, \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<72%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 11, \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<76%>\", \"cumulative_profit_loss\": \"<A$X>\" },\n    { \"month\": 12, \"revenue\": \"<A$X>\", \"customers_per_day\": <n>, \"utilisation_pct\": \"<80%>\", \"cumulative_profit_loss\": \"<A$X>\" }\n  ],\n  \"sensitivity_analysis\": {\n    \"worst_case\": { \"monthly_revenue\": \"<A$X>\", \"monthly_profit_loss\": \"<A$X>\", \"break_even_months\": <n>, \"assumption\": \"60% of base revenue\" },\n    \"base_case\":  { \"monthly_revenue\": \"<A$X>\", \"monthly_profit_loss\": \"<A$X>\", \"break_even_months\": <n>, \"assumption\": \"Base modelled scenario\" },\n    \"best_case\":  { \"monthly_revenue\": \"<A$X>\", \"monthly_profit_loss\": \"<A$X>\", \"break_even_months\": <n>, \"assumption\": \"140% of base revenue\" }\n  },\n  \"break_even_months\": <n>,\n  \"break_even_reasoning\": \"<show: setup_cost / (monthly_revenue - A4_monthly_opex)>\",\n  \"avg_ticket_validation\": {\n    \"user_range\": \"<stated range>\",\n    \"market_benchmark\": \"<what AU data suggests>\",\n    \"verdict\": \"Aligned\" | \"Too Low\" | \"Too High\",\n    \"recommendation\": \"<specific advice>\"\n  },\n  \"top_revenue_risks\": [\n    { \"risk\": \"<>\", \"impact\": \"High|Medium|Low\", \"mitigation\": \"<>\" }\n  ],\n  \"revenue_growth_levers\": [\"<lever 1>\", \"<lever 2>\", \"<lever 3>\"],\n  \"overall_revenue_verdict\": \"Strong\" | \"Viable\" | \"Marginal\" | \"Not Viable\",\n  \"agent_notes\": \"<A1/A2/A3/A4 integration notes, footfall basis, Australian benchmarks used>\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "eb7beb61-d3f5-47e6-a3af-b517899bfd52",
+      "name": "AI Agent \u2013 Revenue Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        6544,
+        -768
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 4000,
+          "temperature": 0.2
+        }
+      },
+      "id": "48e6af48-8106-40c4-a666-aac21e5bef52",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        6544,
+        -608
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputJson = $input.first().json;\nconst rawText = inputJson.output || inputJson.text || inputJson.response || JSON.stringify(inputJson);\nlet analysis;\ntry {\n  let cleaned = rawText.trim()\n    .replace(/^```json\\s*/i,'').replace(/^```\\s*/i,'').replace(/```\\s*$/i,'').trim();\n  const start = cleaned.indexOf('{'), end = cleaned.lastIndexOf('}');\n  if (start !== -1 && end > start) cleaned = cleaned.slice(start, end+1);\n  cleaned = cleaned.replace(/(:\\s*)(\\d{1,3}(?:,\\d{3})+)([,\\}\\]\\s\\n])/g,(m,pre,num,post)=>pre+num.replace(/,/g,'')+post);\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error: true, raw_response: rawText.slice(0,800), error_message: e.message };\n}\nconst d = $('Process & Merge All Data').item.json;\nreturn [{ json: {\n  agent_id:   'A5',\n  agent_name: 'Revenue & Profitability (Australian)',\n  status:     analysis.parse_error ? 'error' : 'success',\n  timestamp:  new Date().toISOString(),\n  email:      d.email,\n  inputs_used: {\n    location:            `${d.area}, ${d.city}, ${d.country}`,\n    industry:            d.industry_category,\n    avg_ticket:          `${d.currency}${d.avg_ticket_min} \u2013 ${d.currency}${d.avg_ticket_max}`,\n    pricing_positioning: d.pricing_positioning,\n    operating_hours:     d.operating_hours,\n    currency:            d.currency,\n    transport_score:     d.transport_score,\n    footfall_estimate:   d.footfall_estimate\n  },\n  competitor_businesses: d.competitor_businesses,\n  data_sources: d.data_sources,\n  outputs: {\n    revenue_range:           analysis.revenue_range           || null,\n    profitability_score:     analysis.profitability_score     ?? null,\n    profitability_reasoning: analysis.profitability_reasoning || null,\n    pricing_strategies:      analysis.pricing_strategies      || [],\n    revenue_channels:        analysis.revenue_channels        || [],\n    customer_volume:         analysis.customer_volume         || {},\n    year1_monthly_ramp:      analysis.year1_monthly_ramp      || [],\n    sensitivity_analysis:    analysis.sensitivity_analysis    || {},\n    break_even_months:       analysis.break_even_months       ?? null,\n    break_even_reasoning:    analysis.break_even_reasoning    || null,\n    avg_ticket_validation:   analysis.avg_ticket_validation   || {},\n    top_revenue_risks:       analysis.top_revenue_risks       || [],\n    revenue_growth_levers:   analysis.revenue_growth_levers   || [],\n    overall_revenue_verdict: analysis.overall_revenue_verdict || null,\n    agent_notes:             analysis.agent_notes             || null\n  }\n}}];\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "009726fd-a819-454b-aec1-f4a623783c23",
+      "name": "Format Agent Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6912,
+        -768
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        7152,
+        -768
+      ],
+      "id": "88c7315f-4713-4ca5-bbbd-b374351474df",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 Receive Inputs": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "SerpApi \u2013 Competitor Pricing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Revenue Benchmarks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Maps \u2013 Competitor Ratings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Competitor Pricing": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Revenue Benchmarks": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Maps \u2013 Competitor Ratings": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge All Results": {
+      "main": [
+        [
+          {
+            "node": "Process & Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2013 Revenue Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2013 Revenue Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2013 Revenue Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "aada629a-c423-493d-9a35-e8d02636536f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "ApWQpl4FaGZ3xv4Z",
+  "tags": []
+}

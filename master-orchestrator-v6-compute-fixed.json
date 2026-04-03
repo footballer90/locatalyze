@@ -1,0 +1,342 @@
+{
+  "name": "Locatalyze – Master Orchestrator v6 (computeEngine)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-analyse",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "47f598ba-8e2e-41e9-8aca-b6e7efb78e77",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [62144, -1216],
+      "webhookId": "cc2de9c0-1b25-4160-96e1-babdbbdade91"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst raw = $input.first().json;\nconst body = raw.body || raw;\n\n// Accept both camelCase (from Vercel /api/analyse) and snake_case (legacy)\nconst businessType  = body.businessType  || body.business_type  || '';\nconst monthlyRent   = Number(body.monthlyRent   || body.monthly_rent   || 0);\nconst setupBudget   = Number(body.setupBudget   || body.setup_cost     || body.setupCost || 0);\nconst avgTicketSize = Number(body.avgTicketSize || body.avg_ticket_size || 0);\nconst rawUserId     = body.userId || body.user_id || null;\nconst userId        = (rawUserId && rawUserId !== 'anonymous') ? rawUserId : null;\nconst reportId      = body.reportId || body.report_id || ('RPT-' + Date.now());\nconst address       = body.address  || '';\n\nif (!businessType) throw new Error('Missing required field: businessType');\nif (!address)      throw new Error('Missing required field: address');\nif (!monthlyRent)  throw new Error('Missing required field: monthlyRent');\n\n// CRITICAL FIX v6: use body.area (specific suburb) NOT just city\n// Vercel /api/analyse parses '421 Brunswick St, Fitzroy VIC 3065' → area='Fitzroy', city='Melbourne'\n// v5 bug: area was set to city ('Melbourne'), causing A1/A2 to search wrong suburb\nconst suburb = body.area || body.suburb || body.locality || '';\n\nlet city = body.city || '';\nif (!city && address) {\n  const parts = address.split(',').map(p => p.trim()).filter(Boolean);\n  if (parts.length >= 2) {\n    city = (parts[parts.length - 2] || '').replace(/\\s+\\d{4,6}.*$/, '').trim();\n  }\n}\n\nconst state    = body.state    || '';\nconst postcode = body.postcode || '';\n\nlet country = body.country || 'Australia';\nif (address) {\n  if (/\\bUSA?\\b/i.test(address) || /\\bUnited States\\b/i.test(address) ||\n      /,\\s*[A-Z]{2}\\s+\\d{5}/.test(address)) {\n    country = 'USA';\n  } else if (/\\bUK\\b/i.test(address) || /\\bUnited Kingdom\\b/i.test(address)) {\n    country = 'UK';\n  } else if (/\\bAustralia\\b/i.test(address) || /\\bVIC\\b/.test(address) ||\n             /\\bNSW\\b/.test(address) || /\\bQLD\\b/.test(address) ||\n             /\\bWA\\b/.test(address)  || /\\bSA\\b/.test(address)) {\n    country = 'Australia';\n  }\n}\nconst currency = country === 'USA' ? 'USD' : country === 'UK' ? 'GBP' : (body.currency || 'AUD');\n\nreturn [{ json: {\n  report_id:       reportId,\n  submission_id:   body.submissionId || reportId,\n  business_type:   businessType,\n  industry_category: businessType,\n  // v6 FIX: area = actual suburb (e.g. 'Wembley'), not metro city (e.g. 'Perth')\n  area:            suburb || city,\n  locality:        suburb || city,\n  city:            city,\n  state:           state,\n  postcode:        postcode,\n  address:         address,\n  country:         country,\n  currency:        currency,\n  email:           body.email      || '',\n  mode:            (body.mode === 'light') ? 'light' : 'full',\n  lat:             body.lat        || '',\n  lng:             body.lng        || '',\n  monthly_rent:    monthlyRent,\n  setup_cost:      setupBudget,\n  avg_ticket_size: avgTicketSize,\n  monthly_revenue: Number(body.monthly_revenue || body.monthlyRevenue || 0),\n  staff_count:     Number(body.staff_count     || body.staffCount     || 1),\n  user_id:         userId,\n  _start_time:     Date.now()\n}}];\n"
+      },
+      "id": "0a3d62ed-3e63-4c6f-991f-ee86b63090fc",
+      "name": "Parse Inputs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [62384, -1216]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://amanguleria.app.n8n.cloud/webhook/locatalyze-a1-competitor",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { business_type: $('Parse Inputs').first().json.business_type, industry_category: $('Parse Inputs').first().json.industry_category, city: $('Parse Inputs').first().json.city, area: $('Parse Inputs').first().json.area, locality: $('Parse Inputs').first().json.locality, state: $('Parse Inputs').first().json.state, postcode: $('Parse Inputs').first().json.postcode, address: $('Parse Inputs').first().json.address, country: $('Parse Inputs').first().json.country, currency: $('Parse Inputs').first().json.currency, lat: $('Parse Inputs').first().json.lat, lng: $('Parse Inputs').first().json.lng, monthly_rent: $('Parse Inputs').first().json.monthly_rent, setup_cost: $('Parse Inputs').first().json.setup_cost, avg_ticket_size: $('Parse Inputs').first().json.avg_ticket_size, monthly_revenue: $('Parse Inputs').first().json.monthly_revenue, staff_count: $('Parse Inputs').first().json.staff_count, mode: $('Parse Inputs').first().json.mode, report_id: $('Parse Inputs').first().json.report_id } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 115000
+        }
+      },
+      "id": "89292f71-27b5-40c7-bd20-5df939373b2d",
+      "name": "Call A1 – Competitor Intel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [62624, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resp = $input.first().json;\nconst prev = $('Parse Inputs').first().json;\nconst isHttpErr = typeof resp.statusCode === 'number' && resp.statusCode >= 400;\nconst isNetErr  = !!(resp.code && ['ECONNREFUSED','ETIMEDOUT','ENOTFOUND','ECONNRESET'].includes(resp.code));\nconst isErrItem = !!(resp.error !== undefined && resp.message !== undefined && resp.statusCode !== undefined);\nconst isFailed  = isHttpErr || isNetErr || isErrItem;\nreturn [{ json: { ...prev, a1_status: isFailed ? 'failed' : 'ok', a1_failed: isFailed, a1_error: isFailed ? (resp.message || JSON.stringify(resp.error || resp).slice(0,300)) : null, a1_data: isFailed ? null : resp }}];\n"
+      },
+      "id": "e5317c5a-6c63-4c77-b622-7250f135d93a",
+      "name": "Store A1 – Competitor Intel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [62864, -1216]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://amanguleria.app.n8n.cloud/webhook/locatalyze-a2-rent",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { business_type: $('Parse Inputs').first().json.business_type, industry_category: $('Parse Inputs').first().json.industry_category, city: $('Parse Inputs').first().json.city, area: $('Parse Inputs').first().json.area, locality: $('Parse Inputs').first().json.locality, state: $('Parse Inputs').first().json.state, postcode: $('Parse Inputs').first().json.postcode, address: $('Parse Inputs').first().json.address, country: $('Parse Inputs').first().json.country, currency: $('Parse Inputs').first().json.currency, lat: $('Parse Inputs').first().json.lat, lng: $('Parse Inputs').first().json.lng, monthly_rent: $('Parse Inputs').first().json.monthly_rent, setup_cost: $('Parse Inputs').first().json.setup_cost, avg_ticket_size: $('Parse Inputs').first().json.avg_ticket_size, monthly_revenue: $('Parse Inputs').first().json.monthly_revenue, staff_count: $('Parse Inputs').first().json.staff_count, mode: $('Parse Inputs').first().json.mode, report_id: $('Parse Inputs').first().json.report_id } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 115000
+        }
+      },
+      "id": "5ea9d16a-e70b-4deb-8cdc-de627b995346",
+      "name": "Call A2 – Rent & Real Estate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [63104, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resp = $input.first().json;\nconst prev = $('Store A1 – Competitor Intel').first().json;\nconst isHttpErr = typeof resp.statusCode === 'number' && resp.statusCode >= 400;\nconst isNetErr  = !!(resp.code && ['ECONNREFUSED','ETIMEDOUT','ENOTFOUND','ECONNRESET'].includes(resp.code));\nconst isErrItem = !!(resp.error !== undefined && resp.message !== undefined && resp.statusCode !== undefined);\nconst isFailed  = isHttpErr || isNetErr || isErrItem;\nreturn [{ json: { ...prev, a2_status: isFailed ? 'failed' : 'ok', a2_failed: isFailed, a2_error: isFailed ? (resp.message || JSON.stringify(resp.error || resp).slice(0,300)) : null, a2_data: isFailed ? null : resp }}];\n"
+      },
+      "id": "112a1812-23c3-4070-878e-c6b90ce239c7",
+      "name": "Store A2 – Rent & Real Estate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [63344, -1216]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://amanguleria.app.n8n.cloud/webhook/locatalyze-a3-market",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { business_type: $('Parse Inputs').first().json.business_type, industry_category: $('Parse Inputs').first().json.industry_category, city: $('Parse Inputs').first().json.city, area: $('Parse Inputs').first().json.area, locality: $('Parse Inputs').first().json.locality, state: $('Parse Inputs').first().json.state, postcode: $('Parse Inputs').first().json.postcode, address: $('Parse Inputs').first().json.address, country: $('Parse Inputs').first().json.country, currency: $('Parse Inputs').first().json.currency, lat: $('Parse Inputs').first().json.lat, lng: $('Parse Inputs').first().json.lng, monthly_rent: $('Parse Inputs').first().json.monthly_rent, setup_cost: $('Parse Inputs').first().json.setup_cost, avg_ticket_size: $('Parse Inputs').first().json.avg_ticket_size, monthly_revenue: $('Parse Inputs').first().json.monthly_revenue, staff_count: $('Parse Inputs').first().json.staff_count, mode: $('Parse Inputs').first().json.mode, report_id: $('Parse Inputs').first().json.report_id } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 115000
+        }
+      },
+      "id": "005fcf3c-e229-4f0b-bf35-ef24d25fedd4",
+      "name": "Call A3 – Market & Demand",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [63584, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resp = $input.first().json;\nconst prev = $('Store A2 – Rent & Real Estate').first().json;\nconst isHttpErr = typeof resp.statusCode === 'number' && resp.statusCode >= 400;\nconst isNetErr  = !!(resp.code && ['ECONNREFUSED','ETIMEDOUT','ENOTFOUND','ECONNRESET'].includes(resp.code));\nconst isErrItem = !!(resp.error !== undefined && resp.message !== undefined && resp.statusCode !== undefined);\nconst isFailed  = isHttpErr || isNetErr || isErrItem;\nreturn [{ json: { ...prev, a3_status: isFailed ? 'failed' : 'ok', a3_failed: isFailed, a3_error: isFailed ? (resp.message || JSON.stringify(resp.error || resp).slice(0,300)) : null, a3_data: isFailed ? null : resp }}];\n"
+      },
+      "id": "fff43e3c-40c8-47e0-a654-492ed1c5fe1d",
+      "name": "Store A3 – Market & Demand",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [63824, -1216]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://amanguleria.app.n8n.cloud/webhook/locatalyze-a4-cost",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { business_type: $('Parse Inputs').first().json.business_type, industry_category: $('Parse Inputs').first().json.industry_category, city: $('Parse Inputs').first().json.city, area: $('Parse Inputs').first().json.area, locality: $('Parse Inputs').first().json.locality, state: $('Parse Inputs').first().json.state, postcode: $('Parse Inputs').first().json.postcode, address: $('Parse Inputs').first().json.address, country: $('Parse Inputs').first().json.country, currency: $('Parse Inputs').first().json.currency, lat: $('Parse Inputs').first().json.lat, lng: $('Parse Inputs').first().json.lng, monthly_rent: $('Parse Inputs').first().json.monthly_rent, setup_cost: $('Parse Inputs').first().json.setup_cost, avg_ticket_size: $('Parse Inputs').first().json.avg_ticket_size, monthly_revenue: $('Parse Inputs').first().json.monthly_revenue, staff_count: $('Parse Inputs').first().json.staff_count, mode: $('Parse Inputs').first().json.mode, report_id: $('Parse Inputs').first().json.report_id } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 115000
+        }
+      },
+      "id": "1f56b7e1-357e-4c9b-b2d8-2eaf806eb4e8",
+      "name": "Call A4 – Cost Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [64064, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resp = $input.first().json;\nconst prev = $('Store A3 – Market & Demand').first().json;\nconst isHttpErr = typeof resp.statusCode === 'number' && resp.statusCode >= 400;\nconst isNetErr  = !!(resp.code && ['ECONNREFUSED','ETIMEDOUT','ENOTFOUND','ECONNRESET'].includes(resp.code));\nconst isErrItem = !!(resp.error !== undefined && resp.message !== undefined && resp.statusCode !== undefined);\nconst isFailed  = isHttpErr || isNetErr || isErrItem;\nreturn [{ json: { ...prev, a4_status: isFailed ? 'failed' : 'ok', a4_failed: isFailed, a4_error: isFailed ? (resp.message || JSON.stringify(resp.error || resp).slice(0,300)) : null, a4_data: isFailed ? null : resp }}];\n"
+      },
+      "id": "fa45a640-91a9-4875-80a9-60f12afb158d",
+      "name": "Store A4 – Cost Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [64304, -1216]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://amanguleria.app.n8n.cloud/webhook/locatalyze-a5-revenue",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { business_type: $('Parse Inputs').first().json.business_type, industry_category: $('Parse Inputs').first().json.industry_category, city: $('Parse Inputs').first().json.city, area: $('Parse Inputs').first().json.area, locality: $('Parse Inputs').first().json.locality, state: $('Parse Inputs').first().json.state, postcode: $('Parse Inputs').first().json.postcode, address: $('Parse Inputs').first().json.address, country: $('Parse Inputs').first().json.country, currency: $('Parse Inputs').first().json.currency, lat: $('Parse Inputs').first().json.lat, lng: $('Parse Inputs').first().json.lng, monthly_rent: $('Parse Inputs').first().json.monthly_rent, setup_cost: $('Parse Inputs').first().json.setup_cost, avg_ticket_size: $('Parse Inputs').first().json.avg_ticket_size, monthly_revenue: $('Parse Inputs').first().json.monthly_revenue, staff_count: $('Parse Inputs').first().json.staff_count, mode: $('Parse Inputs').first().json.mode, report_id: $('Parse Inputs').first().json.report_id } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 115000
+        }
+      },
+      "id": "021b20a6-a745-4520-b650-cc14d38108c5",
+      "name": "Call A5 – Revenue & Profit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [64544, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resp = $input.first().json;\nconst prev = $('Store A4 – Cost Analysis').first().json;\nconst isHttpErr = typeof resp.statusCode === 'number' && resp.statusCode >= 400;\nconst isNetErr  = !!(resp.code && ['ECONNREFUSED','ETIMEDOUT','ENOTFOUND','ECONNRESET'].includes(resp.code));\nconst isErrItem = !!(resp.error !== undefined && resp.message !== undefined && resp.statusCode !== undefined);\nconst isFailed  = isHttpErr || isNetErr || isErrItem;\nreturn [{ json: { ...prev, a5_status: isFailed ? 'failed' : 'ok', a5_failed: isFailed, a5_error: isFailed ? (resp.message || JSON.stringify(resp.error || resp).slice(0,300)) : null, a5_data: isFailed ? null : resp }}];\n"
+      },
+      "id": "50266ad4-7c48-476a-9f48-13d2f2cbef8f",
+      "name": "Store A5 – Revenue & Profit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [64784, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// v6: Package Raw Data — ZERO computation here.\n// computeEngine() in /api/compute is the ONLY source of financial truth.\n// This node just assembles the 5 agent outputs for Supabase + /api/compute.\n\nconst d = $input.first().json;\n\nconst a1 = d.a1_data || {};\nconst a2 = d.a2_data || {};\nconst a3 = d.a3_data || {};\nconst a4 = d.a4_data || {};\nconst a5 = d.a5_data || {};\n\nreturn [{ json: {\n  report_id:  d.report_id,\n  user_id:    (d.user_id && d.user_id !== 'anonymous') ? d.user_id : null,\n\n  // Keyed for /api/compute\n  agentOutputs: { a1, a2, a3, a4, a5 },\n\n  // Flat structure for backward-compat reads (V1 legacy path in dashboard)\n  result_data: {\n    competitors: a1,\n    rentData:    a2,\n    market:      a3,\n    financials:  a4,\n    revenue:     a5,\n    agent_statuses: {\n      a1: d.a1_status, a2: d.a2_status, a3: d.a3_status,\n      a4: d.a4_status, a5: d.a5_status\n    },\n    errors: {\n      a1: d.a1_error, a2: d.a2_error, a3: d.a3_error,\n      a4: d.a4_error, a5: d.a5_error\n    }\n  }\n}}];\n"
+      },
+      "id": "9b1a2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d",
+      "name": "Package Raw Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [65024, -1216]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://pgtqofiqazjllstkoiql.supabase.co/rest/v1/reports?report_id=eq.' + $('Package Raw Data').first().json.report_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBndHFvZmlxYXpqbGxzdGtvaXFsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTY3MDcxMiwiZXhwIjoyMDg3MjQ2NzEyfQ.UW_21Hj2SEaJgX8nO4vOQFn2RzhBporqPUY72WEPnBk"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBndHFvZmlxYXpqbGxzdGtvaXFsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTY3MDcxMiwiZXhwIjoyMDg3MjQ2NzEyfQ.UW_21Hj2SEaJgX8nO4vOQFn2RzhBporqPUY72WEPnBk"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { result_data: $('Package Raw Data').first().json.result_data, raw_data_snapshot: $('Package Raw Data').first().json.agentOutputs, status: 'processing', progress_step: 'Computing results' } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 30000
+        }
+      },
+      "id": "d01c3a19-e741-4490-8030-0146b8131e87",
+      "name": "Save Raw Data to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [65264, -1216]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/compute",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Locatalyze-n8n/6.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { reportId: $('Package Raw Data').first().json.report_id, agentOutputs: $('Package Raw Data').first().json.agentOutputs } }}",
+        "options": {
+          "response": { "response": { "neverError": true } },
+          "timeout": 35000
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Call /api/compute",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [65504, -1216]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst pkg         = $('Package Raw Data').first().json;\nconst computeResp = $input.first().json;\n\nconst isHttpErr  = typeof computeResp.statusCode === 'number' && computeResp.statusCode >= 400;\nconst computeOk  = computeResp.success === true && !isHttpErr;\nconst errDetail  = computeOk ? null : (computeResp.error || JSON.stringify(computeResp).slice(0, 300));\n\nif (!computeOk) {\n  console.error('[v6] /api/compute failed for', pkg.report_id, ':', errDetail);\n}\n\nreturn [{ json: {\n  success:       computeOk,\n  report_id:     pkg.report_id,\n  compute_ok:    computeOk,\n  compute_error: errDetail,\n  verdict:       computeOk ? computeResp.verdict    : null,\n  net_profit:    computeOk ? computeResp.netProfit  : null,\n  engine_ver:    computeOk ? computeResp.engineVersion : null\n}}];\n"
+      },
+      "id": "be9ac3a8-a30c-4ebc-b5d8-7a236c3e83a0",
+      "name": "Handle Compute Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [65744, -1216]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ accepted: true, report_id: $('Parse Inputs').first().json.report_id }) }}",
+        "options": { "responseCode": 202 }
+      },
+      "id": "3650a482-5df0-4670-9fdd-0d7271c3fab8",
+      "name": "Return Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [62864, -1056]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Parse Inputs", "type": "main", "index": 0 }]]
+    },
+    "Parse Inputs": {
+      "main": [[{ "node": "Return Response", "type": "main", "index": 0 }]]
+    },
+    "Return Response": {
+      "main": [[{ "node": "Call A1 – Competitor Intel", "type": "main", "index": 0 }]]
+    },
+    "Call A1 – Competitor Intel": {
+      "main": [[{ "node": "Store A1 – Competitor Intel", "type": "main", "index": 0 }]]
+    },
+    "Store A1 – Competitor Intel": {
+      "main": [[{ "node": "Call A2 – Rent & Real Estate", "type": "main", "index": 0 }]]
+    },
+    "Call A2 – Rent & Real Estate": {
+      "main": [[{ "node": "Store A2 – Rent & Real Estate", "type": "main", "index": 0 }]]
+    },
+    "Store A2 – Rent & Real Estate": {
+      "main": [[{ "node": "Call A3 – Market & Demand", "type": "main", "index": 0 }]]
+    },
+    "Call A3 – Market & Demand": {
+      "main": [[{ "node": "Store A3 – Market & Demand", "type": "main", "index": 0 }]]
+    },
+    "Store A3 – Market & Demand": {
+      "main": [[{ "node": "Call A4 – Cost Analysis", "type": "main", "index": 0 }]]
+    },
+    "Call A4 – Cost Analysis": {
+      "main": [[{ "node": "Store A4 – Cost Analysis", "type": "main", "index": 0 }]]
+    },
+    "Store A4 – Cost Analysis": {
+      "main": [[{ "node": "Call A5 – Revenue & Profit", "type": "main", "index": 0 }]]
+    },
+    "Call A5 – Revenue & Profit": {
+      "main": [[{ "node": "Store A5 – Revenue & Profit", "type": "main", "index": 0 }]]
+    },
+    "Store A5 – Revenue & Profit": {
+      "main": [[{ "node": "Package Raw Data", "type": "main", "index": 0 }]]
+    },
+    "Package Raw Data": {
+      "main": [[{ "node": "Save Raw Data to Supabase", "type": "main", "index": 0 }]]
+    },
+    "Save Raw Data to Supabase": {
+      "main": [[{ "node": "Call /api/compute", "type": "main", "index": 0 }]]
+    },
+    "Call /api/compute": {
+      "main": [[{ "node": "Handle Compute Response", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "v6-compute-fixed-2026-04-03",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157"
+  },
+  "id": "U7naTpbSBHy8n44l",
+  "tags": [
+    {
+      "name": "locatalyze-v2",
+      "id": "1oThQNdFjJqwhHng",
+      "updatedAt": "2026-04-03T00:00:00.000Z",
+      "createdAt": "2026-03-26T12:47:51.239Z"
+    }
+  ]
+}

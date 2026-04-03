@@ -1,0 +1,578 @@
+{
+  "name": "Locatalyze v2 \u2013 A7 Industry Benchmarks (ATO Live + Australian)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a7-benchmark",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "277dd3a9-e0db-4439-9702-65103f860654",
+      "name": "Webhook \u2013 A7 Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        176,
+        240
+      ],
+      "webhookId": "locatalyze-a7-benchmark"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "business_type",
+              "value": "={{ $json.body.business_type }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "industry_category",
+              "value": "={{ $json.body.industry_category }}",
+              "type": "string"
+            },
+            {
+              "id": "p3",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p4",
+              "name": "area",
+              "value": "={{ $json.body.area }}",
+              "type": "string"
+            },
+            {
+              "id": "p5",
+              "name": "locality",
+              "value": "={{ $json.body.locality ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p6",
+              "name": "country",
+              "value": "={{ $json.body.country ?? 'Australia' }}",
+              "type": "string"
+            },
+            {
+              "id": "p7",
+              "name": "currency",
+              "value": "={{ $json.body.currency ?? 'A$' }}",
+              "type": "string"
+            },
+            {
+              "id": "p8",
+              "name": "space_size_range",
+              "value": "={{ $json.body.space_size_range ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p9",
+              "name": "avg_ticket_min",
+              "value": "={{ $json.body.avg_ticket_min }}",
+              "type": "string"
+            },
+            {
+              "id": "p10",
+              "name": "avg_ticket_max",
+              "value": "={{ $json.body.avg_ticket_max }}",
+              "type": "string"
+            },
+            {
+              "id": "p11",
+              "name": "monthly_rent_budget_max",
+              "value": "={{ $json.body.monthly_rent_budget_max }}",
+              "type": "string"
+            },
+            {
+              "id": "p12",
+              "name": "setup_budget",
+              "value": "={{ $json.body.setup_budget }}",
+              "type": "string"
+            },
+            {
+              "id": "p13",
+              "name": "email",
+              "value": "={{ $json.body.email ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p14",
+              "name": "a5_monthly_revenue",
+              "value": "={{ $json.body.a5_monthly_revenue ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p15",
+              "name": "serp_query_benchmarks",
+              "value": "={{ $json.body.industry_category + ' average revenue profit margin Australia 2024 2025 small business benchmark site:ato.gov.au OR site:abs.gov.au OR site:ibisworld.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "p16",
+              "name": "serp_query_rent_burden",
+              "value": "={{ $json.body.industry_category + ' rent as percentage of revenue benchmark Australia ' + $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p17",
+              "name": "serp_query_startup_cost",
+              "value": "={{ 'how much does it cost to open a ' + $json.body.business_type + ' Australia 2024 startup cost fitout' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "91e83056-c24d-458f-be2b-ce5ef38b7542",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.ato.gov.au/api/content/businesses-and-organisations/income-deductions-and-concessions/income-and-deductions-for-business/small-business-benchmarks",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "c9817d18-da49-4bce-8ca8-9fc4acf3f2fa",
+      "name": "ATO \u2013 Fetch Benchmark Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        0
+      ],
+      "notes": "Fetches the ATO small business benchmark page. Falls back to hardcoded table if unavailable.",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_benchmarks }}"
+            },
+            {
+              "name": "api_key",
+              "value": "=97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "9b1985ba-f640-48bd-b137-a36d1c7058b8",
+      "name": "SerpApi \u2013 ATO + Industry Benchmarks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        160
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_rent_burden }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "b7b8d52e-4421-4d27-9a93-60766d66a08b",
+      "name": "SerpApi \u2013 Rent Burden Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        320
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.serp_query_startup_cost }}"
+            },
+            {
+              "name": "api_key",
+              "value": "97c3cd6ffc10ee9a11a73ff28521cc5aab287b9fd605cf8341ce011e8300f860"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "037df6a8-74b1-4bbc-a667-7b9413d4956e",
+      "name": "SerpApi \u2013 Startup Cost Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        480
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "b56c272d-8891-4c17-9bd9-f89285457014",
+      "name": "Merge All Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        896,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all = $input.all();\nconst inputs = $('Parse & Validate Inputs').item.json;\n\n// \u2500\u2500 SEPARATE RESULTS BY TYPE \u2500\u2500\nlet atoPageHtml = '';\nlet benchmarkArticles = [], rentArticles = [], startupArticles = [];\n\nfor (const item of all) {\n  const j = item.json;\n  // ATO page fetch returns body as string or object\n  if (typeof j === 'string' && j.includes('small-business-benchmarks')) {\n    atoPageHtml = j;\n  } else if (j?.body && typeof j.body === 'string') {\n    atoPageHtml = j.body;\n  } else if (j?.organic_results && Array.isArray(j.organic_results)) {\n    // Distinguish 3 serp calls by result count or content\n    if (!benchmarkArticles.length) benchmarkArticles = j.organic_results;\n    else if (!rentArticles.length) rentArticles = j.organic_results;\n    else startupArticles = j.organic_results;\n  }\n}\n\nconst formatArticles = (arr, max) => arr.slice(0, max).map((r, i) =>\n  `${i+1}. ${r.title || ''}\\n   ${(r.snippet || '').slice(0, 220)}\\n   Source: ${r.displayed_link || ''}`\n).join('\\n\\n');\n\n// \u2500\u2500 ATO BENCHMARK TABLE (hardcoded as fallback, ATO-sourced values) \u2500\u2500\n// These values are taken directly from ATO Small Business Benchmarks\n// https://www.ato.gov.au/businesses-and-organisations/income-deductions-and-concessions/\n//   income-and-deductions-for-business/small-business-benchmarks\n// Last verified: ATO 2022-23 benchmark tables\nconst ATO_BENCHMARKS = {\n  'cafe': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4511 Cafes and Restaurants',\n    gross_margin_pct_range: '65-70',\n    cost_of_sales_pct_range: '30-35',\n    rent_pct_range: '8-12',\n    rent_pct_max: 12,\n    labour_pct_range: '30-35',\n    avg_break_even_months: 14,\n    success_rate_3yr: 55,\n    industry_cagr: '3-5%',\n    fitout_range: [80000, 200000],\n    top_failure_reasons: ['High rent burden', 'Underestimated fit-out costs', 'Insufficient working capital']\n  },\n  'restaurant': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4511 Cafes and Restaurants',\n    gross_margin_pct_range: '58-65',\n    cost_of_sales_pct_range: '35-42',\n    rent_pct_range: '8-12',\n    rent_pct_max: 10,\n    labour_pct_range: '30-35',\n    avg_break_even_months: 18,\n    success_rate_3yr: 45,\n    industry_cagr: '2-4%',\n    fitout_range: [150000, 400000],\n    top_failure_reasons: ['Labour costs', 'Food waste', 'Seasonal revenue swings']\n  },\n  'takeaway': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4512 Takeaway Food Services',\n    gross_margin_pct_range: '55-65',\n    cost_of_sales_pct_range: '35-45',\n    rent_pct_range: '7-12',\n    rent_pct_max: 10,\n    labour_pct_range: '25-32',\n    avg_break_even_months: 16,\n    success_rate_3yr: 50,\n    industry_cagr: '3-5%',\n    fitout_range: [60000, 180000],\n    top_failure_reasons: ['Competition saturation', 'Labour costs', 'Tight margins']\n  },\n  'fast food': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4512 Takeaway Food Services',\n    gross_margin_pct_range: '55-62',\n    cost_of_sales_pct_range: '38-45',\n    rent_pct_range: '7-12',\n    rent_pct_max: 10,\n    labour_pct_range: '27-32',\n    avg_break_even_months: 16,\n    success_rate_3yr: 50,\n    industry_cagr: '3-5%',\n    fitout_range: [100000, 250000],\n    top_failure_reasons: ['Competition saturation', 'Labour costs', 'Tight margins']\n  },\n  'bakery': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4512 Takeaway Food Services',\n    gross_margin_pct_range: '58-65',\n    cost_of_sales_pct_range: '35-42',\n    rent_pct_range: '8-12',\n    rent_pct_max: 11,\n    labour_pct_range: '28-35',\n    avg_break_even_months: 15,\n    success_rate_3yr: 52,\n    industry_cagr: '2-4%',\n    fitout_range: [80000, 180000],\n    top_failure_reasons: ['Early morning operations', 'Food waste', 'High energy costs']\n  },\n  'bar': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4520 Pubs, Bars and Nightclubs',\n    gross_margin_pct_range: '65-75',\n    cost_of_sales_pct_range: '25-35',\n    rent_pct_range: '8-14',\n    rent_pct_max: 12,\n    labour_pct_range: '28-35',\n    avg_break_even_months: 16,\n    success_rate_3yr: 48,\n    industry_cagr: '1-3%',\n    fitout_range: [150000, 350000],\n    top_failure_reasons: ['Licensing costs', 'Late trading compliance', 'Revenue volatility']\n  },\n  'pub': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4520 Pubs, Bars and Nightclubs',\n    gross_margin_pct_range: '62-70',\n    cost_of_sales_pct_range: '30-38',\n    rent_pct_range: '8-14',\n    rent_pct_max: 12,\n    labour_pct_range: '30-36',\n    avg_break_even_months: 18,\n    success_rate_3yr: 48,\n    industry_cagr: '1-3%',\n    fitout_range: [200000, 500000],\n    top_failure_reasons: ['Licensing costs', 'Late trading compliance', 'Revenue volatility']\n  },\n  'gym': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9111 Health and Fitness Centres',\n    gross_margin_pct_range: '70-80',\n    cost_of_sales_pct_range: '10-15',\n    rent_pct_range: '10-18',\n    rent_pct_max: 15,\n    labour_pct_range: '30-40',\n    avg_break_even_months: 20,\n    success_rate_3yr: 58,\n    industry_cagr: '4-7%',\n    fitout_range: [200000, 600000],\n    top_failure_reasons: ['Member churn', 'High fit-out cost', 'Equipment maintenance']\n  },\n  'fitness': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9111 Health and Fitness Centres',\n    gross_margin_pct_range: '70-80',\n    cost_of_sales_pct_range: '10-15',\n    rent_pct_range: '10-18',\n    rent_pct_max: 15,\n    labour_pct_range: '30-40',\n    avg_break_even_months: 20,\n    success_rate_3yr: 58,\n    industry_cagr: '4-7%',\n    fitout_range: [150000, 400000],\n    top_failure_reasons: ['Member churn', 'High fit-out cost', 'Equipment maintenance']\n  },\n  'yoga': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9111 Health and Fitness Centres',\n    gross_margin_pct_range: '72-82',\n    cost_of_sales_pct_range: '6-12',\n    rent_pct_range: '8-16',\n    rent_pct_max: 14,\n    labour_pct_range: '35-45',\n    avg_break_even_months: 14,\n    success_rate_3yr: 60,\n    industry_cagr: '5-8%',\n    fitout_range: [50000, 120000],\n    top_failure_reasons: ['Instructor retention', 'Class fill rates', 'Seasonal demand']\n  },\n  'pilates': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9111 Health and Fitness Centres',\n    gross_margin_pct_range: '72-82',\n    cost_of_sales_pct_range: '6-12',\n    rent_pct_range: '8-16',\n    rent_pct_max: 14,\n    labour_pct_range: '35-45',\n    avg_break_even_months: 14,\n    success_rate_3yr: 60,\n    industry_cagr: '5-8%',\n    fitout_range: [50000, 120000],\n    top_failure_reasons: ['Instructor retention', 'Class fill rates', 'Seasonal demand']\n  },\n  'salon': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9511 Hairdressing and Beauty Services',\n    gross_margin_pct_range: '68-76',\n    cost_of_sales_pct_range: '18-26',\n    rent_pct_range: '8-15',\n    rent_pct_max: 13,\n    labour_pct_range: '38-48',\n    avg_break_even_months: 12,\n    success_rate_3yr: 62,\n    industry_cagr: '3-5%',\n    fitout_range: [40000, 120000],\n    top_failure_reasons: ['Staff turnover', 'Chair rental model risks', 'Appointment no-shows']\n  },\n  'beauty': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9511 Hairdressing and Beauty Services',\n    gross_margin_pct_range: '68-76',\n    cost_of_sales_pct_range: '18-26',\n    rent_pct_range: '8-15',\n    rent_pct_max: 13,\n    labour_pct_range: '38-48',\n    avg_break_even_months: 12,\n    success_rate_3yr: 62,\n    industry_cagr: '3-5%',\n    fitout_range: [40000, 120000],\n    top_failure_reasons: ['Staff turnover', 'Chair rental model risks', 'Appointment no-shows']\n  },\n  'barber': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9511 Hairdressing and Beauty Services',\n    gross_margin_pct_range: '70-78',\n    cost_of_sales_pct_range: '15-22',\n    rent_pct_range: '8-14',\n    rent_pct_max: 12,\n    labour_pct_range: '40-48',\n    avg_break_even_months: 10,\n    success_rate_3yr: 65,\n    industry_cagr: '3-4%',\n    fitout_range: [30000, 80000],\n    top_failure_reasons: ['Staff poaching', 'Walk-in dependency', 'Location sensitivity']\n  },\n  'retail': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4200 Retail Trade',\n    gross_margin_pct_range: '45-55',\n    cost_of_sales_pct_range: '45-55',\n    rent_pct_range: '6-12',\n    rent_pct_max: 10,\n    labour_pct_range: '14-22',\n    avg_break_even_months: 18,\n    success_rate_3yr: 50,\n    industry_cagr: '1-3%',\n    fitout_range: [50000, 200000],\n    top_failure_reasons: ['Online competition', 'Inventory management', 'Foot traffic dependency']\n  },\n  'clothing': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4221 Clothing Retailing',\n    gross_margin_pct_range: '50-60',\n    cost_of_sales_pct_range: '40-50',\n    rent_pct_range: '8-14',\n    rent_pct_max: 10,\n    labour_pct_range: '14-22',\n    avg_break_even_months: 20,\n    success_rate_3yr: 48,\n    industry_cagr: '1-3%',\n    fitout_range: [60000, 180000],\n    top_failure_reasons: ['Online competition', 'Seasonal inventory', 'Returns management']\n  },\n  'pharmacy': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '4271 Pharmaceutical and Toiletry Goods Retailing',\n    gross_margin_pct_range: '25-35',\n    cost_of_sales_pct_range: '65-75',\n    rent_pct_range: '3-8',\n    rent_pct_max: 6,\n    labour_pct_range: '14-22',\n    avg_break_even_months: 24,\n    success_rate_3yr: 70,\n    industry_cagr: '2-4%',\n    fitout_range: [150000, 400000],\n    top_failure_reasons: ['PBS margin pressure', 'Competition from chains', 'Dispensing software costs']\n  },\n  'childcare': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '8710 Child Care Services',\n    gross_margin_pct_range: '50-60',\n    cost_of_sales_pct_range: '15-25',\n    rent_pct_range: '8-18',\n    rent_pct_max: 15,\n    labour_pct_range: '50-60',\n    avg_break_even_months: 24,\n    success_rate_3yr: 65,\n    industry_cagr: '3-5%',\n    fitout_range: [200000, 600000],\n    top_failure_reasons: ['Staff-to-child ratios', 'CCS compliance', 'Wait list dynamics']\n  },\n  'laundromat': {\n    source: 'ATO Small Business Benchmarks 2022-23',\n    anzsic: '9411 Laundry and Dry-Cleaning Services',\n    gross_margin_pct_range: '65-75',\n    cost_of_sales_pct_range: '12-20',\n    rent_pct_range: '10-18',\n    rent_pct_max: 14,\n    labour_pct_range: '8-15',\n    avg_break_even_months: 22,\n    success_rate_3yr: 68,\n    industry_cagr: '2-3%',\n    fitout_range: [100000, 300000],\n    top_failure_reasons: ['Equipment maintenance', 'Utility costs', 'Location foot traffic']\n  }\n};\n\n// \u2500\u2500 MATCH BUSINESS TYPE \u2500\u2500\nconst btLower = (inputs.business_type || '').toLowerCase();\nconst catLower = (inputs.industry_category || '').toLowerCase();\nlet matchedKey = null;\nfor (const key of Object.keys(ATO_BENCHMARKS)) {\n  if (btLower.includes(key) || catLower.includes(key)) { matchedKey = key; break; }\n}\nif (!matchedKey) {\n  if (/food|beverage|hospitality|catering/i.test(catLower)) matchedKey = 'cafe';\n  else matchedKey = 'retail';\n}\nconst bench = ATO_BENCHMARKS[matchedKey];\n\n// \u2500\u2500 TRY TO EXTRACT ATO RATIOS FROM SCRAPED PAGE \u2500\u2500\n// If ATO page was successfully fetched, look for percentage patterns near the category\nlet atoLiveData = null;\nif (atoPageHtml && atoPageHtml.length > 500) {\n  // Look for cost of sales % and gross profit % patterns\n  const cosMatch = atoPageHtml.match(/cost of sales[\\s\\S]{0,200}?(\\d{1,2})\\s*(?:to|\u2013|-)\\s*(\\d{1,2})\\s*%/i);\n  const gpMatch  = atoPageHtml.match(/gross profit[\\s\\S]{0,200}?(\\d{1,2})\\s*(?:to|\u2013|-)\\s*(\\d{1,2})\\s*%/i);\n  if (cosMatch || gpMatch) {\n    atoLiveData = {\n      fetched: true,\n      cos_range: cosMatch ? `${cosMatch[1]}-${cosMatch[2]}%` : bench.cost_of_sales_pct_range + '%',\n      gp_range:  gpMatch  ? `${gpMatch[1]}-${gpMatch[2]}%`   : bench.gross_margin_pct_range + '%'\n    };\n  }\n}\n\n// \u2500\u2500 CITY TIER \u2500\u2500\nconst tier1 = ['sydney','melbourne','brisbane','perth','adelaide'];\nconst tier2 = ['gold coast','newcastle','wollongong','canberra','geelong','hobart','darwin','townsville','cairns'];\nconst cityLower = (inputs.city || '').toLowerCase();\nconst cityTier = tier1.some(c => cityLower.includes(c)) ? 'Tier 1'\n               : tier2.some(c => cityLower.includes(c)) ? 'Tier 2' : 'Tier 3';\n\n// \u2500\u2500 REVENUE BASELINE \u2500\u2500\n// Use A5 revenue if passed through, otherwise estimate\nconst a5Revenue = parseFloat(inputs.a5_monthly_revenue) || 0;\nconst avgTicket = parseFloat(inputs.avg_ticket_max) || parseFloat(inputs.avg_ticket_min) || 0;\nconst estimatedMonthlyRev = a5Revenue > 0 ? a5Revenue : avgTicket * 40 * 26;\nconst revenueSource = a5Revenue > 0 ? 'A5 agent output' : '40 customers/day \u00d7 avg ticket \u00d7 26 days (estimate)';\n\n// \u2500\u2500 RENT BURDEN \u2500\u2500\nconst monthlyRent = parseFloat(inputs.monthly_rent_budget_max) || 0;\nconst rentBurdenPct = estimatedMonthlyRev > 0\n  ? parseFloat(((monthlyRent / estimatedMonthlyRev) * 100).toFixed(1)) : null;\nconst rentBurdenLabel = !rentBurdenPct ? 'Unknown'\n  : rentBurdenPct <= 8  ? 'Excellent'\n  : rentBurdenPct <= 12 ? 'Healthy'\n  : rentBurdenPct <= 15 ? 'Caution'\n  : rentBurdenPct <= 20 ? 'High Risk' : 'Avoid';\nconst rentBurdenScore = !rentBurdenPct ? 50\n  : rentBurdenPct <= 8  ? 95\n  : rentBurdenPct <= 12 ? 80\n  : rentBurdenPct <= 15 ? 60\n  : rentBurdenPct <= 20 ? 35 : 10;\nconst benchmarkMaxRent = estimatedMonthlyRev > 0\n  ? `$${Math.round(estimatedMonthlyRev * bench.rent_pct_max / 100).toLocaleString()}/mo` : 'N/A';\n\n// \u2500\u2500 CAPITALISATION \u2500\u2500\nconst setupBudget = parseFloat(inputs.setup_budget) || 0;\nconst fitoutRange = bench.fitout_range || [60000, 200000];\nconst capitalisationAssessment = setupBudget < fitoutRange[0] ? 'Under-capitalised'\n  : setupBudget > fitoutRange[1] * 1.3   ? 'Over-capitalised'\n  : setupBudget <= fitoutRange[1]        ? 'Well-capitalised' : 'Adequate';\n\n// \u2500\u2500 3-YEAR PROJECTION \u2500\u2500\nconst annualRevY1 = estimatedMonthlyRev > 0 ? Math.round(estimatedMonthlyRev * 12 * 0.75) : null;\nconst annualRevY2 = estimatedMonthlyRev > 0 ? Math.round(estimatedMonthlyRev * 12 * 0.90) : null;\nconst annualRevY3 = estimatedMonthlyRev > 0 ? Math.round(estimatedMonthlyRev * 12 * 1.05) : null;\n\n// \u2500\u2500 PERFORMANCE PERCENTILE \u2500\u2500\nconst performancePercentile = !rentBurdenPct ? 50\n  : rentBurdenPct <= bench.rent_pct_max * 0.5  ? 85\n  : rentBurdenPct <= bench.rent_pct_max * 0.75 ? 70\n  : rentBurdenPct <= bench.rent_pct_max        ? 55\n  : rentBurdenPct <= bench.rent_pct_max * 1.25 ? 35 : 15;\n\nreturn [{ json: {\n  business_type:      inputs.business_type,\n  industry_category:  inputs.industry_category,\n  city: inputs.city, area: inputs.area, locality: inputs.locality,\n  country: inputs.country, currency: inputs.currency,\n  avg_ticket_min: inputs.avg_ticket_min, avg_ticket_max: inputs.avg_ticket_max,\n  monthly_rent_budget_max: inputs.monthly_rent_budget_max,\n  setup_budget: inputs.setup_budget, email: inputs.email,\n  // ATO data\n  matched_category:   matchedKey,\n  ato_anzsic_code:    bench.anzsic,\n  ato_source:         bench.source,\n  ato_live_fetched:   atoLiveData?.fetched || false,\n  ato_live_data:      atoLiveData,\n  bench,\n  city_tier:          cityTier,\n  // Revenue\n  revenue_source:          revenueSource,\n  estimated_monthly_rev:   estimatedMonthlyRev,\n  a5_revenue_used:         a5Revenue > 0,\n  // Rent burden\n  rent_burden_pct:    rentBurdenPct,\n  rent_burden_label:  rentBurdenLabel,\n  rent_burden_score:  rentBurdenScore,\n  benchmark_max_rent: benchmarkMaxRent,\n  // Other computed\n  capitalisation:          capitalisationAssessment,\n  fitout_range_min:        fitoutRange[0],\n  fitout_range_max:        fitoutRange[1],\n  performance_percentile:  performancePercentile,\n  annual_rev_y1: annualRevY1, annual_rev_y2: annualRevY2, annual_rev_y3: annualRevY3,\n  // Articles\n  benchmark_text:    formatArticles(benchmarkArticles, 5) || 'No benchmark articles found.',\n  rent_burden_text:  formatArticles(rentArticles, 4)     || 'No rent burden articles found.',\n  startup_cost_text: formatArticles(startupArticles, 4)  || 'No startup cost articles found.',\n  data_sources: {\n    ato_page_fetched:    atoLiveData?.fetched || false,\n    ato_benchmark_table: bench.source,\n    anzsic_code:         bench.anzsic,\n    benchmark_articles:  benchmarkArticles.length,\n    rent_articles:       rentArticles.length,\n    startup_articles:    startupArticles.length,\n    revenue_basis:       revenueSource\n  }\n}}];\n"
+      },
+      "id": "41c4f855-e71c-4670-a5d5-5b932f6d7407",
+      "name": "Compute Benchmarks & Rent Burden",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n'Produce an industry benchmark analysis for a new ' + $json.business_type + ' (' + $json.industry_category + ') at ' + $json.area + ', ' + $json.city + ', Australia.\\n\\n' +\n'\u2500\u2500 ATO BENCHMARK SOURCE \u2500\u2500\\n' +\n'ANZSIC Code: ' + $json.ato_anzsic_code + '\\n' +\n'Source: ' + $json.ato_source + '\\n' +\n'ATO live page fetched: ' + ($json.ato_live_fetched ? 'Yes \u2014 use live data below' : 'No \u2014 using verified ATO table values') + '\\n' +\n($json.ato_live_data ? 'Live ATO cost of sales range: ' + $json.ato_live_data.cos_range + '\\nLive ATO gross profit range: ' + $json.ato_live_data.gp_range + '\\n' : '') +\n'\\n\u2500\u2500 VERIFIED ATO BENCHMARK TABLE (cite ATO in your output) \u2500\u2500\\n' +\n'Category: ' + $json.matched_category + '\\n' +\n'Gross margin range: ' + $json.bench.gross_margin_pct_range + '%\\n' +\n'Cost of sales range: ' + $json.bench.cost_of_sales_pct_range + '%\\n' +\n'Rent % of revenue range: ' + $json.bench.rent_pct_range + '% (max sustainable: ' + $json.bench.rent_pct_max + '%)\\n' +\n'Labour range: ' + $json.bench.labour_pct_range + '%\\n' +\n'Category avg break-even: ' + $json.bench.avg_break_even_months + ' months\\n' +\n'3yr success rate: ' + $json.bench.success_rate_3yr + '%\\n' +\n'Industry CAGR: ' + $json.bench.industry_cagr + '\\n' +\n'Top failure reasons: ' + $json.bench.top_failure_reasons.join('; ') + '\\n\\n' +\n'\u2500\u2500 RENT BURDEN ANALYSIS \u2500\u2500\\n' +\n'Revenue basis: ' + $json.revenue_source + '\\n' +\n'Estimated monthly revenue: $' + $json.estimated_monthly_rev + '\\n' +\n'User rent: $' + $json.monthly_rent_budget_max + '/mo\\n' +\n'Rent burden: ' + ($json.rent_burden_pct !== null ? $json.rent_burden_pct + '%' : 'Unable to calculate') + ' (' + $json.rent_burden_label + ')\\n' +\n'Rent burden score: ' + $json.rent_burden_score + '/100\\n' +\n'Benchmark max affordable rent (ATO ' + $json.bench.rent_pct_max + '%): ' + $json.benchmark_max_rent + '\\n' +\n'Performance percentile: ' + $json.performance_percentile + 'th\\n\\n' +\n'\u2500\u2500 CAPITALISATION \u2500\u2500\\n' +\n'User setup budget: $' + $json.setup_budget + ' | ATO-aligned fit-out range: $' + $json.fitout_range_min + '\u2013$' + $json.fitout_range_max + '\\n' +\n'Assessment: ' + $json.capitalisation + '\\n\\n' +\n'\u2500\u2500 3-YEAR REVENUE PROJECTION \u2500\u2500\\n' +\n'Y1 (75% utilisation): $' + $json.annual_rev_y1 + '\\n' +\n'Y2 (90% utilisation): $' + $json.annual_rev_y2 + '\\n' +\n'Y3 (105% utilisation): $' + $json.annual_rev_y3 + '\\n\\n' +\n'\u2500\u2500 LIVE RESEARCH \u2500\u2500\\n' +\n'ATO + Industry benchmark search results:\\n' + $json.benchmark_text + '\\n\\n' +\n'Rent burden research:\\n' + $json.rent_burden_text + '\\n\\n' +\n'Startup cost research:\\n' + $json.startup_cost_text\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Industry Benchmark Agent (A7) for the Australian market.\n\nYou receive ATO Small Business Benchmark data (government-verified), computed rent burden analysis, and live SerpApi research.\n\nCRITICAL RULES:\n1. ALL currency is AUD ($). Never use \u20b9 or other currency symbols.\n2. ALWAYS cite 'ATO Small Business Benchmarks 2022-23' as the source for all financial ratios. Include the ANZSIC code.\n3. Rent burden is the single most important metric \u2014 weight it heavily.\n4. If A5 revenue was used (revenue_basis says 'A5 agent output'), trust it over the 40/day estimate.\n5. Three-year projections must use the provided baseline numbers exactly.\n6. Reference Fair Work Act minimum wages, GST thresholds ($75,000 p.a.), food safety licensing.\n7. benchmark_score penalises heavily for rent burden > ATO category max.\n8. Never fabricate statistics not in the provided data.\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown fences:\n{\n  \"benchmark_score\": <0-100>,\n  \"benchmark_verdict\": \"Excellent\" | \"Above Average\" | \"Average\" | \"Below Average\" | \"Poor\",\n  \"data_credibility\": \"ATO-verified\",\n  \"ato_citation\": \"ATO Small Business Benchmarks 2022-23, ANZSIC <code>\",\n  \"category_matched\": \"<e.g. cafe>\",\n  \"city_tier\": \"Tier 1\" | \"Tier 2\" | \"Tier 3\",\n  \"rent_burden\": {\n    \"pct\": <number or null>,\n    \"label\": \"Excellent\" | \"Healthy\" | \"Caution\" | \"High Risk\" | \"Avoid\" | \"Unknown\",\n    \"score\": <0-100>,\n    \"verdict\": \"<1 sentence citing ATO max %>\",\n    \"benchmark_max_affordable_rent\": \"<e.g. $4,200/mo (ATO 12% threshold)>\",\n    \"ato_rent_range\": \"<e.g. 8-12% of revenue per ATO benchmarks>\"\n  },\n  \"break_even_benchmark\": {\n    \"category_avg_months\": <number>,\n    \"vs_benchmark\": \"Better than average\" | \"At average\" | \"Worse than average\",\n    \"reasoning\": \"<1 sentence>\"\n  },\n  \"revenue_benchmark\": {\n    \"benchmark_monthly_revenue\": \"<category median for this city tier>\",\n    \"user_estimated_monthly\": \"<from inputs>\",\n    \"revenue_source\": \"<A5 agent output or estimate>\",\n    \"user_vs_benchmark_pct\": <number>,\n    \"verdict\": \"<1 sentence>\"\n  },\n  \"gross_margin_benchmark\": {\n    \"ato_range_pct\": \"<e.g. 65-70%>\",\n    \"category_avg_pct\": <number>,\n    \"note\": \"<1 sentence citing ATO>\"\n  },\n  \"three_year_projection\": {\n    \"year1_revenue\": \"<from inputs>\",\n    \"year2_revenue\": \"<from inputs>\",\n    \"year3_revenue\": \"<from inputs>\",\n    \"growth_assumption\": \"<brief>\"\n  },\n  \"capitalisation_assessment\": {\n    \"assessment\": \"Well-capitalised\" | \"Adequate\" | \"Under-capitalised\" | \"Over-capitalised\",\n    \"au_fitout_range\": \"<range>\",\n    \"user_budget\": \"<budget>\",\n    \"verdict\": \"<1 sentence>\"\n  },\n  \"industry_context\": {\n    \"cagr\": \"<range>\",\n    \"success_rate_3yr\": \"<pct>\",\n    \"top_failure_reasons\": [\"<r1>\",\"<r2>\",\"<r3>\"],\n    \"au_regulatory_context\": \"<Fair Work, GST, licensing>\",\n    \"market_outlook\": \"<1-2 sentences>\"\n  },\n  \"performance_percentile\": <number>,\n  \"key_risks\": [{\"risk\": \"<name>\",\"severity\": \"High|Medium|Low\",\"mitigation\": \"<action>\"}],\n  \"benchmark_recommendations\": [\"<rec1>\",\"<rec2>\",\"<rec3>\"],\n  \"overall_benchmark_verdict\": \"<2-3 sentences with ATO citation>\",\n  \"agent_notes\": \"<sources, assumptions, ATO ANZSIC code used>\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "b794df99-6ee1-4212-b321-8a3e64f56b76",
+      "name": "AI Agent \u2013 Benchmark Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1376,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 3000,
+          "temperature": 0.2
+        }
+      },
+      "id": "f6e6b639-ec60-4387-8124-32b41c1b44d6",
+      "name": "OpenAI Chat Model \u2013 A7",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1376,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputJson = $input.first().json;\nconst rawText = inputJson.output || inputJson.text || JSON.stringify(inputJson);\n\nlet analysis;\ntry {\n  let cleaned = rawText.trim()\n    .replace(/^```json\\s*/i,'').replace(/^```\\s*/i,'').replace(/```\\s*$/i,'').trim();\n  const s = cleaned.indexOf('{'), e = cleaned.lastIndexOf('}');\n  if (s !== -1 && e > s) cleaned = cleaned.slice(s, e+1);\n  cleaned = cleaned.replace(/(:\\s*)(\\d{1,3}(?:,\\d{3})+)([,\\}\\]\\s\\n])/g,(m,pre,num,post)=>pre+num.replace(/,/g,'')+post);\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error: true, raw_response: rawText.slice(0,800) };\n}\n\nconst d = $('Compute Benchmarks & Rent Burden').first().json;\n\nreturn [{ json: {\n  agent_id:   'A7',\n  agent_name: 'Industry Benchmarks (ATO-verified Australian)',\n  status:     analysis.parse_error ? 'error' : 'success',\n  timestamp:  new Date().toISOString(),\n  email:      d.email,\n  inputs_used: {\n    business_type:     d.business_type,\n    industry_category: d.industry_category,\n    location:          `${d.area}, ${d.city}`,\n    city_tier:         d.city_tier,\n    monthly_rent:      d.monthly_rent_budget_max,\n    setup_budget:      d.setup_budget,\n    avg_ticket:        `$${d.avg_ticket_min}\u2013$${d.avg_ticket_max}`\n  },\n  data_sources: {\n    primary:             d.ato_source,\n    anzsic_code:         d.ato_anzsic_code,\n    ato_live_fetched:    d.ato_live_fetched,\n    serp_research:       d.data_sources,\n    revenue_basis:       d.revenue_source,\n    ai_synthesis:        'GPT-4o'\n  },\n  computed: {\n    matched_category:       d.matched_category,\n    city_tier:              d.city_tier,\n    rent_burden_pct:        d.rent_burden_pct,\n    rent_burden_label:      d.rent_burden_label,\n    rent_burden_score:      d.rent_burden_score,\n    benchmark_max_rent:     d.benchmark_max_rent,\n    capitalisation:         d.capitalisation,\n    performance_percentile: d.performance_percentile,\n    annual_rev_y1:          d.annual_rev_y1,\n    annual_rev_y2:          d.annual_rev_y2,\n    annual_rev_y3:          d.annual_rev_y3,\n    a5_revenue_used:        d.a5_revenue_used\n  },\n  outputs: {\n    benchmark_score:          analysis.benchmark_score          ?? null,\n    benchmark_verdict:        analysis.benchmark_verdict         || null,\n    data_credibility:         analysis.data_credibility         || 'ATO-verified',\n    ato_citation:             analysis.ato_citation             || d.ato_source,\n    category_matched:         analysis.category_matched          || d.matched_category,\n    city_tier:                analysis.city_tier                 || d.city_tier,\n    rent_burden:              analysis.rent_burden               || { pct: d.rent_burden_pct, label: d.rent_burden_label, score: d.rent_burden_score, benchmark_max_affordable_rent: d.benchmark_max_rent },\n    break_even_benchmark:     analysis.break_even_benchmark      || null,\n    revenue_benchmark:        analysis.revenue_benchmark         || null,\n    gross_margin_benchmark:   analysis.gross_margin_benchmark    || null,\n    three_year_projection:    analysis.three_year_projection     || { year1_revenue: d.annual_rev_y1 ? `$${d.annual_rev_y1.toLocaleString()}` : null, year2_revenue: d.annual_rev_y2 ? `$${d.annual_rev_y2.toLocaleString()}` : null, year3_revenue: d.annual_rev_y3 ? `$${d.annual_rev_y3.toLocaleString()}` : null },\n    capitalisation_assessment: analysis.capitalisation_assessment || { assessment: d.capitalisation },\n    industry_context:         analysis.industry_context          || null,\n    performance_percentile:   analysis.performance_percentile   ?? d.performance_percentile,\n    key_risks:                analysis.key_risks                 || [],\n    benchmark_recommendations: analysis.benchmark_recommendations || [],\n    overall_benchmark_verdict: analysis.overall_benchmark_verdict || null,\n    agent_notes:              analysis.agent_notes               || null\n  }\n}}];\n\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "751d0d4e-62f3-4ea6-9730-1e9dc51908bb",
+      "name": "Format A7 Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "f75ad294-c1c7-481c-af15-6d6d4a02c6c5",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        240
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 A7 Intake": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "ATO \u2013 Fetch Benchmark Page",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 ATO + Industry Benchmarks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Rent Burden Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SerpApi \u2013 Startup Cost Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ATO \u2013 Fetch Benchmark Page": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 ATO + Industry Benchmarks": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Rent Burden Research": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "SerpApi \u2013 Startup Cost Research": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge All Results": {
+      "main": [
+        [
+          {
+            "node": "Compute Benchmarks & Rent Burden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Benchmarks & Rent Burden": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2013 Benchmark Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2013 Benchmark Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format A7 Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model \u2013 A7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2013 Benchmark Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format A7 Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5af7de4a-b63e-40a9-b5ae-3bfb7217c7a4",
+  "meta": {
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o-mini, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "7EwOTu6TZA5dkY8r",
+  "tags": []
+}

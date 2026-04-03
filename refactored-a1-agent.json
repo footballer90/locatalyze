@@ -1,0 +1,509 @@
+{
+  "name": "Locatalyze v2 \u2013 A1 Competitor Intelligence (Nearbysearch 500m Fixed)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a1-competitor",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "41b3a771-957e-4bf9-acee-316c83e600de",
+      "name": "Webhook \u2013 Receive Inputs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        -1024
+      ],
+      "webhookId": "locatalyze-a1-competitor-intel"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "business_type",
+              "value": "={{ $json.body.business_type }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "industry_category",
+              "value": "={{ $json.body.industry_category }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "area",
+              "value": "={{ $json.body.area }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "locality",
+              "value": "={{ $json.body.locality }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "pricing_positioning",
+              "value": "={{ $json.body.pricing_positioning }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "target_customer_segments",
+              "value": "={{ $json.body.target_customer_segments }}",
+              "type": "string"
+            },
+            {
+              "id": "f8",
+              "name": "landmark_hint",
+              "value": "={{ $json.body.landmark_hint ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f9",
+              "name": "nominatim_query",
+              "value": "={{ ($json.body.locality ? $json.body.locality + ', ' : '') + $json.body.area + ', ' + $json.body.city + ', Australia' }}",
+              "type": "string",
+              "_note": "NO encodeURIComponent \u2014 n8n encodes query params automatically. Double-encoding breaks Nominatim."
+            },
+            {
+              "id": "f10",
+              "name": "maps_type",
+              "value": "={{ ({'Food & Beverage':'restaurant','Cafe':'cafe','Coffee':'cafe','Restaurant':'restaurant','Gym':'gym','Fitness':'gym','Yoga':'gym','Pilates':'gym','Salon':'beauty_salon','Barber':'hair_care','Beauty':'beauty_salon','Spa':'spa','Pharmacy':'pharmacy','Retail':'store','Clothing':'clothing_store','Childcare':'school','Laundromat':'laundry'}[$json.body.business_type] || ({'Food & Beverage':'restaurant','Health & Fitness':'gym','Beauty & Wellness':'beauty_salon','Retail':'store','Services':'establishment'}[$json.body.industry_category] || 'establishment')) }}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "text_search_query",
+              "value": "={{ $json.body.industry_category + ' near ' + $json.body.locality + ' ' + $json.body.area + ' ' + $json.body.city }}",
+              "type": "string",
+              "_note": "Fallback text query used only if Nominatim geocoding fails"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "92d6b0b7-9da2-4ce7-ad6e-ab3142b3a7e5",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5440,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://nominatim.openstreetmap.org/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.nominatim_query }}"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            },
+            {
+              "name": "countrycodes",
+              "value": "au"
+            },
+            {
+              "name": "addressdetails",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Locatalyze/1.0 contact@locatalyze.com"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 12000
+        }
+      },
+      "id": "6fb015d3-5f0f-4083-b8f9-2fd286401bd4",
+      "name": "Nominatim \u2013 Geocode Address",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5680,
+        -1024
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle Nominatim response \u2014 returns array directly\n// n8n wraps it in json so we need to handle both [{}] and {body: [{}]} shapes\nconst raw = $input.first().json;\nconst inputs = $('Parse & Validate Inputs').first().json;\n\n// Nominatim returns a JSON array \u2014 n8n may parse it as the object itself\n// or wrap it. Handle all cases:\nlet results = [];\nif (Array.isArray(raw)) {\n  results = raw;\n} else if (Array.isArray(raw?.body)) {\n  results = raw.body;\n} else if (raw?.lat && raw?.lon) {\n  // Single object (shouldn't happen but handle anyway)\n  results = [raw];\n}\n\nconst first = results[0] || null;\nlet lat = first ? parseFloat(first.lat) : null;\nlet lng = first ? parseFloat(first.lon) : null;\n\n// \u2500\u2500 CITY FALLBACK COORDINATES \u2500\u2500\n// Used when Nominatim returns no result (e.g. very short street name)\nconst cityFallbacks = {\n  'melbourne': { lat: -37.8136, lng: 144.9631 },\n  'sydney':    { lat: -33.8688, lng: 151.2093 },\n  'brisbane':  { lat: -27.4698, lng: 153.0251 },\n  'perth':     { lat: -31.9505, lng: 115.8605 },\n  'adelaide':  { lat: -34.9285, lng: 138.6007 },\n  'canberra':  { lat: -35.2809, lng: 149.1300 },\n  'hobart':    { lat: -42.8821, lng: 147.3272 },\n  'darwin':    { lat: -12.4634, lng: 130.8456 },\n  'gold coast':{ lat: -28.0167, lng: 153.4000 },\n  'newcastle': { lat: -32.9283, lng: 151.7817 },\n  'wollongong':{ lat: -34.4278, lng: 150.8931 },\n  'geelong':   { lat: -38.1499, lng: 144.3617 }\n};\n\nlet geocodeSource = 'Nominatim (exact)';\nif (!lat || !lng || isNaN(lat) || isNaN(lng)) {\n  const cityLower = (inputs.city || '').toLowerCase();\n  for (const [city, coords] of Object.entries(cityFallbacks)) {\n    if (cityLower.includes(city)) {\n      lat = coords.lat;\n      lng = coords.lng;\n      geocodeSource = `City fallback \u2014 Nominatim returned no result for \"${inputs.nominatim_query}\"`;\n      break;\n    }\n  }\n}\n\n// If still no coordinates, use Melbourne as last resort\nif (!lat || !lng) {\n  lat = -37.8136;\n  lng = 144.9631;\n  geocodeSource = 'Default fallback (Melbourne centre) \u2014 no geocode result';\n}\n\nconst locationString = `${lat},${lng}`;\n\nreturn [{ json: {\n  ...inputs,\n  lat,\n  lng,\n  location_string:  locationString,\n  geocode_source:   geocodeSource,\n  geocode_raw:      first ? { display_name: first.display_name, osm_type: first.osm_type } : null,\n  nominatim_found:  !!first\n}}];\n"
+      },
+      "id": "b99d849b-5ab2-4f2f-a2e1-c5d39e2694c1",
+      "name": "Extract Coordinates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5920,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "location",
+              "value": "={{ $json.location_string }}"
+            },
+            {
+              "name": "radius",
+              "value": "500"
+            },
+            {
+              "name": "type",
+              "value": "={{ $json.maps_type }}"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "1d751b78-81d9-4b1e-aff1-8c7b83fbb024",
+      "name": "Google Maps \u2013 Nearby 500m",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6160,
+        -1152
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "location",
+              "value": "={{ $('Extract Coordinates').item.json.location_string }}"
+            },
+            {
+              "name": "radius",
+              "value": "1500"
+            },
+            {
+              "name": "type",
+              "value": "={{ $('Extract Coordinates').item.json.maps_type }}"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "89de3074-b589-47ca-acb8-81a6d229909a",
+      "name": "Google Maps \u2013 Nearby 1500m",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6160,
+        -896
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {},
+      "id": "ec98ad9d-fb18-4745-99cd-b9eb5ef16861",
+      "name": "Merge Map Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        6400,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst inputs = $input.all();\nconst geo = $('Extract Coordinates').first().json;\n\nconst localResults   = inputs[0]?.json?.results || [];\nconst broaderResults = inputs[1]?.json?.results || [];\n\n// Deduplicate by place_id\nconst seen = new Set();\nconst unique = [...localResults, ...broaderResults].filter(p => {\n  if (!p.place_id || seen.has(p.place_id)) return false;\n  seen.add(p.place_id);\n  return true;\n});\n\nconst localIds = new Set(localResults.map(p => p.place_id));\n\nconst competitors = unique.slice(0, 20).map(p => ({\n  name:         p.name,\n  address:      p.formatted_address || p.vicinity || '',\n  rating:       p.rating ?? 'N/A',\n  review_count: p.user_ratings_total ?? 0,\n  price_level:  p.price_level !== undefined ? '$'.repeat(p.price_level) : 'Unknown',\n  open_now:     p.opening_hours?.open_now ?? 'Unknown',\n  types:        (p.types || []).slice(0, 4).join(', '),\n  within_500m:  localIds.has(p.place_id),\n  maps_url:     `https://www.google.com/maps/place/?q=place_id:${p.place_id}`\n}));\n\nconst within500  = competitors.filter(c => c.within_500m);\nconst within1500 = competitors.filter(c => !c.within_500m);\n\nconst competitorText = competitors.length > 0\n  ? competitors.map((c, i) =>\n      `${i+1}. ${c.name} [${c.within_500m ? '500m' : '1500m'}]\\n   ${c.address}\\n   Rating: ${c.rating} (${c.review_count} reviews) | Price: ${c.price_level}`\n    ).join('\\n\\n')\n  : `No competitors found via nearbysearch at ${geo.location_string} \u2014 geocode source: ${geo.geocode_source}`;\n\nreturn [{ json: {\n  competitors_raw:          competitors,\n  competitor_count:         competitors.length,\n  competitors_500m:         within500.length,\n  competitors_1500m:        within1500.length,\n  competitors_text:         competitorText,\n  geocode_source:           geo.geocode_source,\n  geocode_display:          geo.geocode_raw?.display_name || geo.nominatim_query || '',\n  nominatim_found:          geo.nominatim_found,\n  lat:                      geo.lat,\n  lng:                      geo.lng,\n  location_string:          geo.location_string,\n  business_type:            geo.business_type,\n  industry_category:        geo.industry_category,\n  city:                     geo.city,\n  area:                     geo.area,\n  locality:                 geo.locality,\n  pricing_positioning:      geo.pricing_positioning,\n  target_customer_segments: geo.target_customer_segments,\n  landmark_hint:            geo.landmark_hint,\n  maps_type_used:           geo.maps_type\n}}];\n"
+      },
+      "id": "ab7fb688-bb44-4868-8571-03c2db4ab3fa",
+      "name": "Process & Deduplicate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6640,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n\"Analyse the competitive landscape for a new \" + $json.business_type + \" (\" + $json.industry_category + \") at \" + $json.locality + \", \" + $json.area + \", \" + $json.city + \".\\n\\n\" +\n\"Geocoding: \" + $json.geocode_source + \"\\n\" +\n\"Coordinates used: \" + $json.lat + \", \" + $json.lng + \"\\n\\n\" +\n\"Competitors found: \" + $json.competitor_count + \" total (\" + $json.competitors_500m + \" within exact 500m radius, \" + $json.competitors_1500m + \" within 1500m)\\n\\n\" +\n$json.competitors_text + \"\\n\\n\" +\n\"Pricing position: \" + $json.pricing_positioning + \"\\n\" +\n\"Target customers: \" + $json.target_customer_segments + \"\\n\\n\" +\n\"Currency is AUD ($). Apply Australian suburb context and F&B/retail benchmarks.\"\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Competitor Intelligence Agent \u2014 an expert in Australian retail and small business market analysis.\n\nYou receive nearbysearch results with exact radius tagging ([500m] vs [1500m]). Weight 500m competitors heavily \u2014 these are the direct threat.\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown fences:\n{\n  \"competitor_density_score\": <0-100>,\n  \"saturation_level\": \"Low\" | \"Medium\" | \"High\",\n  \"total_competitors_found\": <number>,\n  \"competitors_within_500m\": <number>,\n  \"competitors_within_1500m\": <number>,\n  \"geocode_accuracy\": \"<Nominatim exact | City fallback | Default fallback>\",\n  \"competitor_profiles\": [\n    {\n      \"name\": \"<n>\",\n      \"competitor_type\": \"Direct\" | \"Indirect\",\n      \"within_500m\": true | false,\n      \"estimated_pricing\": \"Budget\" | \"Mid-range\" | \"Premium\",\n      \"rating\": <number or null>,\n      \"review_count\": <number>,\n      \"strengths\": [\"...\"],\n      \"weaknesses\": [\"...\"]\n    }\n  ],\n  \"pricing_bands\": { \"budget_count\": <n>, \"mid_range_count\": <n>, \"premium_count\": <n> },\n  \"opportunity_gaps\": [\"...\", \"...\", \"...\"],\n  \"threat_summary\": \"<2-3 sentences>\",\n  \"differentiation_suggestions\": [\"...\", \"...\", \"...\"],\n  \"locality_context\": \"<1-2 sentences about this Australian suburb>\",\n  \"agent_notes\": \"<geocode source used, radius accuracy, any caveats>\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "917ff3d4-573c-4cc9-9e8e-dbab70afbab2",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        6880,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 2500,
+          "temperature": 0.3
+        }
+      },
+      "id": "c64a9640-d39d-41a3-b190-e4b3daa71ace",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        6880,
+        -832
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output || '';\nlet analysis;\ntry {\n  const cleaned = rawText.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error: true, raw_response: rawText };\n}\n\nconst d = $('Process & Deduplicate Results').first().json;\n\nreturn [{ json: {\n  agent_id:   'A1',\n  agent_name: 'Competitor Intelligence (Nearbysearch 500m)',\n  status:     analysis.parse_error ? 'error' : 'success',\n  timestamp:  new Date().toISOString(),\n  inputs_used: {\n    business_type:            d.business_type,\n    industry_category:        d.industry_category,\n    location:                 `${d.locality}, ${d.area}, ${d.city}`,\n    pricing_positioning:      d.pricing_positioning,\n    target_customer_segments: d.target_customer_segments,\n    geocode_source:           d.geocode_source,\n    nominatim_found:          d.nominatim_found,\n    coordinates:              `${d.lat}, ${d.lng}`\n  },\n  outputs: {\n    competitor_density_score:    analysis.competitor_density_score    ?? null,\n    saturation_level:            analysis.saturation_level            || null,\n    total_competitors_found:     analysis.total_competitors_found     ?? d.competitor_count,\n    competitors_within_500m:     analysis.competitors_within_500m     ?? d.competitors_500m,\n    competitors_within_1500m:    analysis.competitors_within_1500m    ?? d.competitors_1500m,\n    geocode_accuracy:            analysis.geocode_accuracy            || d.geocode_source,\n    competitor_profiles:         analysis.competitor_profiles         || [],\n    pricing_bands:               analysis.pricing_bands               || {},\n    opportunity_gaps:            analysis.opportunity_gaps            || [],\n    threat_summary:              analysis.threat_summary              || null,\n    differentiation_suggestions: analysis.differentiation_suggestions || [],\n    locality_context:            analysis.locality_context            || null,\n    agent_notes:                 analysis.agent_notes                 || null\n  },\n  raw_maps_data: d.competitors_raw\n}}];\n\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "2721ba37-b941-47bf-9dd1-7c5eecc1ae1d",
+      "name": "Format Agent Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7296,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        7568,
+        -1024
+      ],
+      "id": "b6e43724-9e79-41bd-9679-aac375860be6",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 Receive Inputs": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "Nominatim \u2013 Geocode Address",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nominatim \u2013 Geocode Address": {
+      "main": [
+        [
+          {
+            "node": "Extract Coordinates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Coordinates": {
+      "main": [
+        [
+          {
+            "node": "Google Maps \u2013 Nearby 500m",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Maps \u2013 Nearby 1500m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Maps \u2013 Nearby 500m": {
+      "main": [
+        [
+          {
+            "node": "Merge Map Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Maps \u2013 Nearby 1500m": {
+      "main": [
+        [
+          {
+            "node": "Merge Map Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Map Results": {
+      "main": [
+        [
+          {
+            "node": "Process & Deduplicate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Deduplicate Results": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c53d18da-cd52-4241-ac3e-12d936c833b9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o-mini, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "3zFAr9W6mecrM4QQ",
+  "tags": []
+}

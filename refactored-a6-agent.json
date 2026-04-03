@@ -1,0 +1,539 @@
+{
+  "name": "Locatalyze v2 \u2013 A6 Demographics v2 (Fixed + Enhanced)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a6-demographics",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c2fe0350-6cfb-467a-bc8c-481967466c6b",
+      "name": "Webhook \u2013 A6 Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        5920,
+        2272
+      ],
+      "webhookId": "locatalyze-a6-demographics"
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $input.first().json.body || $input.first().json;\n\nconst city              = b.city             || '';\nconst area              = b.area             || '';\nconst locality          = b.locality         || '';\nconst country           = b.country          || 'Australia';\nconst business_type     = b.business_type    || '';\nconst industry_category = b.industry_category || '';\nconst target_segments   = b.target_customer_segments || [];\nconst email             = b.email            || '';\n\n// FIX 1: Geocode the SUBURB directly, not \"locality, area, city\"\n// \"Brunswick Street, Fitzroy, Melbourne\" resolves to CBD\n// \"Fitzroy VIC 3065\" resolves correctly to the suburb centroid\nconst SUBURB_POSTCODES = {\n  'fitzroy':'3065','fitzroy north':'3068','collingwood':'3066','abbotsford':'3067',\n  'carlton':'3053','carlton north':'3054','richmond':'3121','northcote':'3070',\n  'brunswick':'3056','brunswick east':'3057','clifton hill':'3068','north melbourne':'3051',\n  'south yarra':'3141','prahran':'3181','st kilda':'3182','elwood':'3184',\n  'hawthorn':'3122','camberwell':'3124','surry hills':'2010','newtown':'2042',\n  'fortitude valley':'4006','new farm':'4005','west end':'4101','subiaco':'6008',\n  'norwood':'5067','braddon':'2612'\n};\nconst areaKey = area.toLowerCase().trim();\nconst knownPostcode = SUBURB_POSTCODES[areaKey] || '';\n\n// Use \"Suburb VIC postcode\" format for Nominatim \u2014 much more accurate\nconst stateGuess = ({'Melbourne':'VIC','Sydney':'NSW','Brisbane':'QLD','Perth':'WA','Adelaide':'SA','Canberra':'ACT','Hobart':'TAS','Darwin':'NT'})[city] || 'VIC';\nconst geo_query = knownPostcode\n  ? `${area} ${stateGuess} ${knownPostcode}`\n  : `${area} ${stateGuess} Australia`;\n\nconst abs_postcode = knownPostcode || '';\n\nreturn [{ json: {\n  city, area, locality, country,\n  business_type, industry_category,\n  target_customer_segments: target_segments,\n  email, geo_query,\n  abs_postcode,\n  state_guess: stateGuess,\n  radius_m: 500\n}}];"
+      },
+      "id": "fdb427eb-789a-47f7-a2cc-d60561827e7f",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6160,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://nominatim.openstreetmap.org/search?q={{ encodeURIComponent($json.geo_query) }}&format=json&limit=1&addressdetails=1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Locatalyze/1.0 (contact@locatalyze.com)"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "9c60f20d-e58a-4abf-a872-d077fb5c4408",
+      "name": "Nominatim \u2013 Geocode Suburb",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6400,
+        2272
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "const geo  = $input.first().json;\nconst prev = $('Parse & Validate Inputs').first().json;\n\nconst result = Array.isArray(geo) ? geo[0] : null;\nlet lat = null, lon = null, postcode = null, suburb = null, state = null;\n\nif (result) {\n  lat      = parseFloat(result.lat);\n  lon      = parseFloat(result.lon);\n  postcode = result.address?.postcode || null;\n  suburb   = result.address?.suburb || result.address?.locality || result.address?.town || prev.area;\n  state    = result.address?.state || result.address?.state_code || '';\n}\n\n// Known suburb centroids \u2014 use these if Nominatim returns wrong coords\n// Detected wrong: if lat/lon is within 500m of Melbourne CBD (-37.8136, 144.9631)\nconst SUBURB_CENTROIDS = {\n  'fitzroy':         {lat:-37.7985,lon:144.9784,postcode:'3065'},\n  'fitzroy north':   {lat:-37.7817,lon:144.9817,postcode:'3068'},\n  'collingwood':     {lat:-37.8030,lon:144.9875,postcode:'3066'},\n  'abbotsford':      {lat:-37.8027,lon:144.9981,postcode:'3067'},\n  'carlton':         {lat:-37.7990,lon:144.9662,postcode:'3053'},\n  'richmond':        {lat:-37.8183,lon:144.9971,postcode:'3121'},\n  'northcote':       {lat:-37.7710,lon:144.9990,postcode:'3070'},\n  'brunswick':       {lat:-37.7668,lon:144.9619,postcode:'3056'},\n  'north melbourne': {lat:-37.7993,lon:144.9451,postcode:'3051'},\n  'south yarra':     {lat:-37.8400,lon:144.9920,postcode:'3141'},\n  'st kilda':        {lat:-37.8583,lon:144.9819,postcode:'3182'},\n  'prahran':         {lat:-37.8499,lon:144.9900,postcode:'3181'},\n  'hawthorn':        {lat:-37.8226,lon:145.0351,postcode:'3122'},\n  'surry hills':     {lat:-33.8852,lon:151.2102,postcode:'2010'},\n  'newtown':         {lat:-33.8967,lon:151.1794,postcode:'2042'},\n  'fortitude valley':{lat:-27.4591,lon:153.0354,postcode:'4006'},\n  'west end':        {lat:-27.4794,lon:153.0100,postcode:'4101'},\n  'subiaco':         {lat:-31.9455,lon:115.8327,postcode:'6008'},\n  'norwood':         {lat:-34.9212,lon:138.6363,postcode:'5067'},\n};\n\nfunction distKm(a, b, c, d) {\n  const R = 6371, dL=(c-a)*Math.PI/180, dl=(d-b)*Math.PI/180;\n  const x = Math.sin(dL/2)**2 + Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dl/2)**2;\n  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));\n}\n\nconst areaKey = (prev.area || '').toLowerCase().trim();\nconst centroid = SUBURB_CENTROIDS[areaKey];\n\n// Use hardcoded centroid if: Nominatim failed OR returned CBD (within 2km of -37.8136,144.9631)\nconst cbdDist = lat && lon ? distKm(lat, lon, -37.8136, 144.9631) : 999;\nconst useHardcoded = centroid && (!lat || !lon || cbdDist < 2.0);\nif (useHardcoded) {\n  lat      = centroid.lat;\n  lon      = centroid.lon;\n  postcode = postcode || centroid.postcode;\n}\n\n// Ensure postcode from known map\nif (!postcode && centroid) postcode = centroid.postcode;\nif (!postcode && prev.abs_postcode) postcode = prev.abs_postcode;\n\n// State fallbacks\nconst stateFallbacks = {'Melbourne':'VIC','Sydney':'NSW','Brisbane':'QLD','Perth':'WA','Adelaide':'SA','Canberra':'ACT','Hobart':'TAS','Darwin':'NT'};\nif (!state || state.length > 4) state = stateFallbacks[prev.city] || 'VIC';\n\nconst abs_postcode = postcode ? postcode.replace(/^0+/,'') : null;\n\nreturn [{ json: {\n  ...prev,\n  lat, lon, postcode, abs_postcode,\n  suburb: suburb || prev.area,\n  state,\n  geocode_success: !!(lat && lon),\n  used_hardcoded_centroid: useHardcoded || false,\n  cbd_dist_km: Math.round(cbdDist*100)/100\n}}];"
+      },
+      "id": "036b0631-4040-4967-9ad2-bce9915149c5",
+      "name": "Extract Coordinates & Postcode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6640,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.data.abs.gov.au/data/C21_G02_POA/POA{{ $json.abs_postcode }}.all.A.2021?format=jsondata",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "cd73cf34-79a0-48ec-b30d-97553f39d468",
+      "name": "ABS Census \u2013 G02 Income & Population",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6880,
+        2032
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://api.data.abs.gov.au/data/WPI/1.3.10.30.1.10.Q?format=jsondata&startPeriod=2021-Q3&endPeriod=2025-Q3",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "05cd3335-c852-44cb-8d66-b52430af1d72",
+      "name": "ABS WPI \u2013 Wage Price Index",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6880,
+        2208
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "=https://api.data.abs.gov.au/data/SEIFA_POA/POA{{ $('Extract Coordinates & Postcode').first().json.abs_postcode }}.all.A?format=jsondata",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "6a61b524-990a-4912-9714-6aa08ee567b0",
+      "name": "ABS SEIFA \u2013 Suburb Advantage Score",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6880,
+        2384
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://overpass-api.de/api/interpreter",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "={{ $json.overpass_query }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "d71c3522-1ea0-4785-92fa-e4e22a8502c1",
+      "name": "Overpass \u2013 Combined POI Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7088,
+        2736
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "85a7d0e8-e806-4121-9b83-874d5c1f4792",
+      "name": "Merge All Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        7120,
+        2688
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all    = $input.all();\nconst coords = $('Extract Coordinates & Postcode').first().json;\n\n// \u2500\u2500 PARSE INPUTS BY MERGE POSITION \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Merge order: [0]=G02, [1]=WPI, [2]=SEIFA, [3]=Transit, [4]=Edu, [5]=Demand\nlet absG02Data = null, wpiData = null, seifaData = null;\nlet transit_count = 0, edu_count = 0, demand_count = 0;\n\nfunction getOverpassCount(j) {\n  if (!j) return 0;\n  // Handle neverError HTML responses (gateway timeout etc)\n  if (typeof j === 'string') return 0;\n  if (!Array.isArray(j.elements)) return 0;\n  if (j.elements.length === 0) return 0;\n  // 'out count' format: [{type:'count', id:0, tags:{total:'N'}}]\n  const first = j.elements[0];\n  if (first?.type === 'count' && first?.tags?.total !== undefined) {\n    return parseInt(first.tags.total) || 0;\n  }\n  // Some mirrors use tags.nodes + tags.ways + tags.relations\n  if (first?.tags?.nodes !== undefined) {\n    return (parseInt(first.tags.nodes)||0) + (parseInt(first.tags.ways)||0) + (parseInt(first.tags.relations)||0);\n  }\n  // Fallback: raw element count (for 'out body' responses)\n  return j.elements.length;\n}\n\n// \u2500\u2500 DETECTION: ABS by dataSets, Overpass by _type:'combined' \u2500\u2500\nfor (const item of all) {\n  const j = item?.json;\n  if (!j) continue;\n\n  // Single combined Overpass response\n  if (j._type === 'combined') {\n    transit_count = parseInt(j.transit_count) || 0;\n    edu_count     = parseInt(j.edu_count)     || 0;\n    demand_count  = parseInt(j.demand_count)  || 0;\n    continue;\n  }\n\n  // ABS SDMX-JSON responses \u2014 v2 API returns data.dataSets\n  if (j?.data?.dataSets !== undefined) {\n    const seriesCount = Object.keys(j.data?.dataSets?.[0]?.series || {}).length;\n    if (seriesCount >= 10 && !absG02Data) absG02Data = j;\n    else if (!wpiData)                    wpiData    = j;\n    else if (!seifaData)                  seifaData  = j;\n  }\n}\n\n// \u2500\u2500 PARSE ABS G02 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// SDMX-JSON with dimensionAtObservation=AllDimensions puts each obs as a key\n// Key format: \"REGION:MEASURE:FREQ\" e.g. \"POA3065:3:A\"\n// G02 measures: 0=Tot_P_P, 3=Median_tot_prsnl_inc_weekly, 7=Median_age, 15=Median_rent_weekly\nlet abs_median_weekly_income = null, abs_population = null;\nlet abs_median_age = null, abs_median_weekly_rent = null;\nlet abs_data_found = false;\n\n// \u2500\u2500 ABS G02 Parser \u2014 handles both v1 and v2 SDMX-JSON formats \u2500\u2500\nif (absG02Data?.data?.dataSets) {\n  const ds = absG02Data.data.dataSets[0];\n  const struct = absG02Data.data.structure;\n\n  // Get measure dimension names to map indices to field names\n  const measureDimension = struct?.dimensions?.series?.find(d => d.id === 'MEASURE')\n    || struct?.dimensions?.observation?.find(d => d.id === 'MEASURE');\n  const measureValues = measureDimension?.values || [];\n\n  // Known G02 measure IDs (ABS Census 2021)\n  const MEASURE_MAP = {\n    'Tot_P_P': 'population',\n    'Median_tot_prsnl_inc_weekly': 'income',\n    'Median_age_persons': 'age',\n    'Median_rent_weekly': 'rent'\n  };\n\n  function extractFromSeries(series) {\n    for (const [key, val] of Object.entries(series)) {\n      const obs = val.observations;\n      if (!obs) continue;\n      const v = Object.values(obs)?.[0]?.[0];\n      if (v === null || v === undefined || isNaN(parseFloat(v))) continue;\n      const num = parseFloat(v);\n      if (num <= 0) continue;\n      abs_data_found = true;\n\n      // Try to match by measure name from structure\n      const parts = key.split(':');\n      const measureIdx = parseInt(parts[1] ?? parts[0] ?? '99');\n      const measureId = measureValues[measureIdx]?.id || '';\n      const field = MEASURE_MAP[measureId] || '';\n\n      if (field === 'population' || (measureIdx === 0 && !abs_population))           abs_population           = num;\n      if (field === 'income'     || (measureIdx === 3 && !abs_median_weekly_income)) abs_median_weekly_income = num;\n      if (field === 'age'        || (measureIdx === 7 && !abs_median_age))           abs_median_age           = num;\n      if (field === 'rent'       || (measureIdx === 15 && !abs_median_weekly_rent))  abs_median_weekly_rent   = num;\n    }\n  }\n\n  function extractFromObservations(obs) {\n    // v2 flat observations: key = \"dim0:dim1:dim2:...\", value = [obs_val, ...]\n    for (const [key, valArr] of Object.entries(obs)) {\n      const v = parseFloat(valArr?.[0]);\n      if (!v || v <= 0 || isNaN(v)) continue;\n      abs_data_found = true;\n      const parts = key.split(':');\n      const measureIdx = parseInt(parts[1] ?? '99');\n      const measureId = measureValues[measureIdx]?.id || '';\n      const field = MEASURE_MAP[measureId] || '';\n      if (field === 'population' || (measureIdx === 0 && !abs_population))           abs_population           = v;\n      if (field === 'income'     || (measureIdx === 3 && !abs_median_weekly_income)) abs_median_weekly_income = v;\n      if (field === 'age'        || (measureIdx === 7 && !abs_median_age))           abs_median_age           = v;\n      if (field === 'rent'       || (measureIdx === 15 && !abs_median_weekly_rent))  abs_median_weekly_rent   = v;\n    }\n  }\n\n  if (ds.series)       extractFromSeries(ds.series);\n  if (ds.observations) extractFromObservations(ds.observations);\n}\n\n// \u2500\u2500 PARSE WPI \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nlet wpi_value = null;\nif (wpiData?.data?.dataSets?.[0]?.series) {\n  for (const val of Object.values(wpiData.data.dataSets[0].series)) {\n    const obs = val.observations;\n    if (!obs) continue;\n    const latest = Object.values(obs).sort().pop()?.[0];\n    if (latest) { wpi_value = latest; break; }\n  }\n}\nconst WPI_BASE_2021 = 112.5;\nconst wpi_current = wpi_value || 134.0;\nconst wage_growth_multiplier = wpi_current / WPI_BASE_2021;\n\n// \u2500\u2500 PARSE SEIFA \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nlet seifa_score = null, seifa_decile = null;\nif (seifaData?.data?.dataSets?.[0]?.series) {\n  const vals = [];\n  for (const val of Object.values(seifaData.data.dataSets[0].series)) {\n    const obs = val.observations;\n    if (!obs) continue;\n    const v = Object.values(obs)?.[0]?.[0];\n    if (v && !isNaN(v)) vals.push(v);\n  }\n  if (vals.length >= 1) seifa_score  = vals[0];\n  if (vals.length >= 2) seifa_decile = vals[1];\n}\n\n// \u2500\u2500 KNOWN SEIFA SCORES FOR COMMON SUBURBS \u2500\u2500\n// If API fails, use verified 2021 SEIFA IRSAD scores\nconst KNOWN_SEIFA = {\n  '3065':1062,'3066':1042,'3053':1064,'3121':1064,'3070':1034,\n  '3056':1003,'3068':1055,'3067':1056,'3141':1114,'3182':1089,\n  '2010':1085,'2042':1070,'4006':1032,'4101':1028,'6008':1095,'5067':1052\n};\nconst pc = coords.postcode;\nif (!seifa_score && pc && KNOWN_SEIFA[pc]) seifa_score = KNOWN_SEIFA[pc];\n\n// \u2500\u2500 INCOME FALLBACKS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst STATE_WEEKLY = {\n  'VIC':1100,'NSW':1200,'QLD':1000,'WA':1150,'SA':900,'TAS':850,'ACT':1400,'NT':1050\n};\nconst raw_weekly_income = abs_median_weekly_income ||\n  STATE_WEEKLY[coords.state_guess || 'VIC'] || 1000;\n\nconst adjusted_weekly  = Math.round(raw_weekly_income * wage_growth_multiplier);\nconst adjusted_monthly = Math.round(adjusted_weekly * 52 / 12);\nconst adjusted_annual  = adjusted_weekly * 52;\n\n// \u2500\u2500 SEIFA PREMIUM \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nlet seifa_premium = 1.0, seifa_label = 'Average';\nif (seifa_score) {\n  if      (seifa_score >= 1100) { seifa_premium=1.25; seifa_label='High Advantage'; }\n  else if (seifa_score >= 1050) { seifa_premium=1.15; seifa_label='Above Average'; }\n  else if (seifa_score >= 950)  { seifa_premium=1.00; seifa_label='Average'; }\n  else if (seifa_score >= 900)  { seifa_premium=0.90; seifa_label='Below Average'; }\n  else                          { seifa_premium=0.80; seifa_label='Disadvantaged'; }\n}\nconst seifa_adjusted_monthly = Math.round(adjusted_monthly * seifa_premium);\n\n// \u2500\u2500 SCORES \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst population = abs_population || 8500;\nconst pop_density = Math.round(population / 5);\n\n// Foot traffic \u2014 FIXED weights for tram-heavy Melbourne inner suburbs\nconst tramCities = ['melbourne'];\nconst cityLower = (coords.city||'').toLowerCase();\nconst isTramCity = tramCities.some(c => cityLower.includes(c));\n\n// Melbourne: tram stops are extremely dense so transit_count will be high in inner suburbs\nconst transitScore = Math.min(isTramCity ? transit_count * 8 : transit_count * 15, 45);\nconst demandScore  = Math.min(Math.round(demand_count * 0.12), 30);\nconst eduBonus     = Math.min(edu_count * 5, 15);\nconst densityBonus = pop_density >= 5000?10:pop_density>=2000?7:pop_density>=1000?5:2;\nconst seifaBonus   = seifa_score>=1050?8:seifa_score>=950?4:0;\nconst foot_traffic_score = Math.min(Math.max(Math.round(transitScore+demandScore+eduBonus+densityBonus+seifaBonus),10),100);\nconst foot_traffic_label = foot_traffic_score>=75?'High':foot_traffic_score>=55?'Moderate':foot_traffic_score>=35?'Low':'Very Low';\n\nconst income_score = Math.min(Math.max(Math.round(((adjusted_weekly-500)/2000)*100),0),100);\nconst income_label = adjusted_weekly>=2000?'High Income Area':adjusted_weekly>=1400?'Upper-Middle Income':adjusted_weekly>=900?'Middle Income':'Lower-Middle Income';\n\nconst biz  = (coords.business_type||'').toLowerCase();\nconst segs = (coords.target_customer_segments||[]).map(s=>s.toLowerCase()).join(' ');\nlet fit = 50;\nif (biz.includes('caf\u00e9')||biz.includes('cafe')||biz.includes('coffee')) {\n  fit += adjusted_weekly>=1500?25:adjusted_weekly>=900?15:5;\n} else if (biz.includes('restaurant')||biz.includes('food')) {\n  fit += adjusted_weekly>=1200?20:adjusted_weekly>=700?10:5;\n} else { fit += adjusted_weekly>=1000?15:8; }\nif (segs.includes('professional')) fit += 8;\nif (segs.includes('student') && edu_count>=2) fit += 8;\nif (segs.includes('family') && seifa_score>=1000) fit += 5;\nconst demographic_fit = Math.min(Math.max(fit,10),100);\n\nconst consumer_affordability = Math.min(Math.max(Math.round((adjusted_weekly/2500)*100*0.7+demographic_fit*0.3),0),100);\nconst density_score = Math.min(Math.max(Math.round((pop_density/10000)*100),0),100);\nconst demographics_score = Math.round(foot_traffic_score*0.30+income_score*0.30+demographic_fit*0.25+density_score*0.15);\n\nconst est_daily = Math.round(population*0.05*(foot_traffic_score/100)*0.015);\n\nconst area_type =\n  seifa_score>=1100&&transit_count>=3?'Premium Transit-Connected':\n  seifa_score>=1100?'Affluent Residential':\n  transit_count>=10?'High-Transit Urban Inner':\n  transit_count>=3?'Well-Connected Urban':\n  edu_count>=2?'Student/Education Hub':\n  demand_count>=8?'Dense Commercial':\n  demand_count>=4?'Mixed-Use Urban':'Suburban';\n\nconst segmentAlignment = (coords.target_customer_segments||[]).map(seg=>{\n  const s=seg.toLowerCase();\n  let score=60,alignment='Moderate';\n  if(s.includes('student')){score=edu_count>=2?80:55;alignment=edu_count>=2?'Strong':'Moderate';}\n  if(s.includes('professional')){score=demand_count>=5?80:60;alignment=demand_count>=5?'Strong':'Moderate';}\n  if(s.includes('family')){score=seifa_score>=1000?75:55;alignment=seifa_score>=1000?'Strong':'Moderate';}\n  if(s.includes('tourist')){score=transit_count>=5?70:45;alignment=transit_count>=5?'Strong':'Low';}\n  return {segment:seg,alignment,score};\n});\n\nconst demandGenerators=[\n  transit_count>0?`${transit_count} transit stop(s) within ${coords.radius_m}m (incl. trams/buses)`:null,\n  edu_count>0?`${edu_count} education hub(s) within ${coords.radius_m}m`:null,\n  demand_count>0?`${demand_count} demand POIs (cafes/shops/offices/hospitals)`:null,\n  seifa_score>=1050?`Above-average suburb (SEIFA ${seifa_score} \u2014 ${seifa_label})`:null\n].filter(Boolean);\n\n// Premium area flag\nconst is_premium = seifa_score>=1050 || adjusted_weekly>=1500;\nconst city_tier = ['sydney','melbourne','brisbane','perth','adelaide'].some(c=>(coords.city||'').toLowerCase().includes(c))?'Tier 1':'Tier 2';\nconst urban_density = pop_density>=8000?'Very High':pop_density>=4000?'High':pop_density>=1500?'Medium':'Low';\n\nreturn [{ json: {\n  abs_data_found, abs_median_weekly_income: raw_weekly_income,\n  abs_population, abs_median_age, abs_median_weekly_rent,\n  postcode: coords.postcode, suburb: coords.suburb, state: coords.state_guess,\n  wpi_current, wage_growth_multiplier: parseFloat(wage_growth_multiplier.toFixed(3)),\n  adjusted_weekly_income: adjusted_weekly,\n  adjusted_monthly_income: adjusted_monthly,\n  adjusted_annual_income:  adjusted_annual,\n  seifa_score, seifa_decile, seifa_label, seifa_premium,\n  seifa_adjusted_monthly_income: seifa_adjusted_monthly,\n  overpass_transit_count: transit_count,\n  overpass_edu_count: edu_count,\n  overpass_demand_count: demand_count,\n  foot_traffic_score, foot_traffic_label,\n  income_score, income_label,\n  density_score, consumer_affordability_index: consumer_affordability,\n  demographic_fit_score: demographic_fit,\n  demographics_score, est_daily_customers: est_daily,\n  population_per_sqkm: pop_density,\n  area_type, demand_generators: demandGenerators,\n  segment_alignment: segmentAlignment,\n  is_premium_area: is_premium, city_tier, urban_density,\n  city: coords.city, area: coords.area, locality: coords.locality,\n  business_type: coords.business_type, industry_category: coords.industry_category,\n  target_customer_segments: coords.target_customer_segments,\n  email: coords.email, lat: coords.lat, lon: coords.lon,\n  radius_m: coords.radius_m, geocode_success: coords.geocode_success,\n  used_hardcoded_centroid: coords.used_hardcoded_centroid\n}}];"
+      },
+      "id": "8c8492ba-1296-4816-a89a-d39002da9c78",
+      "name": "Compute All Scores (ABS + WPI + SEIFA)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7360,
+        2688
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n'Analyse demographics and foot traffic for a new ' + $json.business_type + ' (' + $json.industry_category + ')' +\n' at ' + $json.locality + ', ' + $json.area + ', ' + $json.city + ', Australia.' +\n'\\n\\n\u2500\u2500 GEOCODING \u2500\u2500' +\n'\\nCoordinates: ' + $json.lat + ', ' + $json.lon + (($json.used_hardcoded_centroid) ? ' (hardcoded suburb centroid \u2014 Nominatim returned CBD)' : ' (Nominatim)') +\n'\\nPostcode: ' + ($json.postcode || 'unknown') + ' | State: ' + ($json.state || 'VIC') +\n'\\n\\n\u2500\u2500 ABS CENSUS 2021 (WPI-adjusted to 2026) \u2500\u2500' +\n'\\nData found: ' + $json.abs_data_found +\n'\\nMedian personal income: $' + $json.adjusted_weekly_income + '/week ($' + $json.adjusted_monthly_income + '/month, $' + $json.adjusted_annual_income + '/year)' +\n'\\nWage growth applied: ' + Math.round(($json.wage_growth_multiplier - 1) * 100) + '% (2021\u21922026 WPI index: ' + $json.wpi_current + ')' +\n($json.abs_median_age ? '\\nMedian age: ' + $json.abs_median_age + ' years' : '') +\n($json.abs_population ? '\\nSuburb population: ' + $json.abs_population.toLocaleString() : '\\nSuburb population: not available from ABS') +\n($json.abs_median_weekly_rent ? '\\nMedian weekly rent: $' + $json.abs_median_weekly_rent : '') +\n'\\n\\n\u2500\u2500 SEIFA SOCIO-ECONOMIC INDEX 2021 \u2500\u2500' +\n'\\nSEIFA IRSAD score: ' + ($json.seifa_score || 'Not available') + ' (national avg = 1000)' +\n'\\nSEIFA label: ' + $json.seifa_label +\n'\\nSEIFA decile: ' + ($json.seifa_decile || 'N/A') +\n'\\nSEIFA-adjusted monthly income: $' + $json.seifa_adjusted_monthly_income +\n'\\nIs premium area: ' + $json.is_premium_area +\n'\\n\\n\u2500\u2500 OSM OVERPASS POI DATA (' + $json.radius_m + 'm radius from suburb centroid) \u2500\u2500' +\n'\\nTransit stops (bus + tram + train): ' + $json.overpass_transit_count +\n'\\nEducation hubs (schools/unis/libraries): ' + $json.overpass_edu_count +\n'\\nDemand generators (cafes/shops/offices/hospitals): ' + $json.overpass_demand_count +\n'\\n\\n\u2500\u2500 COMPUTED SCORES \u2500\u2500' +\n'\\nFoot traffic score: ' + $json.foot_traffic_score + '/100 (' + $json.foot_traffic_label + ')' +\n'\\nIncome score: ' + $json.income_score + '/100 (' + $json.income_label + ')' +\n'\\nDemographic fit score: ' + $json.demographic_fit_score + '/100' +\n'\\nConsumer affordability index: ' + $json.consumer_affordability_index + '/100' +\n'\\nOverall demographics score: ' + $json.demographics_score + '/100' +\n'\\nCity tier: ' + $json.city_tier + ' | Urban density: ' + $json.urban_density +\n'\\nArea type: ' + $json.area_type +\n'\\nPopulation density: ' + $json.population_per_sqkm + '/km\u00b2' +\n'\\nEst. daily customers: ' + $json.est_daily_customers +\n'\\n\\nDemand generators: ' + $json.demand_generators.join(', ') +\n'\\nSegment alignment: ' + JSON.stringify($json.segment_alignment) +\n'\\n\\nProvide a detailed Australian-market demographic analysis. Cite specific ABS/SEIFA numbers. Be specific to this exact suburb and business type. Flag if data was from fallback estimates.'\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Demographics & Foot Traffic Intelligence Agent (A6) for the Australian market.\n\nYou receive ABS 2021 Census data (WPI-adjusted to 2026), SEIFA socio-economic scores, and OSM Overpass POI counts.\n\nCRITICAL RULES:\n- Cite exact ABS figures provided \u2014 never invent numbers\n- SEIFA > 1050 = above average spending power; < 950 = disadvantaged\n- Melbourne has extensive tram network \u2014 high transit_count is expected and positive\n- Australian median income ~$1,300/wk; Fitzroy/inner Melbourne typically $1,100-1,400/wk\n- Currency is AUD ($) only\n- If abs_data_found is false, note this clearly and use state-level estimates\n- Transit stops include trams (critical for Melbourne inner suburbs)\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown:\n{\n  \"demographics_score\": <0-100>,\n  \"foot_traffic_score\": <0-100>,\n  \"income_score\": <0-100>,\n  \"consumer_affordability_index\": <0-100>,\n  \"demographic_fit_score\": <0-100>,\n  \"area_profile\": \"<2-3 sentences>\",\n  \"income_analysis\": \"<2 sentences citing ABS figures>\",\n  \"foot_traffic_analysis\": \"<2-3 sentences on transit, trams, peak times>\",\n  \"seifa_interpretation\": \"<1-2 sentences on SEIFA score meaning>\",\n  \"demand_generator_breakdown\": [{\"generator\": \"<type>\", \"count\": <n>, \"impact\": \"High|Medium|Low\", \"note\": \"<why>\"}],\n  \"target_segment_fit\": [{\"segment\": \"<seg>\", \"fit_score\": <0-100>, \"reasoning\": \"<1 sentence>\"}],\n  \"seasonal_patterns\": \"<Australian seasonal variation>\",\n  \"demographic_risks\": [\"<risk1>\", \"<risk2>\"],\n  \"demographic_opportunities\": [\"<opp1>\", \"<opp2>\"],\n  \"estimated_daily_customers_range\": {\"low\": <n>, \"base\": <n>, \"high\": <n>},\n  \"abs_data_quality\": \"Real ABS data\" | \"State estimate\" | \"Fallback estimate\",\n  \"data_confidence\": \"High\" | \"Medium\" | \"Low\",\n  \"data_confidence_note\": \"<reason if not High>\",\n  \"overall_demographic_verdict\": \"Strong Fit\" | \"Good Fit\" | \"Moderate Fit\" | \"Weak Fit\" | \"Poor Fit\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "1b23640c-f39e-456c-8e71-99bc85090309",
+      "name": "AI Agent \u2013 Australian Demographics Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        7600,
+        2688
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 2000,
+          "temperature": 0.2
+        }
+      },
+      "id": "424d5678-de4d-4346-8463-1dc89fa819be",
+      "name": "OpenAI Chat Model \u2013 A6",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        7600,
+        2880
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputJson = $input.first().json;\nconst rawText = inputJson.output || inputJson.text || JSON.stringify(inputJson);\nlet analysis;\ntry {\n  let cleaned = rawText.trim()\n    .replace(/^```json\\s*/i,'').replace(/^```\\s*/i,'').replace(/```\\s*$/i,'').trim();\n  const s=cleaned.indexOf('{'),e=cleaned.lastIndexOf('}');\n  if(s!==-1&&e>s) cleaned=cleaned.slice(s,e+1);\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error:true, raw_response: rawText.slice(0,800) };\n}\n\nconst sc = $('Compute All Scores (ABS + WPI + SEIFA)').first().json;\n\nreturn [{ json: {\n  agent_id:'A6',\n  agent_name:'Demographics & Foot Traffic (Australian)',\n  status: analysis.parse_error?'error':'success',\n  timestamp: new Date().toISOString(),\n  email: sc.email,\n  inputs_used: {\n    city:sc.city,area:sc.area,locality:sc.locality,\n    business_type:sc.business_type,postcode:sc.postcode,\n    suburb:sc.suburb,state:sc.state,lat:sc.lat,lon:sc.lon,\n    radius_m:sc.radius_m,geocode_success:sc.geocode_success,\n    used_hardcoded_centroid:sc.used_hardcoded_centroid\n  },\n  data_sources: {\n    geocoding:'OpenStreetMap Nominatim (free)',\n    census:    sc.abs_data_found?'ABS 2021 Census C21_G02_POA (real)':'ABS state-level estimate',\n    wage_index:'ABS Wage Price Index (live quarterly)',\n    seifa:     sc.seifa_score?'ABS SEIFA 2021 (real or known suburb value)':'Not available',\n    poi_data:  'OSM Overpass API (POST \u2014 tram/bus/train + demand POIs)',\n    ai_analysis:'GPT-4o'\n  },\n  abs_raw: {\n    median_weekly_income_2021:sc.abs_median_weekly_income,\n    population:sc.abs_population,median_age:sc.abs_median_age,\n    median_weekly_rent_2021:sc.abs_median_weekly_rent,data_found:sc.abs_data_found\n  },\n  wpi: {\n    index_value:sc.wpi_current,\n    growth_multiplier:sc.wage_growth_multiplier,\n    growth_pct:Math.round((sc.wage_growth_multiplier-1)*100)\n  },\n  seifa: {score:sc.seifa_score,decile:sc.seifa_decile,label:sc.seifa_label,premium:sc.seifa_premium},\n  outputs: {\n    demographics_score:          analysis.demographics_score          ?? sc.demographics_score,\n    foot_traffic_score:          analysis.foot_traffic_score          ?? sc.foot_traffic_score,\n    foot_traffic_label:          sc.foot_traffic_label,\n    income_score:                analysis.income_score                ?? sc.income_score,\n    income_label:                sc.income_label,\n    demographic_fit_score:       analysis.demographic_fit_score       ?? sc.demographic_fit_score,\n    consumer_affordability_index:analysis.consumer_affordability_index ?? sc.consumer_affordability_index,\n    median_weekly_income:        sc.adjusted_weekly_income,\n    median_monthly_income:       sc.seifa_adjusted_monthly_income || sc.adjusted_monthly_income,\n    median_annual_income:        sc.adjusted_annual_income,\n    area_type:                   sc.area_type,\n    is_premium_area:             sc.is_premium_area,\n    city_tier:                   sc.city_tier,\n    urban_density:               sc.urban_density,\n    area_profile:                analysis.area_profile || null,\n    suburb:sc.suburb,postcode:sc.postcode,state:sc.state,\n    seifa_score:sc.seifa_score,seifa_label:sc.seifa_label,\n    seifa_interpretation:        analysis.seifa_interpretation || null,\n    foot_traffic_analysis:       analysis.foot_traffic_analysis || null,\n    income_analysis:             analysis.income_analysis || null,\n    demand_generator_breakdown:  analysis.demand_generator_breakdown || [],\n    demand_generators_raw:       sc.demand_generators,\n    overpass_counts: {\n      total_pois:sc.overpass_demand_count,\n      transit_stops:sc.overpass_transit_count,\n      education_hubs:sc.overpass_edu_count\n    },\n    estimated_daily_customers_range: analysis.estimated_daily_customers_range || {\n      low:Math.max(sc.est_daily_customers-10,1),\n      base:sc.est_daily_customers,\n      high:sc.est_daily_customers+20\n    },\n    target_segment_fit:          analysis.target_segment_fit    || sc.segment_alignment,\n    seasonal_patterns:           analysis.seasonal_patterns     || null,\n    demographic_risks:           analysis.demographic_risks     || [],\n    demographic_opportunities:   analysis.demographic_opportunities || [],\n    abs_data_quality:            analysis.abs_data_quality || (sc.abs_data_found?'Real ABS data':'State estimate'),\n    data_confidence:             analysis.data_confidence     || 'Medium',\n    data_confidence_note:        analysis.data_confidence_note|| null,\n    overall_demographic_verdict: analysis.overall_demographic_verdict || 'Moderate Fit',\n    population_per_sqkm:         sc.population_per_sqkm\n  }\n}}];\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "7f0eb749-d7ab-4084-bbf0-2eab6bbffc9f",
+      "name": "Format A6 Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7840,
+        2688
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "f8b8d0e9-5077-498c-98bc-7578248339c6",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        8080,
+        2688
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nconst elements = j?.elements || [];\n\n// Classify each element by its tags\nlet transit_count = 0, edu_count = 0, demand_count = 0;\n\nconst TRANSIT_HIGHWAY = ['bus_stop'];\nconst TRANSIT_RAILWAY = ['station','tram_stop','halt','stop'];\nconst EDU_AMENITY     = ['university','college','school','library'];\nconst DEMAND_AMENITY  = ['cafe','restaurant','bar','fast_food','bank','pharmacy'];\nconst DEMAND_SHOP     = ['supermarket','convenience'];\n\nfor (const el of elements) {\n  const tags = el.tags || {};\n  const hw = tags.highway || '';\n  const rw = tags.railway || '';\n  const am = tags.amenity || '';\n  const sh = tags.shop    || '';\n  const et = el.type      || '';\n\n  if (TRANSIT_HIGHWAY.includes(hw) || TRANSIT_RAILWAY.includes(rw)) {\n    transit_count++;\n  } else if ((et === 'way' || et === 'relation') && EDU_AMENITY.includes(am)) {\n    edu_count++;\n  } else if (DEMAND_AMENITY.includes(am) || DEMAND_SHOP.includes(sh)) {\n    demand_count++;\n  }\n}\n\nreturn [{ json: {\n  _type: 'combined',\n  transit_count,\n  edu_count,\n  demand_count,\n  total_elements: elements.length\n}}];"
+      },
+      "id": "24009030-b832-44a9-ac7c-d7aaa2a9449d",
+      "name": "Parse Combined Overpass",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7024,
+        2736
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $input.first().json;\nconst r = c.radius_m || 500;\nconst lat = c.lat;\nconst lon = c.lon;\nconst ar = `around:${r},${lat},${lon}`;\n\nconst q = [\n  '[out:json][timeout:30];(',\n  `node[highway=bus_stop](${ar});`,\n  `node[railway=station](${ar});`,\n  `node[railway=tram_stop](${ar});`,\n  `node[railway=halt](${ar});`,\n  `node[railway=stop](${ar});`,\n  `way[amenity=school](${ar});`,\n  `way[amenity=university](${ar});`,\n  `way[amenity=college](${ar});`,\n  `way[amenity=library](${ar});`,\n  `relation[amenity=school](${ar});`,\n  `relation[amenity=university](${ar});`,\n  `node[amenity=cafe](${ar});`,\n  `node[amenity=restaurant](${ar});`,\n  `node[amenity=bar](${ar});`,\n  `node[amenity=fast_food](${ar});`,\n  `node[amenity=pub](${ar});`,\n  `node[amenity=bank](${ar});`,\n  `node[amenity=pharmacy](${ar});`,\n  `node[shop=supermarket](${ar});`,\n  `node[shop=convenience](${ar});`,\n  ');out body;'\n].join('');\n\nreturn [{ json: { overpass_query: q, lat, lon, radius_m: r } }];"
+      },
+      "id": "883375e7-bc15-47b1-b624-c3fc19256253",
+      "name": "Build Overpass Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6880,
+        2736
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 A6 Intake": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "Nominatim \u2013 Geocode Suburb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nominatim \u2013 Geocode Suburb": {
+      "main": [
+        [
+          {
+            "node": "Extract Coordinates & Postcode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Coordinates & Postcode": {
+      "main": [
+        [
+          {
+            "node": "ABS Census \u2013 G02 Income & Population",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ABS WPI \u2013 Wage Price Index",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ABS SEIFA \u2013 Suburb Advantage Score",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Overpass Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ABS Census \u2013 G02 Income & Population": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ABS WPI \u2013 Wage Price Index": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ABS SEIFA \u2013 Suburb Advantage Score": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "Compute All Scores (ABS + WPI + SEIFA)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute All Scores (ABS + WPI + SEIFA)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2013 Australian Demographics Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2013 Australian Demographics Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format A6 Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model \u2013 A6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2013 Australian Demographics Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format A6 Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Overpass \u2013 Combined POI Query": {
+      "main": [
+        [
+          {
+            "node": "Parse Combined Overpass",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Combined Overpass": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Build Overpass Query": {
+      "main": [
+        [
+          {
+            "node": "Overpass \u2013 Combined POI Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f0b24458-5761-49ec-ab0b-5f3d32447aa7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o-mini, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "WrItoJEgSsP4uIj6",
+  "tags": []
+}

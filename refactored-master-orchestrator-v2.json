@@ -1,0 +1,1209 @@
+{
+  "name": "Locatalyze \u2013 Master Orchestrator v2 (Parallel + Secure + Validated)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-master-v2",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "044a196c-93d9-4ed2-8439-7794211fa19c",
+      "name": "Webhook \u2013 Master Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        34608,
+        912
+      ],
+      "webhookId": "locatalyze-master-orchestrator-v2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json;\nconst body = raw.body || raw;\n\n// \u2500\u2500 SECURITY: Validate webhookBaseUrl against allowlist \u2500\u2500\nconst ALLOWED_HOSTS = ['amanguleria.app.n8n.cloud', 'n8n.cloud'];\nconst rawUrl = body.webhookBaseUrl || 'https://amanguleria.app.n8n.cloud/webhook';\nlet webhookBaseUrl = rawUrl;\ntry {\n  const parsed = new URL(rawUrl);\n  const allowed = ALLOWED_HOSTS.some(h => parsed.hostname.endsWith(h));\n  if (!allowed) {\n    webhookBaseUrl = 'https://amanguleria.app.n8n.cloud/webhook';\n    console.warn('[SECURITY] webhookBaseUrl rejected, falling back to default');\n  }\n} catch(e) { webhookBaseUrl = 'https://amanguleria.app.n8n.cloud/webhook'; }\n\n// \u2500\u2500 Mode: 'light' (A1+A2+A3+A5) or 'full' (all 8 agents) \u2500\u2500\nconst mode = ['light', 'full'].includes(body.mode) ? body.mode : 'full';\n\nconst out = {\n  business_type:              body.business_type              ?? '',\n  industry_category:          body.industry_category          ?? '',\n  city:                       body.city                       ?? '',\n  area:                       body.area                       ?? '',\n  locality:                   body.locality                   ?? '',\n  landmark_hint:              body.landmark_hint              ?? '',\n  country:                    body.country                    ?? 'Australia',\n  currency:                   body.currency                   ?? 'A$',\n  pricing_positioning:        body.pricing_positioning        ?? '',\n  target_customer_segments:   body.target_customer_segments   ?? [],\n  space_size_range:           body.space_size_range           ?? '',\n  preferred_sqft:             body.preferred_sqft             ?? '',\n  monthly_rent_budget_min:    body.monthly_rent_budget_min    ?? '',\n  monthly_rent_budget_max:    body.monthly_rent_budget_max    ?? '',\n  setup_budget:               body.setup_budget               ?? '',\n  staff_count_range:          body.staff_count_range          ?? '',\n  business_model:             body.business_model             ?? 'Independent',\n  lease_term_years:           body.lease_term_years           ?? '2',\n  equipment_owned:            body.equipment_owned            ?? 'None',\n  business_stage:             body.business_stage             ?? 'pre-launch',\n  avg_ticket_min:             body.avg_ticket_min             ?? '',\n  avg_ticket_max:             body.avg_ticket_max             ?? '',\n  operating_hours:            body.operating_hours            ?? '10',\n  seating_or_daily_capacity:  body.seating_or_daily_capacity  ?? '',\n  email:                      body.email                      ?? '',\n  user_id:                    body.user_id                    ?? null,\n  lat:                        body.lat                        ?? '',\n  lng:                        body.lng                        ?? '',\n  webhookBaseUrl,\n  mode,\n  _workflow_start: Date.now(),\n  _request_id: 'req_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)\n};\n\n// Timestamp per parallel agent (used for exec_ms tracking)\nout._timing_a1 = Date.now();\nout._timing_a6 = Date.now();\nout._timing_a7 = Date.now();\nout._timing_a8 = Date.now();\n\nreturn [{ json: out }];"
+      },
+      "id": "75f23335-09e5-47c5-81ae-42daacbbd89b",
+      "name": "Parse & Validate Inputs v2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        34868,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a1-competitor",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:      $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:  $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:               $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:               $('Parse & Validate Inputs v2').first().json.area ?? '',\n  locality:           $('Parse & Validate Inputs v2').first().json.locality ?? '',\n  country:            $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:           $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:              $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:               $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  lat:                $('Parse & Validate Inputs v2').first().json.lat ?? '',\n  lng:                $('Parse & Validate Inputs v2').first().json.lng ?? ''\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "67bf8473-346d-4aec-a48e-0ac8c6e6ba3c",
+      "name": "Call Agent A1 \u2013 Competitor Intel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        35128,
+        612
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "b18e1ed8-98e0-4497-915e-63d2281e3834",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "full",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0dad4987-cc71-4c48-ba9f-91e73e9d59be",
+      "name": "IF A6 \u2013 Full Mode Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        35128,
+        812
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "5540eefb-bb22-4108-afb7-359db2b5798f",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "full",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8280a707-7383-4e9d-84ba-e2978441d348",
+      "name": "IF A7 \u2013 Full Mode Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        35128,
+        1012
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "0fdf26c3-a57f-41b6-93f1-6435075a936a",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "full",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "98c5638d-2099-47b9-89f4-60e025ac5a1f",
+      "name": "IF A8 \u2013 Full Mode Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        35128,
+        1212
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a6-demographics",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:      $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:  $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:               $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:               $('Parse & Validate Inputs v2').first().json.area ?? '',\n  locality:           $('Parse & Validate Inputs v2').first().json.locality ?? '',\n  country:            $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:           $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:              $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:               $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  lat:                $('Parse & Validate Inputs v2').first().json.lat ?? '',\n  lng:                $('Parse & Validate Inputs v2').first().json.lng ?? '',\n  a1_summary: {\n    competitor_density_score: $('Extract Group 1 Summaries').first().json.a1_summary?.competitor_density_score ?? null,\n    saturation_level:         $('Extract Group 1 Summaries').first().json.a1_summary?.saturation_level ?? 'Unknown',\n    total_competitors_found:  $('Extract Group 1 Summaries').first().json.a1_summary?.total_competitors_found ?? null\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "25d1e94f-7272-4ebb-a36f-b91bae89b630",
+      "name": "Call Agent A6 \u2013 Demographics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        35388,
+        712
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Parse & Validate Inputs v2').first().json;\nreturn [{ json: {\n  agent_id: 'A6', agent_name: 'Demographics (Skipped \u2013 Light Mode)',\n  _stub: true, _mode: 'light', status: 'skipped',\n  outputs: {\n    demographics_score: null, foot_traffic_score: null,\n    income_label: 'Unknown', median_monthly_income: null,\n    area_type: 'Unknown', is_premium_area: false,\n    estimated_daily_customers_range: { base: null },\n    overall_demographic_verdict: 'Skipped in Light Mode'\n  }\n}}];"
+      },
+      "id": "d655a1c1-5177-44af-900e-af57a979b551",
+      "name": "A6 Stub \u2013 Light Mode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35388,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a7-benchmark",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:      $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:  $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:               $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:               $('Parse & Validate Inputs v2').first().json.area ?? '',\n  country:            $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:           $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:              $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:               $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  monthly_rent_budget_max: $('Parse & Validate Inputs v2').first().json.monthly_rent_budget_max ?? '',\n  setup_budget:            $('Parse & Validate Inputs v2').first().json.setup_budget ?? '',\n  a1_summary: {\n    competitor_density_score: $('Extract Group 1 Summaries').first().json.a1_summary?.competitor_density_score ?? null,\n    saturation_level:         $('Extract Group 1 Summaries').first().json.a1_summary?.saturation_level ?? 'Unknown'\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "1797f9a1-ee63-4efa-9301-41bdebd71650",
+      "name": "Call Agent A7 \u2013 Benchmark",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        35388,
+        1012
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  agent_id: 'A7', agent_name: 'Benchmarks (Skipped \u2013 Light Mode)',\n  _stub: true, _mode: 'light', status: 'skipped',\n  outputs: {\n    benchmark_score: null, ato_citation: 'N/A',\n    rent_burden: { pct: null, label: 'Unknown', score: null },\n    break_even_benchmark: { category_avg_months: null },\n    performance_percentile: null, capitalisation_assessment: {},\n    overall_benchmark_verdict: 'Skipped in Light Mode'\n  }\n}}];"
+      },
+      "id": "3af5de88-1872-44af-b17f-ca96b1a7cacc",
+      "name": "A7 Stub \u2013 Light Mode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35388,
+        1112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a8-economic",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:      $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:  $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:               $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:               $('Parse & Validate Inputs v2').first().json.area ?? '',\n  country:            $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:           $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:              $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:               $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  business_stage:     $('Parse & Validate Inputs v2').first().json.business_stage ?? 'pre-launch'\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "e638946f-ba51-41a4-b594-a41eda132ac7",
+      "name": "Call Agent A8 \u2013 Economic Context",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        35388,
+        1212
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  agent_id: 'A8', agent_name: 'Economy (Skipped \u2013 Light Mode)',\n  _stub: true, _mode: 'light', status: 'skipped',\n  outputs: {\n    economic_health_score: null, economic_verdict: 'Skipped',\n    anchor_store_analysis: { major_supermarket_present: null, anchors_found: [] },\n    labour_cost_analysis: { annual_wage_growth_pct: null, min_casual_wage_aud: 25.41, source: 'Fair Work \u2013 Assumed' },\n    cpi_impact: { food_cpi_yoy_pct: null, source: 'Skipped' },\n    consumer_sentiment: { index_value: null, label: 'Unknown' },\n    state_regulatory_summary: {},\n    overall_economic_verdict: 'Skipped in Light Mode'\n  }\n}}];"
+      },
+      "id": "7a6c0586-dde6-4418-9ba7-0ddded928cf7",
+      "name": "A8 Stub \u2013 Light Mode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35388,
+        1312
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a1 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a1_output: resp,\n  _a1_failed: isFailed,\n  _a1_missing_fields: missing,\n  _a1_exec_ms: exec_ms,\n  _a1_mode: mode\n} }];"
+      },
+      "id": "7c656465-0186-4e1a-8c6b-54fd9dcf1b31",
+      "name": "Validate & Store A1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35648,
+        612
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a6 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a6_output: resp,\n  _a6_failed: isFailed,\n  _a6_missing_fields: missing,\n  _a6_exec_ms: exec_ms,\n  _a6_mode: mode\n} }];"
+      },
+      "id": "8192a086-8991-4ea6-829c-42ed8032a790",
+      "name": "Validate & Store A6",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35648,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a7 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a7_output: resp,\n  _a7_failed: isFailed,\n  _a7_missing_fields: missing,\n  _a7_exec_ms: exec_ms,\n  _a7_mode: mode\n} }];"
+      },
+      "id": "d2fc726b-6d75-491d-aa2d-2d73385ac741",
+      "name": "Validate & Store A7",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35648,
+        1012
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a8 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a8_output: resp,\n  _a8_failed: isFailed,\n  _a8_missing_fields: missing,\n  _a8_exec_ms: exec_ms,\n  _a8_mode: mode\n} }];"
+      },
+      "id": "316e644a-72e7-47b0-a54b-01d8a8d35057",
+      "name": "Validate & Store A8",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        35648,
+        1212
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "dbc8b547-aff6-48a1-a87a-74cb0f83eff4",
+      "name": "Merge G1 \u2013 Final",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        35908,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Parse & Validate Inputs v2').first().json;\n\nfunction safeGet(nodeName, key) {\n  try { return $('Validate & Store ' + nodeName).first().json[key] || {}; } catch(e) { return {}; }\n}\n\nconst a1raw = safeGet('A1', 'a1_output');\nconst a6raw = safeGet('A6', 'a6_output');\nconst a7raw = safeGet('A7', 'a7_output');\nconst a8raw = safeGet('A8', 'a8_output');\n\nconst a1o = a1raw.outputs || a1raw || {};\nconst a6o = a6raw.outputs || a6raw || {};\nconst a7o = a7raw.outputs || a7raw || {};\nconst a8o = a8raw.outputs || a8raw || {};\n\n// Slim summary payloads \u2013 60\u201380% smaller than full outputs\nconst a1_summary = {\n  competitor_density_score: a1o.competitor_density_score ?? null,\n  saturation_level: a1o.saturation_level ?? null,\n  total_competitors_found: a1o.total_competitors_found ?? null,\n  competitors_within_500m: a1o.competitors_within_500m ?? null,\n  competitors_within_1500m: a1o.competitors_within_1500m ?? null,\n  pricing_bands: a1o.pricing_bands ?? {},\n  opportunity_gaps: (a1o.opportunity_gaps || []).slice(0, 3),\n  threat_summary: a1o.threat_summary ?? null,\n  locality_context: a1o.locality_context ?? null,\n  _failed: $('Validate & Store A1').first().json._a1_failed || false\n};\n\nconst a6_summary = {\n  demographics_score: a6o.demographics_score ?? null,\n  foot_traffic_score: a6o.foot_traffic_score ?? null,\n  income_label: a6o.income_label ?? null,\n  median_monthly_income: a6o.median_monthly_income ?? null,\n  area_type: a6o.area_type ?? null,\n  is_premium_area: a6o.is_premium_area ?? false,\n  daily_customers_base: a6o.estimated_daily_customers_range?.base ?? null,\n  _failed: $('Validate & Store A6').first().json._a6_failed || false\n};\n\nconst a7_summary = {\n  benchmark_score: a7o.benchmark_score ?? null,\n  ato_citation: a7o.ato_citation ?? null,\n  rent_burden_pct: a7o.rent_burden?.pct ?? null,\n  rent_burden_label: a7o.rent_burden?.label ?? null,\n  break_even_avg_months: a7o.break_even_benchmark?.category_avg_months ?? null,\n  capitalisation: a7o.capitalisation_assessment?.assessment ?? null,\n  _failed: $('Validate & Store A7').first().json._a7_failed || false\n};\n\nconst a8_summary = {\n  economic_health_score: a8o.economic_health_score ?? null,\n  economic_verdict: a8o.economic_verdict ?? null,\n  major_supermarket_present: a8o.anchor_store_analysis?.major_supermarket_present ?? null,\n  wage_growth_pct: a8o.labour_cost_analysis?.annual_wage_growth_pct ?? null,\n  min_casual_wage: a8o.labour_cost_analysis?.min_casual_wage_aud ?? 25.41,\n  food_cpi_yoy_pct: a8o.cpi_impact?.food_cpi_yoy_pct ?? null,\n  consumer_sentiment_label: a8o.consumer_sentiment?.label ?? null,\n  _failed: $('Validate & Store A8').first().json._a8_failed || false\n};\n\nconst agentStatus = {\n  a1: $('Validate & Store A1').first().json._a1_failed ? 'failed' : 'ok',\n  a6: $('Validate & Store A6').first().json._a6_failed ? 'failed' : 'ok',\n  a7: $('Validate & Store A7').first().json._a7_failed ? 'failed' : 'ok',\n  a8: $('Validate & Store A8').first().json._a8_failed ? 'failed' : 'ok'\n};\n\nreturn [{ json: {\n  ...d,\n  a1_summary, a6_summary, a7_summary, a8_summary,\n  _agent_status_g1: agentStatus,\n  _g1_complete_at: new Date().toISOString()\n}}];"
+      },
+      "id": "da17cda9-b0e2-497e-a1c5-f00ad332285f",
+      "name": "Extract Group 1 Summaries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        36168,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a2-rent",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:           $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:       $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:                    $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:                    $('Parse & Validate Inputs v2').first().json.area ?? '',\n  locality:                $('Parse & Validate Inputs v2').first().json.locality ?? '',\n  country:                 $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:                $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:                   $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:                    $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  space_size_range:        $('Parse & Validate Inputs v2').first().json.space_size_range ?? '',\n  preferred_sqft:          $('Parse & Validate Inputs v2').first().json.preferred_sqft ?? '',\n  monthly_rent_budget_min: $('Parse & Validate Inputs v2').first().json.monthly_rent_budget_min ?? '',\n  monthly_rent_budget_max: $('Parse & Validate Inputs v2').first().json.monthly_rent_budget_max ?? '',\n  lat:                     $('Parse & Validate Inputs v2').first().json.lat ?? '',\n  lng:                     $('Parse & Validate Inputs v2').first().json.lng ?? '',\n  a1_output: {\n    competitor_density_score: $('Extract Group 1 Summaries').first().json.a1_summary?.competitor_density_score ?? null,\n    saturation_level:         $('Extract Group 1 Summaries').first().json.a1_summary?.saturation_level ?? 'Unknown',\n    total_competitors_found:  $('Extract Group 1 Summaries').first().json.a1_summary?.total_competitors_found ?? null,\n    locality_context:         $('Extract Group 1 Summaries').first().json.a1_summary?.locality_context ?? ''\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "4b83331d-6cf7-4587-a7b2-202bbe1d26b8",
+      "name": "Call Agent A2 \u2013 Rent & RE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        36428,
+        912
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a2 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a2_output: resp,\n  _a2_failed: isFailed,\n  _a2_missing_fields: missing,\n  _a2_exec_ms: exec_ms,\n  _a2_mode: mode\n} }];"
+      },
+      "id": "c50a328a-eac2-44d1-bf08-e2cbdd666b0e",
+      "name": "Validate & Store A2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        36688,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a3-market",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:            $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:        $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:                     $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:                     $('Parse & Validate Inputs v2').first().json.area ?? '',\n  locality:                 $('Parse & Validate Inputs v2').first().json.locality ?? '',\n  country:                  $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:                 $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:                    $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:                     $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  business_stage:           $('Parse & Validate Inputs v2').first().json.business_stage ?? 'pre-launch',\n  target_customer_segments: $('Parse & Validate Inputs v2').first().json.target_customer_segments ?? [],\n  a1_output: {\n    competitor_density_score:  $('Extract Group 1 Summaries').first().json.a1_summary?.competitor_density_score ?? null,\n    saturation_level:          $('Extract Group 1 Summaries').first().json.a1_summary?.saturation_level ?? 'Unknown',\n    total_competitors_found:   $('Extract Group 1 Summaries').first().json.a1_summary?.total_competitors_found ?? null,\n    opportunity_gaps:          $('Extract Group 1 Summaries').first().json.a1_summary?.opportunity_gaps ?? [],\n    threat_summary:            $('Extract Group 1 Summaries').first().json.a1_summary?.threat_summary ?? ''\n  },\n  a2_output: {\n    median_rent_monthly:       $('Validate & Store A2').first().json.a2_output?.outputs?.median_rent_monthly ?? $('Validate & Store A2').first().json.a2_output?.median_rent_monthly ?? null,\n    within_budget_count:       $('Validate & Store A2').first().json.a2_output?.outputs?.within_budget_count ?? null,\n    data_quality:              $('Validate & Store A2').first().json.a2_output?.outputs?.data_quality ?? 'unknown'\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "777ff688-c7e9-481c-8dd0-19fdc2f7d681",
+      "name": "Call Agent A3 \u2013 Market",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        36948,
+        912
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a3 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a3_output: resp,\n  _a3_failed: isFailed,\n  _a3_missing_fields: missing,\n  _a3_exec_ms: exec_ms,\n  _a3_mode: mode\n} }];"
+      },
+      "id": "61bbde22-7104-4c2a-adc1-84df15fb8e2b",
+      "name": "Validate & Store A3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        37208,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "eab66dba-3946-4445-a60d-95ad0e4483b4",
+              "leftValue": "={{ $('Parse & Validate Inputs v2').first().json.mode }}",
+              "rightValue": "full",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4a90eb47-21db-42bb-8e86-ed2922c9055f",
+      "name": "IF A4 \u2013 Full Mode Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        37468,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a4-cost",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:           $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:       $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:                    $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:                    $('Parse & Validate Inputs v2').first().json.area ?? '',\n  locality:                $('Parse & Validate Inputs v2').first().json.locality ?? '',\n  country:                 $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:                $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:                   $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:                    $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  space_size_range:        $('Parse & Validate Inputs v2').first().json.space_size_range ?? '',\n  preferred_sqft:          $('Parse & Validate Inputs v2').first().json.preferred_sqft ?? '',\n  monthly_rent_budget_max: $('Parse & Validate Inputs v2').first().json.monthly_rent_budget_max ?? '',\n  staff_count_range:       $('Parse & Validate Inputs v2').first().json.staff_count_range ?? '',\n  setup_budget:            $('Parse & Validate Inputs v2').first().json.setup_budget ?? '',\n  business_model:          $('Parse & Validate Inputs v2').first().json.business_model ?? 'Independent',\n  lease_term_years:        $('Parse & Validate Inputs v2').first().json.lease_term_years ?? '2',\n  equipment_owned:         $('Parse & Validate Inputs v2').first().json.equipment_owned ?? 'None',\n  a1_output: {\n    competitor_density_score: $('Extract Group 1 Summaries').first().json.a1_summary?.competitor_density_score ?? null,\n    saturation_level:         $('Extract Group 1 Summaries').first().json.a1_summary?.saturation_level ?? 'Unknown',\n    opportunity_gaps:         $('Extract Group 1 Summaries').first().json.a1_summary?.opportunity_gaps ?? []\n  },\n  a2_output: {\n    median_rent_monthly:  $('Validate & Store A2').first().json.a2_output?.outputs?.median_rent_monthly ?? $('Validate & Store A2').first().json.a2_output?.median_rent_monthly ?? null,\n    within_budget_count:  $('Validate & Store A2').first().json.a2_output?.outputs?.within_budget_count ?? null,\n    data_quality:         $('Validate & Store A2').first().json.a2_output?.outputs?.data_quality ?? 'unknown',\n    rent_range_min:       $('Validate & Store A2').first().json.a2_output?.outputs?.rent_range_monthly?.min ?? null,\n    rent_range_max:       $('Validate & Store A2').first().json.a2_output?.outputs?.rent_range_monthly?.max ?? null\n  },\n  a3_output: {\n    growth_score:           $('Validate & Store A3').first().json.a3_output?.outputs?.growth_score ?? null,\n    market_stage:           $('Validate & Store A3').first().json.a3_output?.outputs?.market_maturity_stage ?? 'Unknown',\n    demand_trend:           $('Validate & Store A3').first().json.a3_output?.outputs?.demand_trend ?? 'Unknown',\n    competitor_threat:      $('Validate & Store A3').first().json.a3_output?.outputs?.competitor_threat_level ?? 'Unknown',\n    opportunity_score:      $('Validate & Store A3').first().json.a3_output?.outputs?.opportunity_score ?? null,\n    best_entry_timing:      $('Validate & Store A3').first().json.a3_output?.outputs?.best_entry_timing ?? 'Unknown',\n    top_opportunities:      $('Validate & Store A3').first().json.a3_output?.outputs?.top_opportunities ?? [],\n    top_risks:              $('Validate & Store A3').first().json.a3_output?.outputs?.top_risks ?? []\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "75edd807-05b7-4d8e-b4c2-7b6ca33a699f",
+      "name": "Call Agent A4 \u2013 Cost",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        37728,
+        812
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Parse & Validate Inputs v2').first().json;\nreturn [{ json: {\n  agent_id: 'A4', agent_name: 'Cost Projection (Skipped \u2013 Light Mode)',\n  _stub: true, _mode: 'light', status: 'skipped',\n  outputs: {\n    setup_cost_estimate: { total_min: null, total_max: null, recommended: null, vs_user_budget: 'Unknown', budget_gap: 0 },\n    monthly_operating_cost: { total_monthly: null },\n    financial_projections: { break_even_months: null, roi_12_months: null, roi_24_months: null, roi_36_months: null },\n    overall_financial_verdict: 'Skipped in Light Mode'\n  }\n}}];"
+      },
+      "id": "d44b1e51-bac5-4c39-8691-63c7313ff491",
+      "name": "A4 Stub \u2013 Light Mode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        37728,
+        1012
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a4 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a4_output: resp,\n  _a4_failed: isFailed,\n  _a4_missing_fields: missing,\n  _a4_exec_ms: exec_ms,\n  _a4_mode: mode\n} }];"
+      },
+      "id": "4c044f4a-9623-4dcf-b87a-5cb380e65da4",
+      "name": "Validate & Store A4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        37988,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parse & Validate Inputs v2').first().json.webhookBaseUrl }}/locatalyze-a5-revenue",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  business_type:            $('Parse & Validate Inputs v2').first().json.business_type ?? '',\n  industry_category:        $('Parse & Validate Inputs v2').first().json.industry_category ?? '',\n  city:                     $('Parse & Validate Inputs v2').first().json.city ?? '',\n  area:                     $('Parse & Validate Inputs v2').first().json.area ?? '',\n  locality:                 $('Parse & Validate Inputs v2').first().json.locality ?? '',\n  country:                  $('Parse & Validate Inputs v2').first().json.country ?? 'Australia',\n  currency:                 $('Parse & Validate Inputs v2').first().json.currency ?? 'A$',\n  email:                    $('Parse & Validate Inputs v2').first().json.email ?? '',\n  mode:                     $('Parse & Validate Inputs v2').first().json.mode ?? 'full',\n  avg_ticket_min:           $('Parse & Validate Inputs v2').first().json.avg_ticket_min ?? '',\n  avg_ticket_max:           $('Parse & Validate Inputs v2').first().json.avg_ticket_max ?? '',\n  pricing_positioning:      $('Parse & Validate Inputs v2').first().json.pricing_positioning ?? 'mid-range',\n  operating_hours:          $('Parse & Validate Inputs v2').first().json.operating_hours ?? '10',\n  seating_or_daily_capacity:$('Parse & Validate Inputs v2').first().json.seating_or_daily_capacity ?? '',\n  business_model:           $('Parse & Validate Inputs v2').first().json.business_model ?? 'Independent',\n  a1_output: {\n    competitor_density_score: $('Extract Group 1 Summaries').first().json.a1_summary?.competitor_density_score ?? null,\n    saturation_level:         $('Extract Group 1 Summaries').first().json.a1_summary?.saturation_level ?? 'Unknown',\n    pricing_bands:            $('Extract Group 1 Summaries').first().json.a1_summary?.pricing_bands ?? {}\n  },\n  a2_output: {\n    median_rent_monthly:  $('Validate & Store A2').first().json.a2_output?.outputs?.median_rent_monthly ?? $('Validate & Store A2').first().json.a2_output?.median_rent_monthly ?? null,\n    within_budget_count:  $('Validate & Store A2').first().json.a2_output?.outputs?.within_budget_count ?? null,\n    data_quality:         $('Validate & Store A2').first().json.a2_output?.outputs?.data_quality ?? 'unknown'\n  },\n  a3_output: {\n    growth_score:      $('Validate & Store A3').first().json.a3_output?.outputs?.growth_score ?? null,\n    demand_trend:      $('Validate & Store A3').first().json.a3_output?.outputs?.demand_trend ?? 'Unknown',\n    opportunity_score: $('Validate & Store A3').first().json.a3_output?.outputs?.opportunity_score ?? null,\n    best_entry_timing: $('Validate & Store A3').first().json.a3_output?.outputs?.best_entry_timing ?? 'Unknown',\n    top_opportunities: $('Validate & Store A3').first().json.a3_output?.outputs?.top_opportunities ?? [],\n    target_segments:   ($('Validate & Store A3').first().json.a3_output?.outputs?.target_customer_segments ?? []).map(function(s) { return { name: s.segment_name ?? s, spend: s.spend_profile ?? '' } })\n  },\n  a4_output: {\n    monthly_opex:          $('Validate & Store A4').first().json.a4_output?.outputs?.monthly_operating_cost?.total_monthly ?? null,\n    setup_cost_min:        $('Validate & Store A4').first().json.a4_output?.outputs?.setup_cost_estimate?.min ?? null,\n    setup_cost_recommended:$('Validate & Store A4').first().json.a4_output?.outputs?.setup_cost_estimate?.recommended ?? null,\n    setup_cost_max:        $('Validate & Store A4').first().json.a4_output?.outputs?.setup_cost_estimate?.max ?? null,\n    budget_gap:            $('Validate & Store A4').first().json.a4_output?.outputs?.financial_projections?.budget_gap ?? null,\n    roi_12m:               $('Validate & Store A4').first().json.a4_output?.outputs?.financial_projections?.roi_12_months_pct ?? null,\n    financial_verdict:     $('Validate & Store A4').first().json.a4_output?.outputs?.overall_financial_verdict ?? 'Unknown'\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 115000
+        }
+      },
+      "id": "b8472153-97aa-4eaf-a97d-d2a2c7c1f002",
+      "name": "Call Agent A5 \u2013 Revenue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        38248,
+        912
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\nconst t_start = $('Parse & Validate Inputs v2').first().json._timing_a5 || Date.now();\n\n// Validate required fields\nconst required = [\"agent_id\"];\nconst missing = required.filter(f => !resp[f] && resp[f] !== 0);\nconst isFailed = (resp._stub === true) ? false : missing.length > 0;\n\n// Execution time tracking\nconst exec_ms = Date.now() - t_start;\n\nreturn [{ json: {\n  a5_output: resp,\n  _a5_failed: isFailed,\n  _a5_missing_fields: missing,\n  _a5_exec_ms: exec_ms,\n  _a5_mode: mode\n} }];"
+      },
+      "id": "181d4486-df71-4061-9868-4372e3c910f3",
+      "name": "Validate & Store A5",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        38508,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputs  = $('Parse & Validate Inputs v2').first().json;\nconst a1_raw  = $('Validate & Store A1').first().json.a1_output  || {};\nconst a2_raw  = $('Validate & Store A2').first().json.a2_output  || {};\nconst a3_raw  = $('Validate & Store A3').first().json.a3_output  || {};\nconst a4_raw  = $('Validate & Store A4').first().json.a4_output  || {};\nconst a5_raw  = $('Validate & Store A5').first().json.a5_output  || {};\nconst a6_raw  = $('Validate & Store A6').first().json.a6_output  || {};\nconst a7_raw  = $('Validate & Store A7').first().json.a7_output  || {};\nconst a8_raw  = $('Validate & Store A8').first().json.a8_output  || {};\nconst o = (agent) => agent?.outputs || {};\nconst a1 = o(a1_raw); const a2 = a2_raw?.outputs || a2_raw || {}; const a3 = o(a3_raw); const a4 = o(a4_raw); const a5 = o(a5_raw);\nconst a6 = a6_raw.outputs || a6_raw || {}; const a7 = a7_raw.outputs?.outputs || a7_raw.outputs || a7_raw || {}; const a8 = o(a8_raw);\nconst a5MonthlyBase = parseFloat((a5.revenue_range?.monthly_base || '0').replace(/[^0-9.]/g, '')) || 0;\nconst monthlyRent = parseFloat(inputs.monthly_rent_budget_max || '0') || 0;\nlet a5RentBurdenPct = null, a5RentBurdenLabel = 'Unknown', a5RentBurdenScore = 50;\nif (a5MonthlyBase > 0 && monthlyRent > 0) {\n  a5RentBurdenPct = parseFloat(((monthlyRent / a5MonthlyBase) * 100).toFixed(1));\n  a5RentBurdenLabel = a5RentBurdenPct <= 8 ? 'Excellent' : a5RentBurdenPct <= 12 ? 'Healthy' : a5RentBurdenPct <= 15 ? 'Caution' : a5RentBurdenPct <= 20 ? 'High Risk' : 'Avoid';\n  a5RentBurdenScore = a5RentBurdenPct <= 8 ? 95 : a5RentBurdenPct <= 12 ? 80 : a5RentBurdenPct <= 15 ? 60 : a5RentBurdenPct <= 20 ? 35 : 10;\n}\nconst top5Competitors = (a1.competitor_profiles || []).filter(c => typeof c.rating === 'number' && !isNaN(c.rating)).sort((a, b) => { if (b.within_500m !== a.within_500m) return b.within_500m ? 1 : -1; if ((b.rating||0) !== (a.rating||0)) return (b.rating||0)-(a.rating||0); return (b.review_count||0)-(a.review_count||0); }).slice(0, 8);\n\n// Enrich top competitors with maps_url from raw_maps_data\nconst rawMaps = (a1_raw.raw_maps_data || []);\nconst enrichedCompetitors = top5Competitors.map(c => {\n  const mapEntry = rawMaps.find(r => r.name === c.name);\n  return {\n    ...c,\n    address:   mapEntry?.address   || null,\n    maps_url:  mapEntry?.maps_url  || null,\n    open_now:  mapEntry?.open_now  ?? null,\n    types:     mapEntry?.types     || null,\n    price_level: mapEntry?.price_level || c.estimated_pricing || null\n  };\n});\nconst masterContext = [`=== A1: COMPETITOR INTELLIGENCE ===`,`Density Score: ${a1.competitor_density_score ?? 'N/A'}/100`,`Saturation: ${a1.saturation_level ?? 'N/A'}`,`Total Competitors: ${a1.total_competitors_found ?? 'N/A'}`,`Within 500m: ${a1.competitors_within_500m ?? 'N/A'} | Within 1500m: ${a1.competitors_within_1500m ?? 'N/A'}`,`Opportunity Gaps: ${(a1.opportunity_gaps || []).join('; ') || 'None'}`,`Threat Summary: ${a1.threat_summary ?? 'N/A'}`,`Locality Context: ${a1.locality_context ?? 'N/A'}`,`Differentiation Tips: ${(a1.differentiation_suggestions || []).join('; ')}`,`Top 5 Competitors:`, ...(top5Competitors.length ? top5Competitors.map((c,i) => `${i+1}. ${c.name} | Rating: ${c.rating??'N/A'} | Reviews: ${c.review_count??0} | ${c.within_500m?'Within 500m':'Within 1500m'} | Type: ${c.competitor_type??'Unknown'}`) : ['No top competitors available']),``,`=== A2: RENT & REAL ESTATE ===`,`Median Rent: ${a2.median_rent?.monthly ?? 'N/A'}/mo (Annual: ${a2.median_rent?.annual ?? 'N/A'})`,`Rent Range: ${a2.median_rent?.price_range?.min_monthly ?? 'N/A'} \u2013 ${a2.median_rent?.price_range?.max_monthly ?? 'N/A'} /mo`,`Listings Sampled: ${a2.median_rent?.listings_sampled ?? 'N/A'} | Data Quality: ${a2.data_quality ?? 'N/A'}`,`Within Budget Count: ${a2.within_budget_count ?? 'N/A'}`,`Top Properties: ${(a2.top_3_recommendations || []).map(l => `#${l.rank} ${l.address}`).join(', ')}`,`Transit Stops: ${a2.area_context?.transit_stops ?? 'N/A'} | POIs: ${a2.area_context?.food_retail_pois ?? 'N/A'}`,`Footfall Signal: ${a2.area_context?.footfall_signal ?? 'N/A'} | Zoning: ${a2.area_context?.commercial_zoning ?? 'N/A'}`,``,`=== A3: MARKET GROWTH & DEMAND ===`,`Growth Score: ${a3.growth_score ?? 'N/A'}/100`,`Market Stage: ${a3.market_maturity_stage ?? 'N/A'}`,`Demand Trend: ${a3.demand_trend ?? 'N/A'} \u2014 ${a3.demand_trend_reasoning ?? ''}`,`ABS Retail Trade: Source=${a3.abs_data_summary?.source ?? 'N/A'} | YoY=${a3.abs_data_summary?.yoy_change_pct ?? 'N/A'}% | Trend=${a3.abs_data_summary?.trend ?? 'N/A'}`,`Best Entry Timing: ${a3.best_entry_timing ?? 'N/A'}`,`Market Verdict: ${a3.overall_market_verdict ?? 'N/A'}`,`Top Opportunities: ${(a3.top_opportunities || []).join('; ')}`,`Top Risks: ${(a3.top_risks || []).join('; ')}`,``,`=== A4: COST PROJECTION ===`,`Setup Cost: ${a4.setup_cost_estimate?.total_min ?? 'N/A'} \u2013 ${a4.setup_cost_estimate?.total_max ?? 'N/A'} (Recommended: ${a4.setup_cost_estimate?.recommended ?? 'N/A'})`,`Budget Status: ${a4.setup_cost_estimate?.vs_user_budget ?? 'N/A'}`,`Monthly OpEx: ${a4.monthly_operating_cost?.total_monthly ?? 'N/A'}`,`Break-even: ${a4.financial_projections?.break_even_months ?? 'N/A'} months`,`ROI 36mo: ${a4.financial_projections?.roi_36_months ?? 'N/A'}`,`Financial Verdict: ${a4.overall_financial_verdict ?? 'N/A'}`,``,`=== A5: REVENUE & PROFITABILITY ===`,`Revenue Range: ${a5.revenue_range?.monthly_min ?? 'N/A'} \u2013 ${a5.revenue_range?.monthly_max ?? 'N/A'} (Base: ${a5.revenue_range?.monthly_base ?? 'N/A'})`,`Profitability Score: ${a5.profitability_score ?? 'N/A'}/100`,`Break-even: ${a5.break_even_months ?? 'N/A'} months`,`Revenue Verdict: ${a5.overall_revenue_verdict ?? 'N/A'}`,``,`=== A6: DEMOGRAPHICS & FOOT TRAFFIC ===`,`Demographics Score: ${a6.demographics_score ?? 'N/A'}/100`,`Foot Traffic Score: ${a6.foot_traffic_score ?? 'N/A'}/100 (${a6.foot_traffic_label ?? 'N/A'})`,`Income Level: ${a6.income_label ?? 'N/A'} \u2014 Median ${a6.median_monthly_income ?? 'N/A'}/mo`,`Area Type: ${a6.area_type ?? 'N/A'} | Premium Area: ${a6.is_premium_area ? 'Yes' : 'No'}`,`Est. Daily Customers: ${a6.estimated_daily_customers_range?.base ?? 'N/A'}`,`Demographic Verdict: ${a6.overall_demographic_verdict ?? 'N/A'}`,``,`=== A7: INDUSTRY BENCHMARKS (ATO-verified) ===`,`Benchmark Score: ${a7.benchmark_score ?? 'N/A'}/100`,`ATO Citation: ${a7.ato_citation ?? 'N/A'}`,`Rent Burden: ${a7.rent_burden?.pct ?? 'N/A'}% (${a7.rent_burden?.label ?? 'N/A'}) \u2014 Score: ${a7.rent_burden?.score ?? 'N/A'}/100`,`ATO Rent Range: ${a7.rent_burden?.ato_rent_range ?? 'N/A'}`,`Category Avg Break-even: ${a7.break_even_benchmark?.category_avg_months ?? 'N/A'} months`,`Performance Percentile: ${a7.performance_percentile ?? 'N/A'}th`,`Capitalisation: ${a7.capitalisation_assessment?.assessment ?? 'N/A'}`,`3yr Projection: Y1 ${a7.three_year_projection?.year1_revenue ?? 'N/A'} \u2192 Y2 ${a7.three_year_projection?.year2_revenue ?? 'N/A'} \u2192 Y3 ${a7.three_year_projection?.year3_revenue ?? 'N/A'}`,`Overall Benchmark Verdict: ${a7.overall_benchmark_verdict ?? 'N/A'}`,``,`=== A8: ECONOMIC CONTEXT (Overpass + ABS + RBA) ===`,`Economic Health Score: ${a8.economic_health_score ?? 'N/A'}/100`,`Economic Verdict: ${a8.economic_verdict ?? 'N/A'}`,`Major Supermarket Present: ${a8.anchor_store_analysis?.major_supermarket_present ? 'YES \u2014 strong footfall signal' : 'No'}`,`Anchors Found: ${(a8.anchor_store_analysis?.anchors_found || []).join(', ') || 'None'}`,`ABS Labour Price Index: ${a8.labour_cost_analysis?.annual_wage_growth_pct ?? 'N/A'}% annual wage growth`,`Min Casual Wage: $${a8.labour_cost_analysis?.min_casual_wage_aud ?? 25.41}/hr (Fair Work Act)`,`ABS Food CPI: ${a8.cpi_impact?.food_cpi_yoy_pct ?? 'N/A'}% YoY`,`RBA Consumer Sentiment: ${a8.consumer_sentiment?.index_value ?? 'N/A'} \u2014 ${a8.consumer_sentiment?.label ?? 'N/A'}`,`State Regulations (${a8.state_regulatory_summary?.state ?? 'N/A'}): Food=${a8.state_regulatory_summary?.food_registration ?? 'N/A'}`,`Overall Economic Verdict: ${a8.overall_economic_verdict ?? 'N/A'}`,``,`=== CORRECTED RENT BURDEN ===`,`A7 standalone: ${a7.rent_burden?.pct ?? 'N/A'}% \u2014 ${a7.rent_burden?.label ?? 'N/A'}`,`A5 revenue: $${a5MonthlyBase}/mo`,`CORRECTED: ${a5RentBurdenPct ?? 'N/A'}% \u2014 ${a5RentBurdenLabel} (score: ${a5RentBurdenScore}/100)`,`MASTER INSTRUCTION: Use ${a5RentBurdenPct ?? 'N/A'}% as the definitive rent burden.`].join('\\n');\nconst conflicts = [];\nif (a3.best_entry_timing && a3.best_entry_timing !== 'Immediate') conflicts.push(`A3 recommends \"${a3.best_entry_timing}\" but A5 revenue ramp starts immediately.`);\nif (a4.setup_cost_estimate?.vs_user_budget === 'Over Budget' && a5.overall_revenue_verdict === 'Strong') conflicts.push('A4 flags setup over budget but A5 shows strong revenue \u2014 may justify raising capital.');\nif (a1.saturation_level === 'High' && a3.overall_market_verdict === 'Strong Opportunity') conflicts.push('A1 shows High saturation but A3 rates Strong Opportunity \u2014 investigate niche differentiation.');\nif (a5RentBurdenPct !== null && a5RentBurdenPct > 15) conflicts.push(`Corrected rent burden ${a5RentBurdenPct}% exceeds ATO Healthy threshold of 12%.`);\nif (a7.capitalisation_assessment?.assessment === 'Under-capitalised') conflicts.push('A7 flags under-capitalisation \u2014 setup budget below ATO-aligned minimum.');\nif (a8.cpi_impact?.food_cpi_yoy_pct > 5 && a5.profitability_score > 70) conflicts.push(`A8 Food CPI ${a8.cpi_impact?.food_cpi_yoy_pct}% YoY may compress A5 profitability.`);\nif (a8.consumer_sentiment?.index_value < 90 && a5.revenue_range?.monthly_max) conflicts.push(`A8 RBA sentiment ${a8.consumer_sentiment?.index_value} (Pessimistic) \u2014 A5 revenue highs may be optimistic.`);\nif (a8.labour_cost_analysis?.annual_wage_growth_pct > 4 && a4.monthly_operating_cost?.total_monthly) conflicts.push(`A8 wage growth ${a8.labour_cost_analysis?.annual_wage_growth_pct}% \u2014 A4 labour cost projections may underestimate OpEx.`);\nreturn [{ json: { business_type: inputs.business_type, industry_category: inputs.industry_category, city: inputs.city, area: inputs.area, locality: inputs.locality, country: inputs.country, currency: inputs.currency, pricing_positioning: inputs.pricing_positioning, setup_budget: inputs.setup_budget, email: inputs.email, user_id: inputs.user_id || null, a1, a2, a3, a4, a5, a6, a7, a8, a1_raw, a2_raw, a3_raw, a4_raw, a5_raw, a6_raw, a7_raw, a8_raw, a5_rent_burden_pct: a5RentBurdenPct, a5_rent_burden_label: a5RentBurdenLabel, a5_rent_burden_score: a5RentBurdenScore, a5_monthly_base: a5MonthlyBase, master_context: masterContext, cross_agent_conflicts: conflicts, conflicts_text: conflicts.length > 0 ? conflicts.join('\\n') : 'No cross-agent conflicts detected.', timestamp: new Date().toISOString(), top_5_competitors: enrichedCompetitors }}];"
+      },
+      "id": "ea0ade4f-19a7-4e1c-b5c7-63ded478f82f",
+      "name": "Consolidate All Agent Outputs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        38768,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nfunction parseMoney(val) {\n  if (val === null || val === undefined || val === '') return null;\n  if (typeof val === 'number') return val;\n  const cleaned = String(val).replace(/[^0-9.\\-]/g, '');\n  return cleaned ? Number(cleaned) : null;\n}\n\nfunction clamp(v, min, max) {\n  return Math.max(min, Math.min(max, v));\n}\n\nconst d = $json;\nconst reportId = 'loc_' + new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14) + '_' + Math.random().toString(36).slice(2, 7);\n\nconst a1 = d.a1 || {};\nconst a2 = d.a2 || {};\nconst a3 = d.a3 || {};\nconst a4 = d.a4 || {};\nconst a5 = d.a5 || {};\nconst a6 = d.a6 || {};\nconst a7 = d.a7 || {};\nconst a8 = d.a8 || {};\n\nconst a2Top = Array.isArray(a2.top_3_recommendations) ? a2.top_3_recommendations : [];\nconst a1TopCompetitors = Array.isArray(a1.competitor_profiles) ? a1.competitor_profiles.slice(0, 8) : [];\n\nconst rentMedian = a2?.median_rent?.monthly ?? null;\nconst rentMin = a2?.median_rent?.price_range?.min_monthly ?? null;\nconst rentMax = a2?.median_rent?.price_range?.max_monthly ?? null;\nconst listingsSampled = a2?.median_rent?.listings_sampled ?? 0;\n\nconst revenueMin = parseMoney(a5?.revenue_range?.monthly_min);\nconst revenueBase = parseMoney(a5?.revenue_range?.monthly_base);\nconst revenueMax = parseMoney(a5?.revenue_range?.monthly_max);\nconst annualRevenueBase = parseMoney(a5?.revenue_range?.annual_base);\nconst monthlyOpex = parseMoney(a4?.monthly_operating_cost?.total_monthly);\nconst setupCostRecommended = parseMoney(a4?.setup_cost_estimate?.recommended);\nconst setupCostMin = parseMoney(a4?.setup_cost_estimate?.total_min);\nconst setupCostMax = parseMoney(a4?.setup_cost_estimate?.total_max);\nconst budgetGap = parseMoney(a4?.setup_cost_estimate?.budget_gap);\n\nconst a2Pois = a2?.area_context?.food_retail_pois ?? null;\nconst a2Transit = a2?.area_context?.transit_stops ?? null;\nconst a2Supermarkets = a2?.area_context?.major_supermarkets ?? null;\nconst a2FootfallSignal = a2?.area_context?.footfall_signal ?? null;\n\nconst a6DailyBase = a6?.estimated_daily_customers_range?.base ?? null;\nconst a6FootfallScore = a6?.foot_traffic_score ?? null;\nconst a6IncomeMonthly = a6?.median_monthly_income ?? null;\n\nconst economicHealthScore = a8?.economic_health_score ?? null;\nconst benchmarkScore = a7?.benchmark_score ?? null;\n\nconst netProfitBase = (revenueBase !== null && monthlyOpex !== null) ? revenueBase - monthlyOpex : null;\nconst profitMarginBase = (revenueBase && netProfitBase !== null) ? Number(((netProfitBase / revenueBase) * 100).toFixed(1)) : null;\n\nlet rentFinal = rentMedian;\nlet rentConfidence = 'low';\nif (listingsSampled >= 8 && rentMedian !== null) rentConfidence = 'high';\nelse if (listingsSampled >= 3 && rentMedian !== null) rentConfidence = 'medium';\n\nlet footfallFinalScore = null;\nlet footfallConfidence = 'low';\nconst flags = [];\n\nif (a2Pois !== null && a2Pois > 0) {\n  // Convert A2 area activity to a bounded score\n  const a2Score = clamp(Math.round(a2Pois / 4 + (a2Transit || 0) * 2 + (a2Supermarkets || 0) * 3), 10, 95);\n  if (a6FootfallScore !== null && a6FootfallScore > 0) {\n    footfallFinalScore = Math.round(a2Score * 0.7 + a6FootfallScore * 0.3);\n    footfallConfidence = 'medium';\n    if (Math.abs(a2Score - a6FootfallScore) >= 25) flags.push('footfall_conflict');\n  } else {\n    footfallFinalScore = a2Score;\n    footfallConfidence = 'medium';\n    flags.push('a6_footfall_unreliable');\n  }\n} else if (a6FootfallScore !== null) {\n  footfallFinalScore = a6FootfallScore;\n  footfallConfidence = 'low';\n  flags.push('a2_footfall_missing');\n}\n\nif (listingsSampled < 3) flags.push('low_rent_sample');\nif (rentMedian === null) flags.push('rent_missing');\nif (revenueBase === null) flags.push('revenue_missing');\nif (monthlyOpex === null) flags.push('opex_missing');\nif ((a8?.labour_cost_analysis?.source || '').includes('assumption')) flags.push('economic_assumptions_used');\nif ((a8?.cpi_impact?.source || '').includes('assumption')) flags.push('cpi_assumption_used');\nif ((a8?.consumer_sentiment?.source || '').includes('assumption')) flags.push('sentiment_assumption_used');\n\nconst competitionPressureScore = a1?.competitor_density_score ?? null; // high means bad\nconst competitionViabilityScore = competitionPressureScore !== null ? 100 - competitionPressureScore : null;\nconst marketDemandScore = a3?.growth_score ?? null;\nconst profitabilityScore = a5?.profitability_score ?? null;\nconst demographicScore = a6?.demographics_score ?? null;\nconst costFeasibilityScore = budgetGap !== null && setupCostRecommended\n  ? clamp(100 - Math.round((budgetGap / setupCostRecommended) * 100), 10, 100)\n  : null;\n\nconst userMonthlyRentBudgetMax = parseMoney(d.monthly_rent_budget_max);\nconst breakEvenDailyCustomers = a5?.customer_volume?.daily_customers_needed_breakeven ?? null;\nlet rentViabilityScore = null;\nif (rentMedian !== null && revenueBase !== null && revenueBase > 0) {\n  const rentBurdenPct = (rentMedian / revenueBase) * 100;\n  rentViabilityScore = rentBurdenPct <= 8 ? 95 : rentBurdenPct <= 12 ? 80 : rentBurdenPct <= 15 ? 60 : rentBurdenPct <= 20 ? 35 : 10;\n} else if (rentMedian !== null && userMonthlyRentBudgetMax !== null) {\n  rentViabilityScore = rentMedian <= userMonthlyRentBudgetMax ? 75 : 40;\n}\n\n// weighted overall score using available metrics only\nconst weightedParts = [\n  ['competition', competitionViabilityScore, 0.18],\n  ['market', marketDemandScore, 0.17],\n  ['profitability', profitabilityScore, 0.20],\n  ['footfall', footfallFinalScore, 0.15],\n  ['economy', economicHealthScore, 0.10],\n  ['demographics', demographicScore, 0.10],\n  ['benchmark', benchmarkScore, 0.05],\n  ['cost', costFeasibilityScore, 0.05]\n].filter(x => x[1] !== null && x[1] !== undefined && !Number.isNaN(x[1]));\n\nconst totalWeight = weightedParts.reduce((s, x) => s + x[2], 0);\nconst overallScore = totalWeight > 0\n  ? Math.round(weightedParts.reduce((s, x) => s + x[1] * x[2], 0) / totalWeight)\n  : null;\n\nlet verdict = 'caution';\nif (overallScore !== null) {\n  if (overallScore >= 70) verdict = 'go';\n  else if (overallScore >= 50) verdict = 'caution';\n  else verdict = 'no_go';\n}\n\nconst topProperties = a2Top.map(p => ({\n  rank: p.rank ?? null,\n  address: p.address ?? null,\n  price_monthly: p.price_monthly ?? null,\n  price_annual: p.price_annual ?? null,\n  sqm: p.sqm ?? null,\n  price_per_sqm_pa: p.price_per_sqm_pa ?? null,\n  within_budget: p.within_budget ?? null,\n  score: p.score ?? null,\n  listing_url: p.listing_url ?? null,\n  maps_url: p.maps_url ?? null,\n  size_verdict: p.size_verdict ?? null,\n  vs_area_median: p.vs_area_median ?? null\n}));\n\nconst topCompetitors = a1TopCompetitors.map(c => ({\n  name: c.name ?? null,\n  competitor_type: c.competitor_type ?? null,\n  within_500m: c.within_500m ?? null,\n  estimated_pricing: c.estimated_pricing ?? null,\n  rating: c.rating ?? null,\n  review_count: c.review_count ?? null,\n  strengths: c.strengths || [],\n  weaknesses: c.weaknesses || []\n}));\n\nconst riskItems = [];\nif (competitionPressureScore !== null && competitionPressureScore >= 85) riskItems.push({ risk: 'competition_density', severity: 'high', value: competitionPressureScore, source: 'A1' });\nif (rentMedian !== null && revenueBase !== null) {\n  const rentBurdenPct = Number(((rentMedian / revenueBase) * 100).toFixed(1));\n  if (rentBurdenPct > 12) riskItems.push({ risk: 'rent_burden', severity: rentBurdenPct > 18 ? 'high' : 'medium', value: rentBurdenPct, source: 'A2+A5' });\n}\nif (budgetGap !== null && budgetGap > 0) riskItems.push({ risk: 'setup_budget_gap', severity: budgetGap > 30000 ? 'high' : 'medium', value: budgetGap, source: 'A4' });\nif (flags.includes('footfall_conflict')) riskItems.push({ risk: 'footfall_conflict', severity: 'high', value: null, source: 'A2+A6' });\nif (economicHealthScore !== null && economicHealthScore < 40) riskItems.push({ risk: 'weak_macro_context', severity: 'medium', value: economicHealthScore, source: 'A8' });\n\nconst report = {\n  meta: {\n    report_id: reportId,\n    generated_at: d.timestamp || new Date().toISOString(),\n    business_type: d.business_type,\n    industry_category: d.industry_category,\n    location: {\n      locality: d.locality,\n      area: d.area,\n      city: d.city,\n      country: d.country\n    },\n    input_data: {\n      business_type: d.business_type || null,\n      industry_category: d.industry_category || null,\n      city: d.city || null,\n      area: d.area || null,\n      locality: d.locality || null,\n      country: d.country || null,\n      currency: d.currency || null,\n      pricing_positioning: d.pricing_positioning || null,\n      setup_budget: d.setup_budget || null,\n      monthly_rent_budget_max: d.monthly_rent_budget_max || null,\n      avg_ticket_min: d.avg_ticket_min || null,\n      avg_ticket_max: d.avg_ticket_max || null\n    },\n    user_id: d.user_id || null\n  },\n  scores: {\n    overall: overallScore,\n    verdict,\n    competition_viability: competitionViabilityScore,\n    market_demand: marketDemandScore,\n    profitability: profitabilityScore,\n    footfall: footfallFinalScore,\n    demographics: demographicScore,\n    benchmark: benchmarkScore,\n    economic_health: economicHealthScore,\n    cost_feasibility: costFeasibilityScore\n  },\n  confidence: {\n    rent: rentConfidence,\n    footfall: footfallConfidence,\n    overall_data_quality: (\n      rentConfidence === 'high' &&\n      weightedParts.length >= 5 &&\n      !flags.includes('footfall_conflict')\n    ) ? 'medium' : 'low'\n  },\n  real_estate: {\n    median_rent_monthly: rentFinal,\n    median_rent_annual: rentFinal !== null ? rentFinal * 12 : null,\n    rent_range_monthly: { min: rentMin, max: rentMax },\n    listings_sampled: listingsSampled,\n    data_quality: a2?.data_quality ?? null,\n    within_budget_count: a2?.within_budget_count ?? null,\n    rent_viability_score: rentViabilityScore,\n    top_properties: topProperties,\n    area_context: {\n      food_retail_pois: a2Pois,\n      transit_stops: a2Transit,\n      major_supermarkets: a2Supermarkets,\n      major_anchors_nearby: a2?.area_context?.major_anchors_nearby || [],\n      road_type: a2?.area_context?.road_type ?? null,\n      commercial_zoning: a2?.area_context?.commercial_zoning ?? null,\n      footfall_signal: a2FootfallSignal,\n      transport_signal: a2?.area_context?.transport_signal ?? null,\n      anchor_effect: a2?.area_context?.anchor_effect ?? null\n    }\n  },\n  market: {\n    saturation_level: a1?.saturation_level ?? null,\n    total_competitors_found: a1?.total_competitors_found ?? null,\n    competitors_within_500m: a1?.competitors_within_500m ?? null,\n    competitors_within_1500m: a1?.competitors_within_1500m ?? null,\n    pricing_bands: a1?.pricing_bands || {},\n    opportunity_gaps: a1?.opportunity_gaps || [],\n    differentiation_suggestions: a1?.differentiation_suggestions || [],\n    locality_context: a1?.locality_context ?? null,\n    market_stage: a3?.market_maturity_stage ?? null,\n    demand_trend: a3?.demand_trend ?? null,\n    best_entry_timing: a3?.best_entry_timing ?? null,\n    target_customer_segments: a3?.target_customer_segments || [],\n    top_opportunities: a3?.top_opportunities || [],\n    top_risks: a3?.top_risks || []\n  },\n  financials: {\n    revenue_monthly: { min: revenueMin, base: revenueBase, max: revenueMax },\n    revenue_annual_base: annualRevenueBase,\n    monthly_opex: monthlyOpex,\n    setup_cost: { min: setupCostMin, recommended: setupCostRecommended, max: setupCostMax },\n    setup_budget_user: parseMoney(d.setup_budget),\n    budget_gap: budgetGap,\n    net_profit_monthly_base: netProfitBase,\n    profit_margin_base_pct: profitMarginBase,\n    break_even_months: a5?.break_even_months ?? a4?.financial_projections?.break_even_months ?? null,\n    break_even_daily_customers: breakEvenDailyCustomers,\n    roi_12_months_pct: parseMoney(a4?.financial_projections?.roi_12_months),\n    roi_24_months_pct: parseMoney(a4?.financial_projections?.roi_24_months),\n    roi_36_months_pct: parseMoney(a4?.financial_projections?.roi_36_months),\n    revenue_channels: a5?.revenue_channels || [],\n    pricing_strategies: a5?.pricing_strategies || [],\n    sensitivity_analysis: a5?.sensitivity_analysis || {}\n  },\n  demand_demographics: {\n    footfall: {\n      final_score: footfallFinalScore,\n      final_confidence: footfallConfidence,\n      sources: {\n        a2_food_retail_pois: a2Pois,\n        a2_transit_stops: a2Transit,\n        a2_signal: a2FootfallSignal,\n        a6_foot_traffic_score: a6FootfallScore,\n        a6_daily_customers_base: a6DailyBase\n      }\n    },\n    demographics: {\n      demographics_score: demographicScore,\n      income_score: a6?.income_score ?? null,\n      income_label: a6?.income_label ?? null,\n      median_monthly_income: a6IncomeMonthly,\n      area_type: a6?.area_type ?? null,\n      is_premium_area: a6?.is_premium_area ?? null,\n      consumer_affordability_index: a6?.consumer_affordability_index ?? null,\n      overall_demographic_verdict: a6?.overall_demographic_verdict ?? null\n    }\n  },\n  benchmark: {\n    benchmark_score: benchmarkScore,\n    ato_citation: a7?.ato_citation ?? null,\n    rent_burden_pct: a7?.rent_burden?.pct ?? null,\n    rent_burden_label: a7?.rent_burden?.label ?? null,\n    break_even_category_avg_months: a7?.break_even_benchmark?.category_avg_months ?? null,\n    performance_percentile: a7?.performance_percentile ?? null,\n    capitalisation_assessment: a7?.capitalisation_assessment || {},\n    recommendations: a7?.benchmark_recommendations || []\n  },\n  economy: {\n    economic_health_score: economicHealthScore,\n    economic_verdict: a8?.economic_verdict ?? null,\n    major_anchor_present: a8?.anchor_store_analysis?.major_supermarket_present ?? null,\n    anchors_found: a8?.anchor_store_analysis?.anchors_found || [],\n    wage_growth_pct: a8?.labour_cost_analysis?.annual_wage_growth_pct ?? null,\n    food_cpi_yoy_pct: a8?.cpi_impact?.food_cpi_yoy_pct ?? null,\n    consumer_sentiment_label: a8?.consumer_sentiment?.label ?? null,\n    state_regulations: a8?.state_regulatory_summary || {}\n  },\n  rankings: {\n    top_competitors: topCompetitors,\n    top_properties: topProperties\n  },\n  risks: riskItems,\n  flags,\n  raw_summary: {\n    agent_status: {\n      a1: d.a1_raw?.status || 'unknown',\n      a2: d.a2_raw?.status || 'unknown',\n      a3: d.a3_raw?.status || 'unknown',\n      a4: d.a4_raw?.status || 'unknown',\n      a5: d.a5_raw?.status || 'unknown',\n      a6: d.a6_raw?.status || 'unknown',\n      a7: d.a7_raw?.status || 'unknown',\n      a8: d.a8_raw?.status || 'unknown'\n    }\n  }\n};\n\nreturn [{ json: report }];\n"
+      },
+      "id": "876b48fd-1ec7-4582-a82c-54e6b04df491",
+      "name": "Normalize + Resolve Master Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        39028,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst report = $json || {};\nconst meta = report.meta || {};\nconst scores = report.scores || {};\nconst realEstate = report.real_estate || {};\nconst financials = report.financials || {};\nconst rankings = report.rankings || {};\nconst flags = report.flags || [];\nconst market = report.market || {};\nconst benchmark = report.benchmark || {};\nconst economy = report.economy || {};\nconst inputData = meta.input_data || {};\n\nconst reportId = meta.report_id || ('loc_' + Date.now());\nconst now = new Date().toISOString();\nconst locationName = [meta.location?.locality, meta.location?.area, meta.location?.city].filter(Boolean).join(', ') || null;\nconst address = [meta.location?.locality, meta.location?.area, meta.location?.city, meta.location?.country].filter(Boolean).join(', ') || null;\n\nconst competitors = Array.isArray(rankings.top_competitors) ? rankings.top_competitors.slice(0, 8) : [];\nconst properties = Array.isArray(rankings.top_properties) ? rankings.top_properties.slice(0, 8) : [];\nconst overallScore = scores.overall ?? null;\nconst verdictMap = { go: 'go', caution: 'caution', no_go: 'no' };\nconst verdict = verdictMap[scores.verdict] || 'caution';\n\nconst recommendationParts = [];\nif (scores.competition_viability !== null && scores.competition_viability !== undefined) recommendationParts.push(`competition=${scores.competition_viability}`);\nif (scores.profitability !== null && scores.profitability !== undefined) recommendationParts.push(`profitability=${scores.profitability}`);\nif (scores.footfall !== null && scores.footfall !== undefined) recommendationParts.push(`footfall=${scores.footfall}`);\nif (scores.economic_health !== null && scores.economic_health !== undefined) recommendationParts.push(`economy=${scores.economic_health}`);\nif (realEstate.rent_viability_score !== null && realEstate.rent_viability_score !== undefined) recommendationParts.push(`rent=${realEstate.rent_viability_score}`);\n\nconst row = {\n  report_id: reportId,\n  submission_id: reportId,\n  user_id: meta.user_id || null,\n  status: 'complete',\n  progress_step: 'complete',\n  completed_at: now,\n\n  overall_score: overallScore,\n  verdict,\n  score_competition: scores.competition_viability ?? null,\n  score_rent: realEstate.rent_viability_score ?? null,\n  score_demand: scores.market_demand ?? null,\n  score_cost: scores.cost_feasibility ?? null,\n  score_profitability: scores.profitability ?? null,\n\n  recommendation: recommendationParts.join(' | ') || null,\n  competitor_analysis: market.saturation_level || null,\n  rent_analysis: realEstate.data_quality || null,\n  market_demand: market.demand_trend || null,\n  cost_analysis: financials.budget_gap !== null && financials.budget_gap !== undefined ? `budget_gap=${financials.budget_gap}` : null,\n  profitability: financials.net_profit_monthly_base !== null && financials.net_profit_monthly_base !== undefined ? String(financials.net_profit_monthly_base) : null,\n\n  breakeven_monthly: financials.revenue_monthly?.base ?? null,\n  breakeven_daily: financials.break_even_daily_customers ?? null,\n  breakeven_months: financials.break_even_months ?? null,\n\n  pl_summary: JSON.stringify({\n    overall_score: overallScore,\n    verdict: scores.verdict || null,\n    flags,\n    risk_count: Array.isArray(report.risks) ? report.risks.length : 0\n  }),\n  three_year_projection: JSON.stringify({\n    roi_12_months_pct: financials.roi_12_months_pct ?? null,\n    roi_24_months_pct: financials.roi_24_months_pct ?? null,\n    roi_36_months_pct: financials.roi_36_months_pct ?? null\n  }),\n  sensitivity_analysis: JSON.stringify(financials.sensitivity_analysis || {}),\n  swot_analysis: JSON.stringify({\n    opportunities: market.top_opportunities || [],\n    risks: (report.risks || []).map(r => r.risk),\n    strengths: [],\n    weaknesses: []\n  }),\n  full_report_markdown: JSON.stringify(report),\n\n  result_data: report,\n  input_data: inputData,\n\n  location_name: locationName,\n  business_type: meta.business_type || null,\n  monthly_rent: realEstate.median_rent_monthly ?? null,\n  address\n};\n\nreturn [{ json: { row, reportId, report, competitors, properties } }];\n"
+      },
+      "id": "e852d52e-99ea-4340-ae54-1a400f0d7290",
+      "name": "Prepare Supabase Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        39288,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pgtqofiqazjllstkoiql.supabase.co/rest/v1/reports",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.row) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_SUPABASE_CREDENTIAL_ID",
+          "name": "Supabase Service Role Key"
+        }
+      },
+      "id": "98828d80-bc40-4ed4-ba8d-1900a4ba71bd",
+      "name": "Save to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        39548,
+        912
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Prepare Supabase Payload').first().json;\nconst supaResp = $input.first().json;\nconst start = $('Parse & Validate Inputs v2').first().json._workflow_start || Date.now();\nconst mode = $('Parse & Validate Inputs v2').first().json.mode || 'full';\n\nconst agentStatus = {\n  a1: $('Validate & Store A1').first().json._a1_failed ? 'failed' : 'ok',\n  a2: $('Validate & Store A2').first().json._a2_failed ? 'failed' : 'ok',\n  a3: $('Validate & Store A3').first().json._a3_failed ? 'failed' : 'ok',\n  a4: $('Validate & Store A4').first().json._a4_failed ? 'failed' : (mode === 'light' ? 'skipped' : 'ok'),\n  a5: $('Validate & Store A5').first().json._a5_failed ? 'failed' : 'ok',\n  a6: $('Validate & Store A6').first().json._a6_failed ? 'failed' : (mode === 'light' ? 'skipped' : 'ok'),\n  a7: $('Validate & Store A7').first().json._a7_failed ? 'failed' : (mode === 'light' ? 'skipped' : 'ok'),\n  a8: $('Validate & Store A8').first().json._a8_failed ? 'failed' : (mode === 'light' ? 'skipped' : 'ok'),\n};\n\nreturn [{ json: {\n  success: true,\n  reportId: d.reportId,\n  verdict: d.report?.scores?.verdict || null,\n  score: d.report?.scores?.overall || null,\n  mode,\n  report: d.report,\n  competitors: d.competitors || [],\n  properties: d.properties || [],\n  agent_status: agentStatus,\n  supabase_status: Array.isArray(supaResp) ? 'saved' : (supaResp?.error ? 'error:' + supaResp.error : 'saved'),\n  execution_ms: Date.now() - start\n}}];"
+      },
+      "id": "02a631bc-f12e-4973-8fb7-3e8f00d61021",
+      "name": "Return Webhook Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        39808,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "c0aead97-1893-459a-8126-d70b4d79116c",
+      "name": "Merge G1A \u2013 A1+A6",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        35780,
+        762
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "09ff94ff-e76c-48a4-a53b-0a490654a4fc",
+      "name": "Merge G1B \u2013 A7+A8",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        35780,
+        1112
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook \u2013 Master Intake": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs v2": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A1 \u2013 Competitor Intel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IF A6 \u2013 Full Mode Only",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IF A7 \u2013 Full Mode Only",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IF A8 \u2013 Full Mode Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A1 \u2013 Competitor Intel": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF A6 \u2013 Full Mode Only": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A6 \u2013 Demographics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "A6 Stub \u2013 Light Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A6 \u2013 Demographics": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A6 Stub \u2013 Light Mode": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF A7 \u2013 Full Mode Only": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A7 \u2013 Benchmark",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "A7 Stub \u2013 Light Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A7 \u2013 Benchmark": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A7 Stub \u2013 Light Mode": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF A8 \u2013 Full Mode Only": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A8 \u2013 Economic Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "A8 Stub \u2013 Light Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A8 \u2013 Economic Context": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A8 Stub \u2013 Light Mode": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A1": {
+      "main": [
+        [
+          {
+            "node": "Merge G1A \u2013 A1+A6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A6": {
+      "main": [
+        [
+          {
+            "node": "Merge G1A \u2013 A1+A6",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Validate & Store A7": {
+      "main": [
+        [
+          {
+            "node": "Merge G1B \u2013 A7+A8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A8": {
+      "main": [
+        [
+          {
+            "node": "Merge G1B \u2013 A7+A8",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge G1A \u2013 A1+A6": {
+      "main": [
+        [
+          {
+            "node": "Merge G1 \u2013 Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge G1B \u2013 A7+A8": {
+      "main": [
+        [
+          {
+            "node": "Merge G1 \u2013 Final",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge G1 \u2013 Final": {
+      "main": [
+        [
+          {
+            "node": "Extract Group 1 Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Group 1 Summaries": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A2 \u2013 Rent & RE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A2 \u2013 Rent & RE": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A2": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A3 \u2013 Market",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A3 \u2013 Market": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A3": {
+      "main": [
+        [
+          {
+            "node": "IF A4 \u2013 Full Mode Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF A4 \u2013 Full Mode Only": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A4 \u2013 Cost",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "A4 Stub \u2013 Light Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A4 \u2013 Cost": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A4 Stub \u2013 Light Mode": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A4": {
+      "main": [
+        [
+          {
+            "node": "Call Agent A5 \u2013 Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Agent A5 \u2013 Revenue": {
+      "main": [
+        [
+          {
+            "node": "Validate & Store A5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate & Store A5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Store A5": {
+      "main": [
+        [
+          {
+            "node": "Consolidate All Agent Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidate All Agent Outputs": {
+      "main": [
+        [
+          {
+            "node": "Normalize + Resolve Master Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize + Resolve Master Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Supabase Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Supabase Payload": {
+      "main": [
+        [
+          {
+            "node": "Save to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Return Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "pinData": {},
+  "versionId": "30447c69-c253-41ca-b025-2ee5c51f9338",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "notes": "Refactored: Parallel A1+A6+A7+A8, light/full mode, retry logic, credential-based Supabase, slim payloads, validation nodes"
+  },
+  "tags": [
+    {
+      "createdAt": "2026-03-25",
+      "updatedAt": "2026-03-25",
+      "id": "37044fe0-9f22-4f9f-848a-3a1de499d624",
+      "name": "locatalyze-v2"
+    }
+  ],
+  "id": "e83dce8b-37d3-4ae9-ae69-cdd51b043601"
+}

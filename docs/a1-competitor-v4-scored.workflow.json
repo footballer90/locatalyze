@@ -1,0 +1,180 @@
+{
+  "name": "Locatalyze A1 – Competitor Intelligence v4 (Scored)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## A1 Competitor Intelligence v4 — Scored & Ranked\n\n**What's new in v4 vs v3:**\n- Each competitor gets a `threat_score` (0–100)\n- Competitors sorted by threat_score descending\n- Each competitor gets a `rank` (1 = strongest)\n- Each competitor gets a `threat_label`: strong / moderate / weak\n- Output includes `opportunity_level`: high / medium / low / unknown\n- Output includes `opportunity_reason` — specific plain-English summary\n\n**Scoring formula:**\n- Rating (0–35 pts): (rating / 5) × 35\n- Reviews (0–25 pts): min(reviews / 300, 1) × 25\n- Proximity (0–30 pts): (1 − distance_m / radius) × 30\n- Operational bonus: +10 pts if OPERATIONAL\n\n**Setup:**\n1. Replace `YOUR_GOOGLE_PLACES_API_KEY` in all 3 HTTP Request nodes\n2. Deactivate v3, activate v4\n3. Update Master Orchestrator to call `a1-competitor-v4`",
+        "height": 330,
+        "width": 400,
+        "color": 5
+      },
+      "id": "1a2b3c4d-0001-0001-0001-000000000001",
+      "name": "Setup Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, 40]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a1-competitor-v4",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1a2b3c4d-0002-0002-0002-000000000002",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [440, 300],
+      "webhookId": "a1-competitor-v4-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Parse & validate input from Master Orchestrator ──────────────────────────\nconst body = $input.first().json.body || $input.first().json;\n\nconst lat          = parseFloat(body.lat  || body.latitude  || 0);\nconst lng          = parseFloat(body.lng  || body.longitude || 0);\nconst businessType = String(body.businessType || body.business_type || 'other').toLowerCase();\nconst area         = String(body.area   || body.suburb || '');\nconst city         = String(body.city   || '');\nconst reportId     = String(body.reportId || body.report_id || '');\n\n// ── Radius lookup (metres) — must match lib/compute/benchmarks.ts ─────────────\nconst RADIUS_MAP = {\n  gym:        1500,\n  fitness:    1500,\n  cafe:       600,\n  restaurant: 600,\n  bakery:     600,\n  bar:        600,\n  salon:      600,\n  retail:     500,\n  takeaway:   500,\n  pharmacy:   800\n};\n\nfunction resolveKey(bt) {\n  const keys = Object.keys(RADIUS_MAP);\n  for (let i = 0; i < keys.length; i++) {\n    if (bt.indexOf(keys[i]) !== -1) return keys[i];\n  }\n  return 'other';\n}\n\nconst bizKey = resolveKey(businessType);\nconst radius = RADIUS_MAP[bizKey] || 600;\n\n// ── Google Places primary type ─────────────────────────────────────────────────\nconst TYPE_MAP = {\n  gym:        'gym',\n  fitness:    'gym',\n  cafe:       'cafe',\n  restaurant: 'restaurant',\n  bakery:     'bakery',\n  bar:        'bar',\n  salon:      'beauty_salon',\n  retail:     'clothing_store',\n  takeaway:   'meal_takeaway',\n  pharmacy:   'pharmacy'\n};\n\n// ── Keyword searches — catches places with non-standard Google type tags ───────\nconst KEYWORD_MAP = {\n  gym:        ['fitness centre', 'health club', 'yoga studio', 'pilates', 'crossfit'],\n  fitness:    ['fitness centre', 'health club', 'yoga studio', 'pilates'],\n  cafe:       ['coffee shop', 'espresso bar', 'brunch cafe'],\n  restaurant: ['restaurant', 'dining'],\n  bakery:     ['bakery', 'patisserie'],\n  bar:        ['bar', 'pub', 'tavern'],\n  salon:      ['hair salon', 'barber', 'beauty salon'],\n  retail:     ['clothing store', 'boutique'],\n  takeaway:   ['takeaway', 'fast food'],\n  pharmacy:   ['pharmacy', 'chemist']\n};\n\nconst primaryType = TYPE_MAP[bizKey] || null;\nconst keywords    = (KEYWORD_MAP[bizKey] || []).slice(0, 2);\n\nif (!lat || !lng) {\n  throw new Error('A1: lat/lng missing from input — check Master Orchestrator coordinate passing');\n}\n\nreturn [{\n  json: {\n    lat, lng, bizKey, businessType, area, city, reportId,\n    radius, primaryType, keywords,\n    locationString: lat + ',' + lng\n  }\n}];"
+      },
+      "id": "1a2b3c4d-0003-0003-0003-000000000003",
+      "name": "Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "location", "value": "={{ $json.locationString }}" },
+            { "name": "radius",   "value": "={{ $json.radius }}" },
+            { "name": "type",     "value": "={{ $json.primaryType }}" },
+            { "name": "key",      "value": "YOUR_GOOGLE_PLACES_API_KEY" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1a2b3c4d-0004-0004-0004-000000000004",
+      "name": "Google Places — Type Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [940, 140]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "location", "value": "={{ $json.locationString }}" },
+            { "name": "radius",   "value": "={{ $json.radius }}" },
+            { "name": "keyword",  "value": "={{ $json.keywords[0] }}" },
+            { "name": "key",      "value": "YOUR_GOOGLE_PLACES_API_KEY" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1a2b3c4d-0005-0005-0005-000000000005",
+      "name": "Google Places — Keyword 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [940, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "location", "value": "={{ $json.locationString }}" },
+            { "name": "radius",   "value": "={{ $json.radius }}" },
+            { "name": "keyword",  "value": "={{ $json.keywords[1] }}" },
+            { "name": "key",      "value": "YOUR_GOOGLE_PLACES_API_KEY" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1a2b3c4d-0006-0006-0006-000000000006",
+      "name": "Google Places — Keyword 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [940, 460]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "1a2b3c4d-0007-0007-0007-000000000007",
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [1180, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Collect all results from 3 parallel NearbySearch calls ───────────────────\nconst allPlaces = [];\n\nfor (let i = 0; i < $input.all().length; i++) {\n  const item = $input.all()[i].json;\n  const results = item.results || item.result || [];\n  for (let j = 0; j < results.length; j++) {\n    allPlaces.push(results[j]);\n  }\n}\n\n// ── Deduplicate by place_id ───────────────────────────────────────────────────\nconst seen = {};\nconst unique = [];\nfor (let i = 0; i < allPlaces.length; i++) {\n  const p = allPlaces[i];\n  const key = p.place_id || p.name || ('idx-' + i);\n  if (!seen[key]) {\n    seen[key] = true;\n    unique.push(p);\n  }\n}\n\n// ── Haversine distance calculation ───────────────────────────────────────────\nconst originLat = parseFloat($('Parse Input').first().json.lat);\nconst originLng = parseFloat($('Parse Input').first().json.lng);\n\nfunction haversineM(lat1, lng1, lat2, lng2) {\n  const R = 6371000;\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLng = (lng2 - lng1) * Math.PI / 180;\n  const a = Math.sin(dLat/2) * Math.sin(dLat/2)\n    + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180)\n    * Math.sin(dLng/2) * Math.sin(dLng/2);\n  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));\n}\n\n// ── Scoring function: 0–100, higher = stronger threat ────────────────────────\n// Components:\n//   Rating    0–35 pts  (Google rating × 7)\n//   Reviews   0–25 pts  (caps at 300 reviews = full score)\n//   Proximity 0–30 pts  (closer to origin = higher score)\n//   Operating   +10 pts (bonus if OPERATIONAL)\nfunction scoreCompetitor(c, radius) {\n  let score = 0;\n\n  if (c.rating && c.rating > 0) {\n    score += (c.rating / 5) * 35;\n  }\n\n  if (c.review_count && c.review_count > 0) {\n    score += Math.min(c.review_count / 300, 1) * 25;\n  }\n\n  if (c.distance_m !== null && c.distance_m !== undefined && radius > 0) {\n    const proximity = Math.max(0, 1 - c.distance_m / radius);\n    score += proximity * 30;\n  }\n\n  if (c.business_status === 'OPERATIONAL') {\n    score += 10;\n  }\n\n  return Math.round(Math.min(score, 100));\n}\n\n// ── Build competitor objects ──────────────────────────────────────────────────\nconst bizKey = $('Parse Input').first().json.bizKey;\nconst radius = $('Parse Input').first().json.radius;\nconst area   = $('Parse Input').first().json.area;\nconst city   = $('Parse Input').first().json.city;\n\nconst competitors = unique.map(function(p) {\n  const loc = p.geometry && p.geometry.location ? p.geometry.location : {};\n  const distM = (loc.lat && loc.lng)\n    ? haversineM(originLat, originLng, loc.lat, loc.lng)\n    : null;\n\n  return {\n    name:            p.name || 'Unknown',\n    address:         p.vicinity || p.formatted_address || null,\n    rating:          p.rating || null,\n    review_count:    p.user_ratings_total || null,\n    google_types:    p.types || [],\n    place_id:        p.place_id || null,\n    distance_m:      distM,\n    competitor_type: 'direct',\n    business_status: p.business_status || null\n  };\n}).filter(function(c) {\n  return c.business_status !== 'PERMANENTLY_CLOSED';\n});\n\n// ── Score each competitor ─────────────────────────────────────────────────────\nconst scored = competitors.map(function(c) {\n  c.threat_score = scoreCompetitor(c, radius);\n  return c;\n});\n\n// ── Sort strongest → weakest ──────────────────────────────────────────────────\nscored.sort(function(a, b) { return b.threat_score - a.threat_score; });\n\n// ── Add rank + threat label ───────────────────────────────────────────────────\nconst ranked = scored.map(function(c, idx) {\n  c.rank         = idx + 1;\n  c.threat_label = c.threat_score >= 70 ? 'strong'\n                 : c.threat_score >= 40 ? 'moderate'\n                 : 'weak';\n  return c;\n});\n\n// ── Location-level opportunity assessment ─────────────────────────────────────\nconst totalCount    = ranked.length;\nconst strongCount   = ranked.filter(function(c) { return c.threat_score >= 70; }).length;\nconst moderateCount = ranked.filter(function(c) { return c.threat_score >= 40 && c.threat_score < 70; }).length;\n\nlet opportunityLevel;\nif (totalCount === 0) {\n  opportunityLevel = 'unknown';\n} else if (strongCount >= 3 || totalCount >= 8) {\n  opportunityLevel = 'low';\n} else if (strongCount >= 1 || moderateCount >= 3 || totalCount >= 4) {\n  opportunityLevel = 'medium';\n} else {\n  opportunityLevel = 'high';\n}\n\nlet opportunityReason;\nif (opportunityLevel === 'unknown') {\n  opportunityReason = 'No competitors detected — verify locally before treating as blue ocean. Data may be incomplete.';\n} else if (opportunityLevel === 'low') {\n  opportunityReason = strongCount + ' strong competitor(s) within ' + radius + 'm. Market is saturated — strong differentiation required.';\n} else if (opportunityLevel === 'medium') {\n  opportunityReason = totalCount + ' competitor(s) found (' + strongCount + ' strong, ' + moderateCount + ' moderate). Opportunity exists with clear positioning.';\n} else {\n  opportunityReason = 'Only ' + totalCount + ' weak competitor(s) within ' + radius + 'm. Market appears underserved — strong entry opportunity.';\n}\n\n// ── Build final output ────────────────────────────────────────────────────────\nreturn [{\n  json: {\n    competitors:               ranked,\n    total_found:               allPlaces.length,\n    unique_found:              unique.length,\n    validated_count:           totalCount,\n    strong_count:              strongCount,\n    moderate_count:            moderateCount,\n    weak_count:                totalCount - strongCount - moderateCount,\n    search_radius_m:           radius,\n    biz_key:                   bizKey,\n    area:                      area,\n    city:                      city,\n    opportunity_level:         opportunityLevel,\n    opportunity_reason:        opportunityReason,\n    saturation_level:          totalCount === 0 ? 'unknown'\n                             : totalCount <= 3  ? 'low'\n                             : totalCount <= 8  ? 'moderate'\n                             : 'high',\n    competitors_within_500m:   ranked.filter(function(c) { return c.distance_m !== null && c.distance_m <= 500; }).length,\n    competitors_within_radius: ranked.filter(function(c) { return c.distance_m !== null && c.distance_m <= radius; }).length,\n    data_source:               'google_places_nearbysearch',\n    searched_at:               new Date().toISOString()\n  }\n}];"
+      },
+      "id": "1a2b3c4d-0008-0008-0008-000000000008",
+      "name": "Format + Score Competitors",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1420, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "1a2b3c4d-0009-0009-0009-000000000009",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1660, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[
+        { "node": "Parse Input", "type": "main", "index": 0 }
+      ]]
+    },
+    "Parse Input": {
+      "main": [[
+        { "node": "Google Places — Type Search",  "type": "main", "index": 0 },
+        { "node": "Google Places — Keyword 1",    "type": "main", "index": 0 },
+        { "node": "Google Places — Keyword 2",    "type": "main", "index": 0 }
+      ]]
+    },
+    "Google Places — Type Search": {
+      "main": [[{ "node": "Merge Results", "type": "main", "index": 0 }]]
+    },
+    "Google Places — Keyword 1": {
+      "main": [[{ "node": "Merge Results", "type": "main", "index": 1 }]]
+    },
+    "Google Places — Keyword 2": {
+      "main": [[{ "node": "Merge Results", "type": "main", "index": 2 }]]
+    },
+    "Merge Results": {
+      "main": [[{ "node": "Format + Score Competitors", "type": "main", "index": 0 }]]
+    },
+    "Format + Score Competitors": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    { "name": "locatalyze" },
+    { "name": "a1-competitor" }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-03T00:00:00.000Z",
+  "versionId": "a1-v4-scored-2026-04-03"
+}

@@ -1,0 +1,575 @@
+{
+  "name": "Locatalyze v2 \u2013 A8 Economic Context (Fixed ABS + RBA)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a8-economic",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "44a8444e-0207-47cd-ab55-98b7a9bd6fa2",
+      "name": "Webhook \u2013 A8 Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        192,
+        272
+      ],
+      "webhookId": "locatalyze-a8-economic"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "business_type",
+              "value": "={{ $json.body.business_type }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "industry_category",
+              "value": "={{ $json.body.industry_category }}",
+              "type": "string"
+            },
+            {
+              "id": "p3",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "p4",
+              "name": "area",
+              "value": "={{ $json.body.area }}",
+              "type": "string"
+            },
+            {
+              "id": "p5",
+              "name": "locality",
+              "value": "={{ $json.body.locality ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p6",
+              "name": "country",
+              "value": "={{ $json.body.country ?? 'Australia' }}",
+              "type": "string"
+            },
+            {
+              "id": "p7",
+              "name": "currency",
+              "value": "={{ $json.body.currency ?? 'A$' }}",
+              "type": "string"
+            },
+            {
+              "id": "p8",
+              "name": "monthly_rent_budget_max",
+              "value": "={{ $json.body.monthly_rent_budget_max }}",
+              "type": "string"
+            },
+            {
+              "id": "p9",
+              "name": "setup_budget",
+              "value": "={{ $json.body.setup_budget }}",
+              "type": "string"
+            },
+            {
+              "id": "p10",
+              "name": "avg_ticket_min",
+              "value": "={{ $json.body.avg_ticket_min ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p11",
+              "name": "avg_ticket_max",
+              "value": "={{ $json.body.avg_ticket_max ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p12",
+              "name": "email",
+              "value": "={{ $json.body.email ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p13",
+              "name": "lat",
+              "value": "={{ $json.body.lat ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p14",
+              "name": "lng",
+              "value": "={{ $json.body.lng ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p15",
+              "name": "overpass_anchor_query",
+              "value": "={{ '[out:json][timeout:15];(node[\"name\"~\"Woolworths|Coles|Aldi|IGA|Kmart|Big W|Target|Myer|David Jones|Bunnings|Chemist Warehouse|McDonald|Subway|Starbucks|7-Eleven\"](around:300,' + ($json.body.lat ?? '-37.8136') + ',' + ($json.body.lng ?? '144.9631') + ');way[\"name\"~\"Woolworths|Coles|Aldi|IGA|Kmart|Big W|Target|Myer|David Jones|Bunnings|Chemist Warehouse|McDonald|Subway|Starbucks|7-Eleven\"](around:300,' + ($json.body.lat ?? '-37.8136') + ',' + ($json.body.lng ?? '144.9631') + '););out center;' }}",
+              "type": "string"
+            },
+            {
+              "id": "p16",
+              "name": "data_gov_query",
+              "value": "={{ encodeURIComponent('food business licence ' + ($json.body.city || 'Melbourne') + ' Victoria') }}",
+              "type": "string"
+            },
+            {
+              "id": "p17",
+              "name": "state_code",
+              "value": "={{ ({'Melbourne':'VIC','Sydney':'NSW','Brisbane':'QLD','Perth':'WA','Adelaide':'SA','Canberra':'ACT','Hobart':'TAS','Darwin':'NT','Gold Coast':'QLD','Newcastle':'NSW','Wollongong':'NSW','Geelong':'VIC'}[$json.body.city] || 'VIC') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2fcba287-84e3-46bf-b436-05fd344a2ea4",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://overpass-api.de/api/interpreter",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "={{ $json.overpass_anchor_query }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "7916f698-a0bb-44b6-8882-2a0a562a4f3d",
+      "name": "Overpass \u2013 Major Anchor Stores 300m",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        32
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://data.api.abs.gov.au/rest/data/ABS,LPI,1.0.0/1.1.1.10.Q?startPeriod=2022-Q1&detail=dataonly",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "text/csv"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "b8ed44bf-8e36-43a4-92fb-a5699c46083a",
+      "name": "ABS \u2013 Labour Price Index (CSV)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        192
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://data.api.abs.gov.au/rest/data/ABS,CPI,1.0.0/1.50.10.Q?startPeriod=2022-Q1&detail=dataonly",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "text/csv"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "00ce82ab-106a-4e46-b00f-a61ae7b78f45",
+      "name": "ABS \u2013 CPI Food (CSV)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        352
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://www.rba.gov.au/statistics/tables/csv/g17hist.csv",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "7d72c3ac-d660-400d-a6de-a66dfc62fd63",
+      "name": "RBA \u2013 Consumer Sentiment CSV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        512
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "https://data.gov.au/data/api/3/action/package_search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Parse & Validate Inputs').item.json.data_gov_query }}"
+            },
+            {
+              "name": "rows",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "a959d3f9-8d8f-48bb-8eb8-025b16d07055",
+      "name": "data.gov.au \u2013 Business Datasets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        672
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "id": "8d641a31-76bf-4a6c-a0e9-3a65cbdc3ac5",
+      "name": "Merge All Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        912,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// \u2500\u2500 Cache check (Supabase) \u2500\u2500\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit \u2192 return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all = $input.all();\nconst inputs = $('Parse & Validate Inputs').item.json;\n\nlet overpassData = null;\nlet absLpiCsv    = null;\nlet absCpiCsv    = null;\nlet rbaRawCsv    = null;\nlet dataGovData  = null;\n\n// \u2500\u2500 SEPARATE RESULTS BY STRUCTURE \u2500\u2500\n// Order in merge: [0]=Overpass, [1]=LPI, [2]=CPI, [3]=RBA, [4]=dataGov\nfor (let i = 0; i < all.length; i++) {\n  const j = all[i].json;\n  const bodyStr = j?.body ?? (typeof j === 'string' ? j : null);\n\n  // Overpass: has elements array\n  if (j?.elements !== undefined) { overpassData = j; continue; }\n\n  // data.gov.au: has result.results\n  if (j?.result?.results) { dataGovData = j; continue; }\n\n  // CSV responses \u2014 n8n text mode returns { body: '...' } or just the string\n  if (bodyStr && typeof bodyStr === 'string') {\n    const upper = bodyStr.toUpperCase();\n    if (upper.includes('LPI') || upper.includes('LABOUR_PRICE') || upper.includes('HOURLY')) {\n      absLpiCsv = bodyStr; continue;\n    }\n    if (upper.includes('CPI') || upper.includes('FOOD') || upper.includes('NON-ALCOHOLIC')) {\n      absCpiCsv = bodyStr; continue;\n    }\n    // RBA CSV has Westpac or Index or G17 patterns\n    if (upper.includes('WESTPAC') || upper.includes('CONSUMER') || i === 3) {\n      rbaRawCsv = bodyStr; continue;\n    }\n    // Fallback assignment by position\n    if (!absLpiCsv) { absLpiCsv = bodyStr; continue; }\n    if (!absCpiCsv) { absCpiCsv = bodyStr; continue; }\n    if (!rbaRawCsv) { rbaRawCsv = bodyStr; continue; }\n  }\n}\n\n// \u2500\u2500 HELPER: PARSE ABS SDMX-CSV \u2500\u2500\n// ABS CSV format: DATAFLOW,DIM1,DIM2,...,TIME_PERIOD,OBS_VALUE,...\nfunction parseAbsCsv(csv) {\n  if (!csv || typeof csv !== 'string') return null;\n  try {\n    const lines = csv.split('\\n').map(l => l.trim()).filter(l => l);\n    if (lines.length < 2) return null;\n    const headers = lines[0].split(',').map(h => h.trim().replace(/\"/g, ''));\n    const timePeriodIdx = headers.findIndex(h => h === 'TIME_PERIOD');\n    const obsValueIdx   = headers.findIndex(h => h === 'OBS_VALUE');\n    if (timePeriodIdx === -1 || obsValueIdx === -1) return null;\n\n    const dataLines = lines.slice(1).filter(l => !/^[A-Z]/.test(l.trim()) || l.includes('-Q') || l.includes('-'));\n    const observations = [];\n    for (const line of dataLines) {\n      const parts = line.split(',');\n      if (parts.length <= Math.max(timePeriodIdx, obsValueIdx)) continue;\n      const period = parts[timePeriodIdx]?.trim().replace(/\"/g, '');\n      const value  = parseFloat(parts[obsValueIdx]?.trim().replace(/\"/g, ''));\n      if (period && !isNaN(value)) observations.push({ period, value });\n    }\n    return observations.length > 0 ? observations : null;\n  } catch(e) {\n    return null;\n  }\n}\n\n// \u2500\u2500 ABS LABOUR PRICE INDEX \u2500\u2500\nlet lpiYoyChange = null;\nlet lpiLabel = 'ABS Labour Price Index unavailable';\nlet lpiObs = parseAbsCsv(absLpiCsv);\n\nif (lpiObs && lpiObs.length >= 5) {\n  const latest  = lpiObs[lpiObs.length - 1].value;\n  const yoyBase = lpiObs[lpiObs.length - 5]?.value;\n  if (latest && yoyBase) {\n    lpiYoyChange = parseFloat(((latest - yoyBase) / yoyBase * 100).toFixed(1));\n    lpiLabel = `ABS Labour Price Index (live): +${lpiYoyChange}% annual wage growth \u2014 ${lpiYoyChange > 4 ? 'High' : lpiYoyChange > 3 ? 'Moderate' : 'Low'} labour cost pressure`;\n  }\n} else if (absLpiCsv) {\n  lpiLabel = 'ABS LPI: data fetched but series key not matched \u2014 check dataflow key 1.1.1.10.Q';\n}\n\n// \u2500\u2500 ABS CPI FOOD \u2500\u2500\nlet cpiYoyChange = null;\nlet cpiLabel = 'ABS Food CPI unavailable';\nlet cpiObs = parseAbsCsv(absCpiCsv);\n\nif (cpiObs && cpiObs.length >= 5) {\n  const latest  = cpiObs[cpiObs.length - 1].value;\n  const yoyBase = cpiObs[cpiObs.length - 5]?.value;\n  if (latest && yoyBase) {\n    cpiYoyChange = parseFloat(((latest - yoyBase) / yoyBase * 100).toFixed(1));\n    const pressure = cpiYoyChange > 5 ? 'High' : cpiYoyChange > 2 ? 'Moderate' : 'Low';\n    cpiLabel = `ABS Food & Non-Alcoholic CPI (live): +${cpiYoyChange}% YoY \u2014 ${pressure} food cost pressure on COGS`;\n  }\n} else if (absCpiCsv) {\n  cpiLabel = 'ABS CPI: data fetched but series key not matched \u2014 check dataflow key 1.50.10.Q';\n}\n\n// \u2500\u2500 RBA CONSUMER SENTIMENT \u2500\u2500\nlet rbaConsumerSentiment = null;\nlet rbaLabel = 'RBA Consumer Sentiment unavailable';\n\nif (rbaRawCsv && typeof rbaRawCsv === 'string') {\n  try {\n    const lines = rbaRawCsv.split('\\n').map(l => l.trim()).filter(l => l);\n    // G17: rows start with a date like Jan-2024 or 2024-01 or 2024Jan\n    const dataLines = lines.filter(l =>\n      /^[A-Za-z]{3}[-\\s]\\d{4}/.test(l) || // Jan 2024 or Jan-2024\n      /^\\d{4}[-\\s][A-Za-z]{3}/.test(l) || // 2024-Jan\n      /^\\d{4}-\\d{2}/.test(l)              // 2024-01\n    );\n    if (dataLines.length > 0) {\n      const lastLine = dataLines[dataLines.length - 1];\n      const parts = lastLine.split(',').map(p => p.trim().replace(/\"/g, ''));\n      const date   = parts[0];\n      // Find the first numeric value after the date\n      const index  = parseFloat(parts.slice(1).find(p => !isNaN(parseFloat(p))));\n      if (!isNaN(index) && index > 0) {\n        const label = index > 100 ? 'Optimistic' : index > 90 ? 'Neutral' : 'Pessimistic';\n        rbaConsumerSentiment = { date, index, label };\n        rbaLabel = `RBA/Westpac Consumer Sentiment (${date}): ${index} \u2014 ${label}`;\n      }\n    }\n    if (!rbaConsumerSentiment) {\n      rbaLabel = `RBA CSV fetched (${rbaRawCsv.length} chars) but date pattern not matched \u2014 check g17hist.csv format`;\n    }\n  } catch(e) {\n    rbaLabel = 'RBA CSV parse error: ' + e.message;\n  }\n}\n\n// \u2500\u2500 OVERPASS: ANCHOR STORES \u2500\u2500\nconst anchorElements = overpassData?.elements || [];\nconst anchorChains = [\n  { key: 'woolworths', label: 'Woolworths', tier: 'Supermarket', footfall_boost: 'High' },\n  { key: 'coles',      label: 'Coles',      tier: 'Supermarket', footfall_boost: 'High' },\n  { key: 'aldi',       label: 'Aldi',       tier: 'Supermarket', footfall_boost: 'Medium' },\n  { key: 'iga',        label: 'IGA',        tier: 'Supermarket', footfall_boost: 'Medium' },\n  { key: 'kmart',      label: 'Kmart',      tier: 'Discount',    footfall_boost: 'High' },\n  { key: 'big w',      label: 'Big W',      tier: 'Discount',    footfall_boost: 'High' },\n  { key: 'target',     label: 'Target',     tier: 'Discount',    footfall_boost: 'Medium' },\n  { key: 'myer',       label: 'Myer',       tier: 'Department',  footfall_boost: 'Medium' },\n  { key: 'david jones',label: 'David Jones',tier: 'Department',  footfall_boost: 'Medium' },\n  { key: 'bunnings',   label: 'Bunnings',   tier: 'Hardware',    footfall_boost: 'High' },\n  { key: 'chemist warehouse', label: 'Chemist Warehouse', tier: 'Pharmacy', footfall_boost: 'Medium' },\n  { key: 'mcdonald',  label: \"McDonald's\",  tier: 'QSR',         footfall_boost: 'Medium' },\n  { key: 'subway',     label: 'Subway',     tier: 'QSR',         footfall_boost: 'Low' },\n  { key: 'starbucks',  label: 'Starbucks',  tier: 'Coffee',      footfall_boost: 'Medium' },\n  { key: '7-eleven',   label: '7-Eleven',   tier: 'Convenience', footfall_boost: 'Low' }\n];\n\nconst foundAnchors = [];\nfor (const el of anchorElements) {\n  const name = (el.tags?.name || el.tags?.brand || '').toLowerCase();\n  for (const chain of anchorChains) {\n    if (name.includes(chain.key)) {\n      foundAnchors.push({ name: el.tags?.name || chain.label, chain: chain.label, tier: chain.tier, footfall_boost: chain.footfall_boost });\n      break;\n    }\n  }\n}\nconst seenChains = new Set();\nconst uniqueAnchors = foundAnchors.filter(a => { if (seenChains.has(a.chain)) return false; seenChains.add(a.chain); return true; });\nconst anchorScore = Math.min(100, uniqueAnchors.reduce((s,a) => s + (a.footfall_boost==='High'?30:a.footfall_boost==='Medium'?20:10), 0));\nconst hasMajorSupermarket = uniqueAnchors.some(a => ['Woolworths','Coles','Aldi'].includes(a.chain));\nconst anchorSummary = uniqueAnchors.length > 0 ? uniqueAnchors.map(a => `${a.chain} (${a.tier})`).join(', ') : 'No major anchor stores within 300m';\n\n// \u2500\u2500 DATA.GOV.AU \u2500\u2500\nlet dataGovDatasets = [];\nlet dataGovLabel = 'No relevant datasets found on data.gov.au';\nif (dataGovData?.result?.results?.length > 0) {\n  dataGovDatasets = dataGovData.result.results.slice(0,3).map(d => ({ title: d.title || '', org: d.organization?.title || '' }));\n  dataGovLabel = `data.gov.au: ${dataGovDatasets.map(d => d.title).join(', ')}`;\n}\n\n// \u2500\u2500 STATE CONTEXT \u2500\u2500\nconst stateContext = {\n  'VIC': { min_wage_casual: 25.41, food_reg: 'Food Act 1984 (Vic) \u2014 local council, $300-600/yr', liquor_reg: 'Liquor Control Reform Act 1998 \u2014 VCGLR, $800-3500/yr', payroll_tax_threshold: 700000 },\n  'NSW': { min_wage_casual: 25.41, food_reg: 'Food Regulation 2015 (NSW) \u2014 local council, $200-500/yr', liquor_reg: 'Liquor Act 2007 \u2014 OLGR, $500-4000/yr', payroll_tax_threshold: 1200000 },\n  'QLD': { min_wage_casual: 25.41, food_reg: 'Food Act 2006 (Qld) \u2014 local council, $200-500/yr', liquor_reg: 'Liquor Act 1992 (Qld) \u2014 OLGR, $600-3000/yr', payroll_tax_threshold: 1300000 },\n  'WA':  { min_wage_casual: 25.41, food_reg: 'Food Act 2008 (WA) \u2014 local council, $200-500/yr', liquor_reg: 'Liquor Control Act 1988 (WA), $400-2000/yr', payroll_tax_threshold: 1000000 },\n  'SA':  { min_wage_casual: 25.41, food_reg: 'Food Act 2001 (SA) \u2014 local council, $150-400/yr', liquor_reg: 'Liquor Licensing Act 1997 (SA) \u2014 LBSA, $400-2500/yr', payroll_tax_threshold: 1500000 },\n  'ACT': { min_wage_casual: 25.41, food_reg: 'Food Act 2001 (ACT) \u2014 ACT Health, $200-500/yr', liquor_reg: 'Liquor Act 2010 (ACT), $500-3000/yr', payroll_tax_threshold: 2000000 },\n  'TAS': { min_wage_casual: 25.41, food_reg: 'Food Act 2003 (Tas) \u2014 local council, $150-400/yr', liquor_reg: 'Liquor Licensing Act 1990 (Tas), $400-2000/yr', payroll_tax_threshold: 1250000 },\n  'NT':  { min_wage_casual: 25.41, food_reg: 'Food Act 2004 (NT) \u2014 NT Health, $150-350/yr', liquor_reg: 'Liquor Act 2019 (NT), $500-3000/yr', payroll_tax_threshold: 1500000 }\n};\nconst stateCode = inputs.state_code || 'VIC';\nconst stateRegs = stateContext[stateCode] || stateContext['VIC'];\n\n// \u2500\u2500 ECONOMIC HEALTH SCORE \u2500\u2500\nconst sentimentScore     = rbaConsumerSentiment ? (rbaConsumerSentiment.index > 105 ? 90 : rbaConsumerSentiment.index > 95 ? 70 : rbaConsumerSentiment.index > 85 ? 50 : 30) : 50;\nconst labourPressureScore= lpiYoyChange !== null ? (lpiYoyChange < 3 ? 80 : lpiYoyChange < 5 ? 60 : lpiYoyChange < 7 ? 40 : 20) : 50;\nconst cpiPressureScore   = cpiYoyChange !== null ? (cpiYoyChange < 2 ? 85 : cpiYoyChange < 4 ? 65 : cpiYoyChange < 7 ? 40 : 20) : 50;\nconst economicHealthScore = Math.round(anchorScore*0.35 + sentimentScore*0.25 + labourPressureScore*0.20 + cpiPressureScore*0.20);\n\nreturn [{ json: {\n  business_type: inputs.business_type, industry_category: inputs.industry_category,\n  city: inputs.city, area: inputs.area, locality: inputs.locality,\n  country: inputs.country, currency: inputs.currency,\n  monthly_rent_budget_max: inputs.monthly_rent_budget_max, setup_budget: inputs.setup_budget,\n  email: inputs.email, lat: inputs.lat, lng: inputs.lng, state_code: stateCode,\n  anchor_stores: uniqueAnchors, anchor_count: uniqueAnchors.length, anchor_score: anchorScore,\n  has_major_supermarket: hasMajorSupermarket, anchor_summary: anchorSummary,\n  lpi_yoy_change: lpiYoyChange, lpi_label: lpiLabel,\n  cpi_yoy_change: cpiYoyChange, cpi_label: cpiLabel,\n  rba_sentiment: rbaConsumerSentiment, rba_label: rbaLabel,\n  data_gov_datasets: dataGovDatasets, data_gov_label: dataGovLabel,\n  state_regs: stateRegs,\n  economic_health_score: economicHealthScore,\n  debug: {\n    abs_lpi_csv_received: absLpiCsv ? absLpiCsv.length + ' chars' : 'null',\n    abs_cpi_csv_received: absCpiCsv ? absCpiCsv.length + ' chars' : 'null',\n    rba_csv_received:     rbaRawCsv ? rbaRawCsv.length + ' chars' : 'null',\n    lpi_obs_count:        lpiObs ? lpiObs.length : 0,\n    cpi_obs_count:        cpiObs ? cpiObs.length : 0\n  },\n  data_sources: {\n    overpass_anchors:  `${uniqueAnchors.length} major anchors found within 300m`,\n    abs_labour_price:  lpiLabel,\n    abs_food_cpi:      cpiLabel,\n    rba_sentiment:     rbaLabel,\n    data_gov_au:       dataGovLabel,\n    state_regulations: `${stateCode} regulatory context (verified from legislation)`,\n    geocoords_used:    inputs.lat && inputs.lng ? `${inputs.lat}, ${inputs.lng}` : 'Fallback coordinates'\n  }\n}}];\n"
+      },
+      "id": "2317c4b5-5c5c-4298-b271-710f127f3e1e",
+      "name": "Compute Economic Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \n'Produce an economic context analysis for a new ' + $json.business_type + ' (' + $json.industry_category + ') at ' + $json.area + ', ' + $json.city + ' (' + $json.state_code + '), Australia.\\n\\n' +\n'\u2500\u2500 MAJOR ANCHOR STORES WITHIN 300M (OpenStreetMap via Overpass) \u2500\u2500\\n' +\n$json.anchor_summary + '\\n' +\n'Anchor score: ' + $json.anchor_score + '/100 | Major supermarket: ' + ($json.has_major_supermarket ? 'YES (footfall premium)' : 'No') + '\\n\\n' +\n'\u2500\u2500 ABS LABOUR PRICE INDEX (live CSV) \u2500\u2500\\n' +\n$json.lpi_label + '\\n' +\n($json.lpi_yoy_change !== null ? 'Annual wage growth: ' + $json.lpi_yoy_change + '% \u2014 Fair Work min casual: $' + ($json.state_regs?.min_wage_casual ?? '25.41') + '/hr\\n' : 'ABS LPI not available this run \u2014 assume approx 3.5% based on recent trend\\n') +\n'\\n\u2500\u2500 ABS FOOD & NON-ALCOHOLIC CPI (live CSV) \u2500\u2500\\n' +\n$json.cpi_label + '\\n' +\n($json.cpi_yoy_change !== null ? 'Food cost inflation: ' + $json.cpi_yoy_change + '% YoY\\n' : 'ABS CPI not available this run \u2014 assume approx 3-4% based on recent trend\\n') +\n'\\n\u2500\u2500 RBA WESTPAC CONSUMER SENTIMENT \u2500\u2500\\n' +\n$json.rba_label + '\\n\\n' +\n'\u2500\u2500 STATE REGULATIONS (' + $json.state_code + ') \u2500\u2500\\n' +\n'Food regulation: ' + ($json.state_regs?.food_reg ?? 'Verify locally') + '\\n' +\n'Liquor licensing: ' + ($json.state_regs?.liquor_reg ?? 'N/A') + '\\n' +\n'Payroll tax threshold: $' + ($json.state_regs?.payroll_tax_threshold?.toLocaleString() ?? 'N/A') + ' p.a.\\n' +\n'GST: Mandatory above $75,000 p.a. \u2014 applies from launch\\n\\n' +\n'\u2500\u2500 DATA.GOV.AU \u2500\u2500\\n' +\n$json.data_gov_label + '\\n\\n' +\n'Economic health score (computed): ' + $json.economic_health_score + '/100'\n}}",
+        "options": {
+          "systemMessage": "You are Locatalyze's Economic Context Agent (A8) for the Australian market.\n\nYou receive live data from Overpass (anchor stores), ABS Labour Price Index (CSV), ABS Food CPI (CSV), RBA Consumer Sentiment, and state-specific regulatory context.\n\nCRITICAL RULES:\n1. ALL currency is AUD ($). Never use \u20b9.\n2. Always cite sources: 'OpenStreetMap via Overpass', 'ABS Labour Price Index (live)', 'ABS Food CPI (live)', 'RBA/Westpac Consumer Sentiment'.\n3. If ABS or RBA data is unavailable, use reasonable Australian market assumptions (clearly labelled as assumptions, not fabrications) \u2014 typical wage growth 3-4%, food CPI 3-5%, sentiment around 85-95.\n4. Coles/Woolworths within 300m = strong footfall signal \u2014 flag explicitly.\n5. VIC payroll tax threshold is $700,000 p.a. \u2014 most small cafes won't hit this initially.\n6. Never fabricate specific index numbers \u2014 if data is unavailable, say so and give a range.\n\nALWAYS respond in this exact JSON \u2014 no preamble, no markdown fences:\n{\n  \"economic_health_score\": <0-100>,\n  \"economic_verdict\": \"Favourable\" | \"Neutral\" | \"Challenging\" | \"Adverse\",\n  \"anchor_store_analysis\": {\n    \"count_within_300m\": <number>,\n    \"anchor_score\": <0-100>,\n    \"major_supermarket_present\": true | false,\n    \"anchors_found\": [\"<chain>\"],\n    \"footfall_assessment\": \"<2 sentences>\",\n    \"rent_premium_risk\": \"Low\" | \"Medium\" | \"High\",\n    \"rent_premium_note\": \"<1 sentence>\"\n  },\n  \"labour_cost_analysis\": {\n    \"source\": \"ABS Labour Price Index (live)\" | \"ABS LPI unavailable \u2014 assumption used\",\n    \"annual_wage_growth_pct\": <number or null>,\n    \"pressure_label\": \"Low\" | \"Moderate\" | \"High\" | \"Very High\",\n    \"min_casual_wage_aud\": 25.41,\n    \"implication\": \"<1 sentence>\"\n  },\n  \"cpi_impact\": {\n    \"source\": \"ABS Food CPI (live)\" | \"ABS CPI unavailable \u2014 assumption used\",\n    \"food_cpi_yoy_pct\": <number or null>,\n    \"pressure_label\": \"Low\" | \"Moderate\" | \"High\" | \"Very High\",\n    \"implication\": \"<1 sentence>\"\n  },\n  \"consumer_sentiment\": {\n    \"source\": \"RBA/Westpac Consumer Sentiment Index (live)\" | \"RBA data unavailable \u2014 assumption used\",\n    \"index_value\": <number or null>,\n    \"label\": \"Optimistic\" | \"Neutral\" | \"Pessimistic\",\n    \"implication\": \"<1 sentence>\"\n  },\n  \"state_regulatory_summary\": {\n    \"state\": \"<VIC etc>\",\n    \"food_registration\": \"<act + authority + cost>\",\n    \"liquor_licensing\": \"<act + cost>\",\n    \"payroll_tax_threshold\": \"<$X p.a.>\",\n    \"gst_note\": \"GST registration mandatory above $75,000 p.a. \u2014 applies from launch\",\n    \"fair_work_note\": \"Minimum casual rate $25.41/hr (Fair Work Act 2009)\"\n  },\n  \"key_economic_risks\": [{\"risk\": \"<n>\", \"severity\": \"High|Medium|Low\", \"data_source\": \"<source>\", \"mitigation\": \"<action>\"}],\n  \"key_economic_tailwinds\": [{\"tailwind\": \"<n>\", \"evidence\": \"<source>\"}],\n  \"data_gov_note\": \"<1 sentence>\",\n  \"overall_economic_verdict\": \"<3-4 sentences with source citations>\",\n  \"agent_notes\": \"<which sources were live vs unavailable>\"\n}\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCRITICAL OUTPUT RULES:\n1. You are an EXPLANATION engine only. Never invent numbers.\n2. All metrics (scores, prices, counts) come exclusively from the data provided to you.\n3. Your job: turn deterministic data into clear, accurate plain-English insights.\n4. If data is missing: state \"Insufficient data\" \u2014 do NOT estimate or hallucinate.\n5. Never alter numeric metrics in your output. Return them exactly as received.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501"
+        }
+      },
+      "id": "2889140f-8420-49c7-9c66-791961b00cc8",
+      "name": "AI Agent \u2013 Economic Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1392,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 3000,
+          "temperature": 0.2
+        }
+      },
+      "id": "90f83d81-7968-494b-ae2f-239b3e003bec",
+      "name": "OpenAI Chat Model \u2013 A8",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1392,
+        512
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yqHjMKQ36kDA2ACz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputJson = $input.first().json;\nconst rawText = inputJson.output || inputJson.text || JSON.stringify(inputJson);\nlet analysis;\ntry {\n  let cleaned = rawText.trim()\n    .replace(/^```json\\s*/i,'').replace(/^```\\s*/i,'').replace(/```\\s*$/i,'').trim();\n  const s = cleaned.indexOf('{'), e = cleaned.lastIndexOf('}');\n  if (s !== -1 && e > s) cleaned = cleaned.slice(s, e+1);\n  cleaned = cleaned.replace(/(:\\s*)(\\d{1,3}(?:,\\d{3})+)([,\\}\\]\\s\\n])/g,(m,pre,num,post)=>pre+num.replace(/,/g,'')+post);\n  analysis = JSON.parse(cleaned);\n} catch(e) {\n  analysis = { parse_error: true, raw_response: rawText.slice(0,800) };\n}\nconst d = $('Compute Economic Context').first().json;\nreturn [{ json: {\n  agent_id:   'A8',\n  agent_name: 'Economic Context (Overpass + ABS + RBA)',\n  status:     analysis.parse_error ? 'error' : 'success',\n  timestamp:  new Date().toISOString(),\n  email:      d.email,\n  inputs_used: { business_type: d.business_type, industry_category: d.industry_category, location: `${d.area}, ${d.city}`, state: d.state_code, coordinates: `${d.lat}, ${d.lng}` },\n  data_sources: d.data_sources,\n  debug: d.debug,\n  computed: {\n    anchor_score: d.anchor_score, anchor_count: d.anchor_count,\n    has_major_supermarket: d.has_major_supermarket,\n    economic_health_score: d.economic_health_score,\n    lpi_yoy_change: d.lpi_yoy_change, cpi_yoy_change: d.cpi_yoy_change,\n    rba_index: d.rba_sentiment?.index || null\n  },\n  outputs: {\n    economic_health_score:    analysis.economic_health_score    ?? d.economic_health_score,\n    economic_verdict:         analysis.economic_verdict          || null,\n    anchor_store_analysis:    analysis.anchor_store_analysis     || { count_within_300m: d.anchor_count, anchor_score: d.anchor_score, major_supermarket_present: d.has_major_supermarket, anchors_found: d.anchor_stores.map(a=>a.chain) },\n    labour_cost_analysis:     analysis.labour_cost_analysis      || { annual_wage_growth_pct: d.lpi_yoy_change, min_casual_wage_aud: 25.41 },\n    cpi_impact:               analysis.cpi_impact                || { food_cpi_yoy_pct: d.cpi_yoy_change },\n    consumer_sentiment:       analysis.consumer_sentiment         || { index_value: d.rba_sentiment?.index || null },\n    state_regulatory_summary: analysis.state_regulatory_summary  || { state: d.state_code, food_registration: d.state_regs?.food_reg, liquor_licensing: d.state_regs?.liquor_reg },\n    key_economic_risks:       analysis.key_economic_risks         || [],\n    key_economic_tailwinds:   analysis.key_economic_tailwinds     || [],\n    data_gov_note:            analysis.data_gov_note              || d.data_gov_label,\n    overall_economic_verdict: analysis.overall_economic_verdict   || null,\n    agent_notes:              analysis.agent_notes                || null\n  }\n}}];\n\n\n// \u2500\u2500 Output validation \u2500\u2500\nconst required_keys = Object.keys(analysis).filter(k => !k.startsWith('_') && !k.startsWith('raw'));\nif (required_keys.length < 3 || analysis.parse_error) {\n  analysis._validation_failed = true;\n  analysis._validation_reason = analysis.parse_error ? 'JSON parse error' : 'Insufficient output fields (' + required_keys.length + ')';\n}\nanalysis._validated_at = new Date().toISOString();\nanalysis._agent_version = 'v2';\n"
+      },
+      "id": "e9125c2d-54f8-43ed-b174-dcebf25679f2",
+      "name": "Format A8 Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "67c509ab-4057-4b2a-aea8-3bfb4b6822e7",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1872,
+        352
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook \u2013 A8 Intake": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "Overpass \u2013 Major Anchor Stores 300m",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ABS \u2013 Labour Price Index (CSV)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ABS \u2013 CPI Food (CSV)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RBA \u2013 Consumer Sentiment CSV",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "data.gov.au \u2013 Business Datasets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Overpass \u2013 Major Anchor Stores 300m": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ABS \u2013 Labour Price Index (CSV)": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "ABS \u2013 CPI Food (CSV)": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "RBA \u2013 Consumer Sentiment CSV": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "data.gov.au \u2013 Business Datasets": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge All Results": {
+      "main": [
+        [
+          {
+            "node": "Compute Economic Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Economic Context": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2013 Economic Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2013 Economic Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format A8 Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model \u2013 A8": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2013 Economic Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format A8 Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "97fe1b17-520b-4d5b-aed8-b3badff59a83",
+  "meta": {
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157",
+    "refactored": true,
+    "refactor_notes": "Model: gpt-4o-mini, retry enabled, AI restrictions added, neverError removed"
+  },
+  "id": "pn3e9IJVkaDNIMXC",
+  "tags": []
+}
