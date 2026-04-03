@@ -10,10 +10,17 @@ export interface Competitor {
   distance: number
   category: string
   rating?: number
+  reviewCount?: number
   isDirect?: boolean
   tier?: 'budget' | 'mid' | 'premium'
   sub_type?: 'fast_food' | 'casual' | 'premium'
   tierInsight?: string
+  source?: 'google' | 'foursquare' | 'geoapify' | string
+  // Strength scoring (added by nearby-places API)
+  strength?: 'strong' | 'medium' | 'weak'
+  strengthScore?: number
+  reviewInsight?: string
+  marketSignals?: string[]
 }
 
 export interface Landmark {
@@ -48,7 +55,19 @@ export interface MapInsights {
   anchorCount?: number
   dataLimited?: boolean
   foursquareVerified?: boolean
+  googleVerified?: boolean
   fsqError?: string | null
+  // Strength intelligence
+  strongCount?: number
+  mediumCount?: number
+  weakCount?: number
+  dominantBrand?: string | null
+  opportunityGap?: string | null
+  marketInsights?: string[]
+  // Demand signals
+  demandScore?: number
+  demandLabel?: string
+  demandDrivers?: string[]
 }
 
 interface MapboxMapProps {
@@ -73,12 +92,11 @@ const RED         = '#DC2626'
 const ISO_5       = '#0F766E'
 const ISO_10      = '#6366F1'
 
-// Marker colours — sub_type overrides tier where known
-const TIER_COLOR: Record<string, string> = {
-  premium:   '#6366F1',   // indigo   — premium/boutique
-  mid:       '#475569',   // slate-600 — casual mid-market
-  budget:    '#94A3B8',   // slate-400 — budget
-  fast_food: '#CBD5E1',   // slate-200 — fast food / indirect (lightest)
+// Marker colours — strength-based (competitive threat level)
+const STRENGTH_COLOR: Record<string, string> = {
+  strong: '#DC2626',   // red    — dominant competitor (high threat)
+  medium: '#D97706',   // amber  — moderate competitor
+  weak:   '#14B8A6',   // teal   — weak/manageable competitor
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -112,27 +130,57 @@ function subTypeBadgeHTML(sub_type: string) {
   return `<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;background:${c.bg};color:${c.color}">${c.label}</span>`
 }
 
+function strengthBadgeHTML(strength: string) {
+  const cfg: Record<string, { bg: string; color: string; label: string }> = {
+    strong: { bg: '#FEF2F2', color: '#DC2626', label: '⚠ Strong' },
+    medium: { bg: '#FFFBEB', color: '#B45309', label: '◆ Medium' },
+    weak:   { bg: '#F0FDFA', color: '#0F766E', label: '✓ Weak' },
+  }
+  const c = cfg[strength] || cfg.weak
+  return `<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;background:${c.bg};color:${c.color}">${c.label}</span>`
+}
+
+function sourceBadgeHTML(source: string) {
+  if (source === 'google')      return `<span style="font-size:9px;color:#1A73E8;font-weight:600;background:#EBF3FE;padding:1px 5px;border-radius:3px">G Verified</span>`
+  if (source === 'foursquare')  return `<span style="font-size:9px;color:#F94877;font-weight:600;background:#FFF0F4;padding:1px 5px;border-radius:3px">4sq</span>`
+  return `<span style="font-size:9px;color:#94A3B8;font-weight:600;background:#F8FAFC;padding:1px 5px;border-radius:3px">OSM</span>`
+}
+
 function buildPopupHTML(props: {
   name: string; distance: number; category: string; rating: number;
   isDirect: boolean; tier: string; sub_type: string; tierInsight: string;
+  strength?: string; reviewCount?: number; reviewInsight?: string; source?: string;
 }) {
-  const { name, distance, category, rating, isDirect, tier, sub_type, tierInsight } = props
+  const { name, distance, category, rating, isDirect, sub_type, tierInsight,
+          strength, reviewCount, reviewInsight, source } = props
   const typeLabel = sub_type === 'fast_food' ? 'Indirect — fast food' : isDirect ? 'Direct competitor' : 'Indirect competitor'
+
   const ratingRow = rating > 0
     ? `<div style="display:flex;align-items:center;gap:4px;margin-top:3px">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="#F59E0B" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span style="font-size:11px;color:#64748B;font-weight:600">${Number(rating).toFixed(1)}</span>
+        ${reviewCount && reviewCount > 0 ? `<span style="font-size:10px;color:#94A3B8">${reviewCount >= 1000 ? (reviewCount/1000).toFixed(1)+'k' : reviewCount} reviews</span>` : ''}
        </div>` : ''
+
+  const insightRow = reviewInsight
+    ? `<div style="font-size:10px;color:#64748B;margin-top:4px;font-style:italic;line-height:1.4">${reviewInsight}</div>`
+    : tierInsight
+    ? `<div style="font-size:10px;color:#64748B;margin-top:4px;line-height:1.4">${tierInsight}</div>`
+    : ''
+
   return `
-    <div style="font-family:'DM Sans','Helvetica Neue',sans-serif;min-width:160px;max-width:220px">
+    <div style="font-family:'DM Sans','Helvetica Neue',sans-serif;min-width:170px;max-width:230px">
       <div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:5px;line-height:1.3;white-space:normal">${name}</div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px">
-        ${subTypeBadgeHTML(sub_type)}
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">
+        ${strength ? strengthBadgeHTML(strength) : ''}
         <span style="font-size:10px;color:#94A3B8">${Math.round(distance)}m</span>
+        ${source ? sourceBadgeHTML(source) : ''}
       </div>
-      <div style="font-size:10px;color:#64748B;border-top:1px solid #F1F5F9;padding-top:5px;margin-top:4px;line-height:1.5">${tierInsight}</div>
-      <div style="font-size:10px;color:#94A3B8;margin-top:3px">${typeLabel} &middot; ${category}</div>
-      ${ratingRow}
+      <div style="border-top:1px solid #F1F5F9;padding-top:5px;margin-top:2px">
+        ${insightRow}
+        <div style="font-size:10px;color:#94A3B8;margin-top:3px">${typeLabel} &middot; ${category}</div>
+        ${ratingRow}
+      </div>
     </div>`
 }
 
@@ -240,14 +288,19 @@ export default function MapboxMap({
           id: idx,           // ← explicit numeric ID required for feature-state
           geometry: { type: 'Point' as const, coordinates: [c.lng, c.lat] },
           properties: {
-            name:        c.name,
-            distance:    c.distance,
-            category:    c.category,
-            rating:      c.rating   ?? 0,
-            isDirect:    c.isDirect ?? true,
-            tier:        c.tier     ?? 'mid',
-            sub_type:    c.sub_type ?? 'casual',
-            tierInsight: c.tierInsight ?? '',
+            name:          c.name,
+            distance:      c.distance,
+            category:      c.category,
+            rating:        c.rating        ?? 0,
+            reviewCount:   c.reviewCount   ?? 0,
+            isDirect:      c.isDirect      ?? true,
+            tier:          c.tier          ?? 'mid',
+            sub_type:      c.sub_type      ?? 'casual',
+            tierInsight:   c.tierInsight   ?? '',
+            source:        c.source        ?? 'geoapify',
+            strength:      c.strength      ?? 'weak',
+            strengthScore: c.strengthScore ?? 0,
+            reviewInsight: c.reviewInsight ?? '',
           },
         }))
 
@@ -393,7 +446,8 @@ export default function MapboxMap({
       paint: { 'text-color': '#fff' },
     })
 
-    // Individual competitor dots — colour by sub_type (most semantic) then tier
+    // Individual competitor dots — colour by strength (competitive threat level)
+    // RED = strong (high threat), AMBER = medium, TEAL = weak (manageable)
     map.addLayer({
       id: 'comp-points', type: 'circle', source: 'competitors',
       filter: ['!', ['has', 'point_count']],
@@ -401,20 +455,24 @@ export default function MapboxMap({
         'circle-color': [
           'case',
           ['boolean', ['feature-state', 'hover'], false], BRAND_LIGHT,
-          ['==', ['get', 'sub_type'], 'fast_food'], TIER_COLOR.fast_food,
-          ['==', ['get', 'sub_type'], 'premium'],   TIER_COLOR.premium,
-          ['==', ['get', 'tier'],     'premium'],   TIER_COLOR.premium,
-          ['==', ['get', 'tier'],     'budget'],    TIER_COLOR.budget,
-          TIER_COLOR.mid,
+          ['==', ['get', 'strength'], 'strong'], STRENGTH_COLOR.strong,
+          ['==', ['get', 'strength'], 'medium'], STRENGTH_COLOR.medium,
+          STRENGTH_COLOR.weak,
         ],
-        'circle-radius': ['case', ['boolean', ['feature-state', 'hover'], false], 9, 7],
+        'circle-radius': [
+          'case',
+          ['==', ['get', 'strength'], 'strong'], ['case', ['boolean', ['feature-state', 'hover'], false], 11, 9],
+          ['==', ['get', 'strength'], 'medium'], ['case', ['boolean', ['feature-state', 'hover'], false], 9,  8],
+          ['case', ['boolean', ['feature-state', 'hover'], false], 8, 6],
+        ],
         'circle-stroke-width': 2,
         'circle-stroke-color': '#fff',
         'circle-opacity': [
           'case',
-          ['==', ['get', 'sub_type'], 'fast_food'], 0.55,  // fast food faded — indirect
-          ['boolean', ['get', 'isDirect'], true],   0.95,
-          0.65,
+          ['==', ['get', 'sub_type'], 'fast_food'], 0.50,  // fast food faded — indirect
+          ['==', ['get', 'strength'], 'strong'],    0.95,
+          ['==', ['get', 'strength'], 'medium'],    0.85,
+          0.70,
         ],
       },
     })
@@ -493,14 +551,18 @@ export default function MapboxMap({
       popup
         .setLngLat(f.geometry.coordinates.slice())
         .setHTML(buildPopupHTML({
-          name:        p.name        || 'Unknown',
-          distance:    Number(p.distance || 0),
-          category:    p.category    || '',
-          rating:      Number(p.rating || 0),
-          isDirect:    p.isDirect    !== false,
-          tier:        p.tier        || 'mid',
-          sub_type:    p.sub_type    || 'casual',
-          tierInsight: p.tierInsight || '',
+          name:          p.name          || 'Unknown',
+          distance:      Number(p.distance || 0),
+          category:      p.category      || '',
+          rating:        Number(p.rating  || 0),
+          reviewCount:   Number(p.reviewCount || 0),
+          isDirect:      p.isDirect      !== false,
+          tier:          p.tier          || 'mid',
+          sub_type:      p.sub_type      || 'casual',
+          tierInsight:   p.tierInsight   || '',
+          strength:      p.strength      || 'weak',
+          reviewInsight: p.reviewInsight || '',
+          source:        p.source        || 'geoapify',
         }))
         .addTo(map)
     })

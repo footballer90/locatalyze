@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse }             from 'next/server'
 import { fetchGooglePlaces, fetchGoogleTextSearch, haversineMeters } from '@/lib/places/multi-source'
+import { scoreCompetitorStrength, deriveMarketIntelligence, computeDemandSignals } from '@/lib/places/strength-scorer'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Tier    = 'budget' | 'mid' | 'premium'
@@ -475,14 +476,38 @@ export async function GET(req: NextRequest) {
         .filter(Boolean) as any[]
     }
 
+    // ── Enrich competitors with strength scoring ──────────────────────────────
+    const enrichedCompetitors = competitors.map((c: any) => {
+      // Foursquare rates 0–10; normalize to 0–5 for consistent scoring
+      const ratingNorm = c.source === 'foursquare' && c.rating > 5
+        ? Number((c.rating / 2).toFixed(1))
+        : (c.rating ?? 0)
+      const strengthData = scoreCompetitorStrength({
+        name: c.name, rating: ratingNorm, reviewCount: c.reviewCount ?? 0,
+        distance: c.distance, source: c.source, tier: c.tier,
+      })
+      return { ...c, rating: ratingNorm, ...strengthData }
+    })
+
+    const demandSignals = computeDemandSignals(landmarks, anchors)
+    const marketIntelligence = deriveMarketIntelligence(
+      enrichedCompetitors.map((c: any) => ({
+        name: c.name, strength: c.strength, strengthScore: c.strengthScore,
+        marketSignals: c.marketSignals, distance: c.distance, tier: c.tier,
+      })),
+      type,
+    )
+
     const responseBody: any = {
-      competitors,
+      competitors: enrichedCompetitors,
       landmarks,
       anchors,
-      dataLimited: competitors.length < 3,
+      dataLimited: enrichedCompetitors.length < 3,
       dataSource: dataSources.join('+') || 'foursquare',
       competitorCountBeforeFilter: venues.length + allGooglePOIs.length,
-      competitorCountAfterFilter: competitors.length,
+      competitorCountAfterFilter: enrichedCompetitors.length,
+      demandSignals,
+      marketIntelligence,
       insights: {
         competitorCount500m:  within500m,
         competitorCountTotal: within1km,
@@ -491,15 +516,24 @@ export async function GET(req: NextRequest) {
         density,
         risk,
         tierBreakdown,
-        subTypeCounts: { fast_food: 0, casual: competitors.filter((c: any) => c.sub_type === 'casual').length, premium: tierBreakdown.premium },
+        subTypeCounts: { fast_food: 0, casual: enrichedCompetitors.filter((c: any) => c.sub_type === 'casual').length, premium: tierBreakdown.premium },
         gapOpportunity,
         typeSpecificInsight,
         anchorInsight: anchors.length > 0 ? `${anchors.length} major anchor tenant${anchors.length > 1 ? 's' : ''} nearby` : null,
         anchorCount: anchors.length,
-        dataLimited: competitors.length < 3,
+        dataLimited: enrichedCompetitors.length < 3,
         foursquareVerified: venues.length > 0,
         googleVerified: allGooglePOIs.length > 0,
         fsqError: fsqErr ?? null,
+        strongCount:      marketIntelligence.strongCount,
+        mediumCount:      marketIntelligence.mediumCount,
+        weakCount:        marketIntelligence.weakCount,
+        dominantBrand:    marketIntelligence.dominantBrand,
+        opportunityGap:   marketIntelligence.opportunityGap,
+        marketInsights:   marketIntelligence.marketInsights,
+        demandScore:      demandSignals.score,
+        demandLabel:      demandSignals.label,
+        demandDrivers:    demandSignals.signals,
       },
     }
 
@@ -727,11 +761,31 @@ export async function GET(req: NextRequest) {
 
     const dataSource = googlePOIs.length > 0 ? 'google+geoapify' : 'geoapify'
 
+    // ── Enrich competitors with strength scoring ──────────────────────────────
+    const enrichedCompetitors = competitors.map((c: any) => {
+      const strengthData = scoreCompetitorStrength({
+        name: c.name, rating: c.rating ?? 0, reviewCount: c.reviewCount ?? 0,
+        distance: c.distance, source: c.source, tier: c.tier,
+      })
+      return { ...c, ...strengthData }
+    })
+
+    const demandSignals = computeDemandSignals(landmarks, anchors)
+    const marketIntelligence = deriveMarketIntelligence(
+      enrichedCompetitors.map((c: any) => ({
+        name: c.name, strength: c.strength, strengthScore: c.strengthScore,
+        marketSignals: c.marketSignals, distance: c.distance, tier: c.tier,
+      })),
+      type,
+    )
+
     const responseBody: any = {
-      competitors, landmarks, anchors, dataLimited,
+      competitors: enrichedCompetitors, landmarks, anchors, dataLimited,
       dataSource,
       competitorCountBeforeFilter: countBefore + googlePOIs.length,
-      competitorCountAfterFilter:  competitors.length,
+      competitorCountAfterFilter:  enrichedCompetitors.length,
+      demandSignals,
+      marketIntelligence,
       insights: {
         competitorCount500m: within500m, competitorCountTotal: within1km,
         directCount, indirectCount, density, risk, tierBreakdown, subTypeCounts,
@@ -740,6 +794,15 @@ export async function GET(req: NextRequest) {
         googleVerified: googlePOIs.length > 0,
         googleCount: googlePOIs.length,
         geoapifyCount: geoapifyCompetitors.length,
+        strongCount:      marketIntelligence.strongCount,
+        mediumCount:      marketIntelligence.mediumCount,
+        weakCount:        marketIntelligence.weakCount,
+        dominantBrand:    marketIntelligence.dominantBrand,
+        opportunityGap:   marketIntelligence.opportunityGap,
+        marketInsights:   marketIntelligence.marketInsights,
+        demandScore:      demandSignals.score,
+        demandLabel:      demandSignals.label,
+        demandDrivers:    demandSignals.signals,
       },
     }
 
