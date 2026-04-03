@@ -29,6 +29,13 @@ import {
   BIZ_BENCHMARKS, resolveBizKey, isValidCompetitor,
 } from './benchmarks'
 import { ComputeLogger, logComputeSummary } from './logger'
+import {
+  detectContradictions,
+  applyHardFailGates,
+  buildSectionConfidence,
+  buildProvenance,
+  buildRevenueRange,
+} from './validation'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -947,6 +954,118 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   const computeLog = logger.seal()
   logComputeSummary(input.reportId, bizKey, input.area, computeLog, netProfit)
 
+  // ── STEP 16: Trust layer ─────────────────────────────────────────────────
+  //
+  // Build a preliminary result shape to run validation functions against.
+  // This is required because validation functions inspect the full result.
+  //
+  // Order:
+  //   16a. Build preliminary result
+  //   16b. Apply hard fail gates (may override verdict)
+  //   16c. Detect contradictions (on potentially-overridden verdict)
+  //   16d. Build section confidence breakdown
+  //   16e. Build per-metric provenance map
+  //   16f. Build honest revenue range
+
+  // 16a — Partial result used by validation (no trust-layer fields yet)
+  const prelimResult: Omit<ComputedResult,
+    'sectionConfidence' | 'provenance' | 'revenueRange' | 'contradictions' | 'verdictGateTriggered'
+  > = {
+    revenue,
+    totalCosts,
+    netProfit,
+    grossMarginPct,
+    costBreakdown: { rent, staff, cogs, other },
+    revenueChannels,
+    dailyCustomers,
+    avgTicketSize,
+    breakEvenDaily,
+    breakEvenMonths,
+    scenarios,
+    projection,
+    scores,
+    verdict,
+    verdictReasons,
+    verdictConditions,
+    verdictFailureModes,
+    competitors: competitors2,
+    validCompetitorCount,
+    competitorRadius,
+    competitorDataQuality,
+    locationSignals,
+    marketSignals,
+    marketIntelligence: {
+      saturationScore:  satScore,
+      saturationBand:   satBand,
+      opportunityScore: oppScore,
+      viabilityScore:   viabScore,
+      opportunityLevel,
+      topThreats,
+      marketGapNote,
+      strongCount,
+      moderateCount,
+      weakCount,
+    },
+    competitorPressure: {
+      density:            liveCD?.density            ?? 'unknown',
+      rawCount500m:       liveCD?.rawCount500m        ?? 0,
+      rawCount1km:        liveCD?.rawCount1km         ?? 0,
+      weightedCount500m:  liveCD?.weightedCount500m   ?? 0,
+      weightedCount1km:   liveCD?.weightedCount1km    ?? 0,
+      avgConfidence:      liveCD?.avgConfidence       ?? 0,
+      pressureFactor,
+      revenueAdjusted:    pressureFactor < 1.0,
+      adjustedDemandScore,
+      sources:            liveCD?.sources             ?? [],
+    },
+    dataCompleteness: completeness,
+    modelConfidence,
+    meta: {
+      engineVersion:    ENGINE_VERSION,
+      benchmarkVersion: BENCHMARK_VERSION,
+      computedAt:       computeLog.computedAt,
+      computeLog,
+    },
+  }
+
+  // 16b — Hard fail gates: may override verdict
+  const gateResult = applyHardFailGates(
+    prelimResult.verdict,
+    prelimResult.verdictReasons,
+    prelimResult.verdictConditions,
+    {
+      dataCompleteness:       prelimResult.dataCompleteness,
+      modelConfidence:        prelimResult.modelConfidence,
+      competitorDataQuality:  prelimResult.competitorDataQuality,
+      marketSignals:          prelimResult.marketSignals,
+      netProfit:              prelimResult.netProfit,
+    }
+  )
+  const finalVerdict             = gateResult.verdict
+  const finalVerdictReasons      = gateResult.verdictReasons
+  const finalVerdictConditions   = gateResult.verdictConditions
+  const verdictGateTriggered     = gateResult.gateTriggered
+
+  // Patch prelim result with final verdict for contradiction detection
+  const resultForValidation = {
+    ...prelimResult,
+    verdict:           finalVerdict,
+    verdictReasons:    finalVerdictReasons,
+    verdictConditions: finalVerdictConditions,
+  } as ComputedResult
+
+  // 16c — Contradiction detection
+  const contradictions = detectContradictions(resultForValidation)
+
+  // 16d — Section confidence breakdown
+  const sectionConfidence = buildSectionConfidence(resultForValidation, input)
+
+  // 16e — Per-metric provenance map
+  const provenance = buildProvenance(resultForValidation, input)
+
+  // 16f — Honest revenue range with uncertainty bounds
+  const revenueRange = buildRevenueRange(revenue, modelConfidence, revenueSource)
+
   // ── ASSEMBLE & RETURN ────────────────────────────────────────────────────
   return {
     // Core financials — always computed, never from agents
@@ -966,9 +1085,10 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     projection,
     scores,
 
-    verdict,
-    verdictReasons,
-    verdictConditions,
+    // Verdict — may have been overridden by hard fail gates
+    verdict:             finalVerdict,
+    verdictReasons:      finalVerdictReasons,
+    verdictConditions:   finalVerdictConditions,
     verdictFailureModes,
 
     competitors:          competitors2,
@@ -1009,6 +1129,13 @@ export function computeEngine(input: ComputeInput): ComputedResult {
 
     dataCompleteness: completeness,
     modelConfidence,
+
+    // ── Trust layer (v3.2) ────────────────────────────────────────────────
+    sectionConfidence,
+    provenance,
+    revenueRange,
+    contradictions,
+    verdictGateTriggered,
 
     meta: {
       engineVersion:    ENGINE_VERSION,

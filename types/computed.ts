@@ -9,12 +9,68 @@
  *       All values arrive pre-computed and sealed.
  */
 
-export const ENGINE_VERSION    = '3.1.0' as const   // bumped: multi-source live density
+export const ENGINE_VERSION    = '3.2.0' as const   // bumped: trust layer — provenance, contradictions, hard fail gates
 export const BENCHMARK_VERSION = '2026-04' as const
 
 // ── Confidence ────────────────────────────────────────────────────────────────
 
 export type ConfidenceLabel = 'high' | 'medium' | 'low' | 'benchmark_default'
+
+// ── Trust layer types (v3.2) ──────────────────────────────────────────────────
+
+/**
+ * Contradiction detected between two data points in the report.
+ * Severity 'error' means it's significant enough to override a verdict.
+ * Severity 'warning' means it's a red flag the user should know about.
+ */
+export interface ContradictionWarning {
+  field:            string                    // e.g. 'saturation_vs_competitors'
+  reason:           string                    // human-readable explanation
+  severity:         'warning' | 'error'
+  affectedSections: string[]                  // which report tabs this affects
+}
+
+/**
+ * Explains where a single metric value came from and how much to trust it.
+ * Attached to every key output metric so the UI can show provenance badges.
+ */
+export interface DataProvenance {
+  source:      string     // e.g. 'Market analysis (A5 agent)'
+  sourceLabel: string     // short label for badge: 'Live Data' | 'Benchmark' | 'Estimated'
+  confidence:  number     // 0-100
+  isBenchmark: boolean    // true when value comes entirely from AU industry benchmarks
+  note?:       string     // optional explanation shown on hover/expand
+}
+
+/**
+ * Per-section confidence breakdown.
+ * Shows users which parts of the report are reliable vs. estimated.
+ */
+export interface SectionScore {
+  score: number                                       // 0-100
+  label: 'high' | 'medium' | 'low' | 'insufficient'
+  gaps:  string[]                                     // specific missing data items
+}
+
+export interface SectionConfidence {
+  financials:  SectionScore
+  competition: SectionScore
+  demand:      SectionScore
+  location:    SectionScore
+}
+
+/**
+ * Honest revenue range with uncertainty bounds.
+ * Replaces false-precision single values like "$47,200/month".
+ */
+export interface RevenueRange {
+  low:         number   // lower bound (e.g. -40% from mid for benchmark estimates)
+  mid:         number   // central estimate (same as result.revenue)
+  high:        number   // upper bound
+  uncertainty: number   // ±% (e.g. 30 means ±30%)
+  source:      string   // which source produced the mid value
+  note:        string   // human-readable explanation
+}
 
 /** 0–1 weight on agent value (1 = full agent, 0 = full benchmark) */
 export type BlendWeight = number
@@ -228,6 +284,42 @@ export interface ComputedResult {
   // ─── Confidence ──────────────────────────────────────────────────────────
   dataCompleteness: number         // 0–100, how much live data was available
   modelConfidence:  ConfidenceLabel
+
+  // ─── Trust layer (v3.2) — data transparency + contradiction detection ─────
+  /**
+   * Per-section confidence breakdown.
+   * financials / competition / demand / location each have score, label, and gaps[].
+   * UI should render these as section-level confidence badges.
+   */
+  sectionConfidence: SectionConfidence
+
+  /**
+   * Per-metric data provenance.
+   * Keys: 'revenue' | 'costs' | 'competitors' | 'demandScore' | 'rent' | 'avgTicketSize'
+   * Each entry tells the UI: where did this number come from, how much to trust it.
+   */
+  provenance: Record<string, DataProvenance>
+
+  /**
+   * Honest revenue range based on data confidence level.
+   * Replaces single-point revenue estimate with ±% uncertainty band.
+   * UI should show "~$35k–$55k/month" instead of "$47,200/month".
+   */
+  revenueRange: RevenueRange
+
+  /**
+   * Contradictions detected between data points in this report.
+   * Empty array = no contradictions (happy path).
+   * UI should render error-severity contradictions as prominent warnings.
+   */
+  contradictions: ContradictionWarning[]
+
+  /**
+   * If a hard fail gate was triggered, records which one.
+   * null = verdict was not overridden.
+   * e.g. 'benchmark_default_confidence' | 'insufficient_data_completeness' | 'declining_demand'
+   */
+  verdictGateTriggered: string | null
 
   // ─── Metadata ────────────────────────────────────────────────────────────
   meta: {

@@ -207,7 +207,24 @@ export async function POST(request: NextRequest) {
   }
 
   const computeMs = Date.now() - startMs
-  console.log(`[compute] ${reportId} done in ${computeMs}ms — netProfit=${computedResult.netProfit} verdict=${computedResult.verdict}`)
+
+  // ── Trust layer logging ───────────────────────────────────────────────────
+  if (computedResult.contradictions.length > 0) {
+    console.warn(
+      `[compute] ${reportId} — ${computedResult.contradictions.length} contradiction(s) detected:`,
+      computedResult.contradictions.map(c => `[${c.severity}] ${c.field}: ${c.reason}`).join(' | ')
+    )
+  }
+  if (computedResult.verdictGateTriggered) {
+    console.warn(`[compute] ${reportId} — hard fail gate triggered: ${computedResult.verdictGateTriggered} (verdict overridden to ${computedResult.verdict})`)
+  }
+
+  console.log(
+    `[compute] ${reportId} done in ${computeMs}ms — ` +
+    `netProfit=${computedResult.netProfit} verdict=${computedResult.verdict} ` +
+    `completeness=${computedResult.dataCompleteness}% confidence=${computedResult.modelConfidence} ` +
+    `contradictions=${computedResult.contradictions.length}`
+  )
 
   // ── 9. Write to Supabase ──────────────────────────────────────────────────
   const updatePayload: Record<string, any> = {
@@ -249,13 +266,18 @@ export async function POST(request: NextRequest) {
   await setCachedResult(bizKey, rawArea, computedResult, isBackfill)
 
   return NextResponse.json({
-    success:       true,
+    success:              true,
     reportId,
-    netProfit:     computedResult.netProfit,
-    verdict:       computedResult.verdict,
+    netProfit:            computedResult.netProfit,
+    verdict:              computedResult.verdict,
+    verdictGateTriggered: computedResult.verdictGateTriggered,
+    dataCompleteness:     computedResult.dataCompleteness,
+    modelConfidence:      computedResult.modelConfidence,
+    contradictions:       computedResult.contradictions.length,
+    revenueRange:         computedResult.revenueRange,
     computeMs,
-    engineVersion: computedResult.meta.engineVersion,
-    mode:          modeLabel,
+    engineVersion:        computedResult.meta.engineVersion,
+    mode:                 modeLabel,
   })
 }
 
