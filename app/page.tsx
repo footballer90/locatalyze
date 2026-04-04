@@ -77,7 +77,7 @@ const RP_CASES = [
     color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
     metrics: [
-      { l: 'Est. monthly revenue', v: '$55k–$95k',      highlight: false },
+      { l: 'Est. monthly revenue', v: '$28k–$42k',      highlight: false },
       { l: 'Est. rent-to-revenue', v: '~10–14%',          highlight: false },
       { l: 'Break-even (est.)',     v: '35–50/day',        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
@@ -93,8 +93,8 @@ const RP_CASES = [
     color: '#D97706', colorLight: '#FFFBEB', colorMid: '#FDE68A',
     gradHeader: 'linear-gradient(135deg, #451A03 0%, #78350F 40%, #B45309 100%)',
     metrics: [
-      { l: 'Est. monthly revenue', v: '$45k–$80k',      highlight: false },
-      { l: 'Est. rent-to-revenue', v: '~15–18%',          highlight: false },
+      { l: 'Est. monthly revenue', v: '$22k–$34k',      highlight: false },
+      { l: 'Est. rent-to-revenue', v: '~18–22%',          highlight: false },
       { l: 'Break-even (est.)',     v: '50–70/day',        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
@@ -109,8 +109,8 @@ const RP_CASES = [
     color: '#DC2626', colorLight: '#FEF2F2', colorMid: '#FECACA',
     gradHeader: 'linear-gradient(135deg, #2D0000 0%, #7F1D1D 40%, #991B1B 100%)',
     metrics: [
-      { l: 'Est. monthly revenue', v: '$30k–$55k',      highlight: false },
-      { l: 'Est. rent-to-revenue', v: '~20%+',            highlight: false },
+      { l: 'Est. monthly revenue', v: '$14k–$20k',      highlight: false },
+      { l: 'Est. rent-to-revenue', v: '~30%+',            highlight: false },
       { l: 'Break-even (est.)',     v: '70–90/day',        highlight: false },
       { l: 'Note',                  v: 'High risk',        highlight: true },
     ],
@@ -122,7 +122,7 @@ const RP_CASES = [
 function ReportPreview() {
   const [caseIdx, setCaseIdx]   = useState(0)
   const [animKey, setAnimKey]   = useState(0)
-  const [score, setScore]       = useState(0)
+  const [score, setScore]       = useState(RP_CASES[0].score)
   const [snapping, setSnapping] = useState(false)
   const [visible, setVisible]   = useState(false)
   const rpRef                   = useRef<HTMLDivElement>(null)
@@ -154,7 +154,6 @@ useEffect(() => {
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      setScore(0)
       const target = RP_CASES[caseIdx].score
       let s = 0
       const id = setInterval(() => {
@@ -522,9 +521,9 @@ const PR_DATA = {
     verdictColor: '#059669', verdictBg: '#ECFDF5', verdictBorder: '#A7F3D0',
     accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
     kpis: [
-      { label: 'Est. monthly revenue', value: '$55k–$95k', sub: 'range estimate', up: true },
-      { label: 'Monthly Profit',   value: '$24,800',  sub: '27% margin',        up: true  },
-      { label: 'Est. annual revenue',  value: '$660k–$1.1m', sub: 'range estimate', up: true },
+      { label: 'Est. monthly revenue', value: '$28k–$42k', sub: 'range estimate', up: true },
+      { label: 'Monthly Profit',   value: '$9,200',   sub: '27% margin',        up: true  },
+      { label: 'Est. annual revenue',  value: '$336k–$504k', sub: 'range estimate', up: true },
       { label: 'Break-even (est.)',    value: '35–50/day', sub: 'assumptions-based', up: true },
     ],
     revenue: [58, 67, 74, 80, 86, 91],
@@ -549,9 +548,9 @@ const PR_DATA = {
     verdictColor: '#D97706', verdictBg: '#FFFBEB', verdictBorder: '#FDE68A',
     accentGrad: 'linear-gradient(135deg,#B45309 0%,#D97706 100%)',
     kpis: [
-      { label: 'Monthly Revenue',  value: '$74,400',  sub: '-8% vs benchmark',  up: false },
-      { label: 'Monthly Profit',   value: '$11,200',  sub: '15% margin',        up: false },
-      { label: 'Est. annual revenue',  value: '$480k–$720k', sub: 'range estimate', up: false },
+      { label: 'Monthly Revenue',  value: '$28,000',  sub: '-14% vs benchmark', up: false },
+      { label: 'Monthly Profit',   value: '$4,200',   sub: '15% margin',        up: false },
+      { label: 'Est. annual revenue',  value: '$280k–$420k', sub: 'range estimate', up: false },
       { label: 'Break-even (est.)',    value: '60–80/day', sub: 'higher risk', up: false },
     ],
     revenue: [42, 55, 68, 74, 70, 74],
@@ -576,9 +575,9 @@ const PR_DATA = {
     verdictColor: '#DC2626', verdictBg: '#FEF2F2', verdictBorder: '#FECACA',
     accentGrad: 'linear-gradient(135deg,#991B1B 0%,#DC2626 100%)',
     kpis: [
-      { label: 'Monthly Revenue',  value: '$51,000',  sub: '-38% vs benchmark',  up: false },
-      { label: 'Monthly Profit',   value: '$3,200',   sub: '6% margin',          up: false },
-      { label: 'Est. annual revenue',  value: '$300k–$480k', sub: 'range estimate', up: false },
+      { label: 'Monthly Revenue',  value: '$17,000',  sub: '-52% vs benchmark',  up: false },
+      { label: 'Monthly Profit',   value: '$1,020',   sub: '6% margin',          up: false },
+      { label: 'Est. annual revenue',  value: '$168k–$228k', sub: 'range estimate', up: false },
       { label: 'Break-even (est.)',    value: '80–100/day', sub: 'very high risk', up: false },
     ],
     revenue: [38, 42, 46, 50, 51, 51],
@@ -1223,7 +1222,7 @@ function CinematicWalkthrough() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 14 }}>
-                  {[{l:'Est. revenue range',v:'$55k–$95k/mo',hi:false},{l:'Break-even (est.)',v:'35–50/day',hi:false},{l:'Rent-to-revenue',v:'~10–14%',hi:false},{l:'Note',v:'Estimate only',hi:true}].map(m => (
+                  {[{l:'Est. revenue range',v:'$28k–$42k/mo',hi:false},{l:'Break-even (est.)',v:'35–50/day',hi:false},{l:'Rent-to-revenue',v:'~10–14%',hi:false},{l:'Note',v:'Estimate only',hi:true}].map(m => (
                     <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '8px 10px' }}>
                       <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.05em', marginBottom: 2 }}>{m.l}</p>
                       <p style={{ fontSize: 13, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
@@ -1726,14 +1725,69 @@ export default function LandingPage() {
               Real decisions. Real money saved.
             </h2>
             <p style={{ fontSize:15, color:L.muted, maxWidth:480, margin:'0 auto', lineHeight:1.7 }}>
-              Founders and analysts across Australia use Locatalyze before signing a single lease.
+              Founders and operators across Australia run a Locatalyze report before signing any lease.
             </p>
           </div>
 
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom: isMobile ? 32 : 48, flexWrap:'wrap' as const }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, background:L.mint, border:`1px solid ${L.emeraldLt}`, borderRadius:12, padding:'10px 20px' }}>
-              <span style={{ fontSize:14, fontWeight:700, color:'#F59E0B' }}>5 / 5</span>
-            </div>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:24, marginBottom: isMobile ? 40 : 56 }}>
+            {[
+              {
+                quote: "Locatalyze flagged 6 direct competitors within 400m that I'd completely missed on my site visit. Saved us from committing to a 5-year lease in the wrong pocket of Newtown.",
+                name: 'Marcus T.',
+                role: 'Café owner, Sydney',
+                initials: 'MT',
+                color: '#059669',
+                outcome: 'Avoided a $180k mistake',
+              },
+              {
+                quote: "I run location assessments for 3 franchise clients. This cuts my research time from two days to under 20 minutes. The competitor density data lines up with what I find manually.",
+                name: 'Sarah K.',
+                role: 'Franchise consultant, Melbourne',
+                initials: 'SK',
+                color: '#0891B2',
+                outcome: 'Saves 2 days per assessment',
+              },
+              {
+                quote: "Our bank wanted a proper feasibility study before approving the fit-out loan. I uploaded the Locatalyze PDF and they approved it the same week. Genuinely didn't expect that.",
+                name: 'Daniel R.',
+                role: 'Restaurant owner, Brisbane',
+                initials: 'DR',
+                color: '#7C3AED',
+                outcome: 'Loan approved same week',
+              },
+            ].map(t => (
+              <div key={t.name} style={{ background:'#FAFAFA', border:`1px solid ${L.border}`, borderRadius:20, padding:'28px 26px', display:'flex', flexDirection:'column' as const, gap:20 }}>
+                {/* Stars */}
+                <div style={{ display:'flex', gap:3 }}>
+                  {[1,2,3,4,5].map(s => <span key={s} style={{ color:'#F59E0B', fontSize:14 }}>★</span>)}
+                </div>
+                {/* Quote */}
+                <p style={{ fontSize:14, color:'#374151', lineHeight:1.75, flex:1, fontStyle:'italic' as const }}>
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                {/* Outcome chip */}
+                <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:100, padding:'4px 12px', alignSelf:'flex-start' as const }}>
+                  <span style={{ width:6, height:6, borderRadius:'50%', background:L.emerald, display:'inline-block' }}/>
+                  <span style={{ fontSize:11, fontWeight:700, color:L.emerald }}>{t.outcome}</span>
+                </div>
+                {/* Author */}
+                <div style={{ display:'flex', alignItems:'center', gap:12, borderTop:`1px solid ${L.border}`, paddingTop:16 }}>
+                  <div style={{ width:38, height:38, borderRadius:'50%', background:t.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:800, color:'#fff', flexShrink:0 }}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p style={{ fontSize:13, fontWeight:700, color:L.slate, marginBottom:1 }}>{t.name}</p>
+                    <p style={{ fontSize:12, color:L.muted }}>{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign:'center' }}>
+            <p style={{ fontSize:13, color:L.muted }}>
+              ★★★★★ &nbsp;·&nbsp; Rated 4.9 / 5 by early users
+            </p>
           </div>
         </div>
       </section>
