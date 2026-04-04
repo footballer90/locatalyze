@@ -712,6 +712,741 @@ function KeyInsights({ report, computed, fin, competitors, market }: {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// DECISION ENGINE — "Should You Open Here?" (THE premium section)
+// ═══════════════════════════════════════════════════════════════════════════════
+function DecisionEngine({ report, computed, fin, competitors, market }: {
+  report: Report
+  computed: import('@/types/computed').ComputedResult | null
+  fin: any; competitors: any; market: any
+}) {
+  const C = computed
+  const _bt = (report.business_type ?? 'business').toLowerCase()
+  const normVerdict = normalizeVerdict(report.verdict)
+  const vc = verdictCfg(report.verdict)
+
+  // ── PROCEED reasons (green) ─────────────────────────────────────────────────
+  const proceedReasons: Array<{ data: string; implication: string; action: string }> = []
+  const avoidReasons: Array<{ data: string; implication: string; action: string }> = []
+  const conditions: string[] = []
+  const failureModes: string[] = []
+
+  // Competition
+  const mi = C?.marketIntelligence
+  const compCount = C?.validCompetitorCount ?? (competitors as any)?.validCount ?? 0
+  const strongCount = mi?.strongCount ?? 0
+  const weakCount = mi?.weakCount ?? 0
+  const radius = C?.competitorRadius ?? 500
+
+  if (compCount <= 5 && compCount > 0) {
+    proceedReasons.push({
+      data: `Only ${compCount} competitor${compCount !== 1 ? 's' : ''} within ${radius}m`,
+      implication: 'Low saturation means lower customer acquisition cost and faster brand awareness',
+      action: 'Focus on visibility and convenience rather than aggressive pricing'
+    })
+  } else if (compCount > 12) {
+    avoidReasons.push({
+      data: `${compCount} competitors within ${radius}m (${strongCount} strong)`,
+      implication: 'Customer acquisition will be expensive and slow in this density',
+      action: 'Enter only with strong differentiation, niche positioning, or superior location within the strip'
+    })
+  } else if (compCount > 5) {
+    if (strongCount <= 1) {
+      proceedReasons.push({
+        data: `${compCount} competitors but only ${strongCount} strong operator`,
+        implication: 'Most existing players are weak — opportunity to become the area leader',
+        action: 'Invest in quality and reviews from day one to establish dominance'
+      })
+    }
+  }
+
+  // Revenue + rent
+  const netProfit = C?.netProfit ?? fin?.monthlyNetProfit ?? null
+  const revenue = C?.revenue ?? fin?.monthlyRevenue ?? null
+  const rentPct = fin?.rent?.toRevenuePercent
+  const isBenchmark = C?.provenance?.revenue?.isBenchmark ?? fin?.isEstimated
+
+  if (netProfit != null && netProfit > 5000) {
+    proceedReasons.push({
+      data: `Projected net profit of ${fmt(netProfit)}/month`,
+      implication: `Breakeven within ${C?.breakEvenMonths ?? '--'} months, building equity quickly`,
+      action: 'Lock in a 3+ year lease with capped annual increases to protect this margin'
+    })
+  } else if (netProfit != null && netProfit < 0) {
+    avoidReasons.push({
+      data: `Projected net loss of ${fmt(Math.abs(netProfit))}/month at baseline`,
+      implication: 'The business loses money from day one unless assumptions change significantly',
+      action: 'Do not sign a lease at this rent — renegotiate rent or increase average ticket size'
+    })
+  }
+
+  if (rentPct != null && rentPct > 20) {
+    avoidReasons.push({
+      data: `Rent consumes ${rentPct.toFixed(1)}% of projected revenue`,
+      implication: 'Industry safe threshold is 8–15%. At this ratio, a 10% revenue dip wipes out profit',
+      action: `Negotiate rent below ${fmt(Math.round((revenue ?? 0) * 0.15))}/month or find cheaper premises`
+    })
+  } else if (rentPct != null && rentPct <= 12) {
+    proceedReasons.push({
+      data: `Rent is ${rentPct.toFixed(1)}% of projected revenue`,
+      implication: 'Well within the safe zone — leaves healthy margin for staff, COGS, and profit',
+      action: 'This cost structure is sustainable even with revenue fluctuations'
+    })
+  }
+
+  // Demand
+  const demandTrend = C?.marketSignals?.demandTrend ?? market?.demandTrend
+  if (demandTrend === 'growing') {
+    proceedReasons.push({
+      data: `${_bt.charAt(0).toUpperCase() + _bt.slice(1)} demand is growing in this area`,
+      implication: 'Market is expanding — new entrants can grow with the market rather than stealing share',
+      action: 'Time entry for early mover advantage before competitors notice the trend'
+    })
+  } else if (demandTrend === 'declining') {
+    avoidReasons.push({
+      data: `${_bt.charAt(0).toUpperCase() + _bt.slice(1)} demand is declining in this area`,
+      implication: 'Shrinking pie — you must take customers from existing operators who have loyalty',
+      action: 'Only proceed with a significantly differentiated concept that creates its own demand'
+    })
+  }
+
+  // Demographics
+  const demographics = (report.result_data as any)?.a6_output ?? (report.result_data as any)?.demographics
+  const income = demographics?.median_income ?? demographics?.medianIncome
+  if (income && income < 55000) {
+    avoidReasons.push({
+      data: `Median household income is $${Math.round(income / 1000)}k/year`,
+      implication: 'Lower spending power limits average ticket size and visit frequency',
+      action: 'Price aggressively or target volume over margin'
+    })
+  }
+
+  // Conditions from engine
+  if (C?.verdictConditions) conditions.push(...C.verdictConditions)
+  if (conditions.length === 0) {
+    if (C?.breakEvenDaily) conditions.push(`Achieve ${C.breakEvenDaily} customers/day consistently within 3 months`)
+    if (revenue) conditions.push(`Maintain monthly revenue above ${fmt(Math.round(revenue * 0.80))}`)
+    if (strongCount > 2) conditions.push('Offer a clear point of differentiation from the ' + strongCount + ' strong operators')
+  }
+
+  // Failure modes from engine
+  if (C?.verdictFailureModes) failureModes.push(...C.verdictFailureModes)
+  if (failureModes.length === 0) {
+    failureModes.push('Slow customer ramp (under 60% of target by month 3) burns through working capital')
+    if (rentPct != null && rentPct > 15) failureModes.push(`Rent increase at next renewal above ${fmt(Math.round((report.monthly_rent ?? 0) * 1.15))}/month flips to loss`)
+    failureModes.push('A strong competitor opening within 200m would split the existing customer base')
+  }
+
+  // Honesty badge
+  const hasData = proceedReasons.length > 0 || avoidReasons.length > 0
+
+  if (!hasData) return null
+
+  return (
+    <Card style={{
+      padding: 0, border: `2px solid ${vc.border}`,
+      background: `linear-gradient(135deg, ${vc.bg} 0%, ${S.white} 100%)`,
+    }}>
+      {/* Header */}
+      <div style={{ padding: '28px 32px 20px', borderBottom: `1px solid ${vc.border}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 14,
+            background: `${vc.text}15`, border: `2px solid ${vc.text}30`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: 20 }}>{normVerdict === 'GO' ? '\u2714' : normVerdict === 'NO' ? '\u2718' : '\u26A0'}</span>
+          </div>
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 800, color: vc.text, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Decision Analysis</p>
+            <h2 style={{ fontSize: 22, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              Should you open {report.business_type === 'Other' ? 'a business' : `a ${_bt}`} here?
+            </h2>
+          </div>
+        </div>
+        {isBenchmark && (
+          <div style={{ marginTop: 14, padding: '8px 14px', background: `${S.amber}10`, border: `1px solid ${S.amberBdr}`, borderRadius: 10 }}>
+            <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
+              Financial projections use industry benchmarks, not local sales data. Treat numbers as directional, not precise.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Two-column: Proceed vs Avoid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+        {/* Reasons to proceed */}
+        <div style={{ padding: '24px 28px', borderRight: `1px solid ${S.n200}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: S.emerald }} />
+            <p style={{ fontSize: 13, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Reasons to proceed ({proceedReasons.length})
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {proceedReasons.slice(0, 4).map((r, i) => (
+              <div key={i}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.4, marginBottom: 4 }}>{r.data}</p>
+                <p style={{ fontSize: 12, color: '#065F46', opacity: 0.75, lineHeight: 1.6, marginBottom: 4 }}>{r.implication}</p>
+                <p style={{ fontSize: 12, color: S.emerald, fontWeight: 600 }}>\u2192 {r.action}</p>
+              </div>
+            ))}
+            {proceedReasons.length === 0 && (
+              <p style={{ fontSize: 13, color: S.n400 }}>No strong proceed signals detected for this location.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Reasons to avoid */}
+        <div style={{ padding: '24px 28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: S.red }} />
+            <p style={{ fontSize: 13, fontWeight: 800, color: S.red, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Reasons to avoid ({avoidReasons.length})
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {avoidReasons.slice(0, 4).map((r, i) => (
+              <div key={i}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#991B1B', lineHeight: 1.4, marginBottom: 4 }}>{r.data}</p>
+                <p style={{ fontSize: 12, color: '#991B1B', opacity: 0.75, lineHeight: 1.6, marginBottom: 4 }}>{r.implication}</p>
+                <p style={{ fontSize: 12, color: S.red, fontWeight: 600 }}>\u2192 {r.action}</p>
+              </div>
+            ))}
+            {avoidReasons.length === 0 && (
+              <p style={{ fontSize: 13, color: S.n400 }}>No major red flags detected for this location.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Conditions + Failure modes */}
+      <div style={{ borderTop: `1px solid ${S.n200}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+        <div style={{ padding: '20px 28px', borderRight: `1px solid ${S.n200}` }}>
+          <p style={{ fontSize: 12, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+            This works only if
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {conditions.slice(0, 4).map((c, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ color: S.amber, fontWeight: 800, fontSize: 11, marginTop: 2, flexShrink: 0 }}>IF</span>
+                <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>{c}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '20px 28px' }}>
+          <p style={{ fontSize: 12, fontWeight: 800, color: S.red, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+            This will fail if
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {failureModes.slice(0, 3).map((m, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ color: S.red, fontWeight: 800, fontSize: 11, marginTop: 2, flexShrink: 0 }}>\u26A0</span>
+                <p style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.6 }}>{m}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPETITIVE POSITIONING — how to enter this market
+// ═══════════════════════════════════════════════════════════════════════════════
+function CompetitivePositioning({ computed, businessType }: {
+  computed: import('@/types/computed').ComputedResult | null
+  businessType: string
+}) {
+  const C = computed
+  if (!C?.marketIntelligence) return null
+  const mi = C.marketIntelligence
+  const strongCount = mi.strongCount ?? 0
+  const weakCount = mi.weakCount ?? 0
+  const total = strongCount + (mi.moderateCount ?? 0) + weakCount
+  if (total === 0) return null
+
+  const bt = (businessType ?? 'business').toLowerCase()
+
+  // Determine recommended positioning
+  type Positioning = 'premium' | 'value_leader' | 'niche_specialist' | 'convenience' | 'avoid'
+  let recommended: Positioning = 'convenience'
+  let rationale = ''
+  let tactics: string[] = []
+
+  if (strongCount >= 3 && total > 10) {
+    recommended = 'niche_specialist'
+    rationale = `With ${strongCount} strong operators already established, a direct head-to-head strategy is high-risk. The market is saturated at the general level, but niches within ${bt} are likely underserved.`
+    tactics = [
+      `Identify the specific subcategory none of the ${strongCount} strong operators covers well`,
+      'Build your brand around that niche from day one — menu, design, marketing',
+      'Price at or above market rate to signal quality, not desperation',
+      'Target a specific customer persona rather than trying to serve everyone',
+    ]
+  } else if (strongCount === 0 && weakCount > 3) {
+    recommended = 'premium'
+    rationale = `All ${total} competitors are weak or mid-tier — no one has claimed the quality position. This is a rare opportunity to become the area's go-to ${bt} by simply being excellent.`
+    tactics = [
+      'Invest in fit-out quality, branding, and online presence — first impressions matter',
+      'Price 15–25% above current market average to signal premium positioning',
+      `Target 4.5+ Google rating within 90 days — actively solicit reviews`,
+      'Build a loyalty program early to create switching costs',
+    ]
+  } else if (strongCount <= 1 && total <= 5) {
+    recommended = 'convenience'
+    rationale = `Low competition with only ${total} operator${total !== 1 ? 's' : ''} suggests this area is either underserved or low-traffic. Focus on capturing the existing demand reliably.`
+    tactics = [
+      'Prioritise location visibility and ease of access over premium fit-out',
+      'Offer extended hours or unique service windows competitors do not cover',
+      'Build a strong delivery and online ordering presence from launch',
+      'Monitor foot traffic patterns to optimise staffing and operating hours',
+    ]
+  } else if (strongCount >= 2) {
+    recommended = 'value_leader'
+    rationale = `${strongCount} strong operators control the premium segment. Competing on quality alone is expensive. Instead, capture the price-sensitive segment they overlook.`
+    tactics = [
+      `Offer comparable quality at 10–20% lower price than the top ${strongCount} operator${strongCount !== 1 ? 's' : ''}`,
+      'Keep overhead lean — smaller footprint, efficient layout, minimal waste',
+      'Win on speed, consistency, and convenience rather than ambience',
+      'Use social media and local community engagement for low-cost marketing',
+    ]
+  }
+
+  const positioningStyles: Record<Positioning, { label: string; color: string; bg: string; border: string }> = {
+    premium:          { label: 'Premium Leader',       color: '#4338CA', bg: '#EEF2FF', border: '#C7D2FE' },
+    value_leader:     { label: 'Value Leader',         color: S.brand,   bg: S.brandFaded, border: S.brandBorder },
+    niche_specialist: { label: 'Niche Specialist',     color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
+    convenience:      { label: 'Convenience & Access', color: S.blue,    bg: S.blueBg,  border: S.blueBdr },
+    avoid:            { label: 'Avoid — Too Saturated', color: S.red,    bg: S.redBg,   border: S.redBdr },
+  }
+  const ps = positioningStyles[recommended]
+
+  return (
+    <Card>
+      <SectionHeading sub="Based on competitor strength distribution and market gaps.">How to Position This Business</SectionHeading>
+      <div style={{ padding: '20px 24px', background: ps.bg, border: `1.5px solid ${ps.border}`, borderRadius: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ padding: '6px 14px', background: `${ps.color}15`, border: `1.5px solid ${ps.color}35`, borderRadius: 10 }}>
+            <span style={{ fontSize: 14, fontWeight: 900, color: ps.color }}>{ps.label}</span>
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 700, color: ps.color, opacity: 0.7 }}>RECOMMENDED POSITIONING</span>
+        </div>
+        <p style={{ fontSize: 13, color: ps.color, lineHeight: 1.7, opacity: 0.85 }}>{rationale}</p>
+      </div>
+
+      <p style={{ fontSize: 12, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
+        Entry Tactics
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {tactics.map((t, i) => (
+          <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <div style={{ width: 24, height: 24, borderRadius: 8, background: S.n100, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ fontSize: 12, fontWeight: 900, color: S.n500 }}>{i + 1}</span>
+            </div>
+            <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.6 }}>{t}</p>
+          </div>
+        ))}
+      </div>
+
+      {mi.marketGapNote && (
+        <div style={{ marginTop: 20, padding: '14px 18px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10 }}>
+          <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, marginBottom: 4 }}>Market Gap Detected</p>
+          <p style={{ fontSize: 12, color: '#065F46', lineHeight: 1.6 }}>{mi.marketGapNote}</p>
+        </div>
+      )}
+    </Card>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FINANCIAL TRUST — honest assumptions, break conditions, failure triggers
+// ═══════════════════════════════════════════════════════════════════════════════
+function FinancialTrust({ computed, fin, report }: {
+  computed: import('@/types/computed').ComputedResult | null
+  fin: any; report: Report
+}) {
+  const C = computed
+  if (!C) return null
+
+  const bt = (report.business_type ?? 'business').toLowerCase()
+  const isBenchmark = C.provenance?.revenue?.isBenchmark ?? false
+  const revenueSource = C.provenance?.revenue?.sourceLabel ?? 'unknown'
+  const costsSource = C.provenance?.costs?.sourceLabel ?? 'unknown'
+
+  // What the model assumes
+  const assumptions: Array<{ assumption: string; risk: 'low' | 'medium' | 'high'; note: string }> = []
+
+  assumptions.push({
+    assumption: `${C.dailyCustomers} customers/day at $${C.avgTicketSize} average ticket`,
+    risk: isBenchmark ? 'high' : 'medium',
+    note: isBenchmark
+      ? `This is an industry average for Australian ${bt}s — your actual volume depends on location quality, marketing, and competition.`
+      : 'Based on demand modelling for this specific location. Still an estimate — validate with comparable venues.',
+  })
+
+  if (C.costBreakdown) {
+    const staffPct = Math.round((C.costBreakdown.staff / Math.max(C.totalCosts, 1)) * 100)
+    assumptions.push({
+      assumption: `Staff costs of $${C.costBreakdown.staff.toLocaleString()}/month (${staffPct}% of total)`,
+      risk: staffPct > 40 ? 'high' : 'medium',
+      note: `Based on ${bt} staffing benchmarks. Award wages, superannuation, and worker's comp included. Actual costs vary with roster and experience levels.`,
+    })
+  }
+
+  const rentPct = fin?.rent?.toRevenuePercent
+  if (rentPct) {
+    assumptions.push({
+      assumption: `Rent at ${rentPct.toFixed(1)}% of projected revenue`,
+      risk: rentPct > 18 ? 'high' : rentPct > 12 ? 'medium' : 'low',
+      note: rentPct > 18
+        ? 'This ratio is uncomfortably high. A 10% revenue shortfall would push rent above 20% — the widely-cited danger threshold for retail tenancies.'
+        : 'Within industry norms. Annual CPI-linked rent reviews could push this higher over a 3-year lease term.',
+    })
+  }
+
+  // What needs to be true
+  const mustBeTrue: string[] = []
+  if (C.breakEvenDaily) mustBeTrue.push(`Average ${C.breakEvenDaily}+ customers per day from month 3 onward`)
+  if (C.revenue) mustBeTrue.push(`Monthly revenue stays above ${fmt(Math.round(C.revenue * 0.80))} (80% of projection)`)
+  if (C.costBreakdown?.staff) mustBeTrue.push(`Staff costs do not exceed $${Math.round(C.costBreakdown.staff * 1.15).toLocaleString()}/month`)
+  mustBeTrue.push('No major competitor opens within 200m during the first 12 months')
+  mustBeTrue.push('Foot traffic patterns match the model (weekday lunch or weekend peak)')
+
+  // What would cause failure
+  const wouldFail: Array<{ trigger: string; consequence: string }> = []
+  if (C.revenue && C.totalCosts) {
+    const cushion = C.revenue - C.totalCosts
+    const revDropPct = Math.round((cushion / C.revenue) * 100)
+    wouldFail.push({
+      trigger: `Revenue drops ${revDropPct}% below projection`,
+      consequence: 'Net profit hits zero — the business cannot cover its operating costs',
+    })
+  }
+  if (report.monthly_rent) {
+    const breakRent = Math.round((report.monthly_rent) * 1.3)
+    wouldFail.push({
+      trigger: `Rent increases to $${breakRent.toLocaleString()}/month at renewal`,
+      consequence: 'Profit margin disappears — lease becomes unviable without revenue growth to match',
+    })
+  }
+  wouldFail.push({
+    trigger: 'Customer ramp takes 6+ months instead of 3',
+    consequence: `Burns through $${Math.round((C.totalCosts - (C.revenue * 0.5)) * 3).toLocaleString()} in additional working capital during the slow period`,
+  })
+
+  const riskColor = (r: string) => r === 'high' ? S.red : r === 'medium' ? S.amber : S.emerald
+  const riskBg = (r: string) => r === 'high' ? S.redBg : r === 'medium' ? S.amberBg : S.emeraldBg
+
+  return (
+    <Card>
+      <SectionHeading sub="Every projection rests on assumptions. Here they are, with their risk levels.">Financial Model Assumptions</SectionHeading>
+
+      {/* Assumptions table */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 24 }}>
+        {assumptions.map((a, i) => (
+          <div key={i} style={{ display: 'flex', gap: 16, padding: '14px 0', borderBottom: i < assumptions.length - 1 ? `1px solid ${S.n100}` : 'none', alignItems: 'flex-start' }}>
+            <div style={{ padding: '3px 10px', background: riskBg(a.risk), border: `1px solid ${riskColor(a.risk)}30`, borderRadius: 8, flexShrink: 0, marginTop: 2 }}>
+              <span style={{ fontSize: 10, fontWeight: 800, color: riskColor(a.risk), textTransform: 'uppercase' }}>{a.risk} risk</span>
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: S.n800, marginBottom: 3 }}>{a.assumption}</p>
+              <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.6 }}>{a.note}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Data sources */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 11, color: S.n400, fontWeight: 600, marginRight: 4 }}>Data sources:</span>
+        <span style={{ fontSize: 11, padding: '2px 8px', background: isBenchmark ? S.amberBg : S.emeraldBg, border: `1px solid ${isBenchmark ? S.amberBdr : S.emeraldBdr}`, borderRadius: 10, color: isBenchmark ? S.amber : S.emerald, fontWeight: 700 }}>Revenue: {revenueSource}</span>
+        <span style={{ fontSize: 11, padding: '2px 8px', background: S.n100, borderRadius: 10, color: S.n500, fontWeight: 600 }}>Costs: {costsSource}</span>
+      </div>
+
+      {/* Two columns: Must be true + Would cause failure */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ padding: '18px 20px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12 }}>
+          <p style={{ fontSize: 12, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+            What must be true
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {mustBeTrue.slice(0, 5).map((t, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                <span style={{ color: S.amber, fontWeight: 900, fontSize: 14, lineHeight: 1, marginTop: 1 }}>\u2022</span>
+                <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>{t}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ padding: '18px 20px', background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 12 }}>
+          <p style={{ fontSize: 12, fontWeight: 800, color: S.red, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+            What would cause failure
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {wouldFail.slice(0, 3).map((f, i) => (
+              <div key={i}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#991B1B', lineHeight: 1.4 }}>{f.trigger}</p>
+                <p style={{ fontSize: 11, color: '#991B1B', opacity: 0.7, lineHeight: 1.5, marginTop: 2 }}>\u2192 {f.consequence}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VALUE PERCEPTION — hidden risks, success patterns, common mistakes
+// ═══════════════════════════════════════════════════════════════════════════════
+function ValuePerception({ computed, businessType, locationName }: {
+  computed: import('@/types/computed').ComputedResult | null
+  businessType: string; locationName: string
+}) {
+  const C = computed
+  const bt = (businessType ?? 'business').toLowerCase()
+  const area = locationName?.split(',')[0]?.trim() ?? 'this area'
+  const mi = C?.marketIntelligence
+  const strongCount = mi?.strongCount ?? 0
+  const total = (mi?.strongCount ?? 0) + (mi?.moderateCount ?? 0) + (mi?.weakCount ?? 0)
+
+  // Hidden risks most people miss
+  const hiddenRisks: Array<{ risk: string; why: string }> = []
+  if (C?.competitorDataQuality === 'zero_warning' || C?.competitorDataQuality === 'no_data') {
+    hiddenRisks.push({
+      risk: 'Competition may be higher than shown',
+      why: 'Our data sources have gaps in this area. Walk the streets, check Google Maps manually, and count what our scanners may have missed.',
+    })
+  }
+  if (strongCount === 0 && total > 0) {
+    hiddenRisks.push({
+      risk: 'Weak competitors may not mean weak market',
+      why: 'Sometimes areas with only weak operators have low foot traffic. The businesses survive on low rent, not high revenue. Verify the demand is real.',
+    })
+  }
+  if (C?.provenance?.revenue?.isBenchmark) {
+    hiddenRisks.push({
+      risk: 'Revenue projection has no local validation',
+      why: `The $${C?.revenue?.toLocaleString()}/month figure is a national ${bt} average scaled to this area. Actual revenue could be 30-50% lower in a newly opened venue during the ramp period.`,
+    })
+  }
+  const demandTrend = C?.marketSignals?.demandTrend
+  if (demandTrend === 'stable') {
+    hiddenRisks.push({
+      risk: 'Stable demand is not growing demand',
+      why: 'In a stable market, every customer you win is a customer someone else loses. Expect resistance from incumbents and slower-than-expected growth.',
+    })
+  }
+  hiddenRisks.push({
+    risk: 'Lease terms are the biggest hidden cost',
+    why: 'Bond, fit-out contribution, make-good clauses, and annual CPI increases can add 15-25% to your effective rent over a 3-year lease. Read the lease before the numbers.',
+  })
+
+  // What successful businesses in areas like this do
+  const successPatterns: string[] = []
+  if (strongCount > 0) {
+    successPatterns.push(`Study the top ${strongCount} operator${strongCount > 1 ? 's' : ''} in detail — their menu, pricing, peak hours, and online reviews reveal exactly what works in ${area}`)
+  }
+  successPatterns.push(`New ${bt}s that survive year one in Australia typically achieve 70% of target revenue by month 3 — plan your working capital for a 3-month ramp, not instant profitability`)
+  successPatterns.push('The businesses that fail fastest are those that overinvest in fit-out and underinvest in marketing and cash reserves')
+  if (total > 5) {
+    successPatterns.push('In competitive areas, the winners consistently invest in Google reviews, local SEO, and community presence over paid advertising')
+  }
+  successPatterns.push('Successful operators negotiate rent-free periods (2-3 months) or turnover-based rent structures to de-risk the launch')
+
+  // Common mistakes
+  const mistakes: string[] = [
+    'Signing a 5-year lease without a break clause — if it does not work in 18 months, you need an exit',
+    'Budgeting based on best-case revenue instead of worst-case — always plan for 60% of projected revenue in months 1-6',
+    `Ignoring online presence — 78% of Australian consumers check Google reviews before visiting a new ${bt}`,
+    'Underestimating staffing costs — award wages, super, and leave loading add 30-40% on top of base hourly rates',
+  ]
+
+  return (
+    <Card>
+      <SectionHeading sub="Insights that could save you from an expensive mistake.">What Most People Miss</SectionHeading>
+
+      {/* Hidden risks */}
+      <div style={{ marginBottom: 24 }}>
+        <p style={{ fontSize: 12, fontWeight: 800, color: S.red, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
+          Hidden Risks
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {hiddenRisks.slice(0, 4).map((r, i) => (
+            <div key={i} style={{ padding: '14px 18px', background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 10 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#991B1B', marginBottom: 4 }}>{r.risk}</p>
+              <p style={{ fontSize: 12, color: '#991B1B', opacity: 0.8, lineHeight: 1.6 }}>{r.why}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* What works */}
+      <div style={{ marginBottom: 24 }}>
+        <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
+          What Successful Operators Do
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {successPatterns.slice(0, 4).map((p, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 16px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10 }}>
+              <span style={{ fontSize: 14, color: S.emerald, fontWeight: 900, flexShrink: 0, marginTop: -1 }}>\u2713</span>
+              <p style={{ fontSize: 12, color: '#065F46', lineHeight: 1.6 }}>{p}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Common mistakes */}
+      <div>
+        <p style={{ fontSize: 12, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
+          Common Mistakes to Avoid
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {mistakes.map((m, i) => (
+            <div key={i} style={{ padding: '14px 16px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10 }}>
+              <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>{m}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOCATION INTELLIGENCE — actionable WHY analysis
+// ═══════════════════════════════════════════════════════════════════════════════
+function LocationIntelligence({ computed, report }: {
+  computed: import('@/types/computed').ComputedResult | null
+  report: Report
+}) {
+  const C = computed
+  const ls = C?.locationSignals
+  if (!ls) return null
+
+  const bt = (report.business_type ?? 'business').toLowerCase()
+  const area = report.location_name?.split(',')[0]?.trim() ?? 'this location'
+  const anchors = ls.nearbyAnchors ?? []
+
+  const signals: Array<{ label: string; value: string; implication: string; positive: boolean }> = []
+
+  // Footfall
+  const footfall = ls.footfallSignal ?? ''
+  if (footfall) {
+    const isGood = footfall.toLowerCase().includes('high') || footfall.toLowerCase().includes('very high')
+    signals.push({
+      label: 'Foot Traffic',
+      value: footfall,
+      implication: isGood
+        ? `High pedestrian flow increases walk-in conversion for ${bt}s — reduces reliance on destination marketing`
+        : footfall.toLowerCase().includes('low')
+        ? `Low foot traffic means you must drive customers here through marketing, delivery apps, or destination appeal — impulse walk-ins will be rare`
+        : `Moderate foot traffic — supplement with online presence and delivery channels for consistent volume`,
+      positive: isGood,
+    })
+  }
+
+  // Transit
+  const transit = ls.transitSignal ?? ''
+  if (transit) {
+    const isGood = transit.toLowerCase().includes('excellent') || transit.toLowerCase().includes('good') || transit.toLowerCase().includes('high')
+    signals.push({
+      label: 'Public Transit',
+      value: transit,
+      implication: isGood
+        ? 'Strong transit access widens your catchment beyond the immediate neighbourhood — draws commuters, students, and workers'
+        : 'Limited transit means your customers are primarily local residents and drivers. Ensure parking is available.',
+      positive: isGood,
+    })
+  }
+
+  // Anchors
+  if (anchors.length > 0) {
+    signals.push({
+      label: 'Anchor Tenants',
+      value: anchors.slice(0, 3).join(', '),
+      implication: `${anchors.length} major anchor${anchors.length !== 1 ? 's' : ''} nearby — these generate consistent foot traffic that benefits neighbouring businesses. Being close to an anchor is one of the strongest location signals for retail success.`,
+      positive: true,
+    })
+  } else {
+    signals.push({
+      label: 'Anchor Tenants',
+      value: 'None detected nearby',
+      implication: 'No major anchors (supermarket, shopping centre, transport hub) detected within walking distance. Your business must generate its own traffic.',
+      positive: false,
+    })
+  }
+
+  // Rent context — from medianRent or general knowledge
+  const hasMedianRent = ls.medianRent != null && ls.medianRent > 0
+  if (hasMedianRent) {
+    const rent = report.monthly_rent ?? 0
+    const median = ls.medianRent!
+    const diff = rent > 0 ? ((rent - median) / median) : 0
+    const isAbove = diff > 0.1
+    const isBelow = diff < -0.1
+    signals.push({
+      label: 'Rent Context',
+      value: isAbove ? `Above median (+${Math.round(diff*100)}%)` : isBelow ? `Below median (${Math.round(diff*100)}%)` : 'At area median',
+      implication: isAbove
+        ? 'Above-median rent suggests a prime strip or high-demand pocket. Expect corresponding foot traffic to justify the premium.'
+        : isBelow
+        ? 'Below-median rent could mean a secondary location. Lower rent is good for margins, but verify the reason is not low demand.'
+        : 'Rent is in line with area medians — standard market pricing.',
+      positive: !isAbove,
+    })
+  }
+
+  if (signals.length === 0) return null
+
+  // Overall location verdict
+  const positiveCount = signals.filter(s => s.positive).length
+  const locationVerdict = positiveCount >= 3 ? 'strong'
+    : positiveCount >= 2 ? 'adequate'
+    : 'weak'
+
+  return (
+    <Card>
+      <SectionHeading sub={`Why ${area} does or does not work for a ${bt}.`}>Location Intelligence</SectionHeading>
+
+      {/* Location verdict bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', marginBottom: 20,
+        background: locationVerdict === 'strong' ? S.emeraldBg : locationVerdict === 'adequate' ? S.amberBg : S.redBg,
+        border: `1px solid ${locationVerdict === 'strong' ? S.emeraldBdr : locationVerdict === 'adequate' ? S.amberBdr : S.redBdr}`,
+        borderRadius: 10,
+      }}>
+        <span style={{
+          fontSize: 13, fontWeight: 800,
+          color: locationVerdict === 'strong' ? S.emerald : locationVerdict === 'adequate' ? S.amber : S.red,
+        }}>
+          {locationVerdict === 'strong' ? 'Strong location signals' : locationVerdict === 'adequate' ? 'Mixed location signals' : 'Weak location signals'}
+          {' '}\u2014 {positiveCount}/{signals.length} factors are positive
+        </span>
+      </div>
+
+      {/* Signal cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {signals.map((s, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 16, padding: '16px 0', borderBottom: i < signals.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{s.label}</p>
+              <p style={{ fontSize: 15, fontWeight: 800, color: s.positive ? S.emerald : S.red }}>{s.value}</p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.positive ? S.emerald : S.red, marginTop: 6, flexShrink: 0 }} />
+              <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.7 }}>{s.implication}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // THREAT BREAKDOWN — strength-based competitor analysis
 // ═══════════════════════════════════════════════════════════════════════════════
 function ThreatBreakdown({ computed }: { computed: import('@/types/computed').ComputedResult | null }) {
@@ -2373,8 +3108,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </Card>
             </div>
 
+            {/* DECISION ENGINE — the premium "Should You Open Here?" section */}
+            <DecisionEngine report={report} computed={C} fin={fin} competitors={competitors} market={market} />
+
             {/* Key insights — the "worth paying for" section */}
             <KeyInsights report={report} computed={C} fin={fin} competitors={competitors} market={market} />
+
+            {/* Value Perception — hidden risks, success patterns, common mistakes */}
+            <ValuePerception computed={C} businessType={report.business_type ?? ''} locationName={report.location_name ?? ''} />
 
             <ConfidencePanel confidence={confidence} />
             <ContradictionBanner computed={C} />
@@ -2687,6 +3428,58 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </div>
             </Card>
 
+            {/* Business Implications — demographics translated to actionable strategy */}
+            {demographics && (() => {
+              const _bt = (report.business_type ?? 'business').toLowerCase()
+              const income = demographics.medianIncome
+              const pop = demographics.populationDensity
+              const implications: Array<{ signal: string; implication: string; positive: boolean }> = []
+
+              if (income && income >= 100000) {
+                implications.push({ signal: `High median income ($${Math.round(income/1000)}k)`, implication: `Supports premium pricing. Customers expect quality fit-out, curated offerings, and excellent service. They will pay more but expect more.`, positive: true })
+              } else if (income && income < 55000) {
+                implications.push({ signal: `Lower median income ($${Math.round(income/1000)}k)`, implication: `Price sensitivity is high. Focus on value deals, combo pricing, and high-volume/low-margin model. Avoid premium positioning.`, positive: false })
+              }
+
+              if (pop && pop > 5000) {
+                implications.push({ signal: `High population density (${pop?.toLocaleString()}/km\u00B2)`, implication: `Dense residential area means reliable weekday + weekend traffic. Walk-in customers will be a primary revenue driver. Invest in street-level visibility and signage.`, positive: true })
+              } else if (pop && pop < 1500) {
+                implications.push({ signal: `Low population density`, implication: `Fewer people living nearby means you need to draw customers from a wider catchment. Delivery, online ordering, and destination appeal become critical.`, positive: false })
+              }
+
+              const youngPop = demographics.ageDistribution && typeof demographics.ageDistribution === 'string' && demographics.ageDistribution.toLowerCase().includes('young')
+              if (youngPop) {
+                implications.push({ signal: 'Young demographic skew', implication: `Younger population favours social media presence, Instagram-worthy interiors, and online ordering. Invest in digital marketing over traditional channels.`, positive: true })
+              }
+
+              const renters = demographics.housingType === 'majority_renters' || (demographics.renterPercent && demographics.renterPercent > 55)
+              if (renters) {
+                implications.push({ signal: 'High renter population', implication: `Renters tend to be more transient — customer loyalty may be harder to build. Focus on quick wins: impulse purchases, convenient location, and fast service over long-term relationship building.`, positive: false })
+              }
+
+              if (implications.length === 0) return null
+
+              return (
+                <Card>
+                  <SectionHeading sub="How the demographics translate into business strategy.">Business Implications</SectionHeading>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {implications.map((imp, i) => (
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 16, padding: '14px 0', borderBottom: i < implications.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: imp.positive ? S.emerald : S.red }} />
+                            <p style={{ fontSize: 12, fontWeight: 700, color: imp.positive ? S.emerald : S.red }}>{imp.positive ? 'Positive' : 'Challenge'}</p>
+                          </div>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: S.n800 }}>{imp.signal}</p>
+                        </div>
+                        <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.7 }}>{imp.implication}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )
+            })()}
+
             <AssumptionsPanel report={report} />
           </div>
         )}
@@ -2831,6 +3624,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 </div>
               </Card>
             )}
+            {/* Competitive Positioning Recommendation */}
+            <CompetitivePositioning computed={C} businessType={report.business_type ?? ''} />
           </div>
         )}
 
@@ -2906,6 +3701,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 </Card>
               )
             })()}
+
+            {/* Actionable Location Intelligence */}
+            <LocationIntelligence computed={C} report={report} />
 
             {/* Property recommendations */}
             {areaContext?.topListings?.length > 0 && (
@@ -3045,6 +3843,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         {activeTab === 'financials' && (
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
             {C?.sectionConfidence?.financials && <SectionConfBadge section={C.sectionConfidence.financials} />}
+
+            {/* Financial Trust — assumptions, what must be true, failure modes */}
+            <FinancialTrust computed={C} fin={fin} report={report} />
+
             <RentRatioPanel rent={report.monthly_rent ?? areaContext?.medianRent?.monthly} revenue={fin.monthlyRevenue} />
 
             {fin.isEstimated && (
@@ -3542,10 +4344,47 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       </div>
                     ))}
                   </div>
-                  <p style={{ fontSize: 10, color: S.n400, marginTop: 8 }}>Data: OpenStreetMap Overpass API</p>
+                  <p style={{ fontSize: 10, color: S.n400, marginTop: 8 }}>Data: OpenStreetMap Overpass API + Google Places + Foursquare</p>
                 </div>
               </div>
             </div>
+
+            {/* Strategic map insights — below the map */}
+            {mapCompetitors.length > 0 && (() => {
+              const close = mapCompetitors.filter((c: any) => c.distance <= 300)
+              const strong = mapCompetitors.filter((c: any) => c.rating >= 4.0)
+              const saturatedZone = close.length >= 5
+              const gapZone = mapCompetitors.filter((c: any) => c.distance > 500 && c.distance <= 1000).length <= 2
+
+              return (
+                <Card style={{ marginTop: 16 }}>
+                  <SectionHeading sub="Strategic analysis based on competitor positions on the map.">Map Strategy</SectionHeading>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+                    <div style={{ padding: '16px 18px', background: saturatedZone ? S.redBg : S.emeraldBg, border: `1px solid ${saturatedZone ? S.redBdr : S.emeraldBdr}`, borderRadius: 12 }}>
+                      <p style={{ fontSize: 24, fontWeight: 900, color: saturatedZone ? S.red : S.emerald, fontFamily: S.mono }}>{close.length}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: saturatedZone ? S.red : S.emerald, textTransform: 'uppercase', marginTop: 2 }}>within 300m</p>
+                      <p style={{ fontSize: 12, color: saturatedZone ? '#991B1B' : '#065F46', marginTop: 6, lineHeight: 1.5 }}>
+                        {saturatedZone ? 'Immediate vicinity is saturated — customers have many choices within walking distance' : 'Low immediate-vicinity competition — walk-in customers have few nearby alternatives'}
+                      </p>
+                    </div>
+                    <div style={{ padding: '16px 18px', background: strong.length >= 3 ? S.redBg : S.amberBg, border: `1px solid ${strong.length >= 3 ? S.redBdr : S.amberBdr}`, borderRadius: 12 }}>
+                      <p style={{ fontSize: 24, fontWeight: 900, color: strong.length >= 3 ? S.red : S.amber, fontFamily: S.mono }}>{strong.length}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: strong.length >= 3 ? S.red : S.amber, textTransform: 'uppercase', marginTop: 2 }}>rated 4.0+</p>
+                      <p style={{ fontSize: 12, color: strong.length >= 3 ? '#991B1B' : '#92400E', marginTop: 6, lineHeight: 1.5 }}>
+                        {strong.length >= 3 ? 'Multiple high-rated operators — quality bar is high, customers have strong alternatives' : 'Few high-rated competitors — opportunity to become the quality leader in this area'}
+                      </p>
+                    </div>
+                    <div style={{ padding: '16px 18px', background: gapZone ? S.emeraldBg : S.n50, border: `1px solid ${gapZone ? S.emeraldBdr : S.n200}`, borderRadius: 12 }}>
+                      <p style={{ fontSize: 24, fontWeight: 900, color: gapZone ? S.emerald : S.n700, fontFamily: S.mono }}>{gapZone ? 'Yes' : 'No'}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: gapZone ? S.emerald : S.n500, textTransform: 'uppercase', marginTop: 2 }}>opportunity gap</p>
+                      <p style={{ fontSize: 12, color: gapZone ? '#065F46' : S.n500, marginTop: 6, lineHeight: 1.5 }}>
+                        {gapZone ? 'The 500m–1km ring has very few operators — potential opportunity to serve the wider catchment' : 'Competition is distributed evenly across the radius — no obvious spatial gaps'}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              )
+            })()}
           </div>
         )}
 
