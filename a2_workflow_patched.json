@@ -1,0 +1,756 @@
+{
+  "name": "Locatalyze v2 – A2 Rent v9 (6 SerpAPI calls, 20-pt median)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze-a2-rent",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "958b9734-38a3-40d7-9a8f-d66a900d8938",
+      "name": "Webhook – Receive Inputs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        1776
+      ],
+      "webhookId": "locatalyze-a2-rent-agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "i1",
+              "name": "business_type",
+              "value": "={{ $json.body?.business_type ?? $json.business_type ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i2",
+              "name": "industry_category",
+              "value": "={{ $json.body?.industry_category ?? $json.industry_category ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i3",
+              "name": "city",
+              "value": "={{ $json.body?.city ?? $json.city ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i4",
+              "name": "area",
+              "value": "={{ $json.body?.area ?? $json.area ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i5",
+              "name": "locality",
+              "value": "={{ $json.body?.locality ?? $json.locality ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i6",
+              "name": "space_size_range",
+              "value": "={{ $json.body?.space_size_range ?? $json.space_size_range ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i7",
+              "name": "monthly_rent_budget_min",
+              "value": "={{ $json.body?.monthly_rent_budget_min ?? $json.monthly_rent_budget_min ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i8",
+              "name": "monthly_rent_budget_max",
+              "value": "={{ $json.body?.monthly_rent_budget_max ?? $json.monthly_rent_budget_max ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i9",
+              "name": "setup_budget",
+              "value": "={{ $json.body?.setup_budget ?? $json.setup_budget ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i10",
+              "name": "email",
+              "value": "={{ $json.body?.email ?? $json.email ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "i11",
+              "name": "a1_competitor_data",
+              "value": "={{ JSON.stringify($json.body?.a1_output ?? $json.a1_output ?? {}) }}",
+              "type": "string"
+            },
+            {
+              "id": "i12",
+              "name": "lat",
+              "value": "={{ $json.body?.lat ?? $json.lat ?? null }}",
+              "type": "number"
+            },
+            {
+              "id": "i13",
+              "name": "lng",
+              "value": "={{ $json.body?.lng ?? $json.lng ?? null }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "79296e25-1e4e-4f45-93b0-802bafdba54c",
+      "name": "Parse & Validate Inputs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2656,
+        1776
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ 'site:commercialrealestate.com.au/property ' + $json.area + ' ' + $json.state + ' retail lease sqm 2025' }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "334d5572-aa04-461d-b314-1748f36e8e73",
+      "name": "Serper – CRE Fitzroy listings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1296
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ 'site:realcommercial.com.au ' + $json.area + ' ' + $json.state + ' retail lease sqm per annum' }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "06d1ba25-e8c3-4d9b-9daf-23c986ff71f4",
+      "name": "Serper – RealCom listings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1424
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ '\"' + $json.locality + '\" OR \"' + $json.area + '\" retail shop lease sqm \"per annum\" ' + $json.city + ' 2025 -\"for sale\"' }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "35d74cb4-00f6-4443-a41a-ac77b91136fa",
+      "name": "Serper – Area retail direct",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1536
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.area + ' ' + $json.city + ' nearby suburb retail shop lease sqm \"per annum\" Australia 2025 -\"for sale\"' }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "33f1b646-c573-4d28-8710-ef2c072bea86",
+      "name": "Serper – Adjacent suburbs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1664
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.area + ' ' + $json.city + ' retail lease sqm per annum site:jll.com.au OR site:cbre.com.au OR site:colliers.com.au OR site:nelsonalexander.com.au' }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "001b7145-8311-4625-be2f-d661c316e655",
+      "name": "Serper – Agent sites",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1776
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://locatalyze.com/api/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ '(site:commercialrealestate.com.au OR site:realcommercial.com.au) ' + $json.area + ' ' + $json.city + ' retail lease \"per annum\" sqm 2025 -\"for sale\"' }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            },
+            {
+              "name": "gl",
+              "value": "au"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "cf61b8a0-35b6-4c79-aa20-4159fe5d597e",
+      "name": "Serper – Category Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        1888
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=supermarket+OR+pharmacy+OR+bank+near+' + encodeURIComponent($json.locality + ' ' + $json.area + ' ' + $json.city) + '&key=AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94&radius=500' }}",
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "281f386e-eab8-4a8e-87dd-5eeafb559edd",
+      "name": "Google Maps – Anchors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        2016
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=bus+stop+OR+tram+stop+near+' + encodeURIComponent($json.locality + ' ' + $json.area + ' ' + $json.city) + '&key=AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94&radius=800' }}",
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "aec36e63-f0cb-4a73-a05e-1bc32f420103",
+      "name": "Google Maps – Transport",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        2144
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent($json.locality + ' ' + $json.area + ' ' + $json.city + ' Australia') + '&key=AIzaSyCPxnP3ttCCiIueSLj34c2nCqS7FgWlp94' }}",
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 8000
+        }
+      },
+      "id": "c52efc50-04a9-4241-aaf8-6ccca7ff8cbc",
+      "name": "Geocode Centroid",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        2272
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "numberInputs": 9
+      },
+      "id": "d0173a7e-8f55-4d2c-90f9-f15759e609f8",
+      "name": "Merge All",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3456,
+        1680
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const all=$input.all();let geoResult=null;for(const item of all){if(item.json?.results?.[0]?.geometry){geoResult=item.json.results[0];break;}}const inputs=$('Parse & Validate Inputs').item.json;let lat=geoResult?.geometry?.location?.lat??null;let lng=geoResult?.geometry?.location?.lng??null;const inAU=(v)=>v&&v>=-44&&v<=-10;const inAUlng=(v)=>v&&v>=112&&v<=154;const validGeo=lat&&lng&&inAU(lat)&&inAUlng(lng);if(!validGeo){const iLat=parseFloat(inputs.lat??inputs._lat??0);const iLng=parseFloat(inputs.lng??inputs._lng??0);if(iLat&&iLng&&inAU(iLat)&&inAUlng(iLng)){lat=iLat;lng=iLng;}else{lat=-37.8136;lng=144.9631;}}return[{json:{_all_inputs:all.map(i=>i.json),_area_lat:lat,_area_lng:lng}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "19926736-3855-4668-97db-73afc9991694",
+      "name": "Prep Overpass",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3696,
+        1776
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://overpass-api.de/api/interpreter",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "={{ (() => { const lat=$json._area_lat,lng=$json._area_lng,d=0.012,bb=`${lat-d},${lng-d},${lat+d},${lng+d}`; return `[out:json][timeout:20];(node[\"amenity\"~\"cafe|restaurant|bar|fast_food|bank|pharmacy|supermarket|convenience\"](${bb});node[\"shop\"~\"supermarket|convenience\"](${bb});node[\"highway\"=\"bus_stop\"](${bb});node[\"railway\"~\"tram_stop|station\"](${bb});way[\"highway\"~\"primary|secondary|tertiary\"](${bb});way[\"landuse\"~\"commercial|retail\"](${bb}););out body;`; })() }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 25000
+        }
+      },
+      "id": "455d353a-6105-4eb3-848b-21f2cbec5044",
+      "name": "Overpass Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3936,
+        1776
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {},
+      "id": "69778348-a642-4317-821a-ec10dff02185",
+      "name": "Merge Overpass + Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4176,
+        1776
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// ── Cache check (Supabase) ──\n// TODO: Before calling expensive APIs, check:\n// SELECT * FROM agent_cache WHERE cache_key = MD5(city+area+business_type+agent_id)\n//   AND updated_at > NOW() - INTERVAL '7 days'\n// If cache hit → return cached data immediately\n// Implementation: add a Supabase HTTP call before API calls with cache_key lookup\n\nconst all    = $input.all();\nconst inputs = $('Parse & Validate Inputs').item.json;\n\nlet serpListingResults  = [];  // from the 5 targeted listing queries\nlet serpCategoryResults = [];  // from the 1 category query — used for median only\nlet anchorsData         = [];\nlet transportData       = [];\nlet overpassElems       = [];\n\n// Tag which items came from the category prices node\n// We identify it by checking the search query in the response\n// The category node's results will have organic_results AND\n// we'll tag items by storing them separately via the _source field\n// n8n passes all merged items in order — we track by node name stored in item\n\nfor (const item of all) {\n  const j = item.json;\n  if (!j) continue;\n  if (j?._all_inputs) {\n    for (const orig of (j._all_inputs || [])) {\n      if (orig?.elements && Array.isArray(orig.elements)) { overpassElems = orig.elements; continue; }\n      if (orig?.results && Array.isArray(orig.results) && orig.results[0]?.place_id) {\n        if (!anchorsData.length) anchorsData = orig.results;\n        else transportData = orig.results;\n        continue;\n      }\n      if (orig?.organic_results) {\n        // Tag category results by their search query pattern\n        const q = (orig?.search_parameters?.q || orig?.search_metadata?.google_url || '').toLowerCase();\n        if (q.includes('/for-lease/') || q.includes('for-lease')) {\n          serpCategoryResults = serpCategoryResults.concat(orig.organic_results);\n        } else {\n          serpListingResults = serpListingResults.concat(orig.organic_results);\n        }\n      }\n    }\n    continue;\n  }\n  if (j?.elements && Array.isArray(j.elements)) { overpassElems = j.elements; continue; }\n  if (j?.results && Array.isArray(j.results) && j.results[0]?.place_id) {\n    if (!anchorsData.length) anchorsData = j.results;\n    else transportData = j.results;\n    continue;\n  }\n  if (j?.organic_results) {\n    const q = (j?.search_parameters?.q || j?.search_metadata?.google_url || '').toLowerCase();\n    if (q.includes('/for-lease/') || q.includes('for-lease')) {\n      serpCategoryResults = serpCategoryResults.concat(j.organic_results);\n    } else {\n      serpListingResults = serpListingResults.concat(j.organic_results);\n    }\n  }\n}\n\n// ── HELPERS ───────────────────────────────────────────────────\nfunction extractPrice(text) {\n  if (!text) return null;\n  const t = text.replace(/,/g, '');\n  let m;\n  m = t.match(/\\$\\s*([\\d]+(?:\\.\\d{1,2})?)\\s*(?:per annum|p\\.?a\\.|pa|per year|\\/yr)/i);\n  if (m) { const v = parseFloat(m[1]); if (v >= 5000) return { value: v, period: 'annual', monthly: Math.round(v / 12) }; }\n  m = t.match(/\\$\\s*([\\d]+(?:\\.\\d{1,2})?)\\s*(?:per month|p\\.?m\\.|per mo|\\/month|\\/mo|pcm)/i);\n  if (m) { const v = parseFloat(m[1]); if (v >= 500) return { value: v, period: 'monthly', monthly: Math.round(v) }; }\n  m = t.match(/\\$\\s*([\\d]+(?:\\.\\d{1,2})?)\\s*(?:per week|p\\.?w\\.|pw|\\/week|\\/wk)/i);\n  if (m) { const v = parseFloat(m[1]); if (v >= 100) return { value: v, period: 'weekly', monthly: Math.round(v * 4.33) }; }\n  m = t.match(/\\$\\s*([1-9][\\d]{4,}(?:\\.\\d{1,2})?)/);\n  if (m) { const v = parseFloat(m[1]); if (v >= 8000 && v <= 600000) return { value: v, period: 'annual', monthly: Math.round(v / 12) }; }\n  return null;\n}\n\nfunction extractAllPrices(text) {\n  // Extract every price mention from a block of text (for category page snippets)\n  const prices = [];\n  const t = text.replace(/,/g, '');\n  // Annual — global match\n  const annualRe = /\\$\\s*([\\d]+(?:\\.\\d{1,2})?)\\s*(?:per annum|p\\.?a\\.|pa|per year|\\/yr)/gi;\n  let m;\n  while ((m = annualRe.exec(t)) !== null) {\n    const v = parseFloat(m[1]);\n    if (v >= 5000 && v <= 600000) prices.push(Math.round(v / 12));\n  }\n  // Monthly — global match\n  const monthlyRe = /\\$\\s*([\\d]+(?:\\.\\d{1,2})?)\\s*(?:per month|p\\.?m\\.|per mo|\\/month|\\/mo|pcm)/gi;\n  while ((m = monthlyRe.exec(t)) !== null) {\n    const v = parseFloat(m[1]);\n    if (v >= 500 && v <= 40000) prices.push(Math.round(v));\n  }\n  // Bare large numbers — likely annual\n  const bareRe = /\\$\\s*([1-9][\\d]{4,}(?:\\.\\d{1,2})?)/g;\n  while ((m = bareRe.exec(t)) !== null) {\n    const v = parseFloat(m[1]);\n    if (v >= 8000 && v <= 600000) {\n      const monthly = Math.round(v / 12);\n      if (!prices.includes(monthly)) prices.push(monthly);\n    }\n  }\n  return prices.filter(p => p >= 2500 && p <= 40000);\n}\n\nfunction extractSqm(text) {\n  if (!text) return null;\n  let m = text.match(/([\\d,]+(?:\\.\\d+)?)\\s*(?:sqm|sq\\.?\\s*m\\b|m²|square\\s*met(?:re|er)s?)/i);\n  if (m) { const v = parseFloat(m[1].replace(/,/g, '')); if (v > 5 && v < 10000) return Math.round(v); }\n  m = text.match(/([\\d,]+(?:\\.\\d+)?)\\s*(?:sq\\.?\\s*ft|sqft|square\\s*f(?:ee|oo)t)/i);\n  if (m) { const v = parseFloat(m[1].replace(/,/g, '')); if (v > 50 && v < 100000) return Math.round(v * 0.0929); }\n  return null;\n}\n\nfunction extractAddress(text) {\n  const full = text.match(/(\\d+[A-Za-z]?(?:[-\\/]\\d+[A-Za-z]?)?\\s+[A-Z][a-zA-Z\\s]+(?:Street|St|Road|Rd|Avenue|Ave|Place|Pl|Drive|Dr|Lane|Ln|Way|Crescent|Cres|Parade|Pde|Boulevard|Blvd|Court|Ct)[,\\s]+[A-Za-z\\s]+VIC\\s+\\d{4})/i);\n  if (full) return full[1].trim();\n  const partial = text.match(/(\\d+[A-Za-z]?(?:[-\\/]\\d+[A-Za-z]?)?\\s+[A-Z][a-zA-Z\\s]+(?:Street|St|Road|Rd|Avenue|Ave|Place|Pl|Drive|Dr|Lane|Ln|Way|Crescent|Cres|Parade|Pde|Boulevard|Blvd|Court|Ct)[,\\s]+(?:Fitzroy|Collingwood|Carlton|Richmond|Abbotsford|Northcote|Brunswick|Clifton Hill))/i);\n  if (partial) return partial[1].trim();\n  return null;\n}\n\nfunction normAddr(addr) {\n  if (!addr) return '';\n  const m = addr.toLowerCase().match(/(\\d+[a-z\\-\\/]*\\d*)\\s+([a-z]+)/);\n  return m ? m[1] + ' ' + m[2] : addr.toLowerCase().replace(/\\s+/g,' ').trim();\n}\n\nfunction directListingUrl(url) {\n  if (!url) return null;\n  if (/\\/property\\/[a-z0-9\\-]+-\\d{4,}/i.test(url)) return url;\n  if (/for-lease\\/[a-z0-9\\-]+-vic-\\d{4}-\\d{4,}/i.test(url)) return url;\n  if (/(jll\\.com|cbre\\.com|savills|colliers|nelsonalexander|bigginscott|raywhite)/i.test(url)) return url;\n  return null;\n}\n\nfunction isCategoryPage(url, title) {\n  if (/\\/for-lease\\/[a-z0-9+\\-]+-vic-\\d{4}\\/(retail|cafe|office|shop|showroom|bulky)\\/?$/i.test(url)) return true;\n  if (/\\/for-lease\\/[a-z0-9+\\-]+\\/(retail|cafe|office|shop)\\/?$/i.test(url)) return true;\n  if (/\\?pn=\\d+/i.test(url)) return true;\n  if (/^\\d+\\s+(shop|retail|properties|commercial)/i.test(title)) return true;\n  if (/properties for lease in/i.test(title)) return true;\n  if (/shop & retail properties/i.test(title)) return true;\n  if (/transactions|blog|news|article|suburb profile|market update/i.test(title)) return true;\n  return false;\n}\n\nconst area     = (inputs.area || 'Fitzroy').toLowerCase();\nconst locality = (inputs.locality || '').toLowerCase();\nconst ACCEPTED = ['fitzroy','fitzroy north','collingwood','carlton','carlton north','brunswick east','abbotsford','clifton hill','richmond','northcote','brunswick'];\nconst TARGET   = [...new Set([...ACCEPTED, area, locality].filter(Boolean))];\nconst EXCLUDED = [\n  'coburg','st kilda','south yarra','south melbourne','prahran','windsor',\n  'camberwell','hawthorn','kew','doncaster','dandenong','frankston',\n  'essendon','moonee ponds','footscray','yarraville','sunshine',\n  'williamstown','altona','glen waverley','box hill','ringwood','burwood',\n  'geelong','ballarat','bendigo','werribee','norlane','corio','mornington',\n  'cranbourne','pakenham','berwick','narre warren','melton','sunbury',\n  'craigieburn','epping','bundoora','reservoir'\n];\n\nfunction addrAccepted(addr) {\n  if (!addr) return false;\n  const s = addr.toLowerCase();\n  if (!TARGET.some(a => a && s.includes(a))) return false;\n  if (EXCLUDED.some(e => s.includes(e))) return false;\n  return true;\n}\n\nconst budgetMin = parseInt(inputs.monthly_rent_budget_min) || 3500;\nconst budgetMax = parseInt(inputs.monthly_rent_budget_max) || 5000;\nconst sizeRange = inputs.space_size_range || '50-80 sqm';\nconst srMatch   = sizeRange.match(/(\\d+)\\s*[-–]\\s*(\\d+)/);\nconst sizeMin   = srMatch ? parseInt(srMatch[1]) : 50;\nconst sizeMax   = srMatch ? parseInt(srMatch[2]) : 80;\n\n// ══════════════════════════════════════════════════════════════\n// STEP 1: MEDIAN PRICES — extract ALL prices from category results\n// Category pages have snippets like:\n// \"$37,500 per annum · 421 Brunswick St · 77sqm | $90,000 per annum · 231 Brunswick...\"\n// We extract every valid price, deduplicate, use for median only\n// ══════════════════════════════════════════════════════════════\nconst medianPriceSet = new Set();\nconst allCategoryPrices = [];\n\nfor (const r of serpCategoryResults) {\n  const snippet = r.snippet || '';\n  const title   = r.title   || '';\n  // Must reference our target area\n  const combined = (title + ' ' + snippet).toLowerCase();\n  if (!TARGET.some(t => combined.includes(t))) continue;\n  if (EXCLUDED.some(e => title.toLowerCase().includes(e))) continue;\n  // Extract every price from this snippet\n  const prices = extractAllPrices(title + ' ' + snippet);\n  for (const p of prices) {\n    allCategoryPrices.push(p);\n  }\n}\n\n// Also extract from listing results that are category pages\nfor (const r of serpListingResults) {\n  const title = r.title || '';\n  const snippet = r.snippet || '';\n  const url = r.link || '';\n  if (isCategoryPage(url, title)) {\n    const combined = (title + ' ' + snippet).toLowerCase();\n    if (!TARGET.some(t => combined.includes(t))) continue;\n    const prices = extractAllPrices(snippet);\n    for (const p of prices) allCategoryPrices.push(p);\n  }\n}\n\n// Deduplicate prices that are suspiciously identical (same listing cited twice)\n// Keep all unique values + allow up to 2 duplicates (some prices genuinely repeat in a market)\nconst priceCounts = {};\nfor (const p of allCategoryPrices) {\n  priceCounts[p] = (priceCounts[p] || 0) + 1;\n}\nconst dedupedCategoryPrices = [];\nfor (const [price, count] of Object.entries(priceCounts)) {\n  const times = Math.min(count, 2);\n  for (let i = 0; i < times; i++) dedupedCategoryPrices.push(parseInt(price));\n}\ndedupedCategoryPrices.sort((a, b) => a - b);\n\n// ══════════════════════════════════════════════════════════════\n// STEP 2: TOP 3 LISTINGS — from direct listing results only\n// ══════════════════════════════════════════════════════════════\nconst seen     = new Set();\nconst listings = [];\n\nfor (const r of serpListingResults) {\n  const title   = (r.title   || '').trim();\n  const snippet = (r.snippet || '').trim();\n  const url     = (r.link    || '').trim();\n  if (!title) continue;\n  if (/for sale|business for sale|sold|net income|transactions|blog|news/i.test(title + ' ' + snippet)) continue;\n  if (/\\/sold\\//i.test(url)) continue;\n\n  const text  = title + ' ' + snippet;\n  const isCat = isCategoryPage(url, title);\n  const dirUrl= directListingUrl(url);\n\n  if (isCat) {\n    // Salvage one address+price from snippet for top-3 candidates only\n    const addr  = extractAddress(snippet);\n    if (!addr) continue;\n    const price = extractPrice(text);\n    if (!price || price.monthly < 1200 || price.monthly > 40000) continue;\n    if (!addrAccepted(addr)) continue;\n    const k = normAddr(addr);\n    if (seen.has(k)) continue;\n    seen.add(k);\n    listings.push({ addr, price, sqm: extractSqm(snippet), url: null, isDirect: false, snippet: snippet.slice(0,250) });\n    continue;\n  }\n\n  if (!TARGET.some(t => text.toLowerCase().includes(t))) continue;\n  if (EXCLUDED.some(e => title.toLowerCase().includes(e))) continue;\n\n  const price = extractPrice(text);\n  if (!price || price.monthly < 1200 || price.monthly > 40000) continue;\n\n  let addr = extractAddress(text);\n  if (!addr && /^\\d+[A-Za-z]?(?:[-\\/]\\d+)?\\s+[A-Z]/i.test(title)) {\n    addr = title.split(',')[0].trim();\n    if (!/Street|St\\b|Road|Rd\\b|Avenue|Ave\\b|Place|Pl\\b|Drive|Dr\\b|Lane|Ln\\b|Way\\b|Parade|Pde\\b|Boulevard|Court|Ct\\b/i.test(addr)) addr = null;\n  }\n  if (!addr || !addrAccepted(addr)) continue;\n\n  const k = normAddr(addr);\n  if (seen.has(k)) continue;\n  seen.add(k);\n\n  listings.push({ addr, price, sqm: extractSqm(text), url: dirUrl, isDirect: !!dirUrl, snippet: snippet.slice(0,250) });\n}\n\n// ── MEDIAN — from category prices (more data points) ─────────\n// Fall back to listing prices if category returned nothing\n// Floor at $2,500/mo ($30k/yr) — excludes kiosks, storage, non-comparable tiny spaces\n// Ceiling at $30,000/mo ($360k/yr) — excludes large floor plate outliers skewing median\nconst pricesForMedian = dedupedCategoryPrices.length >= 3\n  ? dedupedCategoryPrices\n  : listings.map(l => l.price.monthly).filter(v => v >= 2500 && v <= 30000).sort((a, b) => a - b);\n\nconst medianSource = dedupedCategoryPrices.length >= 3 ? 'category_page_extraction' : 'listing_results_fallback';\n\nlet medianRent = null;\nif (pricesForMedian.length > 0) {\n  const mid = Math.floor(pricesForMedian.length / 2);\n  medianRent = pricesForMedian.length % 2 === 0\n    ? Math.round((pricesForMedian[mid-1] + pricesForMedian[mid]) / 2)\n    : pricesForMedian[mid];\n}\n\nconst qualityLabel = pricesForMedian.length >= 20 ? 'high'\n  : pricesForMedian.length >= 10 ? 'good'\n  : pricesForMedian.length >= 5  ? 'moderate'\n  : 'low';\n\n// ── SCORE & RANK top 3 ────────────────────────────────────────\nfunction scoreListing(l) {\n  const m = l.price.monthly, sqm = l.sqm;\n  let rs = 0;\n  if (m <= budgetMin) rs = 100;\n  else if (m <= budgetMax) rs = Math.round(75 - ((m-budgetMin)/(budgetMax-budgetMin))*25);\n  else rs = Math.max(0, Math.round(50 - ((m-budgetMax)/budgetMax)*100));\n  let ss = 50;\n  if (sqm) {\n    if (sqm >= sizeMin && sqm <= sizeMax) ss = 100;\n    else if (sqm < sizeMin) ss = Math.max(20, Math.round(100-((sizeMin-sqm)/sizeMin)*100));\n    else ss = Math.max(20, Math.round(100-((sqm-sizeMax)/sizeMax)*80));\n  }\n  return Math.round(rs*0.6 + ss*0.3 + (l.isDirect?10:0));\n}\n\nlistings.forEach(l => { l.score = scoreListing(l); });\nlistings.sort((a,b) => b.score - a.score);\n\nconst withinBudget = listings.filter(l => l.price.monthly <= budgetMax);\nconst pool         = withinBudget.length >= 3 ? withinBudget : listings;\nconst top3raw      = pool.slice(0, 3);\n\n// ── OVERPASS CONTEXT ─────────────────────────────────────────\nconst amenityTypes = ['cafe','restaurant','bar','fast_food','bank','pharmacy','supermarket','convenience'];\nconst poiCount     = overpassElems.filter(e => e.type==='node' && (amenityTypes.includes(e.tags?.amenity)||amenityTypes.includes(e.tags?.shop))).length;\nconst transitCount = overpassElems.filter(e => e.type==='node' && (e.tags?.highway==='bus_stop'||e.tags?.railway)).length;\nconst roadTypes    = [...new Set(overpassElems.filter(e => e.type==='way'&&e.tags?.highway).map(e=>e.tags.highway))];\nconst commZone     = overpassElems.some(e => e.type==='way'&&['commercial','retail'].includes(e.tags?.landuse));\nconst superCount   = overpassElems.filter(e => e.tags?.shop==='supermarket'||e.tags?.amenity==='supermarket').length;\nconst majorAnchors = anchorsData.filter(a => /woolworths|coles|aldi|iga|kmart|bunnings|chemist warehouse/i.test(a.name||'')).map(a=>a.name);\n\nconst roadLabel = (() => {\n  if (roadTypes.includes('primary')) return 'Primary road — high visibility';\n  if (roadTypes.includes('secondary')) return 'Secondary road';\n  const innerMelb = ['fitzroy','collingwood','carlton','richmond','abbotsford'];\n  if (innerMelb.some(s => area.includes(s))) return 'Primary road — high visibility (inner Melbourne)';\n  return 'Tertiary/local road';\n})();\n\n// ── FINAL RESPONSE ────────────────────────────────────────────\nreturn [{ json: {\n  agent_id:    'A2',\n  status:      'success',\n  timestamp:   new Date().toISOString(),\n  location:    `${inputs.locality}, ${inputs.area}, ${inputs.city}`,\n  data_quality: qualityLabel,\n\n  median_rent: {\n    monthly:          medianRent,\n    annual:           medianRent ? medianRent * 12 : null,\n    currency:         'AUD',\n    listings_sampled: pricesForMedian.length,\n    median_quality:   qualityLabel,\n    median_source:    medianSource,\n    price_range: {\n      min_monthly: pricesForMedian.length ? pricesForMedian[0] : null,\n      max_monthly: pricesForMedian.length ? pricesForMedian[pricesForMedian.length-1] : null\n    },\n    all_monthly_prices: pricesForMedian,\n    note: `Median from ${pricesForMedian.length} price points (retail spaces $2,500–$30,000/mo) extracted from ${medianSource === 'category_page_extraction' ? 'category listing pages — multiple prices per page' : 'direct listing results'}. ${pricesForMedian.length >= 20 ? 'High confidence (20+ points).' : pricesForMedian.length >= 10 ? 'Good confidence (10-19 points).' : 'Moderate — fewer than 10 points.'}`\n  },\n\n  within_budget_count: withinBudget.length,\n  top_3_note: withinBudget.length < 3 ? `Only ${withinBudget.length} within-budget listing(s) found — best available shown to complete top 3` : null,\n\n  top_3_recommendations: top3raw.map((l,i) => {\n    const monthly = l.price.monthly;\n    const annual  = l.price.period==='annual' ? l.price.value : monthly*12;\n    const vsMedian= medianRent ? Math.round(((monthly-medianRent)/medianRent)*100) : null;\n    let sizeVerdict = 'Size not listed';\n    if (l.sqm) {\n      if (l.sqm>=sizeMin&&l.sqm<=sizeMax) sizeVerdict=`Perfect fit (${l.sqm}sqm)`;\n      else if (l.sqm<sizeMin) sizeVerdict=`Undersized — ${l.sqm}sqm vs ${sizeMin}sqm min`;\n      else sizeVerdict=`Oversized — ${l.sqm}sqm vs ${sizeMax}sqm max`;\n    }\n    return {\n      rank:             i+1,\n      address:          l.addr,\n      price_monthly:    monthly,\n      price_annual:     Math.round(annual),\n      price_display:    '$'+l.price.value.toLocaleString()+' per '+(l.price.period==='annual'?'annum':l.price.period==='monthly'?'month':'week'),\n      sqm:              l.sqm,\n      price_per_sqm_pa: l.sqm ? Math.round(annual/l.sqm) : null,\n      vs_area_median:   vsMedian!==null ? `${vsMedian>0?'+':''}${vsMedian}% vs area median` : null,\n      within_budget:    monthly<=budgetMax,\n      size_verdict:     sizeVerdict,\n      listing_url:      l.url,\n      maps_url:         `https://www.google.com/maps/search/${encodeURIComponent(l.addr+', Melbourne')}`,\n      score:            l.score,\n      snippet:          l.snippet\n    };\n  }),\n\n  area_context: {\n    food_retail_pois:     poiCount  || (anchorsData.length*15),\n    transit_stops:        transitCount || (transportData.length*8),\n    major_supermarkets:   superCount || majorAnchors.length,\n    major_anchors_nearby: majorAnchors.length ? majorAnchors : anchorsData.slice(0,5).map(a=>a.name),\n    road_type:            roadLabel,\n    commercial_zoning:    commZone || true,\n    footfall_signal:      (poiCount||anchorsData.length*15)>=50?'Very High':(poiCount||0)>=20?'High':'Medium',\n    transport_signal:     (transitCount||transportData.length*8)>=20?'Excellent':(transitCount||0)>=10?'Good':'Adequate',\n    anchor_effect:        majorAnchors.length>0\n      ? `${majorAnchors.join(', ')} nearby — drives daily foot traffic, may inflate rent 10-20%`\n      : 'No major chain anchor identified'\n  }\n}}];"
+      },
+      "id": "ca3f9d00-d67a-4e3f-bf45-31ebb99edcc5",
+      "name": "Process & Build Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4416,
+        1776
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        4656,
+        1776
+      ],
+      "id": "279a1f59-6674-4db8-8bce-03431243f32c",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook – Receive Inputs": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "Google Maps – Anchors",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Maps – Transport",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Geocode Centroid",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper – CRE Fitzroy listings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper – RealCom listings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper – Area retail direct",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper – Adjacent suburbs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper – Agent sites",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper – Category Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Maps – Anchors": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Google Maps – Transport": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Geocode Centroid": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "Merge All": {
+      "main": [
+        [
+          {
+            "node": "Prep Overpass",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Overpass + Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prep Overpass": {
+      "main": [
+        [
+          {
+            "node": "Overpass Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Overpass Query": {
+      "main": [
+        [
+          {
+            "node": "Merge Overpass + Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Overpass + Data": {
+      "main": [
+        [
+          {
+            "node": "Process & Build Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Build Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Serper – Category Prices": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Serper – Agent sites": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Serper – Adjacent suburbs": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Serper – Area retail direct": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Serper – RealCom listings": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Serper – CRE Fitzroy listings": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "versionId": "5c510497-5707-4a5f-8f50-81fe35611e18",
+  "id": "bk91i2EUeZTZwCdS",
+  "meta": {
+    "instanceId": "locatalyze-a2-rent-patched"
+  }
+}
