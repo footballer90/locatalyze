@@ -303,7 +303,7 @@ useEffect(() => {
 
 // ── Showcase (dark, inline) ────────────────────────────────────────
 const SHOWCASE_TABS = [
-  { id: 'loc',  label: 'Location Analysis', headline: 'Location intelligence,\nilluminated.', sub: 'Understand exactly what makes a location work — or fail. Analyse foot traffic, demographics and proximity to demand generators before you commit to a single dollar of rent.', ui: 'score' },
+  { id: 'loc',  label: 'Location Analysis', headline: 'Location intelligence,\nilluminated.', sub: 'Understand exactly what makes a location work — or fail. Score demand proximity, competitor density and demographic fit before you commit to a single dollar of rent.', ui: 'score' },
   { id: 'sub',  label: 'Suburb Scoring',    headline: 'Every suburb scored\nfor your business.', sub: 'Compare suburbs side by side using income data, population density, age profile and spending behaviour. Find where your concept has the strongest natural advantage.', ui: 'suburbs' },
   { id: 'comp', label: 'Competitor Mapping',headline: 'See every competitor\nbefore they see you.', sub: 'Map every direct competitor within your chosen radius. Understand their ratings, proximity and threat level — and find the gaps where your concept can own the category.', ui: 'competitors' },
   { id: 'rent', label: 'Rent Affordability',headline: 'Know if the rent\nmakes financial sense.', sub: 'Enter your expected rent and average transaction value. Locatalyze calculates the exact daily volume you need to stay profitable — and tells you if this location can deliver it.', ui: 'rent' },
@@ -333,7 +333,7 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
       </div>
-      {[{l:'Foot Traffic',p:85,c:D.e,v:'High'},{l:'Demographics',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Ratio',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
+      {[{l:'Demand Signal',p:85,c:D.e,v:'High'},{l:'Demographics',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Ratio',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
         <div key={i} style={{ marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}><span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.l}</span><span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.v}</span></div>
           <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', background: b.c, borderRadius: 2, width: bars?`${b.p}%`:'0%', transition: `width 1.1s ease ${i*.12}s` }}/></div>
@@ -529,7 +529,7 @@ const PR_DATA = {
     revenue: [58, 67, 74, 80, 86, 91],
     profit:  [10, 14, 17, 21, 23, 25],
     scores: [
-      { label: 'Foot Traffic & Demand', score: 85, icon: 'activity' },
+      { label: 'Demand Proximity Score', score: 85, icon: 'activity' },
       { label: 'Rent Affordability',    score: 78, icon: 'home' },
       { label: 'Competition Level',     score: 72, icon: 'target' },
       { label: 'Profitability',         score: 90, icon: 'trendingUp' },
@@ -948,7 +948,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
         {/* MARKET */}
         {activeSection === 'market' && (
           <div style={{ animation: 'cw-fade .3s ease' }}>
-            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>Demand Heatmap — Weekly Foot Traffic</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: 14 }}>Demand Heatmap — Activity Signals</p>
             <div style={{ background: '#FAFBFC', borderRadius: 16, border: `1px solid ${L.border}`, padding: '20px' }}>
               <DemandHeatmap data={d.heatmap} color={d.verdictColor}/>
             </div>
@@ -974,7 +974,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
                   { label: 'Population (5km)', value: verdict === 'go' ? '42,800' : verdict === 'caution' ? '31,200' : '58,400' },
                   { label: 'Median Income', value: verdict === 'go' ? '$94,200' : verdict === 'caution' ? '$71,400' : '$68,800' },
                   { label: 'Primary Age Group', value: verdict === 'go' ? '25–44 yrs' : verdict === 'caution' ? '20–35 yrs' : '35–55 yrs' },
-                  { label: 'Foot Traffic Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
+                  { label: 'Demand Proximity Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
                     <span style={{ fontSize: 12, color: L.muted }}>{row.label}</span>
@@ -1458,9 +1458,21 @@ export default function LandingPage() {
               <h1 style={{ fontSize: isMobile ? 36 : 54, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', lineHeight: 1.08, marginBottom: 18 }}>
                 The wrong location<br/>costs <span style={{ color: L.emerald }}>$200,000+.</span>
               </h1>
-              <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, lineHeight: 1.75, marginBottom: 28, maxWidth: 440 }}>
-                See competition, demand, and risk for any Australian address — before committing to a lease. Get a clear <strong style={{ color: L.slate }}>GO, CAUTION or NO</strong> verdict.
+              <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, lineHeight: 1.75, marginBottom: 16, maxWidth: 440 }}>
+                See competition, demand, and financial risk for any Australian address. Get a clear <strong style={{ color: L.slate }}>GO, CAUTION or NO</strong> verdict — before you sign anything.
               </p>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
+                {[
+                  { emoji:'🏠', label:'Pre-lease due diligence' },
+                  { emoji:'📈', label:'Expansion site selection' },
+                  { emoji:'🔄', label:'Lease renewal check' },
+                  { emoji:'🤝', label:'Investor / bank report' },
+                ].map(uc => (
+                  <span key={uc.label} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:12, fontWeight:600, color:'#475569', background:'#F8FAFC', border:`1px solid ${L.border}`, borderRadius:100, padding:'5px 12px' }}>
+                    <span>{uc.emoji}</span>{uc.label}
+                  </span>
+                ))}
+              </div>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
                 <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emerald, color: '#fff', borderRadius: 12, padding: isMobile ? '13px 22px' : '15px 28px', fontWeight: 800, fontSize: isMobile ? 14 : 15, boxShadow: '0 4px 20px rgba(16,185,129,.3)' }}>
                   Check your location →
@@ -1518,7 +1530,7 @@ export default function LandingPage() {
           <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1.1, marginBottom: 14, background: `linear-gradient(135deg, ${D.text1} 30%, ${D.glow} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Location intelligence, illuminated.
           </h2>
-          <p style={{ fontSize: 14, color: D.text2, lineHeight: 1.75, marginBottom: 24 }}>Analyse foot traffic, competitors and financials for any Australian address in 30 seconds.</p>
+          <p style={{ fontSize: 14, color: D.text2, lineHeight: 1.75, marginBottom: 24 }}>Map demand signals, competitors and financials for any Australian address in 30 seconds.</p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${D.brand},#0B9488)`, color: '#fff', borderRadius: 12, padding: '13px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
             Check your location →
           </Link>
@@ -1547,6 +1559,74 @@ export default function LandingPage() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* AFTER YOUR REPORT — conversion funnel transparency */}
+      <section style={{ padding: isMobile ? '64px 16px' : '80px 40px', background: L.white, borderTop: `1px solid ${L.border}` }}>
+        <div style={{ ...W, padding: pad }}>
+          <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 48 }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:14 }}>
+              What happens next
+            </div>
+            <h2 style={{ fontSize: isMobile ? 26 : 38, fontWeight:900, color:L.slate, letterSpacing:'-.04em', marginBottom:10 }}>
+              After your free report
+            </h2>
+            <p style={{ fontSize:15, color:L.muted, maxWidth:460, margin:'0 auto', lineHeight:1.7 }}>
+              Three free reports, no card required. Here&apos;s exactly what the experience looks like.
+            </p>
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: isMobile ? 16 : 24 }}>
+            {[
+              {
+                step: '1',
+                color: L.emerald,
+                bg: L.emeraldXlt,
+                border: L.emeraldLt,
+                icon: '📋',
+                title: 'Your verdict lands instantly',
+                body: 'You get a full report — GO, CAUTION or NO — with competitor map, financial model, SWOT and 3-year projection. Download as PDF, share with your accountant or landlord.',
+                cta: null,
+              },
+              {
+                step: '2',
+                color: '#0891B2',
+                bg: 'rgba(8,145,178,.06)',
+                border: 'rgba(8,145,178,.2)',
+                icon: '🔄',
+                title: 'Run up to 3 reports free',
+                body: 'Your first 3 reports are completely free — no card, no signup wall. Compare locations side by side or run the same site with different business types.',
+                cta: null,
+              },
+              {
+                step: '3',
+                color: '#7C3AED',
+                bg: 'rgba(124,58,237,.06)',
+                border: 'rgba(124,58,237,.2)',
+                icon: '⬆️',
+                title: 'Upgrade only if you need more',
+                body: 'After 3 reports, you\'ll see a clear upgrade prompt. Pro ($59/mo) gives you 20 reports and location comparison. No dark patterns, no surprise charges.',
+                cta: { label: 'See pricing', href: '#pricing' },
+              },
+            ].map(s => (
+              <div key={s.step} style={{ background:'#FAFAFA', border:`1.5px solid ${s.border}`, borderRadius:20, padding:'26px 24px', display:'flex', flexDirection:'column' as const, gap:14 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{ width:34, height:34, borderRadius:10, background:s.bg, border:`1px solid ${s.border}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>
+                    {s.icon}
+                  </div>
+                  <span style={{ fontSize:11, fontWeight:800, color:s.color, textTransform:'uppercase' as const, letterSpacing:'.08em' }}>Step {s.step}</span>
+                </div>
+                <p style={{ fontSize:15, fontWeight:800, color:L.slate, lineHeight:1.3 }}>{s.title}</p>
+                <p style={{ fontSize:13, color:L.muted, lineHeight:1.75, flex:1 }}>{s.body}</p>
+                {s.cta && (
+                  <Link href={s.cta.href} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:13, fontWeight:700, color:s.color, textDecoration:'none' }}>
+                    {s.cta.label} →
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -1612,10 +1692,10 @@ export default function LandingPage() {
                 color:'#3B82F6', colorBg:'rgba(59,130,246,.08)', colorBorder:'rgba(59,130,246,.2)',
               },
               {
-                icon: 'users', source:'ABS Census & Demographics', badge:'Gov. verified',
+                icon: 'users', source:'ABS Census & Demographics', badge:'2021 data',
                 headline:'Income, age and population by suburb',
-                body:'Australian Bureau of Statistics census data gives us median income, age profile and population density — the foundation of every demand estimate.',
-                proof:'2021 ABS Census + quarterly updates',
+                body:'ABS census data gives us median income, age profile and density — the foundation of every demand estimate. This uses 2021 census data; the next full census release is expected in 2026.',
+                proof:'2021 ABS Census — next update 2026',
                 color:'#8B5CF6', colorBg:'rgba(139,92,246,.08)', colorBorder:'rgba(139,92,246,.2)',
               },
               {
@@ -1641,9 +1721,9 @@ export default function LandingPage() {
               },
               {
                 icon: 'trendingUp', source:'Market Demand Signals', badge:'Multi-source',
-                headline:'Search trends and foot traffic by suburb',
-                body:'We combine category-level search volume, proximity to demand generators (transport, offices, universities) and ABS commute data to estimate real demand.',
-                proof:'Google Trends + ABS movement data',
+                headline:'Search volume and demand-proximity signals by suburb',
+                body:'We combine category-level search volume and proximity to demand generators (transport, offices, universities) to estimate relative demand. Note: this is a proximity proxy, not direct foot-count data.',
+                proof:'Google Trends + proximity scoring',
                 color:'#0EA5E9', colorBg:'rgba(14,165,233,.08)', colorBorder:'rgba(14,165,233,.2)',
               },
             ].map((ds, i) => (
@@ -1682,9 +1762,9 @@ export default function LandingPage() {
               </div>
               <div style={{ display:'flex', gap:12, flexShrink:0, flexWrap:'wrap' as const }}>
                 {[
-                  { icon: 'shield',    label: 'AU data sources', sub: 'ABS + business listings' },
-                  { icon: 'globe',     label: 'Australian only', sub: 'Localised benchmarks' },
-                  { icon: 'refreshCw', label: 'Updated live',    sub: 'Per-analysis refresh' },
+                  { icon: 'shield',    label: 'AU data sources',  sub: 'ABS + business listings' },
+                  { icon: 'globe',     label: 'Australian only',  sub: 'Localised benchmarks' },
+                  { icon: 'refreshCw', label: 'Competitors live', sub: 'Demographics: 2021 census' },
                 ].map(t => (
                   <div key={t.label} style={{ textAlign:'center' as const, padding:'10px 16px', background:'rgba(16,185,129,.06)', border:'1px solid rgba(16,185,129,.15)', borderRadius:12 }}>
                     <div style={{ display:'flex', justifyContent:'center', marginBottom:6 }}>
