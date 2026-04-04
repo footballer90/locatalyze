@@ -144,6 +144,48 @@ export function detectContradictions(result: ComputedResult): ContradictionWarni
     })
   }
 
+  // ── C9: Projected customers far below break-even but verdict is not NO ────
+  // This fires AFTER deriveVerdict() — if the engine already returned NO for
+  // this reason, this check is redundant but harmless. It catches edge cases
+  // where the verdict slipped through without the customer gap being flagged.
+  const { dailyCustomers, breakEvenDaily } = result
+  if (
+    breakEvenDaily > 0 &&
+    dailyCustomers > 0 &&
+    dailyCustomers < breakEvenDaily * 0.70 &&
+    result.netProfit < 0 &&
+    verdict !== 'NO'
+  ) {
+    const gapPct = Math.round((1 - dailyCustomers / breakEvenDaily) * 100)
+    warnings.push({
+      field: 'customer_volume_vs_breakeven',
+      reason: `Projected ${dailyCustomers} customers/day is ${gapPct}% below the ${breakEvenDaily}/day break-even — this is a structural gap, not a marginal one. Verdict should be reviewed.`,
+      severity: 'error',
+      affectedSections: ['financials', 'verdict'],
+    })
+  }
+
+  // ── C10: Demand claimed when A3 data is missing ────────────────────────────
+  // If no demand score AND no trend, but verdict reasons mention "demand" positively,
+  // flag as potentially misleading inference.
+  if (
+    marketSignals.demandScore == null &&
+    marketSignals.demandTrend == null &&
+    result.verdictReasons.some(r =>
+      r.toLowerCase().includes('demand') &&
+      !r.toLowerCase().includes('unavailable') &&
+      !r.toLowerCase().includes('incomplete') &&
+      !r.toLowerCase().includes('missing')
+    )
+  ) {
+    warnings.push({
+      field: 'demand_inference_without_data',
+      reason: 'Verdict references demand conditions but no A3 market data was available — demand signals are inferred from benchmarks only and may not reflect local conditions',
+      severity: 'warning',
+      affectedSections: ['market', 'verdict'],
+    })
+  }
+
   return warnings
 }
 

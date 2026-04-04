@@ -1117,11 +1117,28 @@ function FinancialTrust({ computed, fin, report }: {
   const wouldFail: Array<{ trigger: string; consequence: string }> = []
   if (C.revenue && C.totalCosts) {
     const cushion = C.revenue - C.totalCosts
-    const revDropPct = Math.round((cushion / C.revenue) * 100)
-    wouldFail.push({
-      trigger: `Revenue drops ${revDropPct}% below projection`,
-      consequence: 'Net profit hits zero — the business cannot cover its operating costs',
-    })
+    if (cushion <= 0) {
+      // Already operating at a loss — no revenue cushion at all
+      wouldFail.push({
+        trigger: 'Business is already projected to lose money at current volume',
+        consequence: `There is no revenue cushion — every dollar of underperformance worsens a deficit that is already ${fmt(Math.abs(cushion))}/month`,
+      })
+    } else {
+      // Show a realistic range (cushion ± buffer) rather than a single over-precise number
+      const cushionPct = Math.round((cushion / C.revenue) * 100)
+      if (cushionPct < 10) {
+        // Thin margin — express as a range to avoid misleading precision like "3%"
+        wouldFail.push({
+          trigger: 'Revenue falls 10–15% below projection',
+          consequence: 'Thin margin means even a modest shortfall eliminates net profit entirely',
+        })
+      } else {
+        wouldFail.push({
+          trigger: `Revenue drops more than ${Math.max(10, cushionPct - 5)}% below projection`,
+          consequence: 'Net profit hits zero — the business cannot cover its operating costs',
+        })
+      }
+    }
   }
   if (report.monthly_rent) {
     const breakRent = Math.round((report.monthly_rent) * 1.3)
@@ -1401,6 +1418,34 @@ function LocationIntelligence({ computed, report }: {
 
   if (signals.length === 0) return null
 
+  // Check whether we have any real agent-sourced signals (not just the fallback "none detected" anchor)
+  const hasRealSignalData = (ls.footfallSignal ?? '').trim() !== ''
+    || (ls.transitSignal ?? '').trim() !== ''
+    || (ls.medianRent != null && ls.medianRent > 0)
+    || anchors.length > 0
+
+  // If all we have is the placeholder "no anchors" signal and no other data, show an
+  // insufficient-data message rather than a misleading "Weak location signals" verdict.
+  if (!hasRealSignalData) {
+    return (
+      <Card>
+        <SectionHeading sub={`Location signals require live data from the A2 agent.`}>Location Intelligence</SectionHeading>
+        <div style={{
+          padding: '20px 24px', background: S.n50, border: `1px solid ${S.n200}`,
+          borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 12,
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={S.n400} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 700, color: S.n700, marginBottom: 4 }}>Location data unavailable for this report</p>
+            <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6 }}>
+              Foot traffic, transit access, and rent benchmarks could not be retrieved for {area}. This section requires live data from the location intelligence agent. Re-run the report for a full location assessment.
+            </p>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
   // Overall location verdict
   const positiveCount = signals.filter(s => s.positive).length
   const locationVerdict = positiveCount >= 3 ? 'strong'
@@ -1422,7 +1467,7 @@ function LocationIntelligence({ computed, report }: {
           fontSize: 13, fontWeight: 800,
           color: locationVerdict === 'strong' ? S.emerald : locationVerdict === 'adequate' ? S.amber : S.red,
         }}>
-          {locationVerdict === 'strong' ? 'Strong location signals' : locationVerdict === 'adequate' ? 'Mixed location signals' : 'Weak location signals'}
+          {locationVerdict === 'strong' ? 'Strong location signals' : locationVerdict === 'adequate' ? 'Mixed location signals' : 'Weak location signals — limited data returned for this suburb'}
           {' '}\u2014 {positiveCount}/{signals.length} factors are positive
         </span>
       </div>
@@ -2689,7 +2734,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       directCompetitorCount: C.competitors.filter((c: any) => c.type === 'direct').length,
       validNearbyBusinesses: C.competitors,
       nearbyBusinesses:      C.competitors,
-      filteredOutCount:      0,
+      // rawCompetitorCount = all A1 businesses before type-filtering; subtract validated to get filtered
+      filteredOutCount:      Math.max(0, (C.meta.computeLog.rawCompetitorCount ?? 0) - C.validCompetitorCount),
       intensityLabel:  C.marketSignals.saturationLabel?.toUpperCase()
         ?? (C.validCompetitorCount <= 3 ? 'LOW' : C.validCompetitorCount <= 8 ? 'MEDIUM' : 'HIGH'),
       saturationLevel: C.marketSignals.saturationLabel
@@ -3501,8 +3547,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
-                    <Tile key="direct" label="Direct Competitors" value={String(_dc)} sub={`of ${_vc} validated ${_bt}s nearby`} mono color={_dc === 0 ? S.emerald : _dc <= 5 ? S.amber : S.red} />
-                    <Tile key="other" label="Non-competitors" value={String(_exc)} sub={`${_exc === 1 ? 'other' : 'other'} ${_exc === 1 ? 'business' : 'businesses'} (not ${_bt}s)`} color={S.n400} mono />
+                    <Tile key="direct" label="Direct Competitors" value={String(_dc)} sub={_vc === 0 && _exc > 0 ? `${_exc} nearby businesses, none are ${_bt}s` : `of ${_vc} ${_bt}s detected nearby`} mono color={_dc === 0 ? S.emerald : _dc <= 5 ? S.amber : S.red} />
+                    <Tile key="other" label="Other Business Types" value={String(_exc)} sub={`nearby non-${_bt} businesses excluded from analysis`} color={S.n400} mono />
                     <Tile key="sat" label="Saturation" value={_sat} color={_satColor} sub={`based on ${_vc} direct competitors`} mono />
                     <Tile key="threat" label="Threat Level" value={_vc === 0 ? 'Low' : (market?.competitorThreat ?? (_sat === 'HIGH' ? 'High' : _sat === 'MEDIUM' ? 'Medium' : 'Low'))} color={_vc === 0 ? S.emerald : (_sat === 'HIGH' ? S.red : _sat === 'MEDIUM' ? S.amber : S.emerald)} mono />
                   </div>

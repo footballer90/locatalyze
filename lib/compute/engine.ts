@@ -287,6 +287,8 @@ function deriveVerdict(
   viabilityScore:   number,
   opportunityLevel: string,
   strongCount:      number,
+  dailyCustomers:   number,
+  breakEvenDaily:   number,
 ): {
   verdict:             VerdictValue
   verdictReasons:      string[]
@@ -295,8 +297,37 @@ function deriveVerdict(
 } {
   const rentPct = revenue > 0 ? (monthlyRent / revenue) : 1
 
+  // ── Hard NO: projected customers far below break-even with negative profit ─
+  // When projected daily customers are <70% of break-even AND the business is
+  // already running at a loss, there is no plausible path to viability without
+  // a structural change to revenue or cost. This is a harder signal than raw
+  // netProfit alone because it captures the SCALE of the gap.
+  const customerCoverageRatio = breakEvenDaily > 0 ? dailyCustomers / breakEvenDaily : 1
+  if (customerCoverageRatio < 0.70 && netProfit < 0) {
+    const customerDeficit = Math.max(0, breakEvenDaily - dailyCustomers)
+    const gapPct = Math.round((1 - customerCoverageRatio) * 100)
+    return {
+      verdict: 'NO',
+      verdictReasons: [
+        `Projected ${dailyCustomers} customers/day is ${gapPct}% below the ${breakEvenDaily}/day break-even — this gap cannot close without a fundamental change to revenue or cost structure`,
+        netProfit < -20000
+          ? `Monthly losses of ${fmt(Math.abs(netProfit))} confirm this location is structurally non-viable at current rent and costs`
+          : `Negative net profit with projected volume ${gapPct}% below break-even means the business cannot self-fund toward viability`,
+        `Requires ${customerDeficit} additional customers per day — a ${gapPct}% volume increase — before this location becomes sustainable`,
+      ],
+      verdictConditions: [
+        `Reduce monthly costs by at least ${fmt(Math.round(Math.abs(netProfit) * 1.1))} OR demonstrate a credible path to ${breakEvenDaily}+ daily customers before reconsidering`,
+        `Renegotiate rent below ${fmt(Math.round(revenue * 0.15))}/month to create meaningful margin of safety`,
+      ],
+      verdictFailureModes: [
+        `At current trajectory, will exhaust a typical setup budget within 6–9 months — well before reaching sustainable volume`,
+        `Requires ${gapPct}% more volume than projected — this is not a marginal gap that marketing alone can close`,
+      ],
+    }
+  }
+
   // ── Hard NO triggers ──────────────────────────────────────────────────────
-  // Financial loss is always a hard NO regardless of viability score
+  // Severe financial loss or extreme rent burden
   if (netProfit < -20000 || rentPct > 0.45 || (scores.overall < 30 && viabilityScore < 25)) {
     return {
       verdict: 'NO',
@@ -444,8 +475,10 @@ function buildScenarios(
   const bestCosts    = round(baseCosts   * 0.95)
 
   const makeRow = (rev: number, costs: number, assumption: string): ScenarioRow => {
+    // customers_needed = daily customers required to break even under this scenario
+    // Formula: daily = monthly_costs / (avg_ticket × gross_margin) / 30
     const needed = avgTicket > 0
-      ? Math.ceil(costs / (avgTicket * 0.70))   // ~70% gross margin assumption for break-even
+      ? Math.ceil(costs / (avgTicket * 0.70) / 30)   // daily break-even customers
       : 0
     return {
       assumption,
@@ -928,6 +961,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     deriveVerdict(
       scores, netProfit, validCompetitorCount, rent, revenue,
       competitorDataQuality, viabScore, opportunityLevel, strongCount,
+      dailyCustomers, breakEvenDaily,
     )
 
   // ── STEP 12: Revenue channels ────────────────────────────────────────────
