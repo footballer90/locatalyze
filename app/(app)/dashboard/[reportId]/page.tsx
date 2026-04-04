@@ -2644,6 +2644,21 @@ function useReport(reportId: string) {
   const [loading, setLoading] = useState(true)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
 
+  // Fire the "report ready" email once when completion is first detected.
+  // Uses sessionStorage to deduplicate across re-renders and page refreshes.
+  function maybeSendCompletionEmail(reportId: string) {
+    try {
+      const key = `email_sent_${reportId}`
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+      fetch('/api/email/report-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportId }),
+      }).catch(() => {/* non-critical */})
+    } catch {/* sessionStorage may be unavailable */}
+  }
+
   useEffect(() => {
     if (!loading) return
     const t = setInterval(() => setElapsedSeconds(s => s + 1), 1000)
@@ -2708,7 +2723,7 @@ function useReport(reportId: string) {
           // v1: complete when status=complete + verdict present
           const isComplete = updated.computed_result != null
             || ((updated.status === 'complete' || updated.status === 'completed') && updated.verdict)
-          if (isComplete) setLoading(false)
+          if (isComplete) { setLoading(false); maybeSendCompletionEmail(reportId) }
           else if (updated.status === 'failed') setLoading(false)
         }
       ).subscribe()
@@ -2725,6 +2740,7 @@ function useReport(reportId: string) {
           || ((data.status === 'complete' || data.status === 'completed') && data.verdict)
         if (reportComplete || data.status === 'failed') {
           setLoading(false)
+          if (reportComplete) maybeSendCompletionEmail(reportId)
           if (pollInterval) { clearInterval(pollInterval); pollInterval = null }
           return
         }
@@ -3475,6 +3491,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Location Report</span>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => router.push('/compare')} style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.7)', borderRadius: 8, padding: '6px 14px',
+            fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: S.font,
+          }}>
+            ⇄ Compare
+          </button>
           <ExportPDFButton report={report} />
           <ShareButton reportId={report.report_id ?? report.id} initialIsPublic={report.is_public ?? false} initialToken={report.public_token ?? null} />
         </div>
