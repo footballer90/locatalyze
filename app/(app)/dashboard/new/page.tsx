@@ -614,7 +614,7 @@ export default function OnboardingPage() {
         style={{ width: '100%', padding: '16px', background: canProceed && !submitting ? S.brand : S.n200, color: canProceed && !submitting ? S.white : S.n400, border: 'none', borderRadius: 13, fontSize: 15, fontWeight: 800, cursor: canProceed && !submitting ? 'pointer' : 'not-allowed', fontFamily: S.font, boxShadow: canProceed && !submitting ? '0 4px 20px rgba(15,118,110,0.25)' : 'none' }}>
         {submitting ? ' Analysing location…' : ' Run analysis'}
        </button>
-              <p style={{ fontSize: 11, color: S.n400, textAlign: 'center', marginTop: 10 }}>Takes 20–40 seconds · Full financial model + GO/CAUTION/NO verdict</p>
+              <p style={{ fontSize: 11, color: S.n400, textAlign: 'center', marginTop: 10 }}>Takes 60–90 seconds · Full financial model + GO/CAUTION/NO verdict</p>
       </div>
           )}
         </div>

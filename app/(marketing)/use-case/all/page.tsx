@@ -23,7 +23,7 @@ const STEPS = [
  { n: '01', title: 'Enter your address', body: 'Paste any Australian street address. Works for any suburb in any state.' },
  { n: '02', title: 'Choose your business type', body: 'Select from café, restaurant, retail, gym, takeaway or general business.' },
  { n: '03', title: 'Add your financial inputs', body: 'Enter your expected rent, average transaction value and trading days.' },
- { n: '04', title: 'Get your report', body: 'Receive a full feasibility report with GO / CAUTION / NO verdict in 30 seconds.' },
+ { n: '04', title: 'Get your report', body: 'Receive a full feasibility report with GO / CAUTION / NO verdict in about 90 seconds.' },
 ]
 
 export default function Page() {
@@ -45,7 +45,7 @@ export default function Page() {
       </Link>
             <div style={{ display: 'inline-flex', background: 'rgba(15,118,110,0.18)', border: '1px solid rgba(15,118,110,0.35)', borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: S.brandLight, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 18 }}>Location Analysis for Every Business Type</div>
       <h1 style={{ fontSize: 'clamp(28px,5vw,48px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.04em', lineHeight: 1.12, marginBottom: 18 }}>Find the right location for<br />your Australian business</h1>
-      <p style={{ fontSize: 16, color: '#9CA3AF', lineHeight: 1.75, marginBottom: 36, maxWidth: 560, margin: '0 auto 36px' }}>Locatalyze analyses demographics, competition, foot traffic and rent affordability for any Australian address — and delivers a GO / CAUTION / NO verdict in 30 seconds.</p>
+      <p style={{ fontSize: 16, color: '#9CA3AF', lineHeight: 1.75, marginBottom: 36, maxWidth: 560, margin: '0 auto 36px' }}>Locatalyze analyses demographics, competition, foot traffic and rent affordability for any Australian address — and delivers a GO / CAUTION / NO verdict in about 90 seconds.</p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
        <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.brand, color: '#fff', borderRadius: 10, padding: '14px 28px', fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 20px rgba(15,118,110,0.4)' }}>
         Analyse my location free →
@@ -92,7 +92,7 @@ export default function Page() {
           {/* How it works */}
           <div style={{ background: S.n900, borderRadius: 24, padding: '48px', marginBottom: 72 }}>
       <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, textAlign: 'center' }}>How it works</p>
-      <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 36 }}>From address to verdict in 30 seconds</h2>
+      <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 36 }}>From address to verdict in about 90 seconds</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 16 }}>
        {STEPS.map((step, i) => (
                 <div key={step.n} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 14, padding: '22px' }}>
@@ -178,7 +178,7 @@ export default function Page() {
           <div style={{ background: `linear-gradient(135deg,${S.headerBg},#0F2E2A)`, borderRadius: 24, padding: '56px 40px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.06)' }}>
       <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>Start for free today</p>
       <h2 style={{ fontSize: 'clamp(24px,4vw,36px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', marginBottom: 14 }}>Stop guessing. Start with data.</h2>
-      <p style={{ fontSize: 16, color: '#9CA3AF', marginBottom: 32, maxWidth: 520, margin: '0 auto 32px' }}>Paste any Australian address. Get a full location feasibility report with competition analysis, demographic scoring and a GO / CAUTION / NO verdict in 30 seconds. Free to start.</p>
+      <p style={{ fontSize: 16, color: '#9CA3AF', marginBottom: 32, maxWidth: 520, margin: '0 auto 32px' }}>Paste any Australian address. Get a full location feasibility report with competition analysis, demographic scoring and a GO / CAUTION / NO verdict in about 90 seconds. Free to start.</p>
       <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.brand, color: '#fff', borderRadius: 12, padding: '16px 32px', fontSize: 16, fontWeight: 800, textDecoration: 'none', boxShadow: '0 6px 24px rgba(15,118,110,0.4)' }}>
        Analyse my location free — no credit card →
             </Link>

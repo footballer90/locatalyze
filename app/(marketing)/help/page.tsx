@@ -18,7 +18,11 @@ const FAQS = [
     items: [
       {
         q: 'How do I run my first analysis?',
-        a: 'Go to the Dashboard and click "New Analysis". Enter any Australian street address, select your business type, fill in your monthly rent and setup budget, then submit. Your report is ready in 20–40 seconds and includes a GO/CAUTION/NO verdict, financial model, competitor map, and 3-year projection.',
+        a: 'Go to the Dashboard and click "New Analysis". Enter any Australian street address, select your business type, and drop a pin on the map to confirm your exact location. Add your monthly rent if you know it, then submit. Your report is usually ready in 60–120 seconds and includes a GO/CAUTION/NO verdict, full financial model, competitor map, SWOT analysis, and 3-year projection.',
+      },
+      {
+        q: 'What is "Calibrate your model" and should I fill it in?',
+        a: 'This section lets you give the financial model more accurate inputs specific to your business. You can enter your expected average order value (which overrides the industry benchmark), your operating hours, location access type (street frontage, transport hub, side street, etc.), and seating capacity. Each field you fill in raises the Model Accuracy score, which starts at 61% with just the address and can reach 98% with full calibration. It takes 60 seconds and meaningfully improves the revenue and break-even estimates.',
       },
       {
         q: 'Do I need a credit card to sign up?',
@@ -26,15 +30,15 @@ const FAQS = [
       },
       {
         q: 'What does the free plan include?',
-        a: 'Three complete location analyses, each with a full financial model, GO/CAUTION/NO verdict, SWOT analysis, competitor data within 500m, demographic scoring, and a 3-year projection. No features are restricted on the free plan — you get the full report.',
+        a: 'Three complete location analyses, each with a full financial model, GO/CAUTION/NO verdict, SWOT analysis, competitor data within 500m, demographic scoring, and 3-year projection. Location comparison (side-by-side analysis of multiple addresses) is a Pro feature.',
       },
       {
         q: 'How accurate are the reports?',
-        a: 'Reports use real data — competitor locations from OpenStreetMap via Geoapify, ABS 2021 Census demographics, and market rent benchmarks. They are indicative estimates, not guarantees. Treat them as a rigorous starting point, then verify with a commercial agent and solicitor before signing a lease.',
+        a: 'Reports are built on real data — competitor locations from Google Maps, ABS-aligned demographic estimates, and commercial rent benchmarks sourced from publicly available property listings. Revenue and profit figures are model estimates, not guarantees. Accuracy improves significantly when you use the "Calibrate your model" section to enter your own average order value and operating hours. Always treat the report as a rigorous starting point and verify key figures with a commercial agent and accountant before signing a lease.',
       },
       {
         q: 'What Australian locations are supported?',
-        a: 'All Australian addresses are supported. Demographics coverage is strongest in major cities (Sydney, Melbourne, Brisbane, Perth, Adelaide) and inner suburbs. Regional coverage uses state-level benchmarks where suburb-level ABS data is unavailable — the report will flag this when it applies.',
+        a: 'All Australian addresses are supported. Demographics and rent coverage is strongest in major cities (Sydney, Melbourne, Brisbane, Perth, Adelaide) and inner suburbs. Regional addresses use state-level benchmarks where suburb-specific data is unavailable — the report flags this in the Data Quality section when it applies.',
       },
     ],
   },
@@ -51,19 +55,19 @@ const FAQS = [
       },
       {
         q: 'Why is the rent-to-revenue ratio the most important number?',
-        a: 'Rent is your largest fixed cost and the one you cannot reduce once you sign. Industry data shows rent above 12% of monthly revenue is a warning sign. Above 20% is the leading predictor of hospitality business failure within 3 years. The report shows you this ratio and benchmarks it against industry standards.',
+        a: 'Rent is your largest fixed cost and the one you cannot reduce once you sign. Industry data shows rent above 12% of monthly revenue is a warning sign. Above 20% is the leading predictor of hospitality business failure within 3 years. The report shows you this ratio, rates it EXCELLENT / GOOD / MARGINAL / POOR, and benchmarks it against the suburb average for your category.',
       },
       {
         q: 'What does the break-even calculation show?',
-        a: 'It shows how many customers per day you need to cover all costs — rent, labour, COGS, and overheads. Your modelled daily customer count (derived from foot traffic and demographics) is compared against this break-even number. If you are above it, the location is viable. If below, the report shows you by how much.',
+        a: 'It shows the minimum number of customers per day needed to cover your fixed costs — rent and staffing. This is the contribution margin break-even (fixed costs only), not a gross margin calculation. Your projected daily customers are compared against this threshold. If you are comfortably above it, the location is viable. If below, the report shows you the gap and how sensitive it is to rent or ticket size changes.',
       },
       {
         q: 'How is the competitor data collected?',
-        a: 'We use the Geoapify Places API to find businesses within 500m of your address matching your business category. The underlying data comes from OpenStreetMap. In some suburbs OSM coverage is incomplete — if our system detects this, it flags the competitor count as potentially understated and recommends a manual check.',
+        a: 'We use Google Maps to find businesses within 500m of your selected coordinates matching your business category. Each competitor is assessed by their rating and review volume to determine a competition intensity score. In some suburbs real-time data may lag — the report flags low-confidence competitor counts when detected.',
       },
       {
-        q: 'Can I adjust the inputs and see a different result?',
-        a: 'Yes. Every report has a "What-if calculator" with sliders for monthly rent, average ticket size, and daily customers. Drag any slider and the verdict, score, and financials update in real time in your browser. This lets you model negotiated rent, different price points, or conservative demand assumptions without running a new report.',
+        q: 'What does the Executive Summary show at the top of the report?',
+        a: 'The Executive Summary is a short narrative that explains why the verdict was reached — in plain language, not bullet points. It references your specific numbers: projected daily customers vs. break-even threshold, primary risk drivers, and any conditions under which the verdict would change. It is generated from the actual computed data, not generic AI text.',
       },
     ],
   },
@@ -72,7 +76,7 @@ const FAQS = [
     items: [
       {
         q: 'What plans are available?',
-        a: 'Free (3 reports, no card required), Pro ($59/month, unlimited reports, PDF export, comparison tool), Annual ($490/year — equivalent to $41/month), and Business ($119/month, for teams and franchise operators with priority support). All paid plans can be cancelled anytime.',
+        a: 'Free (3 reports, no card required), Pro ($59/month — 20 reports/month, PDF export, location comparison), Annual ($490/year — 240 reports, equivalent to $41/month, saves $218 vs monthly), and Business ($119/month — 60 reports/month, for agencies and franchise operators). All paid plans can be cancelled anytime.',
       },
       {
         q: 'How do I upgrade?',
@@ -97,11 +101,19 @@ const FAQS = [
     items: [
       {
         q: 'Why is my report taking longer than expected?',
-        a: 'Reports usually complete in 20–40 seconds. The analysis runs in the background — you can close the tab and return to your dashboard to find it ready. If a report shows "failed" after 90 seconds, try resubmitting. The second attempt almost always succeeds.',
+        a: 'Reports typically complete in 60–120 seconds. The system runs 8 parallel analysis agents — competitor mapping, rent benchmarking, demographic analysis, financial modelling, and more — then compiles them into a single report. You can safely close the tab; the analysis continues in the background and your report will be waiting in the Dashboard when you return. If a report shows "failed" after 3 minutes, resubmit — the second attempt almost always succeeds.',
+      },
+      {
+        q: 'Do I get an email when my report is ready?',
+        a: 'Yes. Once the analysis completes, we send a summary email to your account address with the verdict, key financial figures, and a link back to the full report. This makes it easy to share with a business partner or revisit later.',
       },
       {
         q: 'Can I download my report as a PDF?',
-        a: 'Yes, PDF export is available on all plans. Click the Download button on any report page. The PDF includes all sections: verdict, score breakdown, financial model, competitor analysis, SWOT, and 3-year projection.',
+        a: 'Yes, PDF export is available on Pro and Business plans. Click the Download button on any report page. The PDF includes all sections: verdict, score breakdown, executive narrative, financial model, competitor analysis, SWOT, and 3-year projection.',
+      },
+      {
+        q: 'Can I compare multiple locations?',
+        a: 'Yes. The Location Comparison tool (available on Pro and Business plans) lets you select up to 5 reports and view them side by side — verdict, location score, revenue estimate, profit, break-even, and score breakdown. The tool also surfaces which location is the strongest opportunity and why.',
       },
       {
         q: 'Can I share a report with someone who does not have an account?',

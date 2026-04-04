@@ -139,7 +139,7 @@ export default function SampleReportClient() {
       {/* Sample banner */}
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-          This is a sample report for a fictional address. Every real report is generated live from your address.{' '}
+          Sample report — fictional address, real report structure. Your report is generated live with Google Maps data and your own inputs.{' '}
           <Link href="/onboarding" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
             Run yours free →
           </Link>
@@ -233,7 +233,7 @@ export default function SampleReportClient() {
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 10, padding: 4, marginBottom: 14 }}>
-              {['Overview', 'Financials', 'Analysis', 'Projections'].map((t) => {
+              {['Overview', 'Competition', 'Financials', 'Market'].map((t) => {
                 const id = t.toLowerCase()
                 return (
                   <div key={t} onClick={() => setActiveTab(id)}
@@ -434,64 +434,107 @@ export default function SampleReportClient() {
               </Card>
             </>}
 
-            {/* Analysis tab */}
-            {activeTab === 'analysis' && <>
-              {[
-                { title: 'Recommendation', content: 'Oxford Street Leederville is a strong location for a specialty café. The rent-to-revenue ratio of 8.4% is the healthiest in this analysis — it gives significant headroom if revenue tracks below projection in the first 6 months. The demographic profile (25–44, $96K median income) is the primary specialty coffee cohort. Proceed with lease negotiation. Push for a 5-year term with CPI-capped annual rent reviews and a 12-month break clause at month 24.' },
-                { title: 'Competitor Analysis', content: 'Four café operators within 500m is manageable for a specialty concept with a clear point of difference. The existing operators are predominantly mid-market — The Grind Co. and Blend & Co. both have Google ratings under 4.0 and are not competing on coffee quality. A specialty roaster-focused concept at the premium end ($6.50+ flat white) has clear market differentiation. The risk is a fifth entrant validating the market — a 5-year lease locks your position.' },
-                { title: 'Rent Analysis', content: 'The submitted rent of $7,600/month represents 8.4% of projected monthly revenue. This is the best-case scenario for an inner Perth café location — Oxford Street commands higher rents than comparable Perth strips but the foot traffic density justifies it. At lease renewal, push to cap rent increases at CPI rather than market review — the latter could push rent above 12% if the precinct continues to gentrify.' },
-                { title: 'Market Demand', content: 'Leederville\'s daytime population exceeds its residential population by approximately 40% on weekdays — office workers, students from nearby institutions, and workers from the nearby hospital cluster create a dense daytime customer pool. Saturday morning foot traffic on Oxford Street is among the strongest of any Perth inner suburb. The 25–44 demographic skew is ideal: this cohort has the disposable income for daily coffee habits and is least likely to defect to home brewing.' },
-              ].map(s => (
-                <Card key={s.title}>
-                  <SectionLabel>{s.title}</SectionLabel>
-                  <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.85 }}>{s.content}</p>
-                </Card>
-              ))}
-            </>}
-
-            {/* Projections tab */}
-            {activeTab === 'projections' && <>
+            {/* Market tab */}
+            {activeTab === 'market' && <>
               <Card>
-                <SectionLabel>3-Year Financial Projection</SectionLabel>
-                <div style={{ overflowX: 'auto', marginBottom: 16 }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                    <thead>
-                      <tr style={{ borderBottom: `2px solid ${S.n100}` }}>
-                        {['Metric', 'Year 1', 'Year 2', 'Year 3'].map((h, i) => (
-                          <th key={h} style={{ textAlign: i === 0 ? 'left' : 'right', padding: '8px 0', fontSize: 10, fontWeight: 800, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        { label: 'Revenue',    y1: '$1,094,400', y2: '$1,203,840', y3: '$1,324,224', color: S.n800 },
-                        { label: 'Costs',      y1: '$873,600',   y2: '$927,360',   y3: '$983,801',   color: S.red },
-                        { label: 'Net Profit', y1: '$220,800',   y2: '$276,480',   y3: '$340,423',   color: S.emerald },
-                        { label: 'Margin',     y1: '20.2%',      y2: '23.0%',      y3: '25.7%',      color: S.emerald },
-                      ].map(row => (
-                        <tr key={row.label} style={{ borderBottom: `1px solid ${S.n100}` }}>
-                          <td style={{ padding: '11px 0', fontSize: 12, color: S.n500 }}>{row.label}</td>
-                          {[row.y1, row.y2, row.y3].map((v, i) => (
-                            <td key={i} style={{ padding: '11px 0', textAlign: 'right', fontSize: 13, fontWeight: 800, color: row.color, fontFamily: S.mono }}>{v}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <SectionLabel>Market Demand</SectionLabel>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
+                  <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: 14, fontWeight: 900, color: S.emerald }}>HIGH</p>
+                    <p style={{ fontSize: 9, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Demand score</p>
+                  </div>
+                  <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, fontFamily: S.mono }}>+12%</p>
+                    <p style={{ fontSize: 9, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Café growth 3yr</p>
+                  </div>
+                  <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, fontFamily: S.mono }}>25–44</p>
+                    <p style={{ fontSize: 9, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Primary cohort</p>
+                  </div>
                 </div>
-                <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px' }}>
-                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>Projections assume 10% annual revenue growth from repeat customer base expansion and menu development. Costs grow at 6.5% annually — lower than revenue growth as fixed costs (rent) are stable on a 5-year lease. Year 3 net profit of $340,423 represents a 54% increase on Year 1, demonstrating the operational leverage of a well-located hospitality business on a fixed-cost lease.</p>
-                </div>
+                <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.85 }}>Leederville's daytime population exceeds its residential count by approximately 40% on weekdays — office workers, students from nearby institutions, and staff from the adjacent hospital precinct create a dense daytime customer pool. Saturday morning foot traffic on Oxford Street is among the strongest of any Perth inner suburb. The 25–44 demographic skew is ideal: this cohort has the disposable income for daily coffee habits and the lowest likelihood of switching to home brewing.</p>
               </Card>
               <Card>
-                <SectionLabel>Sensitivity Analysis</SectionLabel>
-                <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px', marginBottom: 12 }}>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Downside scenario — 70% of projected demand</p>
-                  <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.75 }}>At 70% of projected demand (168 customers/day instead of 240), monthly revenue falls to $63,840 and net profit to $4,240. The business remains profitable but has minimal margin. A 6-month cash reserve of $50,000 covers this scenario comfortably.</p>
+                <SectionLabel>Customer Segments</SectionLabel>
+                {[
+                  { segment: 'Daily commuters & office workers', share: '45%', insight: 'Weekday AM peak. High frequency, lower avg ticket ($6–8). Drives predictable morning revenue.' },
+                  { segment: 'Local residents (25–44)', share: '30%', insight: 'Weekend and AM regulars. Higher avg ticket ($12–18 with food). Most loyal cohort.' },
+                  { segment: 'Students & freelancers', share: '15%', insight: 'Long dwell time. Important for off-peak revenue and reputation building.' },
+                  { segment: 'Tourists & pass-through', share: '10%', insight: 'Low frequency but adds to peak-period volume. Oxford Street benefits from northbound weekend traffic.' },
+                ].map(s => (
+                  <div key={s.segment} style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: `1px solid ${S.n100}`, alignItems: 'flex-start' }}>
+                    <div style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 8, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: S.brand }}>{s.share}</div>
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: S.n800, marginBottom: 3 }}>{s.segment}</p>
+                      <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.55 }}>{s.insight}</p>
+                    </div>
+                  </div>
+                ))}
+              </Card>
+              <Card>
+                <SectionLabel>Seasonal Patterns</SectionLabel>
+                <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.85 }}>Perth's year-round mild climate means café revenue variance is lower than eastern-state operators. Leederville's covered footpath seating reduces the impact of summer heat periods. Expected revenue dip of 8–12% in January (holiday period) and moderate uptick in June–August (shoulder season foot traffic increase). No material seasonal risk at this location.</p>
+              </Card>
+            </>}
+
+            {/* Competition tab */}
+            {activeTab === 'competition' && <>
+              <Card>
+                <SectionLabel>Competitor Overview</SectionLabel>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 }}>
+                  <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: 26, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>4</p>
+                    <p style={{ fontSize: 9, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>within 500m</p>
+                  </div>
+                  <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: 14, fontWeight: 900, color: S.amber }}>MEDIUM</p>
+                    <p style={{ fontSize: 9, color: '#92400E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Competition level</p>
+                  </div>
+                  <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: 14, fontWeight: 900, color: S.emerald }}>GAP</p>
+                    <p style={{ fontSize: 9, color: '#047857', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quality ceiling</p>
+                  </div>
                 </div>
-                <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 16px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Rent increase scenario — 15% at review</p>
-                  <p style={{ fontSize: 13, color: '#065F46', lineHeight: 1.75 }}>If rent increases 15% at the 3-year review (from $7,600 to $8,740), the rent-to-revenue ratio rises to 9.6% on Year 1 revenue — still healthy. On Year 3 revenue, it falls to 7.9%. Negotiate a CPI cap now to prevent this scenario entirely.</p>
+                <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8, marginBottom: 16 }}>Four café operators within 500m is manageable for a specialty concept with clear positioning. Two of the four score below 4.0 on Google Maps — indicating an unmet quality ceiling in the precinct.</p>
+              </Card>
+              <Card>
+                <SectionLabel>Competitor Breakdown</SectionLabel>
+                {[
+                  { name: 'The Grind Co.', rating: '3.8', reviews: 142, distance: '180m', threat: 'LOW', threatColor: S.emerald, threatBg: S.emeraldBg, note: 'Mid-market, average reviews, no specialty positioning. Price level: $.' },
+                  { name: 'Blend & Co.', rating: '3.6', reviews: 87, distance: '240m', threat: 'LOW', threatColor: S.emerald, threatBg: S.emeraldBg, note: 'Low ratings, limited menu. Quality gap confirmed. Price level: $.' },
+                  { name: 'Morning Rush', rating: '4.4', reviews: 310, distance: '370m', threat: 'MEDIUM', threatColor: S.amber, threatBg: S.amberBg, note: 'Strong ratings and volume. Direct competition if targeting commuter traffic. Price level: $$.' },
+                  { name: 'Oxford Espresso', rating: '4.6', reviews: 520, distance: '420m', threat: 'HIGH', threatColor: S.red, threatBg: S.redBg, note: 'Highest-rated café on the strip. Established customer base. Differentiation required. Price level: $$$.' },
+                ].map(c => (
+                  <div key={c.name} style={{ display: 'flex', gap: 14, padding: '13px 0', borderBottom: `1px solid ${S.n100}`, alignItems: 'flex-start' }}>
+                    <div style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 10, background: S.n50, border: `1px solid ${S.n200}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14, color: S.n400 }}>{c.name[0]}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>{c.name}</span>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: c.threatColor, background: c.threatBg, borderRadius: 100, padding: '2px 8px' }}>Threat: {c.threat}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 12, marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, color: S.amber, fontWeight: 700 }}>★ {c.rating}</span>
+                        <span style={{ fontSize: 11, color: S.n400 }}>{c.reviews} reviews</span>
+                        <span style={{ fontSize: 11, color: S.n400 }}>{c.distance} away</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.55 }}>{c.note}</p>
+                    </div>
+                  </div>
+                ))}
+              </Card>
+              <Card>
+                <SectionLabel>Opportunity Gaps</SectionLabel>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    { gap: 'Specialty / third-wave coffee', detail: 'No operator in the 500m radius is positioning on coffee quality. A roaster-sourced specialty menu at $6.50+ flat white has no direct local competitor.' },
+                    { gap: 'Afternoon / all-day food', detail: 'Three of the four competitors close by 2pm. An all-day format captures the afternoon work-from-café cohort currently underserved.' },
+                    { gap: 'Quality-price signal', detail: 'Two operators are priced at $ with below-4.0 ratings — customers are paying for poor quality. A $$ premium positioning has clear head-room.' },
+                  ].map(g => (
+                    <div key={g.gap} style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px 14px' }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: S.brand, marginBottom: 4 }}>{g.gap}</p>
+                      <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.65 }}>{g.detail}</p>
+                    </div>
+                  ))}
                 </div>
               </Card>
             </>}

@@ -56,6 +56,12 @@ interface Report {
   result_data: any
   computed_result?: { netProfit?: number; revenue?: number; breakEvenMonths?: number | null } | null
   label?: string | null
+  // Save & Track
+  is_saved?: boolean | null
+  location_status?: string | null
+  saved_at?: string | null
+  // Feedback
+  outcome_feedback?: any | null
 }
 
 function verdictCfg(v: string | null) {
@@ -217,13 +223,14 @@ function ComparisonView({ reports, onClose }: { reports: Report[]; onClose: () =
 }
 
 //  Sidebar 
-function Sidebar({ user, stats, reports, onNewAnalysis, onSignOut }: {
-  user: any; stats: any; reports: Report[]; onNewAnalysis: () => void; onSignOut: () => void
+function Sidebar({ user, stats, reports, plan, onNewAnalysis, onSignOut }: {
+  user: any; stats: any; reports: Report[]; plan: string; onNewAnalysis: () => void; onSignOut: () => void
 }) {
   const FREE_LIMIT = 3
   const used = Math.min(reports.length, FREE_LIMIT)
   const pct = (used / FREE_LIMIT) * 100
   const quotaColor = used >= FREE_LIMIT ? S.red : used >= 2 ? S.amber : S.emerald
+  const planLabel = plan === 'pro' ? 'Pro' : plan === 'annual' ? 'Annual' : plan === 'business' ? 'Business' : 'Free plan'
 
   const bestScore = reports.length > 0 ? Math.max(...reports.map(r => r.overall_score || 0)) : null
   const avgScore  = reports.length > 0 ? Math.round(reports.reduce((a, r) => a + (r.overall_score || 0), 0) / reports.length) : null
@@ -291,7 +298,7 @@ function Sidebar({ user, stats, reports, onNewAnalysis, onSignOut }: {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: S.white, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email?.split('@')[0]}</p>
-            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Free plan</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>{planLabel}</p>
           </div>
           <button
             onClick={onSignOut}
@@ -379,6 +386,7 @@ export default function DashboardPage() {
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+  const [plan, setPlan] = useState<string>('free')
   const [selected, setSelected] = useState<string[]>([])
   const [comparing, setComparing] = useState(false)
   const [compareMode, setCompareMode] = useState(false)
@@ -388,6 +396,7 @@ export default function DashboardPage() {
   const [renamingId, setRenamingId]               = useState<string | null>(null)
   const [renameValue, setRenameValue]             = useState('')
   const [panelOpen, setPanelOpen]                 = useState(true)
+  const [viewFilter, setViewFilter]               = useState<'all' | 'saved'>('all')
 
   useEffect(() => {
     async function load() {
@@ -396,8 +405,12 @@ export default function DashboardPage() {
       if (!user) { router.push('/auth/login'); return }
       if (!user.email_confirmed_at) { router.push('/auth/verify-email'); return }
       setUser(user)
-      const { data } = await supabase.from('reports').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+      const [{ data }, { data: profile }] = await Promise.all([
+        supabase.from('reports').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('profiles').select('plan').eq('id', user.id).single(),
+      ])
       setReports((data || []) as Report[])
+      if (profile?.plan) setPlan(profile.plan)
       setLoading(false)
     }
     load()
@@ -491,6 +504,7 @@ export default function DashboardPage() {
         user={user}
         stats={stats}
         reports={reports}
+        plan={plan}
         onNewAnalysis={() => router.push('/onboarding')}
         onSignOut={handleSignOut}
       />
@@ -592,25 +606,60 @@ export default function DashboardPage() {
                 <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, padding: '64px 32px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
                   <div style={{ width: 64, height: 64, borderRadius: 20, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 20px' }}></div>
                   <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginBottom: 8 }}>No analyses yet</h2>
-                  <p style={{ fontSize: 14, color: S.n500, marginBottom: 28, maxWidth: 360, margin: '0 auto 28px' }}>Run your first location analysis to see a full GO / CAUTION / NO verdict with financial model.</p>
+                  <p style={{ fontSize: 14, color: S.n500, marginBottom: 8, maxWidth: 380, margin: '0 auto 8px' }}>Pin any Australian address, enter your rent, and get a GO / CAUTION / NO verdict with a full financial model in about 90 seconds.</p>
+                  <p style={{ fontSize: 13, color: S.n400, marginBottom: 28, maxWidth: 380, margin: '0 auto 28px' }}>Tip: use the "Calibrate your model" section to improve accuracy up to 98% before submitting.</p>
                   <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 12, padding: '13px 28px', fontWeight: 700, fontSize: 14, boxShadow: '0 4px 16px rgba(15,118,110,0.25)' }}>
-                     Analyse a location
+                    Analyse a location →
                   </button>
                 </div>
               ) : (
+                {(() => {
+                  const savedCount   = reports.filter(r => r.is_saved).length
+                  const displayList  = viewFilter === 'saved' ? reports.filter(r => r.is_saved) : reports
+                  const STATUS_CFG: Record<string, { label: string; color: string; bg: string }> = {
+                    shortlisted: { label: 'Shortlisted', color: S.brand,   bg: S.brandFaded },
+                    visited:     { label: 'Visited',     color: '#7C3AED', bg: '#F5F3FF' },
+                    opened:      { label: 'Opened',      color: S.emerald, bg: S.emeraldBg },
+                    rejected:    { label: 'Rejected',    color: S.red,     bg: S.redBg },
+                    researching: { label: 'Researching', color: S.n500,    bg: S.n100 },
+                  }
+                  return (
                 <div>
+                  {/* Filter tabs */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                    <div>
-                      <h2 style={{ fontSize: 16, fontWeight: 800, color: S.n900, marginBottom: 2 }}>Your Reports</h2>
-                      <p style={{ fontSize: 12, color: S.n400 }}>{reports.length} location{reports.length !== 1 ? 's' : ''} analysed</p>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {[
+                        { key: 'all',   label: `All (${reports.length})` },
+                        { key: 'saved', label: `📍 Saved (${savedCount})` },
+                      ].map(tab => (
+                        <button key={tab.key} onClick={() => setViewFilter(tab.key as any)}
+                          style={{
+                            padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                            background: viewFilter === tab.key ? S.brand : S.white,
+                            color:      viewFilter === tab.key ? S.white   : S.n500,
+                            border:     `1px solid ${viewFilter === tab.key ? S.brand : S.n200}`,
+                          }}>
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
                     {compareMode && selected.length > 0 && (
                       <p style={{ fontSize: 12, color: S.amber, fontWeight: 600 }}>{selected.length}/3 selected</p>
                     )}
                   </div>
 
+                  {/* Empty saved state */}
+                  {viewFilter === 'saved' && savedCount === 0 && (
+                    <div style={{ background: S.white, borderRadius: 16, border: `1px solid ${S.n200}`, padding: '40px 28px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 32, marginBottom: 10 }}>📍</div>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: S.n700, marginBottom: 6 }}>No saved locations yet</p>
+                      <p style={{ fontSize: 12, color: S.n400 }}>Open any report and click "Save location" to track it here.</p>
+                    </div>
+                  )}
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {reports.map(r => {
+                    {displayList.map(r => {
+                      const statusCfg = STATUS_CFG[r.location_status ?? 'researching'] ?? STATUS_CFG.researching
                       const vc = verdictCfg(r.verdict)
                       const isSelected = selected.includes(r.id)
                       const fin = r.result_data?.financials || {}
@@ -701,6 +750,11 @@ export default function DashboardPage() {
                                     {vc.label}
                                   </span>
                                 )}
+                                {!isRenaming && r.is_saved && (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: statusCfg.bg, color: statusCfg.color, border: `1px solid ${statusCfg.color}30`, borderRadius: 100, padding: '2px 9px', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
+                                    📍 {statusCfg.label}
+                                  </span>
+                                )}
                               </div>
                               <p style={{ fontSize: 12, color: S.n400, marginBottom: 8 }}>{shortAddr(r.location_name)}</p>
                               {isRenaming ? (
@@ -769,9 +823,9 @@ export default function DashboardPage() {
                       )
                     })}
                   </div>
-
-
                 </div>
+                  )
+                })()}
               )}
               </div>{/* end left column */}
 

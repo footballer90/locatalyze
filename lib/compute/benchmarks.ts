@@ -34,6 +34,17 @@ export interface BizBenchmark {
   competitorRadiusM: number
 
   /**
+   * Realistic customer travel radius in metres (how far people travel to visit).
+   * Used for map display and catchment labelling — distinct from competitorRadiusM.
+   *   cafe / bakery / takeaway: short (impulse / convenience)
+   *   restaurant / bar:         medium (destination but walkable evening)
+   *   gym / fitness:            long (people drive up to 5km)
+   *   retail:                   medium (specialty retail draws from wider area)
+   *   pharmacy / salon:         local neighbourhood
+   */
+  catchmentRadiusM: number
+
+  /**
    * Saturation ceiling: weighted competitor count at which the market
    * is considered fully saturated (demand signal hits zero).
    * Used to normalise density into a 0–100 demand signal.
@@ -52,67 +63,67 @@ export const BIZ_BENCHMARKS: Record<string, BizBenchmark> = {
   cafe: {
     dailyCustomersBase: 120, dailyCustomersLow: 80,  dailyCustomersHigh: 180,
     avgTicketSize: 18, grossMarginPct: 65, staffCosts: 18000, otherCostsPct: 0.12,
-    competitorRadiusM: 600, maxCompetitorsInRadius: 20,
+    competitorRadiusM: 600, catchmentRadiusM: 500, maxCompetitorsInRadius: 20,
     revenueChannelLabels: ['Coffee & Beverages', 'Food & Brunch', 'Catering & Events'],
   },
   restaurant: {
     dailyCustomersBase: 80, dailyCustomersLow: 50, dailyCustomersHigh: 130,
     avgTicketSize: 55, grossMarginPct: 68, staffCosts: 35000, otherCostsPct: 0.15,
-    competitorRadiusM: 600, maxCompetitorsInRadius: 25,
+    competitorRadiusM: 600, catchmentRadiusM: 3000, maxCompetitorsInRadius: 25,
     revenueChannelLabels: ['Dine-in', 'Delivery & Takeaway', 'Private Functions'],
   },
   bakery: {
     dailyCustomersBase: 100, dailyCustomersLow: 60, dailyCustomersHigh: 160,
     avgTicketSize: 22, grossMarginPct: 62, staffCosts: 15000, otherCostsPct: 0.10,
-    competitorRadiusM: 600, maxCompetitorsInRadius: 12,
+    competitorRadiusM: 600, catchmentRadiusM: 500, maxCompetitorsInRadius: 12,
     revenueChannelLabels: ['Bread & Pastries', 'Café / Beverages', 'Wholesale'],
   },
   gym: {
     dailyCustomersBase: 80, dailyCustomersLow: 40, dailyCustomersHigh: 140,
     avgTicketSize: 65, grossMarginPct: 80, staffCosts: 22000, otherCostsPct: 0.08,
-    competitorRadiusM: 1500, maxCompetitorsInRadius: 10,
+    competitorRadiusM: 1500, catchmentRadiusM: 5000, maxCompetitorsInRadius: 10,
     revenueChannelLabels: ['Memberships', 'Personal Training', 'Classes & Programs'],
   },
   fitness: {
     dailyCustomersBase: 80, dailyCustomersLow: 40, dailyCustomersHigh: 140,
     avgTicketSize: 65, grossMarginPct: 80, staffCosts: 22000, otherCostsPct: 0.08,
-    competitorRadiusM: 1500, maxCompetitorsInRadius: 10,
+    competitorRadiusM: 1500, catchmentRadiusM: 5000, maxCompetitorsInRadius: 10,
     revenueChannelLabels: ['Memberships', 'Personal Training', 'Classes & Programs'],
   },
   salon: {
     dailyCustomersBase: 18, dailyCustomersLow: 10, dailyCustomersHigh: 28,
     avgTicketSize: 90, grossMarginPct: 70, staffCosts: 18000, otherCostsPct: 0.10,
-    competitorRadiusM: 600, maxCompetitorsInRadius: 15,
+    competitorRadiusM: 600, catchmentRadiusM: 800, maxCompetitorsInRadius: 15,
     revenueChannelLabels: ['Hair Services', 'Colour & Treatments', 'Retail Products'],
   },
   retail: {
     dailyCustomersBase: 40, dailyCustomersLow: 20, dailyCustomersHigh: 70,
     avgTicketSize: 75, grossMarginPct: 55, staffCosts: 16000, otherCostsPct: 0.12,
-    competitorRadiusM: 500, maxCompetitorsInRadius: 18,
+    competitorRadiusM: 500, catchmentRadiusM: 2000, maxCompetitorsInRadius: 18,
     revenueChannelLabels: ['In-store Sales', 'Online / Click & Collect', 'Wholesale'],
   },
   bar: {
     dailyCustomersBase: 80, dailyCustomersLow: 40, dailyCustomersHigh: 140,
     avgTicketSize: 35, grossMarginPct: 72, staffCosts: 25000, otherCostsPct: 0.10,
-    competitorRadiusM: 600, maxCompetitorsInRadius: 18,
+    competitorRadiusM: 600, catchmentRadiusM: 1500, maxCompetitorsInRadius: 18,
     revenueChannelLabels: ['Drinks & Bar Sales', 'Food & Snacks', 'Functions & Events'],
   },
   takeaway: {
     dailyCustomersBase: 140, dailyCustomersLow: 80, dailyCustomersHigh: 220,
     avgTicketSize: 20, grossMarginPct: 60, staffCosts: 14000, otherCostsPct: 0.08,
-    competitorRadiusM: 500, maxCompetitorsInRadius: 22,
+    competitorRadiusM: 500, catchmentRadiusM: 400, maxCompetitorsInRadius: 22,
     revenueChannelLabels: ['Walk-in Orders', 'Delivery Platforms', 'Catering'],
   },
   pharmacy: {
     dailyCustomersBase: 70, dailyCustomersLow: 40, dailyCustomersHigh: 110,
     avgTicketSize: 55, grossMarginPct: 35, staffCosts: 20000, otherCostsPct: 0.08,
-    competitorRadiusM: 800, maxCompetitorsInRadius: 8,
+    competitorRadiusM: 800, catchmentRadiusM: 800, maxCompetitorsInRadius: 8,
     revenueChannelLabels: ['Prescription', 'OTC Products', 'Health & Beauty'],
   },
   other: {
     dailyCustomersBase: 60, dailyCustomersLow: 30, dailyCustomersHigh: 100,
     avgTicketSize: 50, grossMarginPct: 60, staffCosts: 18000, otherCostsPct: 0.10,
-    competitorRadiusM: 600, maxCompetitorsInRadius: 15,
+    competitorRadiusM: 600, catchmentRadiusM: 1500, maxCompetitorsInRadius: 15,
     revenueChannelLabels: ['Primary Revenue', 'Secondary Revenue', 'Other'],
   },
 }

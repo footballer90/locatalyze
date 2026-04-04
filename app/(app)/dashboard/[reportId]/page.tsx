@@ -22,6 +22,22 @@ const BUSINESS_TYPES = [
   { id: 'pharmacy', label: 'Pharmacy' }, { id: 'other', label: 'Other' },
 ]
 
+// ── Catchment radius per business type (how far customers realistically travel) ─
+// Mirrors lib/compute/benchmarks.ts — do NOT import that server-only file here.
+const CATCHMENT_RADIUS_M: Record<string, number> = {
+  cafe:       500,
+  restaurant: 3000,
+  bakery:     500,
+  gym:        5000,
+  fitness:    5000,
+  salon:      800,
+  retail:     2000,
+  bar:        1500,
+  takeaway:   400,
+  pharmacy:   800,
+  other:      1500,
+}
+
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const S = {
   font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -81,6 +97,14 @@ interface Report {
   is_public?: boolean | null
   public_token?: string | null
   share_token?: string | null
+  // Save & Track
+  is_saved?: boolean | null
+  location_status?: string | null
+  saved_at?: string | null
+  saved_label?: string | null
+  // Outcomes feedback
+  outcome_feedback?: any | null
+  feedback_dismissed_at?: string | null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -182,12 +206,14 @@ function confidenceLevel(report: Report, computed: ComputedResult | null): { lev
 }
 
 // ─── Section heading ──────────────────────────────────────────────────────────
-function SectionHeading({ children, sub }: { children: string; sub?: string }) {
+function SectionHeading({ children, sub, badge }: { children: string; sub?: string; badge?: 'ai' | 'engine' | null }) {
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 3, height: 18, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
         <h2 style={{ fontSize: 15, fontWeight: 800, color: S.n800, letterSpacing: '-0.02em', lineHeight: 1 }}>{children}</h2>
+        {badge === 'ai'     && <AIBadge />}
+        {badge === 'engine' && <EngineBadge />}
       </div>
       {sub && <p style={{ fontSize: 12, color: S.n400, marginTop: 6, marginLeft: 13 }}>{sub}</p>}
     </div>
@@ -223,9 +249,84 @@ function SourceBadge({ source, detail }: { source: string; detail?: string }) {
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 20, marginRight: 6, marginTop: 6 }}>
       <span style={{ fontSize: 11, fontWeight: 700, color: S.n500, letterSpacing: '0.02em' }}>{source}</span>
-      {detail && <span style={{ fontSize: 11, color: S.n400 }}>-- {detail}</span>}
+      {detail && <span style={{ fontSize: 11, color: S.n400 }}>— {detail}</span>}
     </div>
   )
+}
+
+// ─── AI vs Engine attribution pills ─────────────────────────────────────────
+// These are placed on every section heading so users always know whether a
+// number was computed by the deterministic engine or written by an AI model.
+function AIBadge() {
+  return (
+    <span title="This section is written by an AI language model. Qualitative analysis only — verify specific claims independently." style={{
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: '2px 8px', borderRadius: 100,
+      background: '#FEF3C7', border: '1px solid #FDE68A',
+      fontSize: 10, fontWeight: 700, color: '#92400E',
+      letterSpacing: '0.05em', textTransform: 'uppercase', flexShrink: 0,
+      cursor: 'help',
+    }}>
+      AI Analysis
+    </span>
+  )
+}
+
+function EngineBadge() {
+  return (
+    <span title="This section is calculated by the deterministic compute engine using your inputs and verified benchmarks." style={{
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: '2px 8px', borderRadius: 100,
+      background: S.brandFaded, border: `1px solid ${S.brandBorder}`,
+      fontSize: 10, fontWeight: 700, color: S.brand,
+      letterSpacing: '0.05em', textTransform: 'uppercase', flexShrink: 0,
+      cursor: 'help',
+    }}>
+      Engine
+    </span>
+  )
+}
+
+// ─── AI text sanitizer ───────────────────────────────────────────────────────
+// Strips the most common hallucination patterns from AI-generated narrative:
+// - Made-up specific percentages not derived from actual data fields
+// - Invented year-over-year growth figures the AI has no source for
+// - Fabricated suburb-specific statistics presented as facts
+// Returns cleaned text, or the original if no risky patterns found.
+function sanitizeAIText(text: string | null | undefined): string {
+  if (!text) return ''
+  let out = text
+
+  // Remove invented annual growth/decline claims ("grew 23% since 2022", "up 18% year-on-year")
+  // Keep round numbers like "growing market" but flag suspiciously precise invented stats
+  // Pattern: "[digit(s)][%] [since|in|over|year|annually|YoY|y-o-y]"
+  out = out.replace(/\b(\d{1,2}(?:\.\d)?%)\s+(since\s+\d{4}|year[- ]on[- ]year|YoY|y-o-y|annually|per annum|p\.a\.)\b/gi, (_, pct) =>
+    `approximately ${pct} (market estimate)`
+  )
+
+  // Remove "X% of [suburb] residents/households" invented census claims
+  out = out.replace(/\b(\d{1,2}(?:\.\d)?%)\s+of\s+(?:local\s+)?(?:residents?|households?|population|businesses?)\b/gi,
+    (_match, pct) => `approximately ${pct} of local residents`
+  )
+
+  // Remove fabricated CAGR claims not from actual A3 data ("7.3% CAGR", "4.8% compound")
+  // We keep these only if they came from the fiveYearForecast.estimated_cagr field (already displayed separately)
+  out = out.replace(/\b(\d{1,2}(?:\.\d{1,2})?%)\s+(?:CAGR|compound(?:ed)?\s+annual(?:ly)?|compound\s+growth)\b/gi,
+    () => 'compound annual growth (estimate)'
+  )
+
+  // Truncate extremely long AI narratives — a wall of unverified text is worse than a short hedged one
+  if (out.length > 1200) {
+    const sentences = out.match(/[^.!?]+[.!?]+/g) || [out]
+    let truncated = ''
+    for (const s of sentences) {
+      if ((truncated + s).length > 1100) break
+      truncated += s
+    }
+    out = truncated.trim() + (truncated.length < out.length ? ' [Analysis truncated — full detail in report data.]' : '')
+  }
+
+  return out.trim()
 }
 
 function SourceRow({ children }: { children: React.ReactNode }) {
@@ -268,10 +369,11 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
       else reasons.push(`Rent is ${rentPct}% of revenue — exceeds the 20% danger threshold`)
     }
     const _whyCompCount = (competitors as any)?.validCount ?? competitors?.count
+    const _whyRadius    = C?.competitorRadius ?? 500
     if (_whyCompCount != null) {
-      if (_whyCompCount <= 5) reasons.push(`Only ${_whyCompCount} direct competitors within 500m — low saturation`)
-      else if (_whyCompCount <= 12) reasons.push(`${_whyCompCount} competitors within 500m — moderate saturation, differentiation needed`)
-      else reasons.push(`${_whyCompCount} competitors within 500m — highly saturated market`)
+      if (_whyCompCount <= 5) reasons.push(`Only ${_whyCompCount} direct competitors within ${_whyRadius}m — low saturation`)
+      else if (_whyCompCount <= 12) reasons.push(`${_whyCompCount} competitors within ${_whyRadius}m — moderate saturation, differentiation needed`)
+      else reasons.push(`${_whyCompCount} competitors within ${_whyRadius}m — highly saturated market`)
     }
     if (fin.monthlyNetProfit != null) {
       if (fin.monthlyNetProfit > 2000) reasons.push(`Projected net profit of ${fmt(fin.monthlyNetProfit)}/month at baseline demand`)
@@ -833,7 +935,7 @@ function DataQualityHeader({ computed, report }: {
               </div>
               <p style={{ fontSize: 12, color: '#44403C', lineHeight: 1.6 }}>
                 {pressure.revenueAdjusted
-                  ? `Nearby competitor density (${pressure.rawCount500m} businesses within 500m) triggered a revenue reduction of ${Math.round((1 - pressure.pressureFactor) * 100)}%. Without this, projected revenue would be ${fmt(Math.round(C.revenue / pressure.pressureFactor))}/month.`
+                  ? `Nearby competitor density (${pressure.rawCount500m} businesses within ${C.competitorRadius ?? 500}m) triggered a revenue reduction of ${Math.round((1 - pressure.pressureFactor) * 100)}%. Without this, projected revenue would be ${fmt(Math.round(C.revenue / pressure.pressureFactor))}/month.`
                   : 'No competitor density adjustment applied. Revenue projection reflects the raw model output without pressure discounting.'
                 }
               </p>
@@ -2173,7 +2275,14 @@ function BreakevenGauge({ daily, breakeven }: { daily: number | null; breakeven:
 // ─── Assumptions panel ────────────────────────────────────────────────────────
 function AssumptionsPanel({ report }: { report: Report }) {
   const [open, setOpen] = useState(false)
-  const fin = safeResultData(report.result_data).financials || {}
+  const rd  = safeResultData(report.result_data)
+  const fin = rd.financials || {}
+  const demoQuality = rd.demographics?.dataQuality || null
+  const demoSource  = demoQuality === 'suburb_level'
+    ? 'ABS 2021 Census – suburb (POA) level'
+    : demoQuality === 'abs_state_default'
+      ? 'ABS 2021 Census – state-level estimate'
+      : 'ABS 2021 Census'
   const items = [
     { label: 'Business type', value: report.business_type || '--' },
     { label: 'Address', value: report.location_name || '--' },
@@ -2182,8 +2291,8 @@ function AssumptionsPanel({ report }: { report: Report }) {
     { label: 'Est. daily customers', value: report.breakeven_daily ? `${report.breakeven_daily} / day` : '--' },
     { label: 'Monthly revenue', value: fmt(fin.monthlyRevenue) },
     { label: 'Profit margin', value: fin.profitMargin ? `${fin.profitMargin}%` : '--' },
-    { label: 'Competitor data', value: 'OpenStreetMap Overpass API -- 500m radius' },
-    { label: 'Demographics source', value: 'ABS 2021 Census -- SA2 region' },
+    { label: 'Competitor data', value: `OpenStreetMap Overpass API – ${C?.competitorRadius ?? 500}m radius` },
+    { label: 'Demographics source', value: demoSource },
     { label: 'Geocoding source', value: 'OpenStreetMap Nominatim' },
     { label: 'Report generated', value: new Date(report.created_at).toLocaleString('en-AU') },
   ]
@@ -2954,11 +3063,84 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const userPlan = useUserPlan()
   const [activeTab, setActiveTab] = useState('overview')
 
+  // ── Save & Track state ─────────────────────────────────────────────────────
+  const [isSaved, setIsSaved]               = useState(false)
+  const [locationStatus, setLocationStatus] = useState<string>('researching')
+  const [saveLoading, setSaveLoading]       = useState(false)
+  const [showStatusMenu, setShowStatusMenu] = useState(false)
+
+  // Sync from report once loaded
+  useEffect(() => {
+    if (report) {
+      setIsSaved(report.is_saved ?? false)
+      setLocationStatus(report.location_status ?? 'researching')
+    }
+  }, [report?.is_saved, report?.location_status])
+
+  const toggleSave = async () => {
+    if (!report || saveLoading) return
+    const next = !isSaved
+    setSaveLoading(true)
+    setIsSaved(next)
+    try {
+      await fetch(`/api/reports/${report.report_id ?? report.id}/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ saved: next, status: next ? 'shortlisted' : 'researching' }),
+      })
+      if (next) setLocationStatus('shortlisted')
+    } catch { setIsSaved(!next) }
+    setSaveLoading(false)
+  }
+
+  const updateStatus = async (status: string) => {
+    if (!report) return
+    setLocationStatus(status)
+    setShowStatusMenu(false)
+    await fetch(`/api/reports/${report.report_id ?? report.id}/save`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    })
+  }
+
+  // ── Feedback state ─────────────────────────────────────────────────────────
+  const [feedbackDismissed, setFeedbackDismissed] = useState(false)
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
+  const [feedbackProceeded, setFeedbackProceeded] = useState<boolean | null>(null)
+  const [feedbackAccuracy, setFeedbackAccuracy]   = useState<number | null>(null)
+  const [feedbackNotes, setFeedbackNotes]         = useState('')
+  const [feedbackLoading, setFeedbackLoading]     = useState(false)
+
+  const submitFeedback = async (proceeded: boolean) => {
+    if (!report || feedbackLoading) return
+    setFeedbackProceeded(proceeded)
+    setFeedbackLoading(true)
+    await fetch(`/api/reports/${report.report_id ?? report.id}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ proceeded, accuracy: feedbackAccuracy, notes: feedbackNotes }),
+    })
+    setFeedbackSubmitted(true)
+    setFeedbackLoading(false)
+  }
+
+  const dismissFeedback = async () => {
+    if (!report) return
+    setFeedbackDismissed(true)
+    await fetch(`/api/reports/${report.report_id ?? report.id}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dismissed: true }),
+    })
+  }
+
   // ── Map state ──────────────────────────────────────────────────────────────
   const [mapInsights, setMapInsights] = useState<MapInsights | null>(null)
   const [mapCompetitors, setMapCompetitors] = useState<Competitor[]>([])
   const [mapAnchors, setMapAnchors] = useState<Anchor[]>([])
   const [mapRadius, setMapRadius] = useState<number | undefined>(undefined)
+  const [mapCatchmentRadius, setMapCatchmentRadius] = useState<number>(1500)
   const [showHeatmap, setShowHeatmap] = useState(false)
   const [showIsochrones, setShowIsochrones] = useState(true)
   const [mapBusinessType, setMapBusinessType] = useState('cafe')
@@ -3027,14 +3209,22 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const adjVc = verdictCfg(adjCalc.verdict)
   const isChanged = adjCalc.changed
 
-  // Sync map business type
+  // Sync map business type + radii from report / computed_result
   useEffect(() => {
     if (report?.business_type) {
       const bt = (report.business_type || '').toLowerCase()
       const match = BUSINESS_TYPES.find(b => bt.includes(b.id))
-      if (match) setMapBusinessType(match.id)
+      if (match) {
+        setMapBusinessType(match.id)
+        setMapCatchmentRadius(CATCHMENT_RADIUS_M[match.id] ?? 1500)
+      }
     }
   }, [report?.business_type])
+
+  useEffect(() => {
+    const compR = (report?.computed_result as any)?.competitorRadius
+    if (compR && compR > 0) setMapRadius(compR)
+  }, [(report?.computed_result as any)?.competitorRadius])
 
   // Map tab: lazy load ref (must be before early returns)
   const mapTabMounted = useRef(false)
@@ -3108,7 +3298,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     const isStuck      = elapsedSeconds > 90
 
     const etaText = elapsedSeconds < 20
-      ? 'Usually ready in 20–40 seconds'
+      ? 'Usually ready in 60–90 seconds'
       : elapsedSeconds < 45
       ? `Almost there\u2026`
       : elapsedSeconds < 90
@@ -3490,7 +3680,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14 }}>&#8250;</span>
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Location Report</span>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => router.push('/compare')} style={{
             display: 'flex', alignItems: 'center', gap: 5,
             background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
@@ -3499,10 +3689,124 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           }}>
             ⇄ Compare
           </button>
+
+          {/* ── Save / Track button ── */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={isSaved ? () => setShowStatusMenu(v => !v) : toggleSave}
+              disabled={saveLoading}
+              title={isSaved ? 'Update tracking status' : 'Save this location'}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: isSaved ? S.brand : 'rgba(255,255,255,0.08)',
+                border: `1px solid ${isSaved ? S.brand : 'rgba(255,255,255,0.12)'}`,
+                color: isSaved ? S.white : 'rgba(255,255,255,0.7)',
+                borderRadius: 8, padding: '6px 14px',
+                fontSize: 12, fontWeight: 700, cursor: saveLoading ? 'default' : 'pointer',
+                fontFamily: S.font, opacity: saveLoading ? 0.6 : 1, transition: 'all 0.15s',
+              }}>
+              {isSaved ? '📍' : '🔖'}
+              {isSaved
+                ? ({ researching: 'Researching', shortlisted: 'Shortlisted', visited: 'Visited', opened: 'Opened', rejected: 'Rejected' }[locationStatus] ?? 'Saved')
+                : 'Save location'
+              }
+              {isSaved && <span style={{ fontSize: 9, opacity: 0.7 }}>▼</span>}
+            </button>
+            {showStatusMenu && (
+              <div style={{
+                position: 'absolute', top: '110%', right: 0, zIndex: 200,
+                background: S.white, border: `1px solid ${S.n200}`,
+                borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                minWidth: 170, overflow: 'hidden',
+              }}>
+                {[
+                  { value: 'shortlisted', label: '📋 Shortlisted',  desc: 'On my radar' },
+                  { value: 'visited',     label: '🚶 Site visited',  desc: 'Inspected in person' },
+                  { value: 'opened',      label: '✅ Opened here',   desc: 'Business launched' },
+                  { value: 'rejected',    label: '❌ Not pursuing',  desc: 'Ruled out' },
+                ].map(opt => (
+                  <button key={opt.value} onClick={() => updateStatus(opt.value)}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left', padding: '9px 14px',
+                      background: locationStatus === opt.value ? S.brandFaded : 'transparent',
+                      border: 'none', cursor: 'pointer', fontFamily: S.font,
+                      borderBottom: `1px solid ${S.n100}`,
+                    }}>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: locationStatus === opt.value ? S.brand : S.n800 }}>{opt.label}</p>
+                    <p style={{ fontSize: 10, color: S.n400, marginTop: 1 }}>{opt.desc}</p>
+                  </button>
+                ))}
+                <button onClick={() => { toggleSave(); setShowStatusMenu(false) }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: S.font }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: S.red }}>✕ Unsave</p>
+                </button>
+              </div>
+            )}
+          </div>
+
           <ExportPDFButton report={report} />
           <ShareButton reportId={report.report_id ?? report.id} initialIsPublic={report.is_public ?? false} initialToken={report.public_token ?? null} />
         </div>
       </nav>
+
+      {/* ── Outcomes feedback banner ─────────────────────────────────────────── */}
+      {(() => {
+        const reportAgeDays = report ? (Date.now() - new Date(report.created_at).getTime()) / 86400000 : 0
+        const showFeedback  = reportAgeDays >= 60
+          && !report?.outcome_feedback
+          && !report?.feedback_dismissed_at
+          && !feedbackDismissed
+          && !feedbackSubmitted
+
+        if (!showFeedback) return null
+
+        return (
+          <div style={{ background: S.amberBg, borderBottom: `1px solid ${S.amberBdr}`, padding: '10px 32px' }}>
+            <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E' }}>
+                  How did this location work out? 🏪
+                </p>
+                {feedbackProceeded === null ? (
+                  <p style={{ fontSize: 11, color: '#B45309', marginTop: 2 }}>
+                    You ran this report {Math.round(reportAgeDays)} days ago — your outcome helps us improve accuracy for everyone.
+                  </p>
+                ) : (
+                  <p style={{ fontSize: 11, color: '#B45309', marginTop: 2 }}>
+                    How accurate was the revenue projection? (1 = way off, 5 = spot on)
+                  </p>
+                )}
+              </div>
+              {feedbackProceeded === null ? (
+                <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                  <button onClick={() => submitFeedback(true)} disabled={feedbackLoading} style={{ background: S.emerald, color: S.white, border: 'none', borderRadius: 7, padding: '7px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>
+                    ✅ Yes, I opened here
+                  </button>
+                  <button onClick={() => submitFeedback(false)} disabled={feedbackLoading} style={{ background: S.white, color: S.n700, border: `1px solid ${S.n200}`, borderRadius: 7, padding: '7px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: S.font }}>
+                    Didn't proceed
+                  </button>
+                  <button onClick={dismissFeedback} style={{ background: 'none', border: 'none', color: S.n400, fontSize: 18, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>×</button>
+                </div>
+              ) : !feedbackSubmitted ? (
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+                  {[1,2,3,4,5].map(n => (
+                    <button key={n} onClick={() => setFeedbackAccuracy(n)}
+                      style={{ width: 32, height: 32, borderRadius: 6, border: `1.5px solid ${feedbackAccuracy === n ? S.brand : S.n200}`, background: feedbackAccuracy === n ? S.brandFaded : S.white, color: feedbackAccuracy === n ? S.brand : S.n500, fontWeight: 800, fontSize: 13, cursor: 'pointer', fontFamily: S.font }}>
+                      {n}
+                    </button>
+                  ))}
+                  <button onClick={() => submitFeedback(feedbackProceeded!)} disabled={feedbackAccuracy === null || feedbackLoading}
+                    style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 7, padding: '7px 14px', fontSize: 12, fontWeight: 700, cursor: feedbackAccuracy === null ? 'default' : 'pointer', opacity: feedbackAccuracy === null ? 0.5 : 1, fontFamily: S.font }}>
+                    Submit
+                  </button>
+                </div>
+              ) : (
+                <p style={{ fontSize: 13, fontWeight: 700, color: S.emerald }}>Thanks — your feedback helps calibrate our model. 🙏</p>
+              )}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── Main content ── */}
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 32px 80px' }}>
@@ -3799,7 +4103,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {/* Score breakdown + radar */}
             <Card>
-              <SectionHeading sub="Each component is weighted to produce your overall score.">Score Breakdown</SectionHeading>
+              <SectionHeading badge="engine" sub="Each component is weighted to produce your overall score.">Score Breakdown</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 32, alignItems: 'center' }}>
                 <div>
                   <ScoreBar label="Rent Affordability" score={report.score_rent} weight="30%" />
@@ -3829,7 +4133,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* SWOT */}
             {report.swot_analysis && (
               <Card>
-                <SectionHeading>SWOT Analysis</SectionHeading>
+                <SectionHeading badge="ai" sub="Qualitative analysis from AI agent — verify suburb-specific claims independently.">SWOT Analysis</SectionHeading>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   {swotKeys.map(key => {
                     const items = parseSwot(key, swotKeys)
@@ -4138,6 +4442,55 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )
             })()}
 
+            {/* ─── What this report covers and doesn't ──────────────────── */}
+            <div style={{ border: `1px solid ${S.n200}`, borderRadius: 14, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 20px', background: S.n50, borderBottom: `1px solid ${S.n100}`, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 3, height: 14, background: S.n400, borderRadius: 2 }} />
+                <span style={{ fontSize: 12, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>What this report covers and doesn't cover</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                <div style={{ padding: '18px 22px', borderRight: `1px solid ${S.n100}` }}>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>✓ What's modelled</p>
+                  {[
+                    'Competitor density within your business-type catchment radius',
+                    'Rent-to-revenue ratio and break-even timeline',
+                    'Foot traffic signals from transit nodes and anchor tenants',
+                    'Market demand trends from search and population data',
+                    'Demographics — median income, population age mix',
+                    'Scenario modelling: worst / base / optimistic revenue',
+                  ].map(item => (
+                    <div key={item} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <span style={{ color: S.emerald, fontSize: 12, flexShrink: 0, marginTop: 1 }}>✓</span>
+                      <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6 }}>{item}</p>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: '18px 22px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>✗ What's not modelled</p>
+                  {[
+                    { item: 'Lease negotiation outcomes', note: 'Incentives, fit-out contributions, and rent reviews are between you and the landlord' },
+                    { item: 'Tenancy mix and anchor changes', note: 'Future tenant departures or new anchors can shift foot traffic significantly' },
+                    { item: 'Pending developments', note: 'Approved DA projects, rezoning, or new competitor openings are not captured' },
+                    { item: 'Access and visibility specifics', note: 'Street-level signage, car parking, and disabled access require an on-site visit' },
+                    { item: 'Operator execution', note: 'Staff quality, product-market fit, and marketing are not factored into projections' },
+                  ].map(({ item, note }) => (
+                    <div key={item} style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                      <span style={{ color: S.amber, fontSize: 12, flexShrink: 0, marginTop: 1 }}>✗</span>
+                      <div>
+                        <p style={{ fontSize: 12, color: S.n800, fontWeight: 600, lineHeight: 1.5 }}>{item}</p>
+                        <p style={{ fontSize: 11, color: S.n400, lineHeight: 1.5, marginTop: 2 }}>{note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ padding: '12px 22px', background: S.n50, borderTop: `1px solid ${S.n100}` }}>
+                <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.7 }}>
+                  This report is best used to <strong>shortlist and de-risk locations</strong> before committing to a site visit or engaging a commercial agent. It is not a substitute for a solicitor review, accountant sign-off, or a physical site inspection.
+                </p>
+              </div>
+            </div>
+
             <AssumptionsPanel report={report} />
           </div>
         )}
@@ -4258,7 +4611,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   )}
                 </div>
                 {((competitors as any)?.validNearbyBusinesses ?? []).length === 0 && (
-                  <p style={{ fontSize: 13, color: S.n400, padding: '12px 0' }}>No direct competitors found within 500m after filtering. This may indicate a low-saturation opportunity.</p>
+                  <p style={{ fontSize: 13, color: S.n400, padding: '12px 0' }}>No direct competitors found within {C?.competitorRadius ?? 500}m after filtering. This may indicate a low-saturation opportunity.</p>
                 )}
               </Card>
             )}
@@ -4417,7 +4770,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 {/* 5-year forecast */}
                 {market.fiveYearForecast && (
                   <Card>
-                    <SectionHeading sub="AI-generated 5-year market outlook from A3 agent.">5-Year Market Forecast</SectionHeading>
+                    <SectionHeading badge="ai" sub="AI-generated market outlook — qualitative trend analysis, not a financial forecast.">5-Year Market Forecast</SectionHeading>
                     {market.fiveYearForecast.estimated_cagr && (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, marginBottom: 14 }}>
                         <span style={{ fontSize: 11, fontWeight: 700, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estimated CAGR</span>
@@ -4425,7 +4778,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       </div>
                     )}
                     {market.fiveYearForecast.narrative && (
-                      <p style={{ fontSize: 14, color: S.n500, lineHeight: 1.8, marginBottom: 14 }}>{market.fiveYearForecast.narrative}</p>
+                      <p style={{ fontSize: 14, color: S.n500, lineHeight: 1.8, marginBottom: 14 }}>{sanitizeAIText(market.fiveYearForecast.narrative)}</p>
                     )}
                     {market.fiveYearForecast.key_growth_drivers?.length > 0 && (
                       <div>
@@ -4490,7 +4843,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 {/* Top opportunities */}
                 {market.topOpportunities?.length > 0 && (
                   <Card>
-                    <SectionHeading>Top Market Opportunities</SectionHeading>
+                    <SectionHeading badge="ai" sub="Qualitative opportunities identified by AI — validate against your own market research.">Top Market Opportunities</SectionHeading>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {market.topOpportunities.map((o: any, i: number) => {
                         const label = typeof o === 'string' ? o : (o.opportunity ?? o.title ?? String(o))
@@ -4571,7 +4924,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* A4 Monthly cost breakdown */}
             {fin.monthlyCostBreakdown && (
               <Card>
-                <SectionHeading sub="Line-by-line operating costs from A4 agent financial model.">Monthly Operating Costs (A4)</SectionHeading>
+                <SectionHeading badge="engine" sub="Line-by-line operating costs from A4 agent financial model.">Monthly Operating Costs (A4)</SectionHeading>
                 <MonthlyCostTable breakdown={fin.monthlyCostBreakdown} />
                 {fin.costOptimisationTips?.length > 0 && (
                   <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${S.n100}` }}>
@@ -4590,7 +4943,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             )}
 
             <Card>
-              <SectionHeading>Monthly P&L Waterfall</SectionHeading>
+              <SectionHeading badge="engine">Monthly P&L Waterfall</SectionHeading>
               {fin.monthlyRevenue && (
                 <div style={{ marginBottom: 20 }}>
                   <PLWaterfall fin={fin} submittedRent={report.monthly_rent} />
@@ -4672,7 +5025,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* Setup Cost Estimate (A4) */}
             {(fin.setupCostRec || fin.setupCostMin) && (
               <Card>
-                <SectionHeading sub="Estimated one-time costs to open your business in this location.">Setup Cost Estimate</SectionHeading>
+                <SectionHeading badge="engine" sub="Estimated one-time costs to open your business in this location.">Setup Cost Estimate</SectionHeading>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 20 }}>
                   <Tile label="Recommended budget" value={fmt(fin.setupCostRec)} mono color={S.brand} />
                   <Tile label="Minimum viable" value={fmt(fin.setupCostMin)} mono />
@@ -4725,7 +5078,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             </Card>
 
             <Card>
-              <SectionHeading>Break-even Analysis</SectionHeading>
+              <SectionHeading badge="engine">Break-even Analysis</SectionHeading>
               {/* Single canonical break-even values — _beDailyForGauge = required, _currentDailyCustomers = projected */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 24, alignItems: 'center', marginBottom: 16 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
@@ -4792,7 +5145,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* Year 1 Revenue Ramp (A5) */}
             {fin.monthlyRamp?.length > 0 && (
               <Card>
-                <SectionHeading sub="Customer ramp trajectory from A5 model — month 1 through 12.">Year 1 Revenue Ramp</SectionHeading>
+                <SectionHeading badge="engine" sub="Customer ramp trajectory from A5 model — month 1 through 12.">Year 1 Revenue Ramp</SectionHeading>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 80, marginBottom: 14 }}>
                   {fin.monthlyRamp.map((m: any, i: number) => {
                     const cust = Number(m.customers_per_day ?? m.utilisation_pct ?? 0)
@@ -4858,6 +5211,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     lat={reportLat} lng={reportLng}
                     businessType={mapBusinessType}
                     radius={mapRadius}
+                    competitorRadiusM={mapRadius ?? 600}
+                    catchmentRadiusM={mapCatchmentRadius}
                     onInsightsUpdate={handleInsightsUpdate}
                     onCompetitorsUpdate={handleCompetitorsUpdate}
                     onAnchorsUpdate={handleAnchorsUpdate}
@@ -4913,7 +5268,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       <p style={{ fontSize: 28, fontWeight: 900, color: S.n900, fontFamily: S.mono, letterSpacing: '-0.03em' }}>
                         {mapInsights?.competitorCount500m ?? competitors?.count ?? '--'}
                       </p>
-                      <p style={{ fontSize: 10, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>within 500m</p>
+                      <p style={{ fontSize: 10, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>within {mapRadius ?? C?.competitorRadius ?? 500}m</p>
                     </div>
                     <div style={{ background: S.n50, borderRadius: 10, padding: '14px', border: `1px solid ${S.n100}`, textAlign: 'center' }}>
                       <p style={{
@@ -5007,8 +5362,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                     {[
                       { color: '#EF4444', label: 'Competitor' },
-                      { color: S.brand, label: '500m radius' },
-                      { color: '#6366F1', label: '1km radius' },
+                      { color: S.brand, label: `${mapRadius ?? C?.competitorRadius ?? 500}m competitor area` },
+                      { color: '#6366F1', label: `${mapCatchmentRadius >= 1000 ? `${mapCatchmentRadius / 1000}km` : `${mapCatchmentRadius}m`} catchment` },
                     ].map(item => (
                       <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.color }} />
@@ -5050,7 +5405,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       <p style={{ fontSize: 24, fontWeight: 900, color: gapZone ? S.emerald : S.n700, fontFamily: S.mono }}>{gapZone ? 'Yes' : 'No'}</p>
                       <p style={{ fontSize: 11, fontWeight: 700, color: gapZone ? S.emerald : S.n500, textTransform: 'uppercase', marginTop: 2 }}>opportunity gap</p>
                       <p style={{ fontSize: 12, color: gapZone ? '#065F46' : S.n500, marginTop: 6, lineHeight: 1.5 }}>
-                        {gapZone ? 'The 500m–1km ring has very few operators — potential opportunity to serve the wider catchment' : 'Competition is distributed evenly across the radius — no obvious spatial gaps'}
+                        {gapZone ? `The ${mapRadius ?? C?.competitorRadius ?? 500}m–${mapCatchmentRadius >= 1000 ? `${mapCatchmentRadius / 1000}km` : `${mapCatchmentRadius}m`} ring has very few operators — potential opportunity to serve the wider catchment` : 'Competition is distributed evenly across the catchment area — no obvious spatial gaps'}
                       </p>
                     </div>
                   </div>

@@ -28,7 +28,7 @@ const PLANS = [
   perReport: '≈ $2.95 per report',
   badge: null,
     dark: false,
-    features: ['20 location reports/month', 'Location comparison tool', 'PDF export', 'Priority support', 'All future features'],
+    features: ['20 location reports/month', 'Location comparison tool', 'PDF export', 'Report email delivery', 'Priority support'],
   cta: 'Start Pro — $59/mo',
  },
   {
@@ -41,7 +41,7 @@ const PLANS = [
   perReport: '≈ $2.04 per report',
   badge: ' MOST POPULAR',
   dark: true,
-    features: ['240 location reports/year', 'Location comparison tool', 'PDF export', 'Priority support', 'All future features'],
+    features: ['240 location reports/year', 'Location comparison tool', 'PDF export', 'Report email delivery', 'Priority support'],
   cta: 'Get Annual — $490/yr',
  },
   {
@@ -54,7 +54,7 @@ const PLANS = [
   perReport: '≈ $1.98 per report',
   badge: null,
     dark: false,
-    features: ['60 location reports/month', 'Location comparison tool', 'PDF export', 'Priority support', 'Team sharing (coming soon)', 'API access (coming soon)'],
+    features: ['60 location reports/month', 'Location comparison tool', 'PDF export', 'Report email delivery', 'Priority support', 'Team sharing — coming soon', 'API access — coming soon'],
   cta: 'Start Business — $119/mo',
  },
 ]
@@ -106,10 +106,10 @@ export default function UpgradePage() {
        Upgrade to Pro
           </div>
           <h1 style={{ fontSize: 42, fontWeight: 900, color: S.n900, letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 14 }}>
-      Unlimited location analysis
+      More reports. Better decisions.
           </h1>
           <p style={{ fontSize: 16, color: S.n500, lineHeight: 1.75 }}>
-            You've used your 3 free reports. Upgrade for more reports, PDF export, and location comparison.
+            You've used your 3 free reports. Upgrade for more analyses, PDF export, side-by-side location comparison, and report email delivery.
      </p>
         </div>
 
@@ -180,11 +180,11 @@ export default function UpgradePage() {
         <div style={{ marginTop: 52, width: '100%', maxWidth: 560 }}>
      <h3 style={{ fontSize: 18, fontWeight: 800, color: S.n900, marginBottom: 20, textAlign: 'center' }}>Common questions</h3>
      {[
-            { q: 'What happens to my 3 free reports?', a: 'They stay. Upgrading adds your new monthly or annual allowance on top.' },
-      { q: 'Can I cancel my monthly plan?', a: 'Yes, any time. You keep access until the end of your billing period. No penalties.' },
-      { q: 'What is the difference between Pro and Business?', a: 'Pro gives 20 reports/month for individual founders. Business gives 60 reports/month and will include team sharing and API access.' },
-      { q: 'Why is annual the best value?', a: 'Annual costs $490 vs $708 for 12 months of Pro monthly — you save $218. It locks in your current pricing.' },
-      { q: 'What payment methods are accepted?', a: 'All major credit and debit cards via Stripe. Apple Pay and Google Pay where available.' },
+            { q: 'What happens to my 3 free reports?', a: 'They stay in your dashboard permanently. Upgrading adds your new monthly or annual report allowance on top.' },
+      { q: 'Can I cancel my monthly plan?', a: 'Yes, any time from your Profile page. You keep access until the end of your current billing period. No cancellation fees.' },
+      { q: 'What is the difference between Pro and Business?', a: 'Pro gives 20 reports/month — right for individual founders and operators. Business gives 60 reports/month and is designed for commercial agents, franchise groups, and agencies evaluating multiple sites. Team sharing and API access are on the Business roadmap.' },
+      { q: 'Why is annual the best value?', a: 'Annual costs $490 vs $708 for 12 months of Pro monthly — a saving of $218. It also locks in your pricing if Pro rates increase.' },
+      { q: 'What payment methods are accepted?', a: 'All major credit and debit cards via Stripe. Apple Pay and Google Pay where supported by your browser.' },
      ].map(item => (
             <div key={item.q} style={{ borderBottom: `1px solid ${S.n100}`, padding: '16px 0' }}>
        <p style={{ fontSize: 14, fontWeight: 700, color: S.n800, marginBottom: 6 }}>{item.q}</p>

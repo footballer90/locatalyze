@@ -21,25 +21,25 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default:  'Locatalyze — AI Location Feasibility for Australian Businesses',
+    default:  'Is Your Location Worth It? Café, Restaurant & Retail Analysis — Locatalyze',
     template: '%s | Locatalyze',
   },
   description:
-    'Analyse any Australian address and get a complete financial feasibility report in 30 seconds. GO, CAUTION or NO verdict backed by live data.',
-  keywords: ['location analysis', 'business feasibility', 'cafe location', 'restaurant location', 'Australian business'],
-  authors: [{ name: 'Locatalyze' }],
+    'Enter any Australian address and find out if it can support your café, restaurant or retail store. Competitor map, rent-to-revenue check, demographics and a GO/CAUTION/NO verdict — free to start.',
+  keywords: ['café location analysis Australia', 'best suburb to open a café', 'restaurant location check', 'commercial rent analysis', 'open a café Sydney Melbourne Brisbane Perth', 'business location feasibility'],
+  authors: [{ name: 'Locatalyze', url: SITE_URL }],
   creator: 'Locatalyze',
   openGraph: {
     type:        'website',
     locale:      'en_AU',
     url:         SITE_URL,
     siteName:    'Locatalyze',
-    title:       'Locatalyze — AI Location Feasibility for Australian Businesses',
-    description: 'Know if a location will make you money before you sign the lease.',
+    title:       'Is Your Location Worth It? Café & Restaurant Analysis — Locatalyze',
+    description: 'Know if a location will make you money before you sign the lease. Free for Australian addresses.',
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'Locatalyze — AI Location Feasibility',
+    title:       'Is Your Location Worth It? — Locatalyze',
     description: 'Know if a location will make you money before you sign the lease.',
   },
   robots: {

@@ -101,23 +101,26 @@ export default function MethodologyPage() {
             <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>The process</p>
       <h2 style={{ fontSize: 28, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em' }}>What happens when you submit an address</h2>
      </div>
-          <Step n="01" title="Address geocoding">
-      We convert your address into precise latitude/longitude coordinates using the Google Maps Geocoding API. This gives us the exact location to anchor all subsequent analysis.
+          <Step n="01" title="Address + coordinate pinning">
+      You drop a pin on an interactive map to confirm your exact location. We capture the precise latitude/longitude coordinates — not just a suburb name — so all subsequent analysis is anchored to your specific street and block, not a generic suburb average.
           </Step>
           <Step n="02" title="Competitor mapping">
-      We query Google Places API for all businesses matching your category within a 500m radius. We count them, assess their ratings and review volume, and calculate a competition intensity score from LOW to HIGH.
+      We query Google Maps for all businesses matching your category within a 500m radius of your pinned coordinates. Each competitor is assessed by their rating and review volume to produce a competition intensity score (LOW / MEDIUM / HIGH) and a Threat Score that accounts for quality, not just count.
           </Step>
           <Step n="03" title="Demographic analysis">
-      We pull ABS-aligned demographic estimates for the suburb — median household income, age distribution, population density, and consumer affordability index. These are cross-referenced against your business type to assess market fit.
+      We pull ABS-aligned demographic estimates for your suburb — median household income, age distribution, population density, and a consumer affordability index. These are cross-referenced against your business type to assess market fit.
           </Step>
           <Step n="04" title="Rent benchmarking">
-      Your submitted monthly rent is compared against estimated commercial rental benchmarks for the suburb and business category. We calculate rent as a percentage of projected revenue and rate it EXCELLENT / GOOD / MARGINAL / POOR.
+      Your submitted monthly rent is compared against commercial rental benchmarks for the suburb and business category, sourced from publicly available property listings. We calculate rent as a percentage of projected revenue and rate it EXCELLENT / GOOD / MARGINAL / POOR.
           </Step>
-          <Step n="05" title="Financial modelling">
-      Using your inputs (rent, setup budget, average order value) combined with industry benchmarks for your business type, we build a full P&L model: monthly revenue estimate, cost structure, gross and net profit, break-even customers per day, and payback period on your setup investment.
+          <Step n="05" title="Model calibration (optional but impactful)">
+      If you fill in the "Calibrate your model" section, the financial engine replaces generic benchmarks with your actual inputs. Average order value overrides the industry benchmark for your category — changing revenue projections and break-even thresholds. Operating hours apply a demand multiplier (e.g. breakfast/lunch = 65% of an all-day operator's baseline; all-day = 135%). Location access type applies a footfall multiplier (transport hub = +10%; side street = −25%; arcade = −30%). Each field you provide raises the Model Accuracy score displayed on the report.
           </Step>
-          <Step n="06" title="AI analysis & verdict">
-      All data is passed to our AI model which synthesises the quantitative scores with qualitative analysis — generating the SWOT, recommendation text, risk scenarios and 3-year projections. The final GO / CAUTION / NO verdict is determined by the weighted location score.
+          <Step n="06" title="Deterministic financial model">
+      A rules-based engine (not AI) builds the P&L from your calibrated inputs: monthly revenue, COGS, staffing, rent, fixed overheads, gross margin, net profit, contribution-margin break-even customers per day, and investment payback period. All formulas are documented below. If any critical input is missing, the relevant financial section is suppressed and a data gap is shown — no fake numbers.
+          </Step>
+          <Step n="07" title="AI narrative analysis & verdict">
+      The quantitative scores from Steps 1–6 are passed to an AI model to generate the written analysis: SWOT, market demand narrative, competitive positioning, and 3-year projection. The GO / CAUTION / NO verdict is determined by the weighted location score (not by AI) — the AI explains the verdict, it does not decide it.
           </Step>
         </section>
 
@@ -128,12 +131,12 @@ export default function MethodologyPage() {
       <h2 style={{ fontSize: 28, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em' }}>Where the data comes from</h2>
      </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
-      <DataCard icon="" title="Google Maps Platform" badge="Live API" desc="Real-time competitor locations, business types, ratings, review counts and operating hours within your analysis radius." />
+      <DataCard icon="" title="Google Maps Platform" badge="Live API" desc="Competitor locations, ratings, review counts, and price levels queried live for your specific coordinates within a 500m radius." />
       <DataCard icon="" title="ABS Census Estimates" badge="2021–2026" desc="Population demographics, median income, household size and age distribution aligned to Australian Bureau of Statistics data." />
-      <DataCard icon="" title="Commercial Rent Database" badge="Benchmarks" desc="Suburb-level commercial rent benchmarks calibrated from publicly available commercial property listings and market reports." />
-      <DataCard icon="" title="Industry Benchmarks" badge="By category" desc="Revenue per square metre, labour cost ratios, COGS percentages and average ticket size benchmarks segmented by business type." />
-      <DataCard icon="" title="AI Financial Model" badge="AI Analysis" desc="Our AI synthesises all inputs to produce the narrative analysis, risk scenarios, SWOT assessment and 3-year projection model." />
-      <DataCard icon="" title="Market Demand Signals" badge="Composite" desc="Category search trend proxies, foot traffic signals and business category growth data used to assess demand in your area." />
+      <DataCard icon="" title="Commercial Rent Database" badge="Benchmarks" desc="Suburb-level commercial rent benchmarks built from publicly available property listings. Your submitted rent is validated against these." />
+      <DataCard icon="" title="Industry Benchmarks" badge="By category" desc="Daily customers baseline, average ticket size, COGS %, gross margin, and staffing cost ratios segmented by business type. Used as the fallback when you do not provide your own figures." />
+      <DataCard icon="" title="Deterministic Compute Engine" badge="Rules-based" desc="A rules-based financial model (not AI) that builds the P&L from your calibrated inputs. Formulas are deterministic and documented — no black box outputs." />
+      <DataCard icon="" title="AI Narrative Layer" badge="AI Analysis" desc="AI generates the written analysis only — SWOT, market narrative, risk scenarios, and 3-year projection. Financial figures come from the compute engine, not AI." />
      </div>
         </section>
 
@@ -143,7 +146,7 @@ export default function MethodologyPage() {
             <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Scoring system</p>
       <h2 style={{ fontSize: 28, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 12 }}>How your Location Score is calculated</h2>
       <p style={{ fontSize: 15, color: S.n500, lineHeight: 1.75 }}>
-              The Location Score (0–100) is a weighted composite of five dimensions. Each dimension is scored independently then combined into a final score that determines your GO / CAUTION / NO verdict.
+              The Location Score (0–100) is a weighted composite of four dimensions. Each dimension is scored independently then combined into a final score that determines your GO / CAUTION / NO verdict. Every report also shows a separate Data Completeness % and Model Confidence label so you can see how much of the analysis relied on your own inputs versus fallback benchmarks.
             </p>
           </div>
 
@@ -183,12 +186,12 @@ export default function MethodologyPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {[
-              { label: 'Monthly Revenue', formula: 'Estimated daily customers × Average order value × Operating days', note: 'Daily customer estimate is derived from foot traffic signals, competitor count and demographic density for your category and location.' },
-       { label: 'COGS (Cost of Goods)', formula: '28–35% of revenue', note: 'Benchmark varies by category: cafes ~30%, restaurants ~32%, retail ~40%. Based on industry average gross margins.' },
-       { label: 'Labour Costs', formula: '25–35% of revenue', note: 'Estimated from minimum award rates, typical staffing ratios per business type, and operating hours. Does not include owner salary.' },
-       { label: 'Fixed Costs', formula: 'Rent + utilities + insurance + POS/software', note: 'Your submitted rent plus estimated utilities (~$800–1,500/mo), insurance (~$200–400/mo) and operational software.' },
-       { label: 'Break-even Customers', formula: 'Total monthly fixed costs ÷ (Average order value × contribution margin)', note: 'The minimum daily customers needed to cover all costs. Compared against your projected demand to determine viability.' },
-       { label: 'Payback Period', formula: 'Setup cost ÷ Monthly net profit', note: 'Months to recover your initial investment. Under 12 months is excellent. Over 24 months carries significant risk.' },
+              { label: 'Benchmark Revenue (base)', formula: 'daily_customers_base × hours_multiplier × access_multiplier × avg_ticket × 30', note: 'The baseline revenue from which all scenarios are built. hours_multiplier ranges from 0.45× (weekends only) to 1.35× (all-day). access_multiplier ranges from 0.70× (arcade) to 1.10× (transport hub). avg_ticket uses your entered value if provided, otherwise the category benchmark.' },
+       { label: 'COGS (Cost of Goods)', formula: '28–40% of revenue', note: 'Benchmark varies by category: cafes ~30%, restaurants ~32%, retail ~40%. Based on industry average gross margins for Australian operators.' },
+       { label: 'Labour Costs', formula: 'Staffing tiers by business type and size', note: 'Calculated from typical staffing requirements: cafe (2 FT + 2 casual) = $25,000–35,000/mo; restaurant = $35,000–55,000/mo; retail = $15,000–25,000/mo. Does not include owner salary.' },
+       { label: 'Fixed Costs (for break-even)', formula: 'Monthly rent + Estimated staffing costs', note: 'Only fixed costs are used in the break-even calculation — not COGS, which is variable. This is the contribution margin break-even formula, which avoids double-counting variable costs.' },
+       { label: 'Break-even Customers / Day', formula: 'Fixed costs ÷ (avg_ticket × (gross_margin% − other_variable_costs%) × 30)', note: 'The minimum daily customers needed to cover rent and staffing only. Compared against your projected daily demand. If projected > break-even, the location is viable at current inputs.' },
+       { label: 'Payback Period', formula: 'Setup cost ÷ Monthly net profit', note: 'Months to recover your initial investment. Only shown when monthly net profit is positive. Under 12 months is excellent. Over 24 months carries meaningful risk.' },
       ].map((row, i, arr) => (
               <div key={row.label} style={{ padding: '18px 0', borderBottom: i < arr.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: S.n800, marginBottom: 4 }}>{row.label}</p>
@@ -232,7 +235,7 @@ export default function MethodologyPage() {
       Ready to analyse your location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>
-      Get a full data-driven report in under 30 seconds. Free for your first 3 locations.
+      Get a full data-driven report in 60–120 seconds. Free for your first 3 locations.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-flex', background: S.white, color: S.brand, borderRadius: 12, padding: '13px 28px', fontWeight: 800, fontSize: 15 }}>
       Analyse my location free →

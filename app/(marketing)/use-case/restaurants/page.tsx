@@ -186,9 +186,9 @@ export default function Page() {
           <div style={{ background: S.n900, borderRadius: 20, padding: '40px', marginBottom: 48 }}>
       <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>How Locatalyze helps restaurant owners</p>
       <h2 style={{ fontSize: 26, fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', marginBottom: 16 }}>Stop guessing. Start with data.</h2>
-      <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Locatalyze analyses any Australian address and delivers a full restaurant feasibility report with competition mapping, demographic scoring and financial modelling in 30 seconds.</p>
+      <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Locatalyze analyses any Australian address and delivers a full restaurant feasibility report with competition mapping, demographic scoring and financial modelling in about 90 seconds.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12, marginBottom: 28 }}>
-       {[['', 'Evening foot traffic scoring for your concept'], ['', 'Parking density mapping within 400m'], ['', 'Revenue model at your target spend per head'], ['', 'Dining category saturation analysis'], ['', 'GO / CAUTION / NO verdict in 30 seconds']].map(([icon, text]) => (
+       {[['', 'Evening foot traffic scoring for your concept'], ['', 'Parking density mapping within 400m'], ['', 'Revenue model at your target spend per head'], ['', 'Dining category saturation analysis'], ['', 'GO / CAUTION / NO verdict in about 90 seconds']].map(([icon, text]) => (
         <div key={text as string} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px', display: 'flex', gap: 10 }}>
          <span style={{ fontSize: 16 }}>{icon}</span>
                   <p style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.55 }}>{text}</p>

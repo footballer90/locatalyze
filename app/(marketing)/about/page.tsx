@@ -206,7 +206,7 @@ export default function AboutPage() {
         <p style={{ fontSize: 16, color: '#475569', lineHeight: 1.85, margin: 0 }}>
           Democratise commercial property intelligence for Australian small businesses —
           so any founder can access the same insights as a $10,000 feasibility
-          consultant, in 30 seconds, before signing anything.
+          consultant, in about 90 seconds, before signing anything.
         </p>
       </div>
 

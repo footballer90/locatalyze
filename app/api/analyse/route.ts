@@ -237,6 +237,31 @@ export async function POST(request: NextRequest) {
     } catch (qErr: any) { console.error('[Analyse] Quota check failed:', qErr.message) }
   }
 
+  // ── Deduplication: return cached report if same address+type was run in last 24h ──
+  if (userId) {
+    try {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      const { data: cached } = await sb
+        .from('reports')
+        .select('report_id')
+        .eq('user_id', userId)
+        .eq('business_type', data.businessType)
+        .eq('address', data.address)
+        .eq('status', 'completed')
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (cached?.report_id) {
+        console.log('[Analyse] Dedup hit — returning cached report:', cached.report_id)
+        return NextResponse.json({ success: true, reportId: cached.report_id, cached: true })
+      }
+    } catch (dedupErr: any) {
+      // Non-fatal: log and continue to run a fresh analysis
+      console.warn('[Analyse] Dedup check failed (non-fatal):', dedupErr?.message)
+    }
+  }
+
   // ── Generate report ID & save PENDING row ─────────────────────────────────
   const reportId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 

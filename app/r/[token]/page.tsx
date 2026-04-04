@@ -201,7 +201,7 @@ const supabase = await createClient()
       Want to analyse your own location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 24, lineHeight: 1.6 }}>
-      Get a full report like this one in 30 seconds.<br />Free for your first location — no credit card required.
+      Get a full report like this one in about 90 seconds.<br />Free for your first location — no credit card required.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: S.brand, borderRadius: 12, padding: '13px 28px', fontWeight: 700, fontSize: 14 }}>
       Get your free analysis →

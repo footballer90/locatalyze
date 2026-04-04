@@ -127,9 +127,9 @@ export default function Page() {
 
           <div style={{ background: S.n900, borderRadius: 20, padding: '40px', marginBottom: 48 }}>
       <h2 style={{ fontSize: 26, fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', marginBottom: 16 }}>How Locatalyze helps gym owners find the gap</h2>
-      <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Paste any Australian address and get a full gym feasibility report: residential catchment data, format competition mapping, income demographics and membership revenue modelling in 30 seconds.</p>
+      <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Paste any Australian address and get a full gym feasibility report: residential catchment data, format competition mapping, income demographics and membership revenue modelling in about 90 seconds.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12, marginBottom: 28 }}>
-       {[['', 'Residential catchment within 2km and 3km radius'], ['', 'Format gap analysis — what is missing within 2km'], ['', 'Membership revenue model at 100/150/200 members'], ['', 'Parking density at peak training hours'], ['', 'GO / CAUTION / NO verdict in 30 seconds']].map(([icon, text]) => (
+       {[['', 'Residential catchment within 2km and 3km radius'], ['', 'Format gap analysis — what is missing within 2km'], ['', 'Membership revenue model at 100/150/200 members'], ['', 'Parking density at peak training hours'], ['', 'GO / CAUTION / NO verdict in about 90 seconds']].map(([icon, text]) => (
         <div key={text as string} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px', display: 'flex', gap: 10 }}>
          <span style={{ fontSize: 16 }}>{icon}</span>
                   <p style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.55 }}>{text}</p>

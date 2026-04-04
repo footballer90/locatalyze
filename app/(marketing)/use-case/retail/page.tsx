@@ -145,9 +145,9 @@ export default function Page() {
 
           <div style={{ background: S.n900, borderRadius: 20, padding: '40px', marginBottom: 48 }}>
       <h2 style={{ fontSize: 26, fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', marginBottom: 16 }}>How Locatalyze helps retail store owners</h2>
-      <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Paste any Australian address and get foot traffic scoring, demographic analysis, competition mapping and a full financial model in 30 seconds.</p>
+      <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Paste any Australian address and get foot traffic scoring, demographic analysis, competition mapping and a full financial model in about 90 seconds.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12, marginBottom: 28 }}>
-       {[['', 'Pedestrian volume scoring for peak trading windows'], ['', 'Demographic match to your product price point'], ['', 'Rent-to-revenue modelling with your numbers'], ['', 'Anchor store and competitor proximity analysis'], ['', 'GO / CAUTION / NO verdict in 30 seconds']].map(([icon, text]) => (
+       {[['', 'Pedestrian volume scoring for peak trading windows'], ['', 'Demographic match to your product price point'], ['', 'Rent-to-revenue modelling with your numbers'], ['', 'Anchor store and competitor proximity analysis'], ['', 'GO / CAUTION / NO verdict in about 90 seconds']].map(([icon, text]) => (
         <div key={text as string} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px', display: 'flex', gap: 10 }}>
          <span style={{ fontSize: 16 }}>{icon}</span>
                   <p style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.55 }}>{text}</p>

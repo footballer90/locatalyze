@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ suburb: s
   const name = slug.replace(/-/g, ' ').replace(/w/g, c => c.toUpperCase())
  return {
     title: `${name} business location analysis — Locatalyze`,
-    description: `Is ${name} a good location for your business? Market demand, rent ranges, and competitor density — AI analysis in 30 seconds.`,
+    description: `Is ${name} a good location for your business? Market demand, rent ranges, and competitor density — AI analysis in about 90 seconds.`,
     alternates: { canonical: `https://www.locatalyze.com/suburb/${slug}` },
   }
 }

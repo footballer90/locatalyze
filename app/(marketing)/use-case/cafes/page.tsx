@@ -238,7 +238,7 @@ export default function Page() {
       <h2 style={{ fontSize: 26, fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', marginBottom: 16 }}>Stop guessing. Start with data.</h2>
       <p style={{ fontSize: 15, color: '#9CA3AF', lineHeight: 1.8, marginBottom: 24, maxWidth: 560 }}>Locatalyze combines ABS demographic data, competitor mapping and financial modelling into a single 30-second analysis for any Australian address. Paste a street address and get a full feasibility report with a GO / CAUTION / NO verdict.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12, marginBottom: 28 }}>
-       {[['', 'Competition count & scoring within your radius'], ['', 'Suburb demographics matched to café profile'], ['', 'Rent-to-revenue ratio with your actual numbers'], ['', 'Daily customer volume estimate'], ['', 'GO / CAUTION / NO verdict in 30 seconds']].map(([icon, text]) => (
+       {[['', 'Competition count & scoring within your radius'], ['', 'Suburb demographics matched to café profile'], ['', 'Rent-to-revenue ratio with your actual numbers'], ['', 'Daily customer volume estimate'], ['', 'GO / CAUTION / NO verdict in about 90 seconds']].map(([icon, text]) => (
         <div key={text as string} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
          <span style={{ fontSize: 16 }}>{icon}</span>
                   <p style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.55 }}>{text}</p>

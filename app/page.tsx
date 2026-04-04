@@ -298,7 +298,7 @@ const SHOWCASE_TABS = [
   { id: 'sub',  label: 'Suburb Scoring',    headline: 'Every suburb scored\nfor your business.', sub: 'Compare suburbs side by side using income data, population density, age profile and spending behaviour. Find where your concept has the strongest natural advantage.', ui: 'suburbs' },
   { id: 'comp', label: 'Competitor Mapping',headline: 'See every competitor\nbefore they see you.', sub: 'Map every direct competitor within your chosen radius. Understand their ratings, proximity and threat level — and find the gaps where your concept can own the category.', ui: 'competitors' },
   { id: 'rent', label: 'Rent Affordability',headline: 'Know if the rent\nmakes financial sense.', sub: 'Enter your expected rent and average transaction value. Locatalyze calculates the exact daily volume you need to stay profitable — and tells you if this location can deliver it.', ui: 'rent' },
-  { id: 'rep',  label: 'Feasibility Reports',headline: 'A full report,\nin 30 seconds.', sub: 'Get a complete feasibility report covering demand, competition, demographics and financials. Share it with your accountant, investor or landlord as a professional PDF — instantly.', ui: 'report' },
+  { id: 'rep',  label: 'Feasibility Reports',headline: 'A full report,\nin about 90 seconds.', sub: 'Get a complete feasibility report covering demand, competition, demographics and financials. Share it with your accountant, investor or landlord as a professional PDF — instantly.', ui: 'report' },
 ]
 
 function ShowcaseScoreUI({ ak }: { ak: number }) {
@@ -1450,7 +1450,7 @@ export default function LandingPage() {
                 The wrong location<br/>costs <span style={{ color: L.emerald }}>$200,000+.</span>
               </h1>
               <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, lineHeight: 1.75, marginBottom: 16, maxWidth: 440 }}>
-                See competition, demand, and financial risk for any Australian address. Get a clear <strong style={{ color: L.slate }}>GO, CAUTION or NO</strong> verdict — before you sign anything.
+                See competition, demand, and financial risk for any Australian address. Get a clear <strong style={{ color: L.slate }}>GO, CAUTION or NO</strong> verdict — before you shortlist a site or visit an agent.
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
                 {[
@@ -1521,7 +1521,7 @@ export default function LandingPage() {
           <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1.1, marginBottom: 14, background: `linear-gradient(135deg, ${D.text1} 30%, ${D.glow} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Location intelligence, illuminated.
           </h2>
-          <p style={{ fontSize: 14, color: D.text2, lineHeight: 1.75, marginBottom: 24 }}>Map demand signals, competitors and financials for any Australian address in 30 seconds.</p>
+          <p style={{ fontSize: 14, color: D.text2, lineHeight: 1.75, marginBottom: 24 }}>Map demand signals, competitors and financials for any Australian address in about 90 seconds.</p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${D.brand},#0B9488)`, color: '#fff', borderRadius: 12, padding: '13px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
             Check your location →
           </Link>
@@ -1533,7 +1533,7 @@ export default function LandingPage() {
         <div style={{ ...W, padding: pad }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>How it works</div>
-            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 12 }}>From address to verdict in 30 seconds</h2>
+            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 12 }}>From address to verdict in about 90 seconds</h2>
             <p style={{ fontSize: 15, color: L.muted, maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>No spreadsheets. No consultants. Just paste the address.</p>
           </div>
           {!isMobile && <CinematicWalkthrough/>}
@@ -1923,16 +1923,16 @@ export default function LandingPage() {
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>
         <div style={{ maxWidth: 560, margin: '0 auto', padding: pad }}>
           <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 14, lineHeight: 1.1 }}>
-            Don&apos;t sign a lease<br/>without running this first.
+            Research smarter.<br/>Shortlist with confidence.
           </h2>
           <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, marginBottom: 32, lineHeight: 1.75 }}>
-            The average location mistake costs $200,000+. A Locatalyze report is free to start.
+            See the competition, demand, and financial picture for any Australian address in about 90 seconds — so you go to site visits and agent meetings better prepared.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: L.emerald, color: '#fff', borderRadius: 14, padding: isMobile ? '15px 28px' : '17px 38px', fontWeight: 800, fontSize: isMobile ? 15 : 17, boxShadow: '0 6px 28px rgba(16,185,129,.3)', textDecoration: 'none' }}>
             Check if your location is worth it →
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, fontSize: 12, color: '#94A3B8', marginTop: 14, flexWrap: 'wrap' }}>
-            <span>No signup required to start</span><span>·</span><span>3 free reports</span><span>·</span><span>See results in 30 seconds</span>
+            <span>No signup required to start</span><span>·</span><span>3 free reports</span><span>·</span><span>See results in about 90 seconds</span>
           </div>
         </div>
       </section>

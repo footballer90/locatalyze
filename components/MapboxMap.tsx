@@ -75,6 +75,10 @@ interface MapboxMapProps {
   lng: number
   businessType?: string
   radius?: number            // if provided, overrides API default
+  /** Inner ring: competitor density search area (default 600m) */
+  competitorRadiusM?: number
+  /** Outer ring: realistic customer travel catchment (default 1500m) */
+  catchmentRadiusM?: number
   onFlyEnd?: () => void
   onInsightsUpdate?: (insights: MapInsights) => void
   onCompetitorsUpdate?: (competitors: Competitor[]) => void
@@ -206,6 +210,8 @@ function anchorPopupHTML(name: string, footTraffic: string, distance: number) {
 
 export default function MapboxMap({
   lat, lng, businessType = 'cafe', radius,
+  competitorRadiusM = 600,
+  catchmentRadiusM  = 1500,
   onFlyEnd, onInsightsUpdate, onCompetitorsUpdate, onAnchorsUpdate,
   showHeatmap = false, showIsochrones = true,
 }: MapboxMapProps) {
@@ -373,10 +379,11 @@ export default function MapboxMap({
       (156543.03392 * Math.cos((cLat * Math.PI) / 180)) / Math.pow(2, z)
     const rPx = (m: number) => ['interpolate', ['exponential', 2], ['zoom'], 10, m / mpp(10), 20, m / mpp(20)]
 
-    map.addLayer({ id: 'r-1km-fill',   type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(1000), 'circle-color': ISO_10, 'circle-opacity': 0.04 } })
-    map.addLayer({ id: 'r-1km-border', type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(1000), 'circle-color': 'transparent', 'circle-stroke-width': 1, 'circle-stroke-color': ISO_10, 'circle-stroke-opacity': 0.18 } })
-    map.addLayer({ id: 'r-500m-fill',   type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(500), 'circle-color': BRAND, 'circle-opacity': 0.06 } })
-    map.addLayer({ id: 'r-500m-border', type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(500), 'circle-color': 'transparent', 'circle-stroke-width': 1.5, 'circle-stroke-color': BRAND, 'circle-stroke-opacity': 0.30 } })
+    // Inner ring = competitor density area; outer ring = customer catchment
+    map.addLayer({ id: 'r-outer-fill',   type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(catchmentRadiusM),  'circle-color': ISO_10, 'circle-opacity': 0.04 } })
+    map.addLayer({ id: 'r-outer-border', type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(catchmentRadiusM),  'circle-color': 'transparent', 'circle-stroke-width': 1, 'circle-stroke-color': ISO_10, 'circle-stroke-opacity': 0.18 } })
+    map.addLayer({ id: 'r-inner-fill',   type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(competitorRadiusM), 'circle-color': BRAND, 'circle-opacity': 0.06 } })
+    map.addLayer({ id: 'r-inner-border', type: 'circle', source: 'radius-center', paint: { 'circle-radius': rPx(competitorRadiusM), 'circle-color': 'transparent', 'circle-stroke-width': 1.5, 'circle-stroke-color': BRAND, 'circle-stroke-opacity': 0.30 } })
 
     // Radius text labels
     const addLabel = (id: string, coord: [number, number], text: string, color: string, minZoom = 12) => {
@@ -389,8 +396,14 @@ export default function MapboxMap({
         paint: { 'text-color': color, 'text-halo-color': '#fff', 'text-halo-width': 1.5, 'text-opacity': 0.75 },
       })
     }
-    addLabel('lbl-500m', [cLng, cLat + 0.0045], '500m',  BRAND, 13)
-    addLabel('lbl-1km',  [cLng, cLat + 0.009],  '1km',   ISO_10, 12)
+
+    // Format radius label: show in km if >= 1000m
+    const fmtRadius = (m: number) => m >= 1000 ? `${(m / 1000).toFixed(1).replace(/\.0$/, '')}km` : `${m}m`
+    // lat offset per metre ≈ 1/111320; use half for inner to avoid label overlap
+    const innerLatOffset = competitorRadiusM / 111320
+    const outerLatOffset = catchmentRadiusM  / 111320
+    addLabel('lbl-inner', [cLng, cLat + innerLatOffset], `${fmtRadius(competitorRadiusM)} competitor area`,  BRAND, 13)
+    addLabel('lbl-outer', [cLng, cLat + outerLatOffset], `${fmtRadius(catchmentRadiusM)} catchment`,         ISO_10, 12)
 
     // ── Heatmap ──────────────────────────────────────────────────────────────
     map.addSource('heatmap-data', { type: 'geojson', data: emptyFC })
