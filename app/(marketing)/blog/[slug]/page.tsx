@@ -395,6 +395,17 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             }}>
               {post.title}
             </h1>
+            {post.author && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16 }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(20,184,166,0.35)', border: '1.5px solid rgba(20,184,166,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                  {post.author.split(' ').map((n: string) => n[0]).join('')}
+                </div>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{post.author}</p>
+                  {post.authorRole && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>{post.authorRole}</p>}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

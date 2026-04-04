@@ -27,6 +27,8 @@ export interface BlogPost {
   intro: string
   sections: Section[]
   tags: string[]
+  author?: string
+  authorRole?: string
 }
 
 export const POSTS: Record<string, BlogPost> = {
@@ -34,15 +36,17 @@ export const POSTS: Record<string, BlogPost> = {
   // ─── POST 1 ──────────────────────────────────────────────────────────────────
   'cafe-location-guide-australia': {
   slug: 'cafe-location-guide-australia',
-  title: 'How to Choose the Perfect Café Location in Australia (2026)',
-  seoTitle: 'Café Location Guide Australia 2026',
+  title: 'The Café Location Checklist I Wish Had Existed Before We Signed',
+  seoTitle: 'Café Location Checklist Australia — What to Check Before Signing',
   metaDescription: 'Choosing the right café location in Australia can make or break your business. Use this data-driven guide to analyse foot traffic, rent and competition.',
   primaryKeyword: 'café location Australia',
   secondaryKeywords: ['coffee shop location analysis', 'café business planning', 'rent to revenue ratio café', 'foot traffic café', 'best suburbs for cafes'],
   category: 'Cafes', date: 'February 28, 2026', readTime: '9 min read',
   heroImg: 'https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=1200&q=85',
   tags: ['Location strategy', 'Cafes', 'Rent analysis'],
-  intro: 'Before you spend $80,000 on an espresso machine and fit-out, spend a week on this. The difference between a café that queues out the door and one that closes in 18 months almost always comes down to one decision made before the doors open: where you put it.',
+  author: 'Ella Nguyen',
+  authorRole: 'Hospitality analyst, Locatalyze',
+  intro: 'We had the espresso machine. We had the concept. We had a landlord who was surprisingly reasonable on rent. What we didn\'t have — and what cost us — was a clear picture of the three blocks around us. This is the checklist that should have existed before we signed. It\'s built from that mistake and a lot of subsequent research.',
   sections: [
       { type: 'stats', items: [{ value: '18 months', label: 'Average survival time for a poorly-located café' }, { value: '12%', label: 'Maximum healthy rent-to-revenue ratio' }, { value: '7–9am', label: 'Window generating 40–60% of daily revenue' }] },
    { type: 'h2', text: 'Why location beats everything — including the coffee' },
@@ -81,7 +85,9 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Restaurants', date: 'February 14, 2026', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=85',
   tags: ['Leasing', 'Restaurants', 'Finance'],
-  intro: 'A commercial lease is the largest financial commitment most restaurant owners ever make — and most sign one without fully understanding what they are agreeing to. Here are the seven mistakes we see repeatedly, and how to avoid every single one.',
+  author: 'Steve Marchetti',
+  authorRole: 'Operations & finance writer, Locatalyze',
+  intro: 'A commercial lease is the largest financial commitment most restaurant owners ever make — and most sign one without fully understanding what they\'ve agreed to. I\'ve talked to operators across Melbourne and Sydney who could point to a specific clause, or a market review mechanism they didn\'t read, that eventually broke them. These are the seven mistakes that come up again and again, and exactly what to do instead.',
   sections: [
       { type: 'stats', items: [{ value: '60%', label: 'Of restaurants that close cite lease terms as a factor' }, { value: '$150K', label: 'Average restaurant fit-out cost in Australia' }, { value: '5 years', label: 'Typical minimum commercial restaurant lease' }] },
    { type: 'h2', text: 'Mistake 1: Signing without a market study' },
@@ -107,15 +113,17 @@ export const POSTS: Record<string, BlogPost> = {
   // ─── POST 3 ──────────────────────────────────────────────────────────────────
   'foot-traffic-vs-demographics': {
   slug: 'foot-traffic-vs-demographics',
-  title: 'Foot Traffic vs Demographics: Which Matters More For Your Business?',
-  seoTitle: 'Foot Traffic vs Demographics for Business Location',
+  title: 'Why I Stopped Counting Feet and Started Reading Suburbs',
+  seoTitle: 'Foot Traffic vs Demographics for Business Location — Which Actually Matters',
   metaDescription: 'Should you prioritise foot traffic or demographics when choosing a business location? The answer depends on your business model. Here is the full breakdown.',
   primaryKeyword: 'foot traffic vs demographics business location',
   secondaryKeywords: ['location analysis retail', 'demographics business planning', 'foot traffic analysis', 'impulse vs destination business', 'suburb scoring'],
   category: 'Strategy', date: 'January 30, 2026', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&q=85',
   tags: ['Data', 'Strategy', 'Demographics'],
-  intro: 'A busy street does not guarantee a profitable business. And a quiet suburb is not necessarily a bad one. Whether foot traffic or demographics is your primary location signal depends entirely on what your business actually is.',
+  author: 'Prashant Gupta',
+  authorRole: 'Founder, Locatalyze',
+  intro: 'For a long time I measured everything in feet per hour. I\'d stand outside potential sites, count people, run the numbers. Then we opened a location in a suburb with 140 people per hour walking past and still struggled at lunchtime. Turned out the foot traffic was mostly commuters cutting through — not buyers, not our demographic, not interested in stopping. That\'s when I changed how I think about this problem entirely.',
   sections: [
       { type: 'h2', text: 'The fundamental question: impulse or destination?' },
    { type: 'p', text: 'The most important question in location analysis is: will your customer walk past and decide to stop (impulse), or will they specifically seek you out and travel to you (destination)? This single distinction changes which data points you should weigh most heavily.' },
@@ -146,6 +154,8 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Retail', date: 'January 16, 2026', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=85',
   tags: ['Retail', 'Competition', 'Data'],
+  author: 'Prashant Gupta',
+  authorRole: 'Founder, Locatalyze',
   intro: 'The 500m competition radius is not an arbitrary number. It is based on a consistent finding in pedestrian behaviour research: within 500m, competing businesses become daily alternatives in your customer\'s decision-making.',
   sections: [
       { type: 'h2', text: 'Why 500m is the critical competition radius' },
@@ -166,7 +176,7 @@ export const POSTS: Record<string, BlogPost> = {
   // ─── POST 5 ──────────────────────────────────────────────────────────────────
   'suburb-data-australia': {
   slug: 'suburb-data-australia',
-  title: 'How ABS Census Data Scores Australian Suburbs for Business Viability',
+  title: 'The ABS Census Data Most Founders Don\'t Know How to Use',
   seoTitle: 'ABS Census Data for Business Location Analysis Australia',
   metaDescription: 'The 2021 Australian Census is one of the most powerful and underused datasets for choosing a business location. Here is how to use it to score any suburb.',
   primaryKeyword: 'ABS census data business location Australia',
@@ -174,7 +184,9 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Data', date: 'January 3, 2026', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1200&q=85',
   tags: ['Data', 'ABS', 'Demographics'],
-  intro: 'The 2021 Australian Census collected data from every household in the country. When it comes to choosing a business location, it is one of the most powerful and underused datasets available to Australian founders.',
+  author: 'Prashant Gupta',
+  authorRole: 'Founder, Locatalyze',
+  intro: 'The 2021 Australian Census collected data from every household in the country. Most founders either don\'t know it exists at the suburb level, or find it too dry to wade through. This article is my attempt to make it practically useful — the variables that actually matter for a location decision, and what each number is really telling you.',
   sections: [
       { type: 'h2', text: 'What the Census actually tells you about a suburb' },
    { type: 'p', text: 'The Census collects data across hundreds of variables at the suburb level (Statistical Area Level 2). For business location analysis, the variables that matter most are: median household income, age distribution, household type, employment type and population density. Each tells you something different about whether a suburb can support your business.' },
@@ -203,6 +215,8 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Gyms', date: 'December 18, 2025', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=85',
   tags: ['Gyms', 'Fitness', 'Competition'],
+  author: 'Ella Nguyen',
+  authorRole: 'Hospitality analyst, Locatalyze',
   intro: 'Australia has one of the highest gym densities per capita in the world. 24/7 chains have blanketed suburban retail strips. Before you commit to 300sqm and a 5-year lease, here is how to read the location data.',
   sections: [
       { type: 'stats', items: [{ value: '3,500+', label: 'Gyms and fitness studios operating in Australia' }, { value: '$2.4B', label: 'Annual revenue of the Australian gym industry' }, { value: '3km', label: 'Maximum distance most gym members will travel regularly' }] },
@@ -232,6 +246,8 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Sydney', date: 'March 1, 2026', readTime: '8 min read',
   heroImg: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1200&q=85',
   tags: ['Sydney', 'Restaurants', 'Location analysis'],
+  author: 'Steve Marchetti',
+  authorRole: 'Operations & finance writer, Locatalyze',
   intro: 'Sydney is one of Australia\'s most competitive restaurant markets. Premium rents in the CBD and eastern suburbs mean many restaurateurs do better in inner-city alternatives — but only if they know what the data says about each precinct.',
   sections: [
       { type: 'stats', items: [{ value: '12,000+', label: 'Restaurants and cafes operating in Greater Sydney' }, { value: '$8,500/mo', label: 'Average commercial rent in inner Sydney restaurant strips' }, { value: '3.2M', label: 'People in Greater Sydney catchment area' }] },
@@ -262,6 +278,8 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Melbourne', date: 'February 22, 2026', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1200&q=85',
   tags: ['Melbourne', 'Cafes', 'Location analysis'],
+  author: 'Ella Nguyen',
+  authorRole: 'Hospitality analyst, Locatalyze',
   intro: 'Melbourne takes its coffee seriously — more seriously, perhaps, than anywhere else in Australia. That creates both an extraordinary opportunity and an extraordinarily demanding market. Here is what the data says about which suburbs stack up.',
   sections: [
       { type: 'stats', items: [{ value: '5,200+', label: 'Cafes operating in Greater Melbourne' }, { value: '$4.10', label: 'Average Melbourne flat white price in 2026' }, { value: '84', label: 'Locatalyze demand score for Fitzroy (cafes)' }] },
@@ -1088,4 +1106,6 @@ export const POST_LIST = Object.values(POSTS).map(p => ({
   intro: p.intro,
   tags: p.tags,
   metaDescription: p.metaDescription,
+  author: p.author,
+  authorRole: p.authorRole,
 }))

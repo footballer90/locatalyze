@@ -359,7 +359,14 @@ export default function BlogPageClient() {
                         {post.intro.slice(0, 120)}…
                       </p>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: S.n400 }}>{post.date}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {post.author && (
+                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: S.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                              {post.author.split(' ').map((n: string) => n[0]).join('')}
+                            </div>
+                          )}
+                          <span style={{ fontSize: 11, color: S.n400 }}>{post.author ?? post.date}</span>
+                        </div>
                         <span
                           className="read-link"
              style={{ fontSize: 12, fontWeight: 700, color: S.n700, transition: 'color 0.15s' }}
@@ -418,7 +425,14 @@ export default function BlogPageClient() {
                         {post.intro.slice(0, 95)}…
                       </p>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: S.n400 }}>{post.date}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {post.author && (
+                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: S.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                              {post.author.split(' ').map((n: string) => n[0]).join('')}
+                            </div>
+                          )}
+                          <span style={{ fontSize: 11, color: S.n400 }}>{post.author ?? post.date}</span>
+                        </div>
                         <span
                           className="read-link"
              style={{ fontSize: 12, fontWeight: 700, color: S.n700, transition: 'color 0.15s' }}

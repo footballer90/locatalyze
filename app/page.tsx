@@ -153,17 +153,8 @@ useEffect(() => {
   }, [caseIdx, visible])
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      const target = RP_CASES[caseIdx].score
-      let s = 0
-      const id = setInterval(() => {
-        s = Math.min(s + 2, target)
-        setScore(s)
-        if (s >= target) clearInterval(id)
-      }, 14)
-    }, 600)
-    return () => clearTimeout(delay)
-  }, [animKey])
+    setScore(RP_CASES[caseIdx].score)
+  }, [caseIdx])
 
   const c   = RP_CASES[caseIdx]
   const r   = 34
@@ -237,7 +228,7 @@ useEffect(() => {
                     <circle cx="37" cy="37" r={r} fill="none" stroke={c.color} strokeWidth="6"
                       strokeLinecap="round" strokeDasharray={cir}
                       strokeDashoffset={cir - cir * score / 100}
-                      style={{ transition:'stroke-dashoffset .03s linear', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
+                      style={{ transition:'stroke-dashoffset 0.85s cubic-bezier(.4,0,.2,1)', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
                     <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{score}</span>
@@ -541,7 +532,7 @@ const PR_DATA = {
       opportunities: ['Growing café culture in WA', 'Weekend brunch market largely untapped'],
       threats:       ['Large chain expansion into the area', 'Rising commercial rent prices YoY'],
     },
-    rec: 'Strong opportunity. High demand demographics combined with manageable competition makes this an excellent location for a specialty coffee concept. Financial projections indicate profitability within 7 months.',
+    rec: 'Data supports this location. High income demographics, manageable competition and a rent-to-revenue ratio within healthy range. Financial projections suggest break-even within 7 months — verify with your own assumptions before committing.',
   },
   caution: {
     biz: 'Casual Dining Restaurant', location: 'Fremantle, WA', suburb: 'Tourist & mixed-use precinct', verdict: 'CAUTION', score: 61,
@@ -568,7 +559,7 @@ const PR_DATA = {
       opportunities: ['Underserved dinner market on weekdays', 'Coastal dining experience premium'],
       threats:       ['8 direct competitors within 500m', 'Off-season revenue drop risk'],
     },
-    rec: 'Proceed with caution. Strong peak-season potential is undermined by significant seasonal dependency. Consider a lean operating model to protect against off-season periods.',
+    rec: 'Data signals caution. Strong peak-season potential is significantly offset by seasonal dependency and above-threshold rent ratio. The numbers can work — but they require explicit planning for the quiet months.',
   },
   no: {
     biz: 'Boutique Gym', location: 'Joondalup, WA', suburb: 'Outer suburban residential', verdict: 'NO', score: 44,
@@ -595,7 +586,7 @@ const PR_DATA = {
       opportunities: ['Underserved women-only fitness niche', 'Corporate wellness contracts potential'],
       threats:       ['Planet Fitness opening 800m away Q3', 'Membership churn risk in saturated market'],
     },
-    rec: 'Not recommended. The location is oversaturated with established fitness competitors and rent far exceeds safe thresholds. Without a highly differentiated concept, financial viability is unlikely.',
+    rec: 'Data does not support this location. Rent consumes 34% of projected revenue — well above the viable threshold — and the area already has four established gyms within 1km. A differentiated concept may help, but the numbers are structurally difficult.',
   },
 }
 
@@ -1702,7 +1693,7 @@ export default function LandingPage() {
                 icon: 'home', source:'Commercial Rent Benchmarks', badge:'Market data',
                 headline:'Fair rent for every suburb and zone',
                 body:'Aggregated from commercial property listings and market research, we estimate realistic rent ranges so your financial model reflects what you\'ll actually pay.',
-                proof:'Refreshed monthly per suburb',
+                proof:'Based on publicly available commercial listings',
                 color:'#F59E0B', colorBg:'rgba(245,158,11,.08)', colorBorder:'rgba(245,158,11,.2)',
               },
               {
@@ -1792,82 +1783,69 @@ export default function LandingPage() {
         `}</style>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: L.white, position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle at 20% 50%, rgba(16,185,129,.04) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(5,150,105,.03) 0%, transparent 50%)', pointerEvents:'none' }}/>
+      {/* ORIGIN + TRUST */}
+      <section style={{ padding: isMobile ? '72px 16px' : '96px 40px', background: '#FAFBFC', borderTop:`1px solid ${L.border}` }}>
+        <div style={{ ...W }}>
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 40 : 64, alignItems:'center' }}>
 
-        <div style={{ ...W, position:'relative', zIndex:2 }}>
-          <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 56 }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:16 }}>
-              Customer stories
+            {/* Left: origin story */}
+            <div>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:20 }}>
+                Why this exists
+              </div>
+              <h2 style={{ fontSize: isMobile ? 26 : 36, fontWeight:900, color:L.slate, letterSpacing:'-.04em', lineHeight:1.15, marginBottom:18 }}>
+                Built after getting a location wrong.
+              </h2>
+              <p style={{ fontSize:15, color:L.muted, lineHeight:1.8, marginBottom:16 }}>
+                Locatalyze was built in Perth after a location decision that looked right on paper — good street, decent foot traffic, affordable rent — but missed three things that mattered: the rent-to-revenue ceiling, an established competitor moving into the same block, and demographic data that didn&apos;t match the concept.
+              </p>
+              <p style={{ fontSize:15, color:L.muted, lineHeight:1.8 }}>
+                The tool that should have existed before that decision is the one we built. It doesn&apos;t make the choice for you — it gives you the data to make it clearly.
+              </p>
             </div>
-            <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight:900, color:L.slate, letterSpacing:'-.04em', marginBottom:12 }}>
-              Real decisions. Real money saved.
-            </h2>
-            <p style={{ fontSize:15, color:L.muted, maxWidth:480, margin:'0 auto', lineHeight:1.7 }}>
-              Founders and operators across Australia run a Locatalyze report before signing any lease.
-            </p>
-          </div>
 
-          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap:24, marginBottom: isMobile ? 40 : 56 }}>
-            {[
-              {
-                quote: "Locatalyze flagged 6 direct competitors within 400m that I'd completely missed on my site visit. Saved us from committing to a 5-year lease in the wrong pocket of Newtown.",
-                name: 'Marcus T.',
-                role: 'Café owner, Sydney',
-                initials: 'MT',
-                color: '#059669',
-                outcome: 'Avoided a $180k mistake',
-              },
-              {
-                quote: "I run location assessments for 3 franchise clients. This cuts my research time from two days to under 20 minutes. The competitor density data lines up with what I find manually.",
-                name: 'Sarah K.',
-                role: 'Franchise consultant, Melbourne',
-                initials: 'SK',
-                color: '#0891B2',
-                outcome: 'Saves 2 days per assessment',
-              },
-              {
-                quote: "Our bank wanted a proper feasibility study before approving the fit-out loan. I uploaded the Locatalyze PDF and they approved it the same week. Genuinely didn't expect that.",
-                name: 'Daniel R.',
-                role: 'Restaurant owner, Brisbane',
-                initials: 'DR',
-                color: '#7C3AED',
-                outcome: 'Loan approved same week',
-              },
-            ].map(t => (
-              <div key={t.name} style={{ background:'#FAFAFA', border:`1px solid ${L.border}`, borderRadius:20, padding:'28px 26px', display:'flex', flexDirection:'column' as const, gap:20 }}>
-                {/* Stars */}
-                <div style={{ display:'flex', gap:3 }}>
-                  {[1,2,3,4,5].map(s => <span key={s} style={{ color:'#F59E0B', fontSize:14 }}>★</span>)}
-                </div>
-                {/* Quote */}
-                <p style={{ fontSize:14, color:'#374151', lineHeight:1.75, flex:1, fontStyle:'italic' as const }}>
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                {/* Outcome chip */}
-                <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:100, padding:'4px 12px', alignSelf:'flex-start' as const }}>
-                  <span style={{ width:6, height:6, borderRadius:'50%', background:L.emerald, display:'inline-block' }}/>
-                  <span style={{ fontSize:11, fontWeight:700, color:L.emerald }}>{t.outcome}</span>
-                </div>
-                {/* Author */}
-                <div style={{ display:'flex', alignItems:'center', gap:12, borderTop:`1px solid ${L.border}`, paddingTop:16 }}>
-                  <div style={{ width:38, height:38, borderRadius:'50%', background:t.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:800, color:'#fff', flexShrink:0 }}>
-                    {t.initials}
+            {/* Right: trust signals */}
+            <div style={{ display:'flex', flexDirection:'column' as const, gap:16 }}>
+              {[
+                {
+                  label: 'Registered Australian business',
+                  detail: 'VSG Group Australia Pty Ltd · ABN 47 683 197 819',
+                  icon: 'shield',
+                },
+                {
+                  label: 'Built and operated in Perth, WA',
+                  detail: 'Not an overseas tool with Australian branding — built here, for here.',
+                  icon: 'mapPin',
+                },
+                {
+                  label: 'Methodology is public',
+                  detail: 'Every score, every weight, every data source is documented. No black box.',
+                  icon: 'lightbulb',
+                  link: '/methodology',
+                },
+                {
+                  label: 'Directional analysis — not financial advice',
+                  detail: 'Locatalyze gives you evidence. Your accountant and solicitor help you act on it.',
+                  icon: 'target',
+                },
+              ].map(item => (
+                <div key={item.label} style={{ display:'flex', alignItems:'flex-start', gap:14, background:L.white, border:`1px solid ${L.border}`, borderRadius:14, padding:'16px 18px' }}>
+                  <div style={{ width:36, height:36, borderRadius:10, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <LI n={item.icon} size={16} color={L.emerald}/>
                   </div>
                   <div>
-                    <p style={{ fontSize:13, fontWeight:700, color:L.slate, marginBottom:1 }}>{t.name}</p>
-                    <p style={{ fontSize:12, color:L.muted }}>{t.role}</p>
+                    <p style={{ fontSize:13, fontWeight:700, color:L.slate, marginBottom:3 }}>{item.label}</p>
+                    <p style={{ fontSize:12, color:L.muted, lineHeight:1.6 }}>{item.detail}</p>
+                    {'link' in item && item.link && (
+                      <Link href={item.link} style={{ fontSize:12, fontWeight:700, color:L.emerald, textDecoration:'none', marginTop:4, display:'inline-block' }}>
+                        Read methodology →
+                      </Link>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div style={{ textAlign:'center' }}>
-            <p style={{ fontSize:13, color:L.muted }}>
-              ★★★★★ &nbsp;·&nbsp; Rated 4.9 / 5 by early users
-            </p>
           </div>
         </div>
       </section>
