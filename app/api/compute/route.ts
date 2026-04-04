@@ -130,6 +130,13 @@ export async function POST(request: NextRequest) {
   const usedBenchmarkForTicket = rawTicket <= 0
   const usedBenchmarkForSetup  = rawSetup  <= 0
 
+  // New accuracy-improving optional inputs (onboarding form additions)
+  const rawOperatingHours  = inp.operatingHours  ?? inp.operating_hours  ?? null
+  const rawSeatingCapacity = inp.seatingCapacity != null ? Number(inp.seatingCapacity) : (inp.seating_capacity != null ? Number(inp.seating_capacity) : null)
+  const rawBusinessMode    = inp.businessMode    ?? inp.business_mode    ?? null
+  const rawAvgOrderValue   = inp.avgOrderValue   != null ? Number(inp.avgOrderValue)   : (inp.avg_order_value   != null ? Number(inp.avg_order_value)   : null)
+  const rawLocationAccess  = inp.locationAccess  ?? inp.location_access  ?? null
+
   const computeInput: ComputeInput = {  // eslint-disable-line prefer-const
     reportId,
     businessType:  rawBizType,
@@ -139,6 +146,11 @@ export async function POST(request: NextRequest) {
     area:  rawArea,
     city:  rawCity,
     state: rawState,
+    operatingHours:  rawOperatingHours  || null,
+    seatingCapacity: rawSeatingCapacity && rawSeatingCapacity > 0 ? rawSeatingCapacity : null,
+    businessMode:    rawBusinessMode    || null,
+    avgOrderValue:   rawAvgOrderValue   && rawAvgOrderValue > 0 ? rawAvgOrderValue : null,
+    locationAccess:  rawLocationAccess  || null,
     agentOutputs: {
       a1: agentOutputs.a1 ?? {},
       a2: agentOutputs.a2 ?? {},

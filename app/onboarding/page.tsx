@@ -140,6 +140,24 @@ export default function OnboardingPage() {
   const [showHeatmap, setShowHeatmap] = useState(false)
   const [showIsochrones, setShowIsochrones] = useState(true)
   const [showAdvanced, setShowAdvanced] = useState(false)
+  // Accuracy-improving optional fields
+  const [operatingHours,  setOperatingHours]  = useState<string>('')
+  const [seatingCapacity, setSeatingCapacity] = useState<string>('')
+  const [businessMode,    setBusinessMode]    = useState<string>('')
+  const [avgOrderValue,   setAvgOrderValue]   = useState<string>('')
+  const [locationAccess,  setLocationAccess]  = useState<string>('')
+
+  // Model accuracy score — purely presentational, maps filled fields to trust %
+  const modelAccuracy = useMemo(() => {
+    let score = 61 // base: business type + address
+    if (monthlyRent)    score += 10 // rent is a core financial input
+    if (operatingHours) score +=  9
+    if (avgOrderValue)  score +=  8
+    if (seatingCapacity && businessType && ['cafe','restaurant','bar','bakery','takeaway'].includes(businessType)) score += 6
+    if (businessMode)   score +=  5
+    if (locationAccess) score +=  5
+    return Math.min(score, 98) // never show 100% — honest about uncertainty
+  }, [monthlyRent, operatingHours, avgOrderValue, seatingCapacity, businessType, businessMode, locationAccess])
 
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authEmail, setAuthEmail] = useState('')
@@ -149,6 +167,26 @@ export default function OnboardingPage() {
   const [authDone, setAuthDone] = useState(false)
   const [analysing, setAnalysing] = useState(false)
   const [analysisError, setAnalysisError] = useState('')
+  const [analysisStep, setAnalysisStep] = useState(0)
+
+  // Named analysis steps — advances on a timer to show meaningful progress
+  const ANALYSIS_STEPS = [
+    { label: 'Scanning competitor intelligence...', sub: 'Google Maps + local data sources' },
+    { label: 'Sourcing location & rent data...', sub: 'SerpApi commercial listings, suburb medians' },
+    { label: 'Analysing market demand...', sub: 'Search trends, foot traffic signals' },
+    { label: 'Building financial model...', sub: 'Costs, revenue benchmarks, staffing' },
+    { label: 'Calibrating 3 revenue scenarios...', sub: 'Worst case, base case, best case' },
+    { label: 'Finalising GO / CAUTION / NO verdict...', sub: 'Risk scoring, decision gates' },
+  ]
+
+  useEffect(() => {
+    if (!analysing) { setAnalysisStep(0); return }
+    const interval = setInterval(() => {
+      setAnalysisStep(s => s < ANALYSIS_STEPS.length - 1 ? s + 1 : s)
+    }, 5500)
+    return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analysing])
 
   const selectedBiz = BUSINESS_TYPES.find(b => b.id === businessType)
 
@@ -192,6 +230,11 @@ export default function OnboardingPage() {
           userId: user.id,
           lat: (override?.coords ?? coords)?.lat ?? null,
           lng: (override?.coords ?? coords)?.lng ?? null,
+          operatingHours:  operatingHours  || null,
+          seatingCapacity: seatingCapacity ? parseInt(seatingCapacity) || null : null,
+          businessMode:    businessMode    || null,
+          avgOrderValue:   avgOrderValue   ? parseFloat(avgOrderValue) || null : null,
+          locationAccess:  locationAccess  || null,
         }),
       })
 
@@ -485,61 +528,175 @@ export default function OnboardingPage() {
             </div>
           )}
 
+          {/* ── Calibrate your model ──────────────────────────────────────────── */}
           <div style={{ marginBottom: 4 }}>
-            <button
-              type="button"
-              onClick={() => setShowAdvanced(a => !a)}
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: S.n500, fontFamily: S.font,
-                padding: '6px 0', display: 'flex', alignItems: 'center', gap: 4
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 200ms' }}>
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-              {showAdvanced ? 'Hide' : 'Add'} optional details (avg order, shop size, staff...)
-            </button>
+            {/* Accuracy score header — always visible once address is set */}
+            {(businessType || address) && (
+              <div
+                onClick={() => setShowAdvanced(a => !a)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '10px 12px', backgroundColor: showAdvanced ? S.brandFaded : S.n50,
+                  border: `1px solid ${showAdvanced ? S.brandBorder : S.n200}`, borderRadius: showAdvanced ? '8px 8px 0 0' : 8,
+                  cursor: 'pointer', userSelect: 'none', transition: 'all 200ms'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.brand} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: S.n800 }}>Calibrate your model</div>
+                    <div style={{ fontSize: 10, color: S.n500, marginTop: 1 }}>
+                      Replace benchmarks with your own numbers for a more accurate report
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {/* Live accuracy score pill */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 5,
+                    padding: '3px 8px', borderRadius: 20,
+                    backgroundColor: modelAccuracy >= 85 ? S.emeraldBg : modelAccuracy >= 70 ? S.amberBg : S.n100,
+                    border: `1px solid ${modelAccuracy >= 85 ? S.emeraldBdr : modelAccuracy >= 70 ? '#FDE68A' : S.n200}`
+                  }}>
+                    <div style={{
+                      width: 5, height: 5, borderRadius: '50%',
+                      backgroundColor: modelAccuracy >= 85 ? S.emerald : modelAccuracy >= 70 ? S.amber : S.n400
+                    }} />
+                    <span style={{
+                      fontSize: 11, fontWeight: 700,
+                      color: modelAccuracy >= 85 ? S.emerald : modelAccuracy >= 70 ? S.amber : S.n500
+                    }}>
+                      {modelAccuracy}% accuracy
+                    </span>
+                  </div>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={S.n400} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 200ms', flexShrink: 0 }}>
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+              </div>
+            )}
+
             {showAdvanced && (
-              <div style={{ marginTop: 8, padding: 16, backgroundColor: S.n50, border: `1px solid ${S.n200}`, borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: S.n700, marginBottom: 4 }}>Avg order value ($)</label>
-                    <input type="number" placeholder="e.g. 12" style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: '#FFFFFF', color: '#1C1917', border: `1px solid ${S.n200}`, borderRadius: 5, fontFamily: S.font, boxSizing: 'border-box' as const }} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: S.n700, marginBottom: 4 }}>Shop size (m²)</label>
-                    <input type="number" placeholder="e.g. 80" style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: '#FFFFFF', color: '#1C1917', border: `1px solid ${S.n200}`, borderRadius: 5, fontFamily: S.font, boxSizing: 'border-box' as const }} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: S.n700, marginBottom: 4 }}>Staff count</label>
-                    <input type="number" placeholder="e.g. 4" style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: '#FFFFFF', color: '#1C1917', border: `1px solid ${S.n200}`, borderRadius: 5, fontFamily: S.font, boxSizing: 'border-box' as const }} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: S.n700, marginBottom: 4 }}>Rent-free months</label>
-                    <input type="number" placeholder="e.g. 2" style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: '#FFFFFF', color: '#1C1917', border: `1px solid ${S.n200}`, borderRadius: 5, fontFamily: S.font, boxSizing: 'border-box' as const }} />
-                  </div>
-                </div>
+              <div style={{ padding: 14, backgroundColor: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderTop: 'none', borderRadius: '0 0 8px 8px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+                {/* Avg order value — most impactful single input */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: S.n700, marginBottom: 4 }}>Parking availability</label>
-                  <select style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: '#FFFFFF', color: '#1C1917', border: `1px solid ${S.n200}`, borderRadius: 5, fontFamily: S.font }}>
-                    <option value="">Select...</option>
-                    <option value="none">No nearby parking</option>
-                    <option value="street">Street parking</option>
-                    <option value="dedicated">Dedicated parking</option>
-                    <option value="carpark">Shopping centre / carpark</option>
-                  </select>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: S.n800 }}>
+                      What&apos;s your expected spend per customer? ($)
+                    </label>
+                    {selectedBiz && !avgOrderValue && (
+                      <span style={{ fontSize: 10, color: S.n400, fontStyle: 'italic' }}>
+                        Using ${selectedBiz.avgTicket} benchmark
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    type="number"
+                    placeholder={`e.g. ${selectedBiz?.avgTicket ?? 15}`}
+                    value={avgOrderValue}
+                    onChange={e => setAvgOrderValue(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: S.white, color: S.n900, border: `1px solid ${avgOrderValue ? S.brand : S.n200}`, borderRadius: 5, fontFamily: S.font, boxSizing: 'border-box' as const, transition: 'border-color 150ms' }}
+                  />
+                  {avgOrderValue && selectedBiz && parseFloat(avgOrderValue) > 0 && (
+                    <p style={{ fontSize: 10, color: S.brand, marginTop: 3, fontWeight: 600 }}>
+                      ↑ Replacing ${selectedBiz.avgTicket} benchmark with your ${avgOrderValue} → revenue projection updated
+                    </p>
+                  )}
                 </div>
+
+                {/* Operating hours */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: S.n700, marginBottom: 4 }}>Road visibility</label>
-                  <select style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: '#FFFFFF', color: '#1C1917', border: `1px solid ${S.n200}`, borderRadius: 5, fontFamily: S.font }}>
-                    <option value="">Select...</option>
-                    <option value="low">Low (side street / hidden)</option>
-                    <option value="medium">Medium (some foot traffic)</option>
-                    <option value="high">High (main road / corner)</option>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: S.n800, marginBottom: 4 }}>
+                    When will you trade?
+                  </label>
+                  <select
+                    value={operatingHours}
+                    onChange={e => setOperatingHours(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: S.white, color: S.n900, border: `1px solid ${operatingHours ? S.brand : S.n200}`, borderRadius: 5, fontFamily: S.font, transition: 'border-color 150ms' }}
+                  >
+                    <option value="">Select trading hours...</option>
+                    <option value="breakfast_lunch">Breakfast &amp; lunch only (6am–3pm)</option>
+                    <option value="lunch_dinner">Lunch &amp; dinner (11am–10pm)</option>
+                    <option value="all_day">All day (7am–10pm)</option>
+                    <option value="dinner_evening">Dinner &amp; evening only (4pm–11pm)</option>
+                    <option value="weekends_only">Weekends only</option>
                   </select>
+                  {!operatingHours && (
+                    <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>Using lunch &amp; dinner baseline by default</p>
+                  )}
                 </div>
-                <div style={{ fontSize: 11, color: S.n500, fontStyle: 'italic' }}>These details improve the accuracy of your financial model</div>
+
+                {/* Seating / floor area — food businesses only */}
+                {businessType && ['cafe', 'restaurant', 'bar', 'bakery', 'takeaway'].includes(businessType) && (
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: S.n800, marginBottom: 4 }}>
+                      {['restaurant', 'bar'].includes(businessType) ? 'How many seats?' : 'Floor area (m²)'}
+                    </label>
+                    <input
+                      type="number"
+                      placeholder={['restaurant', 'bar'].includes(businessType) ? 'e.g. 40 covers' : 'e.g. 60 m²'}
+                      value={seatingCapacity}
+                      onChange={e => setSeatingCapacity(e.target.value)}
+                      style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: S.white, color: S.n900, border: `1px solid ${seatingCapacity ? S.brand : S.n200}`, borderRadius: 5, fontFamily: S.font, boxSizing: 'border-box' as const, transition: 'border-color 150ms' }}
+                    />
+                    <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>
+                      {['restaurant', 'bar'].includes(businessType)
+                        ? 'Caps daily customer estimate based on physical capacity'
+                        : 'Used to calibrate staffing benchmarks'}
+                    </p>
+                  </div>
+                )}
+
+                {/* Location access type — replaces parking + road visibility */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: S.n800, marginBottom: 4 }}>
+                    How do customers find this location?
+                  </label>
+                  <select
+                    value={locationAccess}
+                    onChange={e => setLocationAccess(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: S.white, color: S.n900, border: `1px solid ${locationAccess ? S.brand : S.n200}`, borderRadius: 5, fontFamily: S.font, transition: 'border-color 150ms' }}
+                  >
+                    <option value="">Select access type...</option>
+                    <option value="street_frontage">Main street — high foot traffic, visible from road</option>
+                    <option value="transport_hub">Near train / bus — commuter foot traffic</option>
+                    <option value="shopping_centre">Inside shopping centre or food court</option>
+                    <option value="side_street">Side street — some passing trade</option>
+                    <option value="arcade">Arcade, laneway, or underground — destination only</option>
+                  </select>
+                  {locationAccess === 'side_street' || locationAccess === 'arcade' ? (
+                    <p style={{ fontSize: 10, color: S.amber, marginTop: 3, fontWeight: 600 }}>
+                      ⚠ Lower foot traffic — customer projections adjusted down
+                    </p>
+                  ) : locationAccess === 'street_frontage' || locationAccess === 'transport_hub' ? (
+                    <p style={{ fontSize: 10, color: S.emerald, marginTop: 3, fontWeight: 600 }}>
+                      ↑ Premium exposure — customer projections adjusted up
+                    </p>
+                  ) : null}
+                </div>
+
+                {/* Business mode */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: S.n800, marginBottom: 4 }}>
+                    What stage is this business at?
+                  </label>
+                  <select
+                    value={businessMode}
+                    onChange={e => setBusinessMode(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: 13, backgroundColor: S.white, color: S.n900, border: `1px solid ${businessMode ? S.brand : S.n200}`, borderRadius: 5, fontFamily: S.font, transition: 'border-color 150ms' }}
+                  >
+                    <option value="">Select...</option>
+                    <option value="new_startup">New business — starting from zero</option>
+                    <option value="relocating">Relocating an existing business here</option>
+                    <option value="buying_existing">Buying an existing business at this address</option>
+                  </select>
+                  <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>Affects ramp-up time and Year 1 revenue assumptions</p>
+                </div>
+
               </div>
             )}
           </div>
@@ -592,14 +749,14 @@ export default function OnboardingPage() {
                 try {
                   sessionStorage.setItem('onboarding_data', JSON.stringify({ businessType, address, coords, monthlyRent }))
                 } catch {}
-                // If already signed in run analysis directly, otherwise go to login → onboarding (to restore + auto-run)
+                // If already signed in run analysis directly, otherwise show inline auth modal
                 const supabase = createClient()
                 const { data: { user } } = await supabase.auth.getUser()
                 if (user) {
                   runAnalysis()
                 } else {
                   sessionStorage.setItem('post_auth_action', 'runAnalysis')
-                  router.push('/auth/login?redirectTo=/onboarding')
+                  setShowAuthModal(true)
                 }
               }}
               style={{
@@ -675,34 +832,86 @@ export default function OnboardingPage() {
 
       {analysing && (
         <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.92)',
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.96)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 2000,
           fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif"
         }}>
-          <div style={{ marginBottom: 24 }}>
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ animation: 'spin 1s linear infinite' }}>
-              <circle cx="24" cy="24" r="20" stroke="#E7E5E4" strokeWidth="4"/>
-              <path d="M24 4 A20 20 0 0 1 44 24" stroke="#0F766E" strokeWidth="4" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', letterSpacing: '-0.03em', marginBottom: 8 }}>
-            Analysing your location…
-          </h2>
-          <p style={{ fontSize: 14, color: '#78716C' }}>This takes 20–40 seconds. Hang tight!</p>
-          {analysisError && (
-            <div style={{ marginTop: 24, padding: '12px 20px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, maxWidth: 360, textAlign: 'center' }}>
-              <p style={{ fontSize: 13, color: '#DC2626' }}>{analysisError}</p>
-              <button
-                onClick={() => { setAnalysing(false); setAnalysisError('') }}
-                style={{ marginTop: 10, fontSize: 13, color: '#0F766E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-              >
-                ← Go back and try again
-              </button>
+          <div style={{ maxWidth: 400, width: '90%' }}>
+            {/* Spinner */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+              <svg width="44" height="44" viewBox="0 0 48 48" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+                <circle cx="24" cy="24" r="20" stroke="#E7E5E4" strokeWidth="4"/>
+                <path d="M24 4 A20 20 0 0 1 44 24" stroke="#0F766E" strokeWidth="4" strokeLinecap="round"/>
+              </svg>
             </div>
-          )}
+
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1C1917', letterSpacing: '-0.02em', marginBottom: 4, textAlign: 'center' }}>
+              Building your location report
+            </h2>
+            <p style={{ fontSize: 13, color: '#78716C', textAlign: 'center', marginBottom: 28 }}>
+              Running 6 intelligence agents across live data sources
+            </p>
+
+            {/* Named steps */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {ANALYSIS_STEPS.map((step, i) => {
+                const isDone    = i < analysisStep
+                const isActive  = i === analysisStep
+                const isPending = i > analysisStep
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '9px 12px', borderRadius: 8,
+                      backgroundColor: isActive ? '#F0FDFA' : isDone ? '#FAFAF9' : 'transparent',
+                      border: `1px solid ${isActive ? '#99F6E4' : isDone ? '#E7E5E4' : 'transparent'}`,
+                      transition: 'all 400ms ease',
+                      opacity: isPending ? 0.4 : 1,
+                    }}
+                  >
+                    <div style={{ flexShrink: 0, width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {isDone ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      ) : isActive ? (
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#0F766E', animation: 'pulse 1.2s ease-in-out infinite' }} />
+                      ) : (
+                        <div style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#D6D3D1' }} />
+                      )}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? '#1C1917' : isDone ? '#78716C' : '#A8A29E' }}>
+                        {step.label}
+                      </div>
+                      {isActive && (
+                        <div style={{ fontSize: 11, color: '#0F766E', marginTop: 1 }}>{step.sub}</div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {analysisError && (
+              <div style={{ marginTop: 20, padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, textAlign: 'center' }}>
+                <p style={{ fontSize: 13, color: '#DC2626', marginBottom: 8 }}>{analysisError}</p>
+                <button
+                  onClick={() => { setAnalysing(false); setAnalysisError('') }}
+                  style={{ fontSize: 13, color: '#0F766E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  ← Go back and try again
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+      `}</style>
 
       {showAuthModal && (
         <div style={{
@@ -727,8 +936,8 @@ export default function OnboardingPage() {
               <CloseIcon size={20} />
             </button>
 
-            <h2 style={{ fontSize: 20, fontWeight: 900, color: S.n900, marginTop: 0, marginBottom: 8 }}>Get your full location report</h2>
-            <p style={{ fontSize: 14, color: S.n500, marginBottom: 24, lineHeight: 1.5 }}>Your analysis is ready. Create a free account to see:</p>
+            <h2 style={{ fontSize: 20, fontWeight: 900, color: S.n900, marginTop: 0, marginBottom: 8 }}>One step away from your report</h2>
+            <p style={{ fontSize: 14, color: S.n500, marginBottom: 24, lineHeight: 1.5 }}>Create a free account — your analysis will start immediately and includes:</p>
 
             <ul style={{ listStyle: 'none', padding: 0, marginBottom: 24, fontSize: 13, color: S.n700 }}>
               {['Revenue estimate based on your location', 'Rent-to-revenue viability score', 'GO / CAUTION / NO verdict', 'Competitor density map', '5-year financial projection'].map((item, i) => (

@@ -464,21 +464,23 @@ function buildRevenueChannels(
 // ── Scenario builder ──────────────────────────────────────────────────────────
 
 function buildScenarios(
-  baseRevenue:    number,
-  baseCosts:      number,
-  dailyCustomers: number,
-  avgTicket:      number,
+  baseRevenue:      number,
+  baseCosts:        number,
+  dailyCustomers:   number,
+  avgTicket:        number,
+  fixedCostsOnly:   number,   // staff + rent — truly fixed regardless of scenario
+  contributionUnit: number,   // avgTicket × (grossMargin% - otherCosts%)
 ): ComputedResult['scenarios'] {
   const worstRevenue = round(baseRevenue * 0.65)
   const bestRevenue  = round(baseRevenue * 1.40)
-  const worstCosts   = round(baseCosts   * 1.05)
-  const bestCosts    = round(baseCosts   * 0.95)
+  const worstCosts   = round(baseCosts   * 1.10)   // 10% cost overrun in worst case
+  const bestCosts    = round(baseCosts   * 0.93)   // 7% savings in best case
 
   const makeRow = (rev: number, costs: number, assumption: string): ScenarioRow => {
-    // customers_needed = daily customers required to break even under this scenario
-    // Formula: daily = monthly_costs / (avg_ticket × gross_margin) / 30
-    const needed = avgTicket > 0
-      ? Math.ceil(costs / (avgTicket * 0.70) / 30)   // daily break-even customers
+    // customers_needed = daily customers to cover FIXED costs under this scenario
+    // Uses contribution margin formula (not gross margin on total costs)
+    const needed = contributionUnit > 0
+      ? Math.ceil(fixedCostsOnly / (contributionUnit * 30))
       : 0
     return {
       assumption,
@@ -557,8 +559,37 @@ export function computeEngine(input: ComputeInput): ComputedResult {
 
   // ── STEP 1: Resolve revenue ──────────────────────────────────────────────
 
-  // Benchmark baseline
-  const bmRevenue = round(bm.dailyCustomersBase * bm.avgTicketSize * 30)
+  // Operating hours multiplier — baked into bmRevenue so it affects the
+  // entire blend (not just the benchmark-only path)
+  const hoursMultiplier: Record<string, number> = {
+    breakfast_lunch: 0.65,   // AM-only: lower overall volume
+    lunch_dinner:    1.00,   // baseline
+    all_day:         1.35,   // more trading hours = more customers
+    dinner_evening:  0.55,   // evening-only: typically lower covers
+    weekends_only:   0.45,   // ~2/7 operating days
+  }
+  const hoursKey  = input.operatingHours ?? null   // null = don't adjust
+  const hoursMult = hoursKey ? (hoursMultiplier[hoursKey] ?? 1.0) : 1.0
+
+  // Location access multiplier — street frontage IS the benchmark baseline (1.0)
+  // arcades and side streets materially reduce walk-in volume
+  const locationAccessMultiplier: Record<string, number> = {
+    street_frontage:  1.00,   // this IS the benchmark baseline — no adjustment
+    transport_hub:    1.10,   // captive commuter audience
+    shopping_centre:  1.05,   // indoor foot traffic
+    side_street:      0.75,   // reduced passing trade
+    arcade:           0.70,   // hardest to find, destination-only
+  }
+  const accessKey  = input.locationAccess ?? null  // null = don't adjust
+  const accessMult = accessKey ? (locationAccessMultiplier[accessKey] ?? 1.0) : 1.0
+
+  // User's avgOrderValue takes highest priority for revenue calculation
+  // This ensures the benchmark path uses the user's actual pricing
+  const ticketForBenchmark = (input.avgOrderValue != null && input.avgOrderValue > 0)
+    ? input.avgOrderValue : bm.avgTicketSize
+
+  // Benchmark baseline — incorporates hours + access multipliers and user ticket
+  const bmRevenue = round(bm.dailyCustomersBase * hoursMult * accessMult * ticketForBenchmark * 30)
 
   // Agent revenue candidates (in priority order: A5 > A4)
   const agentRevRaw =
@@ -652,19 +683,45 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   // ── STEP 5: Average ticket size & daily customers ────────────────────────
   // User-entered avgTicketSize is ground truth.
   // Only accept agent value if within 30% of user-entered.
+  // avgOrderValue from onboarding form takes highest priority — user knows their own pricing
+  // (ticketForBenchmark already used this in STEP 1 for bmRevenue)
+  const userTicketOverride = (input.avgOrderValue != null && input.avgOrderValue > 0)
+    ? input.avgOrderValue : null
   const userTicket    = input.avgTicketSize
   const agentTicket   = parseMoney(a5?.avg_ticket_size ?? a4?.avg_ticket_size)
   const ticketDiff    = agentTicket != null ? Math.abs(agentTicket - userTicket) / userTicket : 1
-  const avgTicketSize = ticketDiff < 0.30 ? (agentTicket ?? userTicket) : userTicket
+  const avgTicketSize = userTicketOverride
+    ?? (ticketDiff < 0.30 ? (agentTicket ?? userTicket) : userTicket)
 
-  const dailyCustomers = avgTicketSize > 0
+  // Daily customers — derived from revenue / ticket (hoursMult+accessMult already
+  // baked into bmRevenue in STEP 1, so they flow through the blend into revenue)
+  let dailyCustomers = avgTicketSize > 0
     ? round(revenue / avgTicketSize / 30)
-    : bm.dailyCustomersBase
+    : round(bm.dailyCustomersBase * hoursMult * accessMult)
+
+  // Seating capacity cap — for dine-in businesses, daily customers cannot
+  // physically exceed seats × average_turns_per_day × operating_days_factor
+  if (input.seatingCapacity != null && input.seatingCapacity > 0) {
+    const turnsPerDay = bizKey === 'restaurant' ? 2.5 : bizKey === 'bar' ? 3.0 : 2.0
+    const capacityCap = Math.round(input.seatingCapacity * turnsPerDay)
+    dailyCustomers = Math.min(dailyCustomers, capacityCap)
+  }
 
   // ── STEP 6: Break-even ───────────────────────────────────────────────────
-  const grossMarginFraction = bm.grossMarginPct / 100
-  const breakEvenDaily = avgTicketSize > 0 && grossMarginFraction > 0
-    ? Math.ceil(totalCosts / (avgTicketSize * grossMarginFraction * 30))
+  // Correct formula uses CONTRIBUTION MARGIN (not gross margin) against FIXED costs only.
+  // Variable costs (COGS, other costs as % of revenue) auto-adjust with volume — only
+  // staff and rent are truly fixed. Using total costs in the numerator double-counts COGS.
+  //
+  //   fixedCosts          = staffCosts + rent
+  //   contributionMargin  = avgTicket × (grossMarginPct% - otherCostsPct%)
+  //   breakEvenDaily      = fixedCosts / (contributionMargin × 30)
+  //
+  // Example (cafe): 23,000 / ($18 × 0.53 × 30) = 81 customers/day ✓
+  //   vs old formula: 53,456 / ($18 × 0.65 × 30) = 153 customers/day ✗ (wrong)
+  const fixedCostsOnly         = bm.staffCosts + input.monthlyRent
+  const contributionMarginUnit = avgTicketSize * Math.max(0.01, (bm.grossMarginPct / 100) - bm.otherCostsPct)
+  const breakEvenDaily = contributionMarginUnit > 0
+    ? Math.ceil(fixedCostsOnly / (contributionMarginUnit * 30))
     : 0
 
   const breakEvenMonths = netProfit > 0
@@ -968,7 +1025,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   const revenueChannels = buildRevenueChannels(bizKey, revenue, a5)
 
   // ── STEP 13: Scenarios & projection ──────────────────────────────────────
-  const scenarios = buildScenarios(revenue, totalCosts, dailyCustomers, avgTicketSize)
+  const scenarios = buildScenarios(revenue, totalCosts, dailyCustomers, avgTicketSize, fixedCostsOnly, contributionMarginUnit)
 
   const projection = {
     year1: round(netProfit * 12),

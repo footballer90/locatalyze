@@ -558,6 +558,326 @@ function SectionConfBadge({ section }: { section: import('@/types/computed').Sec
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// EXECUTIVE NARRATIVE — Investor-style "why this result happened" summary
+// Generates a 4-sentence prose explanation from computed data.
+// Placed at the top of the Overview tab, before financial cards.
+// ═══════════════════════════════════════════════════════════════════════════════
+function ExecutiveNarrative({ computed, report }: {
+  computed: import('@/types/computed').ComputedResult | null
+  report: Report
+}) {
+  const S2 = {
+    font:   "'DM Sans','Helvetica Neue',Arial,sans-serif",
+    brand:  '#0F766E', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
+    n400: '#A8A29E', n500: '#78716C', n700: '#44403C', n900: '#1C1917',
+    emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
+    amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
+    red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
+    white: '#FFFFFF',
+  }
+
+  if (!computed) return null
+
+  const bt         = (report.business_type ?? 'business').toLowerCase()
+  const suburb     = report.location_name ?? report.address ?? 'this location'
+  const verdict    = computed.verdict ?? 'CAUTION'
+  const np         = computed.netProfit
+  const revenue    = computed.revenue
+  const rent       = report.monthly_rent ?? 0
+  const breakEven  = computed.breakEvenDaily
+  const dailyCust  = computed.dailyCustomers
+  const compCount  = computed.validCompetitorCount ?? 0
+  const reasons    = computed.verdictReasons ?? []
+  const conditions = computed.verdictConditions ?? []
+  const failures   = computed.verdictFailureModes ?? []
+
+  const fmt = (n: number) => 'A$' + Math.round(n).toLocaleString('en-AU')
+
+  // Build each sentence from real data
+  // Sentence 1: Core financial finding
+  const s1 = np != null && revenue != null
+    ? np >= 0
+      ? `Based on industry benchmarks for ${bt} businesses in ${suburb}, this location projects a monthly net profit of ${fmt(np)} on revenue of ${fmt(revenue)}.`
+      : `This ${bt} in ${suburb} projects a monthly net loss of ${fmt(Math.abs(np))} — revenue of ${fmt(revenue)} falls short of estimated operating costs.`
+    : `This ${bt} in ${suburb} could not be fully modelled — revenue or cost data was insufficient for a complete financial picture.`
+
+  // Sentence 2: The primary driver of the verdict
+  const primaryReason = reasons[0] ?? null
+  const s2 = primaryReason
+    ? `The primary driver of this ${verdict} verdict is: ${primaryReason.toLowerCase().replace(/\.$/, '')}.`
+    : null
+
+  // Sentence 3: Break-even context
+  const s3 = breakEven != null && breakEven > 0 && dailyCust != null
+    ? dailyCust >= breakEven
+      ? `At ${dailyCust} estimated customers per day against a break-even threshold of ${breakEven}, the model shows you are above the minimum needed to cover fixed costs.`
+      : `The model estimates ${dailyCust} customers per day — below the ${breakEven} daily customers needed to cover fixed costs.`
+    : null
+
+  // Sentence 4: Competition context
+  const s4 = compCount > 0
+    ? `${compCount} direct competitor${compCount === 1 ? '' : 's'} ${compCount > 8 ? 'create a highly contested market' : compCount > 4 ? 'make this a moderately competitive location' : 'suggest limited direct competition'} within the trade area.`
+    : null
+
+  const verdictColor = verdict === 'GO' ? S2.emerald : verdict === 'NO' ? S2.red : S2.amber
+  const verdictBg    = verdict === 'GO' ? S2.emeraldBg : verdict === 'NO' ? S2.redBg : S2.amberBg
+  const verdictBdr   = verdict === 'GO' ? S2.emeraldBdr : verdict === 'NO' ? S2.redBdr : S2.amberBdr
+
+  return (
+    <div style={{
+      padding: '20px 24px', background: verdict === 'GO' ? S2.emeraldBg : verdict === 'NO' ? S2.redBg : S2.amberBg,
+      border: `1px solid ${verdictBdr}`, borderRadius: 12, fontFamily: S2.font
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <div style={{ padding: '3px 10px', borderRadius: 6, background: verdictColor, color: '#fff', fontSize: 11, fontWeight: 800, letterSpacing: '0.06em' }}>
+          {verdict}
+        </div>
+        <span style={{ fontSize: 13, fontWeight: 700, color: S2.n900 }}>Executive Summary</span>
+        <span style={{ fontSize: 11, color: S2.n400, marginLeft: 'auto' }}>Generated from {computed.meta?.engineVersion ?? 'engine'}</span>
+      </div>
+
+      <p style={{ fontSize: 14, color: S2.n700, lineHeight: 1.7, margin: 0 }}>
+        {s1}{s2 ? ` ${s2}` : ''}{s3 ? ` ${s3}` : ''}{s4 ? ` ${s4}` : ''}
+      </p>
+
+      {(conditions.length > 0 || failures.length > 0) && (
+        <div style={{ marginTop: 14, display: 'flex', gap: 16, flexWrap: 'wrap' as const }}>
+          {conditions.length > 0 && (
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: verdictColor, textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: 6 }}>
+                This works if
+              </p>
+              {conditions.slice(0, 2).map((c, i) => (
+                <p key={i} style={{ fontSize: 12, color: S2.n700, lineHeight: 1.5, marginBottom: 4, paddingLeft: 10, borderLeft: `2px solid ${verdictColor}` }}>
+                  {c}
+                </p>
+              ))}
+            </div>
+          )}
+          {failures.length > 0 && (
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: S2.red, textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: 6 }}>
+                This fails if
+              </p>
+              {failures.slice(0, 2).map((f, i) => (
+                <p key={i} style={{ fontSize: 12, color: S2.n700, lineHeight: 1.5, marginBottom: 4, paddingLeft: 10, borderLeft: `2px solid ${S2.red}` }}>
+                  {typeof f === 'string' ? f : (f as any).trigger ?? String(f)}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DATA QUALITY HEADER — Stripe-style transparency strip
+// Shows: live vs estimated, source per dimension, alerts for rejected/adjusted data
+// Expandable to full model-decisions audit trail
+// ═══════════════════════════════════════════════════════════════════════════════
+function DataQualityHeader({ computed, report }: {
+  computed: import('@/types/computed').ComputedResult | null
+  report: Report
+}) {
+  const [expanded, setExpanded] = React.useState(false)
+  const C = computed
+  if (!C) return null
+
+  const log      = C.meta.computeLog
+  const complete = C.dataCompleteness
+  const isLive   = C.modelConfidence !== 'benchmark_default'
+  const pressure = C.competitorPressure
+  const gate     = C.verdictGateTriggered
+  const rejected = (log.rejectedValues ?? []) as Array<{ field: string; reason: string; agentValue?: number }>
+
+  const srcRev   = log.revenueSource ?? 'unknown'
+  const srcCosts = log.costsSource   ?? 'unknown'
+  const compQ    = C.competitorDataQuality
+  const rawComp  = log.rawCompetitorCount ?? 0
+  const valComp  = log.validatedCompetitorCount ?? 0
+  const hasDemand = C.marketSignals.demandScore != null
+
+  const revLabel  = srcRev  === 'a5_live' ? 'A5 live' : srcRev  === 'a5_blended' ? 'A5 blended' : srcRev  === 'a4_fallback' ? 'A4 model' : 'industry avg'
+  const costLabel = srcCosts === 'a4_live' ? 'A4 live' : srcCosts === 'a4_blended' ? 'A4 blended' : 'industry avg'
+
+  const modeColor = isLive ? '#059669' : '#D97706'
+  const modeBg    = isLive ? '#ECFDF5' : '#FFFBEB'
+  const modeBdr   = isLive ? '#A7F3D0' : '#FCD34D'
+  const modeLabel = isLive ? 'LIVE DATA' : 'ESTIMATED'
+
+  const alerts = []
+  if (gate)             alerts.push({ label: 'VERDICT DOWNGRADED', bg: '#FEF3C7', bdr: '#FCD34D', color: '#B45309' })
+  if (rejected.length)  alerts.push({ label: `${rejected.length} VALUE${rejected.length > 1 ? 'S' : ''} REJECTED`, bg: '#FEF2F2', bdr: '#FCA5A5', color: '#DC2626' })
+  if (pressure?.revenueAdjusted) alerts.push({ label: 'REVENUE ADJUSTED', bg: '#EFF6FF', bdr: '#BFDBFE', color: '#2563EB' })
+
+  const chips = [
+    { k: 'Revenue',     v: revLabel,  ok: srcRev  !== 'benchmark_default' },
+    { k: 'Costs',       v: costLabel, ok: srcCosts !== 'benchmark_default' },
+    {
+      k: 'Competition',
+      v: compQ === 'live_verified'
+        ? `${valComp} verified`
+        : compQ === 'partial' ? 'partial'
+        : rawComp > 0 ? `${rawComp} raw, 0 matched` : 'no data',
+      ok: compQ === 'live_verified' || compQ === 'partial',
+    },
+    { k: 'Market', v: hasDemand ? 'A3 data' : 'estimated', ok: hasDemand },
+  ]
+
+  return (
+    <div style={{ background: '#FAFAFA', border: '1px solid #E7E5E4', borderRadius: 10, marginBottom: 16, overflow: 'hidden' }}>
+      {/* ── Collapsed header row ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', flexWrap: 'wrap' }}>
+        {/* Mode badge */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', background: modeBg, border: `1px solid ${modeBdr}`, borderRadius: 20, flexShrink: 0 }}>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: modeColor }} />
+          <span style={{ fontSize: 10, fontWeight: 800, color: modeColor, letterSpacing: '0.07em' }}>{modeLabel}</span>
+        </div>
+        {/* Completeness */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+          <span style={{ fontSize: 11, color: '#A8A29E' }}>{complete}% live</span>
+          <div style={{ width: 52, height: 4, background: '#E7E5E4', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${complete}%`, background: modeColor, borderRadius: 4 }} />
+          </div>
+        </div>
+        {/* Source chips */}
+        <div style={{ display: 'flex', gap: 12, flex: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+          {chips.map(s => (
+            <div key={s.k} style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: '#A8A29E' }}>{s.k}:</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: s.ok ? '#059669' : '#D97706' }}>{s.v}</span>
+            </div>
+          ))}
+        </div>
+        {/* Alert badges */}
+        {alerts.length > 0 && (
+          <div style={{ display: 'flex', gap: 5 }}>
+            {alerts.map((a, i) => (
+              <div key={i} style={{ padding: '2px 7px', background: a.bg, border: `1px solid ${a.bdr}`, borderRadius: 20 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: a.color }}>{a.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Expand toggle */}
+        <button onClick={() => setExpanded(e => !e)} style={{
+          background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
+          fontSize: 11, color: '#78716C', fontFamily: S.font, fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
+        }}>
+          How this was built {expanded ? '▲' : '▼'}
+        </button>
+      </div>
+
+      {/* ── Expanded audit trail ── */}
+      {expanded && (
+        <div style={{ borderTop: '1px solid #E7E5E4', padding: '18px 20px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#A8A29E', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>Model Decisions — what the engine used and why</p>
+
+          {/* Revenue */}
+          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 12, padding: '10px 14px', background: srcRev === 'benchmark_default' ? '#FFFBEB' : '#F0FDF4', borderRadius: 8, border: `1px solid ${srcRev === 'benchmark_default' ? '#FCD34D' : '#A7F3D0'}` }}>
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#A8A29E', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Revenue</p>
+              <p style={{ fontSize: 12, fontWeight: 800, color: srcRev !== 'benchmark_default' ? '#059669' : '#D97706' }}>{revLabel}</p>
+            </div>
+            <p style={{ fontSize: 12, color: '#44403C', lineHeight: 1.6 }}>
+              {srcRev === 'a5_live'      && 'A5 market agent returned verified revenue data — within 25% of industry benchmark. Used directly.'}
+              {srcRev === 'a5_blended'   && `A5 revenue diverged ${log.revenueDiffPct != null ? Math.round(log.revenueDiffPct) + '%' : ''} from benchmark (25–60% band). Blended to reduce single-source risk.`}
+              {srcRev === 'a4_fallback'  && 'A5 revenue unavailable. A4 cost model estimated revenue as a fallback — lower confidence than live market data.'}
+              {srcRev === 'benchmark_default' && `No live revenue data available. Using Australian ${(report.business_type ?? 'business').toLowerCase()} industry average (${fmt(C.revenue)}/month). Uncertainty: ±40%.`}
+            </p>
+          </div>
+
+          {/* Costs */}
+          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 12, padding: '10px 14px', background: srcCosts === 'benchmark_default' ? '#FFFBEB' : '#F0FDF4', borderRadius: 8, border: `1px solid ${srcCosts === 'benchmark_default' ? '#FCD34D' : '#A7F3D0'}` }}>
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#A8A29E', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Costs</p>
+              <p style={{ fontSize: 12, fontWeight: 800, color: srcCosts !== 'benchmark_default' ? '#059669' : '#D97706' }}>{costLabel}</p>
+            </div>
+            <p style={{ fontSize: 12, color: '#44403C', lineHeight: 1.6 }}>
+              {srcCosts === 'a4_live'    && 'A4 agent returned total monthly costs within acceptable range. Used directly.'}
+              {srcCosts === 'a4_blended' && `A4 cost data diverged from industry benchmark. Blended for a more conservative estimate.`}
+              {srcCosts === 'benchmark_default' && `No A4 cost data returned. Costs modelled from industry benchmarks for ${(report.business_type ?? 'business').toLowerCase()}s at this rent level.`}
+            </p>
+          </div>
+
+          {/* Competition */}
+          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 12, padding: '10px 14px', background: compQ === 'no_data' ? '#FEF2F2' : '#EFF6FF', borderRadius: 8, border: `1px solid ${compQ === 'no_data' ? '#FCA5A5' : '#BAE6FD'}` }}>
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#A8A29E', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Competition</p>
+              <p style={{ fontSize: 12, fontWeight: 800, color: compQ === 'live_verified' ? '#059669' : '#D97706' }}>
+                {compQ === 'live_verified' ? `${valComp} verified` : compQ === 'partial' ? 'partial data' : 'no match'}
+              </p>
+            </div>
+            <p style={{ fontSize: 12, color: '#44403C', lineHeight: 1.6 }}>
+              {rawComp > 0 && valComp === 0
+                ? `A1 returned ${rawComp} nearby businesses. 0 passed the ${(report.business_type ?? 'business').toLowerCase()} category filter — all were unrelated business types. This means no confirmed direct competitors, which may reflect genuine scarcity or a category mismatch in the data.`
+                : rawComp === 0
+                ? 'A1 returned no competitor data for this area. Competition level cannot be assessed from this report alone — ground-truth verification recommended.'
+                : `A1 returned ${rawComp} businesses, ${valComp} matched the category filter and were used for scoring.`
+              }
+            </p>
+          </div>
+
+          {/* Competitor pressure */}
+          {pressure != null && (
+            <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 12, padding: '10px 14px', background: pressure.revenueAdjusted ? '#EFF6FF' : '#F9FAFB', borderRadius: 8, border: `1px solid ${pressure.revenueAdjusted ? '#BFDBFE' : '#E7E5E4'}` }}>
+              <div>
+                <p style={{ fontSize: 10, fontWeight: 700, color: '#A8A29E', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Comp. Pressure</p>
+                <p style={{ fontSize: 12, fontWeight: 800, color: pressure.revenueAdjusted ? '#2563EB' : '#A8A29E' }}>
+                  {pressure.revenueAdjusted ? `−${Math.round((1 - pressure.pressureFactor) * 100)}% applied` : 'none'}
+                </p>
+              </div>
+              <p style={{ fontSize: 12, color: '#44403C', lineHeight: 1.6 }}>
+                {pressure.revenueAdjusted
+                  ? `Nearby competitor density (${pressure.rawCount500m} businesses within 500m) triggered a revenue reduction of ${Math.round((1 - pressure.pressureFactor) * 100)}%. Without this, projected revenue would be ${fmt(Math.round(C.revenue / pressure.pressureFactor))}/month.`
+                  : 'No competitor density adjustment applied. Revenue projection reflects the raw model output without pressure discounting.'
+                }
+              </p>
+            </div>
+          )}
+
+          {/* Rejected values */}
+          {rejected.length > 0 && (
+            <div style={{ padding: '10px 14px', background: '#FEF2F2', borderRadius: 8, border: '1px solid #FCA5A5' }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', marginBottom: 8 }}>
+                {rejected.length} AI-supplied value{rejected.length > 1 ? 's were' : ' was'} rejected and replaced with industry benchmarks:
+              </p>
+              {rejected.map((r, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: i < rejected.length - 1 ? 6 : 0 }}>
+                  <span style={{ fontSize: 11, color: '#B91C1C', fontWeight: 700, minWidth: 130, flexShrink: 0 }}>{r.field.replace(/_/g, ' ')}</span>
+                  <span style={{ fontSize: 11, color: '#7F1D1D', lineHeight: 1.5 }}>{r.reason}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Verdict gate */}
+          {gate && (
+            <div style={{ padding: '10px 14px', background: '#FFF7ED', borderRadius: 8, border: '1px solid #FED7AA' }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#EA580C', marginBottom: 4 }}>Verdict was downgraded by the trust layer</p>
+              <p style={{ fontSize: 12, color: '#7C2D12', lineHeight: 1.6 }}>
+                {gate === 'benchmark_default_confidence' && 'All financial data is based on industry benchmarks — no live revenue or cost data was available. A GO verdict requires at minimum one verified data source.'}
+                {gate === 'insufficient_data_completeness' && `Data completeness is ${complete}% — below the 25% threshold required for a confident forward-looking verdict.`}
+                {gate === 'declining_demand' && 'Market demand trend is declining. Entering a contracting market requires demonstrated differentiation — the engine conservatively downgrades GO verdicts under declining demand.'}
+                {gate === 'no_competitor_data' && 'Competitor data was unavailable. Without knowing the competitive landscape, a GO verdict cannot be validated.'}
+                {!['benchmark_default_confidence','insufficient_data_completeness','declining_demand','no_competitor_data'].includes(gate) && gate}
+              </p>
+            </div>
+          )}
+
+          <p style={{ fontSize: 11, color: '#A8A29E', marginTop: 4, lineHeight: 1.5 }}>
+            Locatalyze Engine v{C.meta.engineVersion} · Computed {new Date(C.meta.computedAt).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // KEY INSIGHTS — synthesised, data-backed insight cards (the "worth paying for" section)
 // ═══════════════════════════════════════════════════════════════════════════════
 function KeyInsights({ report, computed, fin, competitors, market }: {
@@ -1920,6 +2240,33 @@ function StarRating({ rating, max = 5 }: { rating: number; max?: number }) {
 // ─── Competitor card ──────────────────────────────────────────────────────────
 function CompetitorCard({ c, idx }: { c: any; idx: number }) {
   const pricingColor = c.pricing === 'Budget' ? S.emerald : c.pricing === 'Premium' ? S.red : S.amber
+
+  // Compute a threat strength score from available signals
+  // Priority: explicit threatLabel (A1 v4) > threatScore > rating+reviews
+  const strengthScore: number = (() => {
+    if (c.threatLabel === 'strong')   return 85
+    if (c.threatLabel === 'moderate') return 55
+    if (c.threatLabel === 'weak')     return 25
+    if (typeof c.threatScore === 'number') return c.threatScore
+    // Fallback: derive from rating (50%) + review count log-scale (30%)
+    const ratingPts  = c.rating   > 0 ? (c.rating / 5) * 50 : 0
+    const reviewPts  = c.reviews  > 0 ? Math.min(30, Math.log10(c.reviews) / Math.log10(1000) * 30) : 0
+    return Math.round(ratingPts + reviewPts)
+  })()
+
+  const strengthLabel = strengthScore >= 70 ? 'Dominant'
+    : strengthScore >= 50 ? 'Strong'
+    : strengthScore >= 30 ? 'Moderate'
+    : 'Weak'
+  const strengthColor = strengthScore >= 70 ? S.red
+    : strengthScore >= 50 ? '#EA580C'
+    : strengthScore >= 30 ? S.amber
+    : S.emerald
+  const strengthBg = strengthScore >= 70 ? S.redBg
+    : strengthScore >= 50 ? '#FFF7ED'
+    : strengthScore >= 30 ? S.amberBg
+    : S.emeraldBg
+
   return (
     <div style={{
       border: `1px solid ${S.n200}`, borderRadius: 12, padding: '16px 18px',
@@ -1931,6 +2278,11 @@ function CompetitorCard({ c, idx }: { c: any; idx: number }) {
           <p style={{ fontSize: 11, color: S.n400 }}>{c.type}</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+          {/* Strength badge — most important signal for the user */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', background: strengthBg, border: `1px solid ${strengthColor}30`, borderRadius: 20 }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: strengthColor }} />
+            <span style={{ fontSize: 10, fontWeight: 800, color: strengthColor, letterSpacing: '0.04em' }}>{strengthLabel}</span>
+          </div>
           {c.pricing && (
             <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20, background: `${pricingColor}15`, color: pricingColor, letterSpacing: '0.04em' }}>{c.pricing}</span>
           )}
@@ -1939,8 +2291,15 @@ function CompetitorCard({ c, idx }: { c: any; idx: number }) {
           )}
         </div>
       </div>
-      <StarRating rating={c.rating ?? 0} />
-      {c.reviews > 0 && <p style={{ fontSize: 11, color: S.n400 }}>{c.reviews.toLocaleString()} reviews</p>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <StarRating rating={c.rating ?? 0} />
+        {c.reviews > 0 && (
+          <span style={{ fontSize: 11, color: S.n400, fontFamily: S.mono }}>
+            {c.reviews >= 1000 ? `${(c.reviews / 1000).toFixed(1)}k` : c.reviews} reviews
+            {c.reviews >= 500 ? ' · established' : c.reviews >= 100 ? ' · active' : ''}
+          </span>
+        )}
+      </div>
       {c.strengths?.length > 0 && (
         <div>
           <p style={{ fontSize: 10, fontWeight: 700, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Strengths</p>
@@ -2073,6 +2432,100 @@ function ScenarioCard({ label, data, color, bg, border }: { label: string; data:
             <p style={{ fontSize: 14, fontWeight: 700, color, fontFamily: S.mono }}>{customers}</p>
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// ─── User plan hook ───────────────────────────────────────────────────────────
+function useUserPlan() {
+  const [plan, setPlan]     = useState<string>('free')
+  const [used, setUsed]     = useState<number>(0)
+  const FREE_LIMIT          = 3
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase.from('profiles').select('plan,total_analyses_used').eq('id', user.id).maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setPlan(data.plan ?? 'free')
+            setUsed(data.total_analyses_used ?? 0)
+          }
+        })
+    })
+  }, [])
+
+  const isFree       = plan === 'free'
+  const remaining    = Math.max(0, FREE_LIMIT - used)
+  const usedDisplay  = Math.min(used, FREE_LIMIT)
+  return { plan, used: usedDisplay, remaining, isFree, FREE_LIMIT }
+}
+
+// ─── Upgrade nudge — shown at the bottom of each free-tier report ─────────────
+function UpgradeNudge({ plan, used, remaining, FREE_LIMIT }: {
+  plan: string; used: number; remaining: number; FREE_LIMIT: number
+}) {
+  if (plan !== 'free') return null
+  const isLastReport = remaining === 0
+
+  return (
+    <div style={{
+      margin: '8px 0 0', padding: '20px 24px',
+      background: isLastReport ? '#1C1917' : '#111827',
+      border: `1px solid ${isLastReport ? '#D97706' : '#1F2937'}`,
+      borderRadius: 12, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif"
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' as const }}>
+        <div>
+          {isLastReport ? (
+            <>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#FDE68A', marginBottom: 4 }}>
+                You&apos;ve used all {FREE_LIMIT} free reports
+              </p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                Upgrade to run more analyses. Pro includes 20 reports/month, PDF export, and comparison tools.
+              </p>
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
+                {used} of {FREE_LIMIT} free reports used — {remaining} remaining
+              </p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                Upgrade for unlimited reports, PDF export, and the comparison tool.
+              </p>
+            </>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+          {!isLastReport && (
+            <a href="/onboarding" style={{
+              padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)',
+              textDecoration: 'none', cursor: 'pointer'
+            }}>
+              Run another
+            </a>
+          )}
+          <a href="/upgrade" style={{
+            padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 700,
+            background: '#0F766E', color: '#FFFFFF', border: 'none', textDecoration: 'none', cursor: 'pointer',
+            boxShadow: '0 1px 8px rgba(15,118,110,0.4)'
+          }}>
+            {isLastReport ? 'Upgrade to Pro →' : 'See Pro plans'}
+          </a>
+        </div>
+      </div>
+
+      {/* Usage bar */}
+      <div style={{ marginTop: 14, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 4 }}>
+        <div style={{
+          height: '100%', width: `${(used / FREE_LIMIT) * 100}%`,
+          background: isLastReport ? '#D97706' : '#0F766E', borderRadius: 4,
+          transition: 'width 600ms ease'
+        }} />
       </div>
     </div>
   )
@@ -2375,6 +2828,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const { reportId } = use(params)
   const router = useRouter()
   const { report, loading, notFound, elapsedSeconds } = useReport(reportId)
+  const userPlan = useUserPlan()
   const [activeTab, setActiveTab] = useState('overview')
 
   // ── Map state ──────────────────────────────────────────────────────────────
@@ -2968,6 +3422,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           </div>
         )}
 
+        {/* ═══ DATA QUALITY HEADER — transparency strip ═══ */}
+        <DataQualityHeader computed={C} report={report} />
+
         {/* ═══ SECTION 3: TABS ═══ */}
         <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: 4, marginBottom: 20, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
           {tabs.map(t => (
@@ -3086,6 +3543,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         {/* ═══ OVERVIEW TAB ═══ */}
         {activeTab === 'overview' && (
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+            {/* Executive Narrative — investor-style "why this result happened" prose */}
+            <ExecutiveNarrative computed={C} report={report} />
 
             {/* Big P&L hero + top risks */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -4438,6 +4898,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         <div style={{ marginTop: 28 }}>
           <AssumptionsPanel report={report} />
         </div>
+
+        {/* Upgrade nudge — shown for free users */}
+        <UpgradeNudge plan={userPlan.plan} used={userPlan.used} remaining={userPlan.remaining} FREE_LIMIT={userPlan.FREE_LIMIT} />
 
         <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${S.n200}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>

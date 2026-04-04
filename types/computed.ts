@@ -343,6 +343,16 @@ export interface ComputeInput {
   city:         string
   state:        string
 
+  /**
+   * Optional accuracy-improving inputs from the onboarding form.
+   * When provided, these override benchmark defaults in the engine.
+   */
+  operatingHours?:  string | null   // e.g. 'all_day' | 'breakfast_lunch' | 'lunch_dinner' | 'dinner_evening'
+  seatingCapacity?: number | null   // for food: covers; for retail: sqm — used to cap daily customers
+  businessMode?:    string | null   // 'new_startup' | 'relocating' | 'buying_existing'
+  avgOrderValue?:   number | null   // user's own avg ticket override — replaces benchmark if provided
+  locationAccess?:  string | null   // 'street_frontage' | 'transport_hub' | 'shopping_centre' | 'side_street' | 'arcade'
+
   // Raw n8n agent outputs (treated as SUGGESTIONS, not truth)
   agentOutputs: {
     a1?: Record<string, any>

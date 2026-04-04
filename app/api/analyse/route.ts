@@ -144,7 +144,8 @@ function parseAustralianAddress(address: string): {
 
 function validatePayload(body: any): { valid: true; data: any } | { valid: false; error: string } {
   if (!body || typeof body !== 'object') return { valid: false, error: 'Invalid request body' }
-  const { businessType, address, monthlyRent, setupBudget, avgTicketSize, userId, lat, lng } = body
+  const { businessType, address, monthlyRent, setupBudget, avgTicketSize, userId, lat, lng,
+    operatingHours, seatingCapacity, businessMode, avgOrderValue, locationAccess } = body
   if (!businessType || typeof businessType !== 'string' || businessType.trim().length < 2)
     return { valid: false, error: 'Business type is required' }
   if (!address || typeof address !== 'string' || address.trim().length < 5)
@@ -182,6 +183,12 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
       lat:           (latNum && isFinite(latNum)) ? latNum : null,
       lng:           (lngNum && isFinite(lngNum)) ? lngNum : null,
       userId: typeof userId === 'string' ? userId.slice(0, 100) : undefined,
+      // Optional accuracy inputs
+      operatingHours:  typeof operatingHours  === 'string' ? operatingHours  : null,
+      seatingCapacity: typeof seatingCapacity === 'number' ? seatingCapacity : (seatingCapacity ? Number(seatingCapacity) || null : null),
+      businessMode:    typeof businessMode    === 'string' ? businessMode    : null,
+      avgOrderValue:   typeof avgOrderValue   === 'number' ? avgOrderValue   : (avgOrderValue ? Number(avgOrderValue) || null : null),
+      locationAccess:  typeof locationAccess  === 'string' ? locationAccess  : null,
     }
   }
 }
@@ -256,6 +263,11 @@ export async function POST(request: NextRequest) {
       avgTicketSize: data.avgTicketSize,
       lat:           data.lat,
       lng:           data.lng,
+      operatingHours:  data.operatingHours  ?? null,
+      seatingCapacity: data.seatingCapacity ?? null,
+      businessMode:    data.businessMode    ?? null,
+      avgOrderValue:   data.avgOrderValue   ?? null,
+      locationAccess:  data.locationAccess  ?? null,
     },
   }
 
@@ -288,6 +300,12 @@ export async function POST(request: NextRequest) {
     // Coordinates from Mapbox — eliminates re-geocoding in A2
     lat: data.lat ?? '',
     lng: data.lng ?? '',
+    // Accuracy inputs — agents can use these for context
+    operatingHours:  data.operatingHours  ?? null,
+    seatingCapacity: data.seatingCapacity ?? null,
+    businessMode:    data.businessMode    ?? null,
+    avgOrderValue:   data.avgOrderValue   ?? null,
+    locationAccess:  data.locationAccess  ?? null,
   })
 
   after(async () => {
