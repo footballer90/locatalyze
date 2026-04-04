@@ -681,16 +681,17 @@ function DataQualityHeader({ computed, report }: {
   computed: import('@/types/computed').ComputedResult | null
   report: Report
 }) {
-  const [expanded, setExpanded] = React.useState(false)
   const C = computed
   if (!C) return null
+  const rejected  = (C.meta.computeLog.rejectedValues ?? []) as Array<{ field: string; reason: string; agentValue?: number }>
+  const hasIssues = !!(C.verdictGateTriggered || rejected.length > 0 || C.competitorPressure?.revenueAdjusted)
+  const [expanded, setExpanded] = React.useState(hasIssues)
 
   const log      = C.meta.computeLog
   const complete = C.dataCompleteness
   const isLive   = C.modelConfidence !== 'benchmark_default'
   const pressure = C.competitorPressure
   const gate     = C.verdictGateTriggered
-  const rejected = (log.rejectedValues ?? []) as Array<{ field: string; reason: string; agentValue?: number }>
 
   const srcRev   = log.revenueSource ?? 'unknown'
   const srcCosts = log.costsSource   ?? 'unknown'
@@ -2239,19 +2240,48 @@ function StarRating({ rating, max = 5 }: { rating: number; max?: number }) {
 
 // ─── Competitor card ──────────────────────────────────────────────────────────
 function CompetitorCard({ c, idx }: { c: any; idx: number }) {
-  const pricingColor = c.pricing === 'Budget' ? S.emerald : c.pricing === 'Premium' ? S.red : S.amber
+  // ── Price level: Google Maps price_level (1–4) → $ symbols ──────────────────
+  const priceLevelRaw: number | null = c.price_level ?? null
+  const priceLevelStr = priceLevelRaw != null
+    ? ['', '$', '$$', '$$$', '$$$$'][Math.min(priceLevelRaw, 4)] || null
+    : null
+  // Also accept string "budget"/"mid"/"premium" from older A1 versions
+  const pricingFallback: string | null = c.pricing ?? null
+  const priceDisplay = priceLevelStr ?? pricingFallback
+  const pricingColor = (priceLevelRaw != null && priceLevelRaw <= 1) || pricingFallback === 'Budget'
+    ? S.emerald
+    : (priceLevelRaw != null && priceLevelRaw >= 3) || pricingFallback === 'Premium'
+    ? S.red
+    : S.amber
 
-  // Compute a threat strength score from available signals
-  // Priority: explicit threatLabel (A1 v4) > threatScore > rating+reviews
+  // ── Review count → demand strength signal ────────────────────────────────────
+  const reviewCount: number = c.reviews ?? c.review_count ?? c.user_ratings_total ?? 0
+  const reviewDemandLabel = reviewCount >= 2000 ? 'Dominant'
+    : reviewCount >= 500  ? 'High demand'
+    : reviewCount >= 100  ? 'Established'
+    : reviewCount >= 20   ? 'Active'
+    : reviewCount > 0     ? 'New/quiet'
+    : null
+  const reviewDemandColor = reviewCount >= 2000 ? S.red
+    : reviewCount >= 500  ? '#EA580C'
+    : reviewCount >= 100  ? S.amber
+    : S.n400
+
+  // ── Opening hours / competition pressure ─────────────────────────────────────
+  const isOpenNow: boolean | null = c.is_open_now ?? c.opening_hours?.open_now ?? null
+  const openingHours: string | null = c.opening_hours?.weekday_text?.[0] ?? c.hours_summary ?? null
+
+  // ── Threat strength score: rating (40pts) + reviews log (25pts) + price (20pts) + proximity (15pts) ──
   const strengthScore: number = (() => {
     if (c.threatLabel === 'strong')   return 85
     if (c.threatLabel === 'moderate') return 55
     if (c.threatLabel === 'weak')     return 25
     if (typeof c.threatScore === 'number') return c.threatScore
-    // Fallback: derive from rating (50%) + review count log-scale (30%)
-    const ratingPts  = c.rating   > 0 ? (c.rating / 5) * 50 : 0
-    const reviewPts  = c.reviews  > 0 ? Math.min(30, Math.log10(c.reviews) / Math.log10(1000) * 30) : 0
-    return Math.round(ratingPts + reviewPts)
+    const ratingPts  = c.rating     > 0 ? (c.rating / 5) * 40 : 0
+    const reviewPts  = reviewCount  > 0 ? Math.min(25, Math.log10(reviewCount) / Math.log10(2000) * 25) : 0
+    const pricePts   = priceLevelRaw != null ? (priceLevelRaw / 4) * 20 : 10 // high price = premium = stronger
+    const proxPts    = c.within_500m ? 15 : 0
+    return Math.round(ratingPts + reviewPts + pricePts + proxPts)
   })()
 
   const strengthLabel = strengthScore >= 70 ? 'Dominant'
@@ -2267,39 +2297,66 @@ function CompetitorCard({ c, idx }: { c: any; idx: number }) {
     : strengthScore >= 30 ? S.amberBg
     : S.emeraldBg
 
+  // ── Distance display ─────────────────────────────────────────────────────────
+  const distanceM: number | null = c.distance_meters ?? c.distance ?? null
+  const distanceLabel = distanceM != null
+    ? distanceM < 100  ? `${Math.round(distanceM)}m`
+    : distanceM < 1000 ? `${Math.round(distanceM)}m`
+    : `${(distanceM / 1000).toFixed(1)}km`
+    : c.within_500m ? '< 500m' : null
+
   return (
     <div style={{
-      border: `1px solid ${S.n200}`, borderRadius: 12, padding: '16px 18px',
-      background: S.white, display: 'flex', flexDirection: 'column', gap: 10,
+      border: `1.5px solid ${strengthScore >= 70 ? '#FCA5A5' : S.n200}`,
+      borderRadius: 12, padding: '16px 18px',
+      background: strengthScore >= 70 ? '#FFF5F5' : S.white,
+      display: 'flex', flexDirection: 'column', gap: 10,
     }}>
+      {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 13, fontWeight: 800, color: S.n900, marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</p>
-          <p style={{ fontSize: 11, color: S.n400 }}>{c.type}</p>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+            {c.type && <span style={{ fontSize: 11, color: S.n400 }}>{c.type}</span>}
+            {distanceLabel && <span style={{ fontSize: 10, fontWeight: 700, color: S.n400 }}>· {distanceLabel}</span>}
+            {isOpenNow === true  && <span style={{ fontSize: 10, fontWeight: 700, color: S.emerald }}>· Open now</span>}
+            {isOpenNow === false && <span style={{ fontSize: 10, fontWeight: 700, color: S.red }}>· Closed</span>}
+          </div>
         </div>
+        {/* Strength badge */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-          {/* Strength badge — most important signal for the user */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', background: strengthBg, border: `1px solid ${strengthColor}30`, borderRadius: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', background: strengthBg, border: `1px solid ${strengthColor}40`, borderRadius: 20 }}>
             <div style={{ width: 5, height: 5, borderRadius: '50%', background: strengthColor }} />
             <span style={{ fontSize: 10, fontWeight: 800, color: strengthColor, letterSpacing: '0.04em' }}>{strengthLabel}</span>
+            <span style={{ fontSize: 10, color: strengthColor, opacity: 0.6 }}>{strengthScore}</span>
           </div>
-          {c.pricing && (
-            <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20, background: `${pricingColor}15`, color: pricingColor, letterSpacing: '0.04em' }}>{c.pricing}</span>
-          )}
-          {c.within_500m && (
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: S.redBg, color: S.red, letterSpacing: '0.04em' }}>500m</span>
+          {priceDisplay && (
+            <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20, background: `${pricingColor}15`, color: pricingColor, letterSpacing: '0.04em' }}>
+              {priceLevelStr ?? priceDisplay}
+            </span>
           )}
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+
+      {/* Rating + review demand signal */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <StarRating rating={c.rating ?? 0} />
-        {c.reviews > 0 && (
-          <span style={{ fontSize: 11, color: S.n400, fontFamily: S.mono }}>
-            {c.reviews >= 1000 ? `${(c.reviews / 1000).toFixed(1)}k` : c.reviews} reviews
-            {c.reviews >= 500 ? ' · established' : c.reviews >= 100 ? ' · active' : ''}
+        {reviewCount > 0 && (
+          <span style={{ fontSize: 11, color: reviewDemandColor, fontFamily: S.mono, fontWeight: 600 }}>
+            {reviewCount >= 1000 ? `${(reviewCount / 1000).toFixed(1)}k` : reviewCount}
+            {reviewDemandLabel && <span style={{ fontFamily: S.font, fontWeight: 400, color: S.n400 }}> · {reviewDemandLabel}</span>}
           </span>
         )}
       </div>
+
+      {/* Opening hours note — a real competition pressure signal */}
+      {openingHours && (
+        <div style={{ fontSize: 11, color: S.n500, padding: '4px 8px', background: S.n50, borderRadius: 6, lineHeight: 1.4 }}>
+          {openingHours}
+        </div>
+      )}
+
+      {/* Strengths */}
       {c.strengths?.length > 0 && (
         <div>
           <p style={{ fontSize: 10, fontWeight: 700, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Strengths</p>
@@ -2308,13 +2365,24 @@ function CompetitorCard({ c, idx }: { c: any; idx: number }) {
           ))}
         </div>
       )}
+
+      {/* Weaknesses / exploitable gaps */}
       {c.weaknesses?.length > 0 && (
         <div>
-          <p style={{ fontSize: 10, fontWeight: 700, color: S.red, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Weaknesses</p>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.red, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Gaps you can exploit</p>
           {c.weaknesses.slice(0, 2).map((w: string, i: number) => (
-            <p key={i} style={{ fontSize: 11, color: '#991B1B', lineHeight: 1.5 }}>- {w}</p>
+            <p key={i} style={{ fontSize: 11, color: '#991B1B', lineHeight: 1.5 }}>→ {w}</p>
           ))}
         </div>
+      )}
+
+      {/* Google Maps link if place_id available */}
+      {(c.place_id || c.maps_url || c.google_maps_url) && (
+        <a href={c.maps_url ?? c.google_maps_url ?? `https://www.google.com/maps/place/?q=place_id:${c.place_id}`}
+          target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: 11, color: S.brand, fontWeight: 700, textDecoration: 'none', marginTop: 2 }}>
+          View on Google Maps →
+        </a>
       )}
     </div>
   )
@@ -2461,6 +2529,45 @@ function useUserPlan() {
   const remaining    = Math.max(0, FREE_LIMIT - used)
   const usedDisplay  = Math.min(used, FREE_LIMIT)
   return { plan, used: usedDisplay, remaining, isFree, FREE_LIMIT }
+}
+
+// ─── Paywall gate — blurs premium content on free tier ───────────────────────
+function PaywallGate({ isFree, label, children }: {
+  isFree: boolean
+  label: string
+  children: React.ReactNode
+}) {
+  if (!isFree) return <>{children}</>
+  return (
+    <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden' }}>
+      {/* Blurred content preview */}
+      <div style={{ filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none', opacity: 0.6 }}>
+        {children}
+      </div>
+      {/* Overlay CTA */}
+      <div style={{
+        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(2px)',
+        borderRadius: 12, border: '1.5px solid #E7E5E4',
+      }}>
+        <div style={{ textAlign: 'center', padding: '24px 32px', maxWidth: 320 }}>
+          <div style={{ fontSize: 24, marginBottom: 10 }}>🔒</div>
+          <p style={{ fontSize: 14, fontWeight: 800, color: '#1C1917', marginBottom: 6 }}>{label}</p>
+          <p style={{ fontSize: 12, color: '#78716C', lineHeight: 1.6, marginBottom: 16 }}>
+            Upgrade to Pro to unlock full competitor profiles, revenue scenario modelling, and PDF export.
+          </p>
+          <a href="/upgrade" style={{
+            display: 'inline-block', padding: '9px 22px', borderRadius: 8,
+            background: '#0F766E', color: '#fff', fontSize: 13, fontWeight: 700,
+            textDecoration: 'none', boxShadow: '0 2px 8px rgba(15,118,110,0.3)',
+          }}>
+            Upgrade to Pro →
+          </a>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ─── Upgrade nudge — shown at the bottom of each free-tier report ─────────────
@@ -2853,11 +2960,30 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const COST_MULTIPLIER = 1.45
   const TRADING_DAYS = 30
 
+  // Business-type defaults so sliders always have sensible ranges even when backend data is sparse
+  const _btLower = (report?.business_type ?? '').toLowerCase()
+  const _btDefaults = _btLower.includes('restaurant') || _btLower.includes('dining')
+    ? { ticket: 38, customers: 55 }
+    : _btLower.includes('cafe') || _btLower.includes('coffee')
+    ? { ticket: 18, customers: 85 }
+    : _btLower.includes('retail') || _btLower.includes('shop')
+    ? { ticket: 55, customers: 35 }
+    : _btLower.includes('bar') || _btLower.includes('pub')
+    ? { ticket: 28, customers: 65 }
+    : { ticket: 25, customers: 60 }
+
   const _fin = safeResultData(report?.result_data)?.financials || {}
-  const baseRent = report?.monthly_rent ?? _fin?.rent?.submitted ?? 0
-  const baseTicket = _fin?.baselineCustomers
-    ? Math.round((_fin.monthlyRevenue || 0) / ((_fin.baselineCustomers || 1) * TRADING_DAYS)) : 0
-  const baseCustomers = _fin?.baselineCustomers ?? 0
+  const _cr = report?.computed_result as any // engine v2 — referenced before C is declared
+  const baseRent = report?.monthly_rent ?? _fin?.rent?.submitted ?? 2500
+  // Ticket: compute engine → fin derived → business type default
+  const _rawTicket = (_cr?.avgTicketSize ?? null) || (_fin?.avgTicketSize ?? null)
+    || (_fin?.baselineCustomers
+        ? Math.round((_fin.monthlyRevenue || 0) / ((_fin.baselineCustomers || 1) * TRADING_DAYS))
+        : null)
+  const baseTicket = (_rawTicket && _rawTicket > 0) ? Math.round(_rawTicket) : _btDefaults.ticket
+  // Customers: compute engine → fin baseline → default
+  const _rawCustomers = (_cr?.dailyCustomers ?? null) || (_fin?.baselineCustomers ?? null)
+  const baseCustomers = (_rawCustomers && _rawCustomers > 0) ? Math.round(_rawCustomers) : _btDefaults.customers
   const _scoreComp = report?.score_competition ?? 50
   const _scoreDem = report?.score_demand ?? 50
 
@@ -3475,9 +3601,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
                 {[
-                  { label: 'Monthly Rent', value: adjRent ?? baseRent, base: baseRent, set: setAdjRent, prefix: '$', min: Math.max(500, Math.round(baseRent * 0.4)), max: Math.round(baseRent * 2.5), step: 100, invert: true },
-                  { label: 'Avg Ticket Size', value: adjTicket ?? baseTicket, base: baseTicket, set: setAdjTicket, prefix: '$', min: Math.max(1, Math.round(baseTicket * 0.4)), max: Math.round(baseTicket * 2.5), step: 1, invert: false },
-                  { label: 'Daily Customers', value: adjCustomers ?? baseCustomers, base: baseCustomers, set: setAdjCustomers, prefix: '', min: Math.max(5, Math.round(baseCustomers * 0.3)), max: Math.round(baseCustomers * 3), step: 1, invert: false },
+                  { label: 'Monthly Rent', value: adjRent ?? baseRent, base: baseRent, set: setAdjRent, prefix: '$', min: Math.max(500, Math.round(baseRent * 0.4)), max: Math.max(Math.round(baseRent * 2.5), baseRent + 5000), step: 100, invert: true },
+                  { label: 'Avg Ticket Size', value: adjTicket ?? baseTicket, base: baseTicket, set: setAdjTicket, prefix: '$', min: Math.max(1, Math.round(baseTicket * 0.4)), max: Math.max(Math.round(baseTicket * 2.5), baseTicket + 50), step: 1, invert: false },
+                  { label: 'Daily Customers', value: adjCustomers ?? baseCustomers, base: baseCustomers, set: setAdjCustomers, prefix: '', min: Math.max(5, Math.round(baseCustomers * 0.3)), max: Math.max(Math.round(baseCustomers * 3), baseCustomers + 100), step: 5, invert: false },
                 ].map(s => {
                   const delta = s.value - s.base
                   const pctDelta = s.base > 0 ? Math.abs(Math.round((delta / s.base) * 100)) : 0
@@ -3534,7 +3660,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 </div>
               )}
               <p style={{ fontSize: 12, color: S.n400, marginTop: 14, textAlign: 'center' }}>
-                Estimates based on original model assumptions. Recalculation runs in your browser -- no data is sent.
+                Recalculation runs in your browser — no data is sent. Base values:{' '}
+                {_cr?.avgTicketSize ? 'from compute engine' : _fin?.avgTicketSize ? 'from financial model' : 'industry benchmark defaults'}
+                {' '}· {GROSS_MARGIN * 100}% gross margin · {TRADING_DAYS} trading days/month
               </p>
             </div>
           )}
@@ -4088,10 +4216,22 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).length > 0 && (
               <Card>
                 <SectionHeading sub="Validated competitor profiles — parks, infrastructure and unrelated businesses excluded.">Competitor Profiles</SectionHeading>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
-                  {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).map((c: any, i: number) => (
-                    <CompetitorCard key={i} c={c} idx={i} />
-                  ))}
+                {/* First 3 cards always visible; remaining locked for free users */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+                    {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).slice(0, 3).map((c: any, i: number) => (
+                      <CompetitorCard key={i} c={c} idx={i} />
+                    ))}
+                  </div>
+                  {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).length > 3 && (
+                    <PaywallGate isFree={userPlan.isFree} label="Full Competitor Analysis — Pro">
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+                        {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).slice(3).map((c: any, i: number) => (
+                          <CompetitorCard key={i + 3} c={c} idx={i + 3} />
+                        ))}
+                      </div>
+                    </PaywallGate>
+                  )}
                 </div>
                 {((competitors as any)?.validNearbyBusinesses ?? []).length === 0 && (
                   <p style={{ fontSize: 13, color: S.n400, padding: '12px 0' }}>No direct competitors found within 500m after filtering. This may indicate a low-saturation opportunity.</p>
@@ -4579,6 +4719,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {/* Scenarios — prefer A5 sensitivity_analysis, fallback to old riskScenarios */}
             {fin.monthlyRevenue && (
+              <PaywallGate isFree={userPlan.isFree} label="Revenue Scenario Modelling — Pro">
               <Card>
                 <SectionHeading sub={(fin as any).scenarioSource === 'benchmark' ? "Generated from industry benchmarks — run analysis for live A5 projections" : "Best, base, and worst-case from A5 revenue model"}>Scenario Analysis</SectionHeading>
                 {fin.sensitivityAnalysis ? (
@@ -4621,6 +4762,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                 )}
               </Card>
+              </PaywallGate>
             )}
 
             {/* Year 1 Revenue Ramp (A5) */}
