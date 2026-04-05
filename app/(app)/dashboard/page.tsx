@@ -226,10 +226,10 @@ function ComparisonView({ reports, onClose }: { reports: Report[]; onClose: () =
 function Sidebar({ user, stats, reports, plan, onNewAnalysis, onSignOut }: {
   user: any; stats: any; reports: Report[]; plan: string; onNewAnalysis: () => void; onSignOut: () => void
 }) {
-  const FREE_LIMIT = 3
+  const FREE_LIMIT = 1
   const used = Math.min(reports.length, FREE_LIMIT)
   const pct = (used / FREE_LIMIT) * 100
-  const quotaColor = used >= FREE_LIMIT ? S.red : used >= 2 ? S.amber : S.emerald
+  const quotaColor = used >= FREE_LIMIT ? S.red : S.emerald
   const planLabel = plan === 'pro' ? 'Pro' : plan === 'annual' ? 'Annual' : plan === 'business' ? 'Business' : 'Free plan'
 
   const bestScore = reports.length > 0 ? Math.max(...reports.map(r => r.overall_score || 0)) : null
@@ -613,7 +613,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
               ) : (
-                {(() => {
+                (() => {
                   const savedCount   = reports.filter(r => r.is_saved).length
                   const displayList  = viewFilter === 'saved' ? reports.filter(r => r.is_saved) : reports
                   const STATUS_CFG: Record<string, { label: string; color: string; bg: string }> = {
@@ -825,7 +825,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                   )
-                })()}
+                })()
               )}
               </div>{/* end left column */}
 

@@ -1449,8 +1449,11 @@ export default function LandingPage() {
               <h1 style={{ fontSize: isMobile ? 36 : 54, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', lineHeight: 1.08, marginBottom: 18 }}>
                 The wrong location<br/>costs <span style={{ color: L.emerald }}>$200,000+.</span>
               </h1>
-              <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, lineHeight: 1.75, marginBottom: 16, maxWidth: 440 }}>
-                See competition, demand, and financial risk for any Australian address. Get a clear <strong style={{ color: L.slate }}>GO, CAUTION or NO</strong> verdict — before you shortlist a site or visit an agent.
+              <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, lineHeight: 1.75, marginBottom: 8, maxWidth: 440 }}>
+                Get a <strong style={{ color: L.slate }}>GO / CAUTION / NO</strong> decision for any Australian address in 90 seconds. Unlock full financials + projections for <strong style={{ color: L.emerald }}>$29</strong>.
+              </p>
+              <p style={{ fontSize: isMobile ? 13 : 14, color: '#94A3B8', lineHeight: 1.65, marginBottom: 16, maxWidth: 440 }}>
+                Competition density, break-even customers, revenue projections, rent risk — all in one report, before you shortlist a site or meet an agent.
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
                 {[
@@ -1472,7 +1475,7 @@ export default function LandingPage() {
                   See sample report
                 </Link>
               </div>
-              <p style={{ fontSize: 12, color: '#94A3B8' }}>No signup required to start · See competitors instantly</p>
+              <p style={{ fontSize: 12, color: '#94A3B8' }}>Free verdict · Full unlock $29 · Results in 90 seconds</p>
 
               <div style={{ display: 'flex', gap: isMobile ? 20 : 28, marginTop: 28, paddingTop: 24, borderTop: `1px solid ${L.border}`, flexWrap: 'wrap' }}>
                 {[{value:'Free to start',label:'no signup required'},{value:'Live data',label:'competitor mapping'},{value:'< 60s',label:'see results instantly'}].map(s => (
@@ -1564,7 +1567,7 @@ export default function LandingPage() {
               After your free report
             </h2>
             <p style={{ fontSize:15, color:L.muted, maxWidth:460, margin:'0 auto', lineHeight:1.7 }}>
-              Three free reports, no card required. Here&apos;s exactly what the experience looks like.
+              Your first report is free. Here&apos;s exactly what the experience looks like.
             </p>
           </div>
 
@@ -1576,8 +1579,8 @@ export default function LandingPage() {
                 bg: L.emeraldXlt,
                 border: L.emeraldLt,
                 icon: '📋',
-                title: 'Your verdict lands instantly',
-                body: 'You get a full report — GO, CAUTION or NO — with competitor map, financial model, SWOT and 3-year projection. Download as PDF, share with your accountant or landlord.',
+                title: 'Your free verdict lands instantly',
+                body: 'You get a GO, CAUTION, or NO verdict with a competitor map and top-level score — free, no card required. See whether this location is worth a site visit.',
                 cta: null,
               },
               {
@@ -1585,19 +1588,19 @@ export default function LandingPage() {
                 color: '#0891B2',
                 bg: 'rgba(8,145,178,.06)',
                 border: 'rgba(8,145,178,.2)',
-                icon: '🔄',
-                title: 'Run up to 3 reports free',
-                body: 'Your first 3 reports are completely free — no card, no signup wall. Compare locations side by side or run the same site with different business types.',
-                cta: null,
+                icon: '🔓',
+                title: 'Unlock the full analysis for $29',
+                body: 'Get the complete financial model, break-even analysis, revenue projections, SWOT insights, and a downloadable PDF. One report, one price — no subscriptions required.',
+                cta: { label: 'See pricing', href: '#pricing' },
               },
               {
                 step: '3',
                 color: '#7C3AED',
                 bg: 'rgba(124,58,237,.06)',
                 border: 'rgba(124,58,237,.2)',
-                icon: '⬆️',
-                title: 'Upgrade only if you need more',
-                body: 'After 3 reports, you\'ll see a clear upgrade prompt. Pro ($59/mo) gives you 20 reports and location comparison. No dark patterns, no surprise charges.',
+                icon: '📦',
+                title: 'Save more with report packs',
+                body: 'Comparing multiple locations? Grab a 3-pack for $59 ($19.67 each) or a 10-pack for $149 ($14.90 each). Use credits on any location, any time.',
                 cta: { label: 'See pricing', href: '#pricing' },
               },
             ].map(s => (
@@ -1858,64 +1861,48 @@ export default function LandingPage() {
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>Simple, transparent pricing</h2>
             <p style={{ fontSize: 15, color: L.muted }}>Start free. Upgrade only when you need more.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr 1fr', gap: 16 }}>
-            {/* Free */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, maxWidth: 780, margin: '0 auto' }}>
+            {/* Single Report */}
             <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
-              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Free</p>
+              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Single Report</p>
               <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$0</p>
+                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$29</p>
               </div>
-              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>3 reports · no credit card</p>
-              {['3 location reports','GO/CAUTION/NO verdict','Competitor map','Demographic breakdown'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>{f}</p>
+              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>One-time · per location</p>
+              {['Full financial model','Break-even analysis','Revenue projections','SWOT & AI insights','PDF export'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
               ))}
-              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Start free</a>
+              <a href="/onboarding" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:L.emerald, borderRadius:11, fontSize:12, fontWeight:700, color:'#fff', textDecoration:'none' }}>Get your report — $29</a>
             </div>
-            {/* Pro */}
-            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
-              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Pro</p>
-              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$59</p>
-                <p style={{ fontSize:13, color:L.muted }}>/month</p>
-              </div>
-              <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>20 reports · ≈ $2.95 each</p>
-              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Cancel anytime</p>
-              {['20 reports per month','Location comparison','PDF export','Priority support'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>{f}</p>
-              ))}
-              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.emerald}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.emerald, textDecoration:'none' }}>Start Pro</a>
-            </div>
-            {/* Annual */}
+            {/* 3-Pack */}
             <div style={{ background:'linear-gradient(135deg,#0F766E 0%,#0891B2 100%)', borderRadius:22, padding:'26px 24px', position:'relative', boxShadow:'0 8px 32px rgba(15,118,110,.25)' }}>
-              <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:L.amber, color:'#fff', borderRadius:100, padding:'4px 14px', fontSize:11, fontWeight:800, whiteSpace:'nowrap' }}>MOST POPULAR</div>
-              <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.5)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Annual</p>
+              <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:L.amber, color:'#fff', borderRadius:100, padding:'4px 14px', fontSize:11, fontWeight:800, whiteSpace:'nowrap' }}>BEST VALUE</div>
+              <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.5)', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>3-Pack</p>
               <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                <p style={{ fontSize:34, fontWeight:900, color:'#fff', letterSpacing:'-.03em' }}>$490</p>
-                <p style={{ fontSize:13, color:'rgba(255,255,255,.5)' }}>/year</p>
+                <p style={{ fontSize:34, fontWeight:900, color:'#fff', letterSpacing:'-.03em' }}>$59</p>
               </div>
-              <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>240 reports · save $218</p>
-              <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>vs $708 monthly</p>
-              {['240 reports per year','Location comparison','PDF export','Priority support'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>{f}</p>
+              <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>$19.67 per report · save 32%</p>
+              <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>Compare 3 locations</p>
+              {['Everything in Single Report','Compare locations side-by-side','Use credits any time','No expiry'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
               ))}
-              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E', textDecoration:'none' }}>Get Annual — $490/yr</a>
+              <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E', textDecoration:'none' }}>Get 3-Pack — $59</a>
             </div>
-            {/* Business */}
+            {/* 10-Pack */}
             <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
-              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Business</p>
+              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>10-Pack</p>
               <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
-                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$119</p>
-                <p style={{ fontSize:13, color:L.muted }}>/month</p>
+                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$149</p>
               </div>
-              <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>60 reports · ≈ $1.98 each</p>
-              <p style={{ fontSize: 12, color: '#78716C', marginBottom: 8 }}>Cancel anytime</p>
-              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>Agencies & franchisees</p>
-              {['60 reports per month','Location comparison','PDF export','Priority support','Advanced analytics'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>{f}</p>
+              <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>$14.90 per report · save 49%</p>
+              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>For agencies & multi-site</p>
+              {['Everything in Single Report','10 report credits','Bulk location research','Priority support'].map(f => (
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
               ))}
-              <a href="/auth/signup" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Start Business</a>
+              <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Get 10-Pack — $149</a>
             </div>
           </div>
+          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report includes a free preview — verdict, competitor map, and score. No card required.</p>
         </div>
       </section>
 
@@ -1932,7 +1919,7 @@ export default function LandingPage() {
             Check if your location is worth it →
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, fontSize: 12, color: '#94A3B8', marginTop: 14, flexWrap: 'wrap' }}>
-            <span>No signup required to start</span><span>·</span><span>3 free reports</span><span>·</span><span>See results in about 90 seconds</span>
+            <span>First report free</span><span>·</span><span>Full unlock from $29</span><span>·</span><span>Results in ~90 seconds</span>
           </div>
         </div>
       </section>

@@ -93,13 +93,16 @@ function buildEmailHtml(opts: {
           </p>` : ''}
 
           <!-- CTA -->
-          <table cellpadding="0" cellspacing="0">
+          <table cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
             <tr><td style="background:#0F766E;border-radius:8px;">
               <a href="${reportUrl}" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">
-                View full report →
+                View your free preview →
               </a>
             </td></tr>
           </table>
+          <p style="margin:0 0 12px;font-size:13px;color:#78716C;line-height:1.6;">
+            Your free report includes the verdict, competitor map, and score. Unlock the full financial model, break-even analysis, and PDF export for <strong style="color:#0F766E;">$29</strong>.
+          </p>
         </td></tr>
 
         <!-- Footer -->

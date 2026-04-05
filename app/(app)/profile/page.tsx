@@ -22,7 +22,7 @@ const S = {
  sidebarActive: 'rgba(255,255,255,0.08)',
 }
 
-const FREE_LIMIT = 5
+const FREE_LIMIT = 1
 
 export default function ProfilePage() {
  const router = useRouter()
@@ -242,7 +242,7 @@ export default function ProfilePage() {
         <div style={{ height: '100%', width: `${pct}%`, background: quotaColor, borderRadius: 100, transition: 'width 0.6s ease' }} />
        </div>
               <p style={{ fontSize: 11, color: S.n400 }}>
-                {pct >= 100 ? 'Quota reached — upgrade for unlimited reports' : `${FREE_LIMIT - used} free report${FREE_LIMIT - used !== 1 ? 's' : ''} remaining`}
+                {pct >= 100 ? 'Free report used — unlock full reports from $29' : `${FREE_LIMIT - used} free report remaining`}
        </p>
             </div>
 

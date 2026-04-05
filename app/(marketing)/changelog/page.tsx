@@ -50,7 +50,7 @@ const releases = [
     summary: 'Async analysis engine, pricing overhaul, founder pages, and trust and security hardening.',
     changes: [
       { tag: 'New',      tc: 'green', text: 'Async analysis architecture — browser receives a report ID in under 200ms, analysis runs in the background, dashboard updates live via Supabase Realtime when complete. Eliminates timeout errors.' },
-      { tag: 'New',      tc: 'green', text: 'Pricing overhaul — Free (3 reports), Pro ($59/mo), Annual ($490/yr), Business ($119/mo). Lifetime plan retired.' },
+      { tag: 'New',      tc: 'green', text: 'Pricing overhaul — 1 free report, Single Report ($29), 3-Pack ($59), 10-Pack ($149). Pay-per-report model replaces subscriptions as primary offering.' },
       { tag: 'New',      tc: 'green', text: 'About page added — founder profiles with background and methodology context.' },
       { tag: 'New',      tc: 'green', text: 'Competitor data caching — results cached 48 hours per suburb, reducing API costs and speeding up repeat analyses.' },
       { tag: 'Fix',      tc: 'amber', text: 'Score ring display bug resolved — feasibility ring no longer shows 0/100 on page load.' },

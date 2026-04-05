@@ -577,7 +577,7 @@ export default function SampleReportClient() {
             {/* CTA */}
             <div style={{ background: S.headerBg, borderRadius: 14, padding: '18px' }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB', marginBottom: 8, lineHeight: 1.4 }}>Ready to analyse your address?</p>
-              <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>Your report is generated live from real data. 3 free reports, no credit card.</p>
+              <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>Your report is generated live from real data. First report free, no credit card.</p>
               <Link href="/onboarding" style={{ display: 'block', textAlign: 'center', background: S.brand, color: '#fff', borderRadius: 8, padding: '11px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
                 Run my free report →
               </Link>

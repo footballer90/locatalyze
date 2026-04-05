@@ -26,11 +26,11 @@ const FAQS = [
       },
       {
         q: 'Do I need a credit card to sign up?',
-        a: 'No. The free plan gives you 3 complete reports with no credit card required. You only need payment details when you upgrade to Pro or Business.',
+        a: 'No. Your first report is free — no credit card required. You only need payment details when you unlock a full report or purchase a report pack.',
       },
       {
-        q: 'What does the free plan include?',
-        a: 'Three complete location analyses, each with a full financial model, GO/CAUTION/NO verdict, SWOT analysis, competitor data within 500m, demographic scoring, and 3-year projection. Location comparison (side-by-side analysis of multiple addresses) is a Pro feature.',
+        q: 'What does the free report include?',
+        a: 'Your first report is free and includes: GO/CAUTION/NO verdict, competitor map, and top-level location score. To unlock the full financial model, break-even analysis, SWOT insights, revenue projections, and PDF export, you can purchase a single report for $29 or save with a multi-report pack.',
       },
       {
         q: 'How accurate are the reports?',
@@ -76,11 +76,11 @@ const FAQS = [
     items: [
       {
         q: 'What plans are available?',
-        a: 'Free (3 reports, no card required), Pro ($59/month — 20 reports/month, PDF export, location comparison), Annual ($490/year — 240 reports, equivalent to $41/month, saves $218 vs monthly), and Business ($119/month — 60 reports/month, for agencies and franchise operators). All paid plans can be cancelled anytime.',
+        a: 'Your first report is free. Paid options: Single Report ($29 — one location, full analysis + PDF), 3-Pack ($59 — $19.67 each, save 32%, ideal for comparing locations), 10-Pack ($149 — $14.90 each, save 49%, for agencies and multi-site research). Monthly subscriptions are also available for power users: Pro ($149/month) and Business ($199/month). All purchases are one-time unless you choose a subscription.',
       },
       {
-        q: 'How do I upgrade?',
-        a: 'Go to your Dashboard and click "Upgrade" in the sidebar, or visit the Pricing page. Payment is processed by Stripe. You will have immediate access to Pro features once payment is confirmed.',
+        q: 'How do I unlock a full report?',
+        a: 'Click "Unlock full report — $29" on any report page, or visit the Upgrade page to purchase a report pack. Payment is processed securely by Stripe. Your report unlocks instantly after payment.',
       },
       {
         q: 'Can I cancel my subscription?',

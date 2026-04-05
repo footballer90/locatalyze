@@ -105,6 +105,8 @@ interface Report {
   // Outcomes feedback
   outcome_feedback?: any | null
   feedback_dismissed_at?: string | null
+  // Pricing / unlock
+  is_unlocked?: boolean | null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -2291,7 +2293,7 @@ function AssumptionsPanel({ report }: { report: Report }) {
     { label: 'Est. daily customers', value: report.breakeven_daily ? `${report.breakeven_daily} / day` : '--' },
     { label: 'Monthly revenue', value: fmt(fin.monthlyRevenue) },
     { label: 'Profit margin', value: fin.profitMargin ? `${fin.profitMargin}%` : '--' },
-    { label: 'Competitor data', value: `OpenStreetMap Overpass API – ${C?.competitorRadius ?? 500}m radius` },
+    { label: 'Competitor data', value: `OpenStreetMap Overpass API – ${(report as any).computed_result?.competitorRadius ?? 500}m radius` },
     { label: 'Demographics source', value: demoSource },
     { label: 'Geocoding source', value: 'OpenStreetMap Nominatim' },
     { label: 'Report generated', value: new Date(report.created_at).toLocaleString('en-AU') },
@@ -2615,64 +2617,75 @@ function ScenarioCard({ label, data, color, bg, border }: { label: string; data:
 }
 
 // ─── User plan hook ───────────────────────────────────────────────────────────
-function useUserPlan() {
+// Accepts optional reportUnlocked flag from the report's is_unlocked column
+function useUserPlan(reportUnlocked?: boolean) {
   const [plan, setPlan]     = useState<string>('free')
   const [used, setUsed]     = useState<number>(0)
-  const FREE_LIMIT          = 3
+  const [credits, setCredits] = useState<number>(0)
+  const FREE_LIMIT          = 1
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
-      supabase.from('profiles').select('plan,total_analyses_used').eq('id', user.id).maybeSingle()
+      supabase.from('profiles').select('plan,total_analyses_used,report_credits').eq('id', user.id).maybeSingle()
         .then(({ data }) => {
           if (data) {
             setPlan(data.plan ?? 'free')
             setUsed(data.total_analyses_used ?? 0)
+            setCredits(data.report_credits ?? 0)
           }
         })
     })
   }, [])
 
-  const isFree       = plan === 'free'
+  const isFreePlan   = plan === 'free'
   const remaining    = Math.max(0, FREE_LIMIT - used)
   const usedDisplay  = Math.min(used, FREE_LIMIT)
-  return { plan, used: usedDisplay, remaining, isFree, FREE_LIMIT }
+  // Report is "free" (locked) if: user is on free plan AND this report hasn't been individually unlocked AND they have no credits
+  // Paid plan users or individually unlocked reports always see full content
+  const isFree       = isFreePlan && !reportUnlocked && credits <= 0
+  return { plan, used: usedDisplay, remaining, isFree, FREE_LIMIT, credits, isFreePlan }
 }
 
-// ─── Paywall gate — blurs premium content on free tier ───────────────────────
-function PaywallGate({ isFree, label, children }: {
-  isFree: boolean
+// ─── Paywall gate — blurs premium content for free/locked reports ────────────
+function PaywallGate({ locked, label, reportId, children }: {
+  locked: boolean
   label: string
+  reportId?: string
   children: React.ReactNode
 }) {
-  if (!isFree) return <>{children}</>
+  if (!locked) return <>{children}</>
+  const upgradeUrl = reportId ? `/upgrade?report=${reportId}` : '/upgrade'
   return (
     <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden' }}>
       {/* Blurred content preview */}
-      <div style={{ filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none', opacity: 0.6 }}>
+      <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none', opacity: 0.5 }}>
         {children}
       </div>
       {/* Overlay CTA */}
       <div style={{
         position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(2px)',
+        background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(2px)',
         borderRadius: 12, border: '1.5px solid #E7E5E4',
       }}>
-        <div style={{ textAlign: 'center', padding: '24px 32px', maxWidth: 320 }}>
+        <div style={{ textAlign: 'center', padding: '24px 32px', maxWidth: 360 }}>
           <div style={{ fontSize: 24, marginBottom: 10 }}>🔒</div>
           <p style={{ fontSize: 14, fontWeight: 800, color: '#1C1917', marginBottom: 6 }}>{label}</p>
-          <p style={{ fontSize: 12, color: '#78716C', lineHeight: 1.6, marginBottom: 16 }}>
-            Upgrade to Pro to unlock full competitor profiles, revenue scenario modelling, and PDF export.
+          <p style={{ fontSize: 12, color: '#78716C', lineHeight: 1.6, marginBottom: 14 }}>
+            Unlock the full financial model, break-even analysis, revenue projections, SWOT insights, and PDF export for this location.
           </p>
-          <a href="/upgrade" style={{
-            display: 'inline-block', padding: '9px 22px', borderRadius: 8,
+          <a href={upgradeUrl} style={{
+            display: 'inline-block', padding: '10px 24px', borderRadius: 8,
             background: '#0F766E', color: '#fff', fontSize: 13, fontWeight: 700,
             textDecoration: 'none', boxShadow: '0 2px 8px rgba(15,118,110,0.3)',
           }}>
-            Upgrade to Pro →
+            Unlock full report — $29
           </a>
+          <p style={{ fontSize: 11, color: '#A8A29E', marginTop: 8 }}>
+            Or save with a <a href="/upgrade" style={{ color: '#0F766E', fontWeight: 600, textDecoration: 'none' }}>3-pack ($59)</a> or <a href="/upgrade" style={{ color: '#0F766E', fontWeight: 600, textDecoration: 'none' }}>10-pack ($149)</a>
+          </p>
         </div>
       </div>
     </div>
@@ -2680,69 +2693,40 @@ function PaywallGate({ isFree, label, children }: {
 }
 
 // ─── Upgrade nudge — shown at the bottom of each free-tier report ─────────────
-function UpgradeNudge({ plan, used, remaining, FREE_LIMIT }: {
-  plan: string; used: number; remaining: number; FREE_LIMIT: number
+function UpgradeNudge({ plan, used, remaining, FREE_LIMIT, reportId }: {
+  plan: string; used: number; remaining: number; FREE_LIMIT: number; reportId?: string
 }) {
   if (plan !== 'free') return null
-  const isLastReport = remaining === 0
 
   return (
     <div style={{
       margin: '8px 0 0', padding: '20px 24px',
-      background: isLastReport ? '#1C1917' : '#111827',
-      border: `1px solid ${isLastReport ? '#D97706' : '#1F2937'}`,
+      background: '#1C1917',
+      border: '1px solid #D97706',
       borderRadius: 12, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif"
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' as const }}>
         <div>
-          {isLastReport ? (
-            <>
-              <p style={{ fontSize: 14, fontWeight: 700, color: '#FDE68A', marginBottom: 4 }}>
-                You&apos;ve used all {FREE_LIMIT} free reports
-              </p>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
-                Upgrade to run more analyses. Pro includes 20 reports/month, PDF export, and comparison tools.
-              </p>
-            </>
-          ) : (
-            <>
-              <p style={{ fontSize: 14, fontWeight: 700, color: '#FFFFFF', marginBottom: 4 }}>
-                {used} of {FREE_LIMIT} free reports used — {remaining} remaining
-              </p>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
-                Upgrade for unlimited reports, PDF export, and the comparison tool.
-              </p>
-            </>
-          )}
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#FDE68A', marginBottom: 4 }}>
+            Unlock the full financial model for this location
+          </p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+            Get the complete break-even analysis, revenue projections, SWOT insights, and downloadable PDF for $29.
+          </p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
-          {!isLastReport && (
-            <a href="/onboarding" style={{
-              padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-              background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)',
-              textDecoration: 'none', cursor: 'pointer'
-            }}>
-              Run another
-            </a>
-          )}
-          <a href="/upgrade" style={{
-            padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 700,
+          <a href={reportId ? `/upgrade?report=${reportId}` : '/upgrade'} style={{
+            padding: '10px 22px', borderRadius: 8, fontSize: 13, fontWeight: 700,
             background: '#0F766E', color: '#FFFFFF', border: 'none', textDecoration: 'none', cursor: 'pointer',
             boxShadow: '0 1px 8px rgba(15,118,110,0.4)'
           }}>
-            {isLastReport ? 'Upgrade to Pro →' : 'See Pro plans'}
+            Unlock full report — $29
           </a>
         </div>
       </div>
-
-      {/* Usage bar */}
-      <div style={{ marginTop: 14, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 4 }}>
-        <div style={{
-          height: '100%', width: `${(used / FREE_LIMIT) * 100}%`,
-          background: isLastReport ? '#D97706' : '#0F766E', borderRadius: 4,
-          transition: 'width 600ms ease'
-        }} />
-      </div>
+      <p style={{ marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+        Save with a 3-pack ($59) or 10-pack ($149) — credits never expire
+      </p>
     </div>
   )
 }
@@ -3060,7 +3044,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const { reportId } = use(params)
   const router = useRouter()
   const { report, loading, notFound, elapsedSeconds } = useReport(reportId)
-  const userPlan = useUserPlan()
+  const userPlan = useUserPlan(report?.is_unlocked ?? undefined)
   const [activeTab, setActiveTab] = useState('overview')
 
   // ── Save & Track state ─────────────────────────────────────────────────────
@@ -3744,7 +3728,17 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             )}
           </div>
 
-          <ExportPDFButton report={report} />
+          {!userPlan.isFree && <ExportPDFButton report={report} />}
+          {userPlan.isFree && (
+            <button
+              onClick={() => router.push(`/upgrade?report=${report.report_id ?? report.id}`)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', fontSize: 12, fontWeight: 700, color: S.n400, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit' }}
+              title="Unlock to export PDF"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Export PDF
+            </button>
+          )}
           <ShareButton reportId={report.report_id ?? report.id} initialIsPublic={report.is_public ?? false} initialToken={report.public_token ?? null} />
         </div>
       </nav>
@@ -4130,8 +4124,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )}
             </Card>
 
-            {/* SWOT */}
+            {/* SWOT — locked for free users */}
             {report.swot_analysis && (
+              <PaywallGate locked={userPlan.isFree} label="SWOT Analysis" reportId={report.report_id ?? report.id}>
               <Card>
                 <SectionHeading badge="ai" sub="Qualitative analysis from AI agent — verify suburb-specific claims independently.">SWOT Analysis</SectionHeading>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -4155,6 +4150,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   })}
                 </div>
               </Card>
+              </PaywallGate>
             )}
           </div>
         )}
@@ -4601,7 +4597,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     ))}
                   </div>
                   {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).length > 3 && (
-                    <PaywallGate isFree={userPlan.isFree} label="Full Competitor Analysis — Pro">
+                    <PaywallGate locked={userPlan.isFree} label="Full Competitor Analysis — Pro">
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
                         {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).slice(3).map((c: any, i: number) => (
                           <CompetitorCard key={i + 3} c={c} idx={i + 3} />
@@ -4744,6 +4740,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
         {/* ═══ MARKET TAB ═══ */}
         {activeTab === 'market' && (
+          <PaywallGate locked={userPlan.isFree} label="Market Demand Analysis" reportId={report.report_id ?? report.id}>
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
             {C?.sectionConfidence?.demand && <SectionConfBadge section={C.sectionConfidence.demand} />}
@@ -4860,10 +4857,12 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </>
             )}
           </div>
+          </PaywallGate>
         )}
 
         {/* ═══ FINANCIALS TAB ═══ */}
         {activeTab === 'financials' && (
+          <PaywallGate locked={userPlan.isFree} label="Full Financial Model" reportId={report.report_id ?? report.id}>
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
             {C?.sectionConfidence?.financials && <SectionConfBadge section={C.sectionConfidence.financials} />}
 
@@ -5096,7 +5095,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {/* Scenarios — prefer A5 sensitivity_analysis, fallback to old riskScenarios */}
             {fin.monthlyRevenue && (
-              <PaywallGate isFree={userPlan.isFree} label="Revenue Scenario Modelling — Pro">
               <Card>
                 <SectionHeading sub={(fin as any).scenarioSource === 'benchmark' ? "Generated from industry benchmarks — run analysis for live A5 projections" : "Best, base, and worst-case from A5 revenue model"}>Scenario Analysis</SectionHeading>
                 {fin.sensitivityAnalysis ? (
@@ -5139,7 +5137,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                 )}
               </Card>
-              </PaywallGate>
             )}
 
             {/* Year 1 Revenue Ramp (A5) */}
@@ -5184,6 +5181,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </Card>
             )}
           </div>
+          </PaywallGate>
         )}
 
         {/* ═══ MAP TAB ═══ */}
@@ -5421,7 +5419,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         </div>
 
         {/* Upgrade nudge — shown for free users */}
-        <UpgradeNudge plan={userPlan.plan} used={userPlan.used} remaining={userPlan.remaining} FREE_LIMIT={userPlan.FREE_LIMIT} />
+        <UpgradeNudge plan={userPlan.plan} used={userPlan.used} remaining={userPlan.remaining} FREE_LIMIT={userPlan.FREE_LIMIT} reportId={report.report_id ?? report.id} />
 
         <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${S.n200}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>

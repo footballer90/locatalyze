@@ -15,7 +15,7 @@ try {
 // Fire-and-forget: return in <1s, n8n saves result directly to Supabase
 export const maxDuration = 10
 
-const FREE_LIMIT = 3
+const FREE_LIMIT = 1
 
 function errorResponse(msg: string, status: number) {
   const r = NextResponse.json({ success: false, error: { message: msg } }, { status })
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
       const plan = profile?.plan || 'free'
       const used = profile?.total_analyses_used ?? 0
       if (plan !== 'admin' && plan === 'free' && used >= FREE_LIMIT) {
-        return errorResponse(`You've used all ${FREE_LIMIT} free analyses. Upgrade to Pro for unlimited reports.`, 402)
+        return errorResponse(`You've used your free report. Unlock full reports from $29 at /upgrade`, 402)
       }
       if (!profile) {
         await sb.from('profiles').upsert({ id: userId, total_analyses_used: 0, plan: 'free' })

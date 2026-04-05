@@ -609,7 +609,7 @@ export default function AnalysePage() {
           >
             <div>
               <div style={{ fontSize: '15px', fontWeight: 700, color: S.emerald }}>Free analysis — no card required</div>
-              <div style={{ fontSize: '13px', color: '#047857' }}>1 full analysis on the free plan. Unlimited on Pro ($79/month).</div>
+              <div style={{ fontSize: '13px', color: '#047857' }}>First report free. Unlock full analysis from $29 per report.</div>
             </div>
             <Link
               href="/onboarding"

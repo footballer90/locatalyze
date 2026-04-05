@@ -230,14 +230,14 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
             <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
             <p style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 6 }}>Compare more locations</p>
             <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6, marginBottom: 20 }}>
-              Upgrade to Pro to compare up to 3 locations side by side with full financial breakdown.
+              Unlock full reports to compare locations side by side with complete financial breakdowns. Single report $29 or save with a 3-pack for $59.
             </p>
             <a href="/upgrade" style={{
               display: 'inline-block', padding: '10px 24px', background: S.brand,
               color: S.white, borderRadius: 8, fontSize: 13, fontWeight: 700,
               textDecoration: 'none', boxShadow: '0 2px 8px rgba(15,118,110,0.3)',
             }}>
-              Upgrade to Pro →
+              Unlock reports →
             </a>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function ComparePage() {
         </div>
         {isFree && (
           <a href="/upgrade" style={{ fontSize: 12, fontWeight: 700, color: '#FCD34D', textDecoration: 'none', border: '1px solid rgba(252,211,77,0.3)', borderRadius: 20, padding: '4px 12px' }}>
-            Upgrade for full comparison →
+            Unlock reports for comparison →
           </a>
         )}
       </nav>
