@@ -3,7 +3,7 @@ import Footer from '@/components/Footer'
 import ReportDemoSection from '@/components/ReportDemoSection'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors } from 'lucide-react'
+import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, FileText, Unlock, Package, Briefcase } from 'lucide-react'
 
 // ── Design tokens ──────────────────────────────────────────────────
 const L = {
@@ -294,7 +294,7 @@ useEffect(() => {
 
 // ── Showcase (dark, inline) ────────────────────────────────────────
 const SHOWCASE_TABS = [
-  { id: 'loc',  label: 'Location Analysis', headline: 'Location intelligence,\nilluminated.', sub: 'Understand exactly what makes a location work — or fail. Score demand proximity, competitor density and demographic fit before you commit to a single dollar of rent.', ui: 'score' },
+  { id: 'loc',  label: 'Location Analysis', headline: 'Score any location\nbefore you commit.', sub: 'Understand exactly what makes a location work — or fail. Score demand proximity, competitor density and demographic fit before you commit to a single dollar of rent.', ui: 'score' },
   { id: 'sub',  label: 'Suburb Scoring',    headline: 'Every suburb scored\nfor your business.', sub: 'Compare suburbs side by side using income data, population density, age profile and spending behaviour. Find where your concept has the strongest natural advantage.', ui: 'suburbs' },
   { id: 'comp', label: 'Competitor Mapping',headline: 'See every competitor\nbefore they see you.', sub: 'Map every direct competitor within your chosen radius. Understand their ratings, proximity and threat level — and find the gaps where your concept can own the category.', ui: 'competitors' },
   { id: 'rent', label: 'Rent Affordability',headline: 'Know if the rent\nmakes financial sense.', sub: 'Enter your expected rent and average transaction value. Locatalyze calculates the exact daily volume you need to stay profitable — and tells you if this location can deliver it.', ui: 'rent' },
@@ -302,8 +302,11 @@ const SHOWCASE_TABS = [
 ]
 
 function ShowcaseScoreUI({ ak }: { ak: number }) {
-  const [sc, setSc] = useState(0); const [bars, setBars] = useState(false)
-  useEffect(() => { setSc(0); setBars(false); let n=0; const t=setInterval(()=>{ n=Math.min(n+2,84); setSc(n); if(n>=84){clearInterval(t); setBars(true)} },18); return()=>clearInterval(t) }, [ak])
+  const [sc, setSc] = useState(84); const [bars, setBars] = useState(true)
+  useEffect(() => {
+    if (ak === 0) return // Don't reset on first mount — show score immediately
+    setSc(0); setBars(false); let n=0; const t=setInterval(()=>{ n=Math.min(n+2,84); setSc(n); if(n>=84){clearInterval(t); setBars(true)} },18); return()=>clearInterval(t)
+  }, [ak])
   const off = 188-(188*sc/100)
   return (
     <div style={{ padding: 20 }}>
@@ -527,7 +530,7 @@ const PR_DATA = {
     ],
     heatmap: [8,6,5,7,9,8,7, 4,3,2,4,6,5,4, 6,5,4,6,8,7,6, 5,4,3,5,7,6,5, 7,6,5,7,9,8,7],
     swot: {
-      strengths:     ['High foot traffic from young professionals', 'Affluent demographics — avg income $95k+', 'Underserved specialty coffee segment'],
+      strengths:     ['High demand from young professionals', 'Affluent demographics — avg income $95k+', 'Underserved specialty coffee segment'],
       weaknesses:    ['Competitive market with 3 established chains', 'High commercial rent at $3,800/mo'],
       opportunities: ['Growing café culture in WA', 'Weekend brunch market largely untapped'],
       threats:       ['Large chain expansion into the area', 'Rising commercial rent prices YoY'],
@@ -547,7 +550,7 @@ const PR_DATA = {
     revenue: [42, 55, 68, 74, 70, 74],
     profit:  [4,  8,  12, 11, 9,  11],
     scores: [
-      { label: 'Foot Traffic & Demand', score: 68, icon: 'activity' },
+      { label: 'Demand Proximity', score: 68, icon: 'activity' },
       { label: 'Rent Affordability',    score: 55, icon: 'home' },
       { label: 'Competition Level',     score: 60, icon: 'target' },
       { label: 'Profitability',         score: 62, icon: 'trendingUp' },
@@ -574,7 +577,7 @@ const PR_DATA = {
     revenue: [38, 42, 46, 50, 51, 51],
     profit:  [1,  1,  2,  3,  3,  3],
     scores: [
-      { label: 'Foot Traffic & Demand', score: 48, icon: 'activity' },
+      { label: 'Demand Proximity', score: 48, icon: 'activity' },
       { label: 'Rent Affordability',    score: 38, icon: 'home' },
       { label: 'Competition Level',     score: 42, icon: 'target' },
       { label: 'Profitability',         score: 46, icon: 'trendingUp' },
@@ -1018,7 +1021,7 @@ const CW_STEPS = [
 ]
 
 const CW_PHASE_META = [
-  { step:'01', label:'Enter Address',   desc:'Type any Australian address. Add your business type, monthly rent and transaction value. Done in 60 seconds.' },
+  { step:'01', label:'Enter Address',   desc:'Type any Australian address. Add your business type, monthly rent and transaction value. Takes under 2 minutes.' },
   { step:'02', label:'AI Analyses',     desc:'Locatalyze scans competitors, loads live demographics, calculates rent viability and builds your financial model — all in real time.' },
   { step:'03', label:'Get Your Report', desc:'Receive a clear GO, CAUTION or NO verdict with a full financial model, score breakdown, SWOT analysis and 3-year projection.' },
 ]
@@ -1030,8 +1033,8 @@ function CinematicWalkthrough() {
   const [stepsVisible, setSteps] = useState(0)
   const [scanLine, setScanLine]  = useState(0)
   const [pins, setPins]          = useState<number[]>([])
-  const [scoreAnim, setScoreAnim]= useState(0)
-  const [barsFired, setBarsFired]= useState(false)
+  const [scoreAnim, setScoreAnim]= useState(82)
+  const [barsFired, setBarsFired]= useState(true)
   const [replay, setReplay]      = useState(0)
   const addr = '45 King St, Newtown NSW'
 
@@ -1404,7 +1407,6 @@ export default function LandingPage() {
         {!isMobile && (
           <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
             <a href="#how-it-works" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>How it works</a>
-            <a href="#sample-report" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>Sample report</a>
             <a href="#pricing" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>Pricing</a>
             <Link href="/methodology" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>Methodology</Link>
             <Link href="/auth/login" style={{ fontSize: 13, color: L.slate, fontWeight: 600, padding: '6px 12px' }}>Sign in</Link>
@@ -1425,7 +1427,7 @@ export default function LandingPage() {
 
       {isMobile && menuOpen && (
         <div style={{ position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99, background: L.white, borderBottom: `1px solid ${L.border}`, padding: 16, boxShadow: '0 8px 24px rgba(0,0,0,.08)' }}>
-          {[{l:'How it works',h:'#how-it-works'},{l:'Sample report',h:'#sample-report'},{l:'Pricing',h:'#pricing'},{l:'Methodology',h:'/methodology'}].map(item => (
+          {[{l:'How it works',h:'#how-it-works'},{l:'Pricing',h:'#pricing'},{l:'Methodology',h:'/methodology'}].map(item => (
             <a key={item.l} href={item.h} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '12px 8px', fontSize: 15, fontWeight: 600, color: L.slate, borderBottom: `1px solid ${L.border}` }}>{item.l}</a>
           ))}
           <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
@@ -1457,13 +1459,13 @@ export default function LandingPage() {
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
                 {[
-                  { emoji:'🏠', label:'Pre-lease due diligence' },
-                  { emoji:'📈', label:'Expansion site selection' },
-                  { emoji:'🔄', label:'Lease renewal check' },
-                  { emoji:'🤝', label:'Investor / bank report' },
+                  { icon: <Home size={12} strokeWidth={2}/>, label:'Pre-lease due diligence' },
+                  { icon: <TrendingUp size={12} strokeWidth={2}/>, label:'Expansion site selection' },
+                  { icon: <RefreshCw size={12} strokeWidth={2}/>, label:'Lease renewal check' },
+                  { icon: <Briefcase size={12} strokeWidth={2}/>, label:'Investor / bank report' },
                 ].map(uc => (
                   <span key={uc.label} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:12, fontWeight:600, color:'#475569', background:'#F8FAFC', border:`1px solid ${L.border}`, borderRadius:100, padding:'5px 12px' }}>
-                    <span>{uc.emoji}</span>{uc.label}
+                    {uc.icon}{uc.label}
                   </span>
                 ))}
               </div>
@@ -1478,7 +1480,7 @@ export default function LandingPage() {
               <p style={{ fontSize: 12, color: '#94A3B8' }}>Free verdict · Full unlock $29 · Results in 90 seconds</p>
 
               <div style={{ display: 'flex', gap: isMobile ? 20 : 28, marginTop: 28, paddingTop: 24, borderTop: `1px solid ${L.border}`, flexWrap: 'wrap' }}>
-                {[{value:'Free to start',label:'no signup required'},{value:'Live data',label:'competitor mapping'},{value:'< 60s',label:'see results instantly'}].map(s => (
+                {[{value:'Free to start',label:'no signup required'},{value:'Live data',label:'competitor mapping'},{value:'~90s',label:'to get your verdict'}].map(s => (
                   <div key={s.label}>
                     <p style={{ fontSize: isMobile ? 18 : 22, fontWeight: 900, color: L.emerald, letterSpacing: '-.03em', lineHeight: 1 }}>{s.value}</p>
                     <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 3 }}>{s.label}</p>
@@ -1522,7 +1524,7 @@ export default function LandingPage() {
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: D.glow, display: 'inline-block' }}/>Feature Showcase
           </div>
           <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1.1, marginBottom: 14, background: `linear-gradient(135deg, ${D.text1} 30%, ${D.glow} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            Location intelligence, illuminated.
+            Score any address.<br/>Know before you sign.
           </h2>
           <p style={{ fontSize: 14, color: D.text2, lineHeight: 1.75, marginBottom: 24 }}>Map demand signals, competitors and financials for any Australian address in about 90 seconds.</p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${D.brand},#0B9488)`, color: '#fff', borderRadius: 12, padding: '13px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
@@ -1578,7 +1580,7 @@ export default function LandingPage() {
                 color: L.emerald,
                 bg: L.emeraldXlt,
                 border: L.emeraldLt,
-                icon: '📋',
+                icon: <FileText size={16} strokeWidth={2} color={L.emerald}/>,
                 title: 'Your free verdict lands instantly',
                 body: 'You get a GO, CAUTION, or NO verdict with a competitor map and top-level score — free, no card required. See whether this location is worth a site visit.',
                 cta: null,
@@ -1588,7 +1590,7 @@ export default function LandingPage() {
                 color: '#0891B2',
                 bg: 'rgba(8,145,178,.06)',
                 border: 'rgba(8,145,178,.2)',
-                icon: '🔓',
+                icon: <Unlock size={16} strokeWidth={2} color='#0891B2'/>,
                 title: 'Unlock the full analysis for $29',
                 body: 'Get the complete financial model, break-even analysis, revenue projections, SWOT insights, and a downloadable PDF. One report, one price — no subscriptions required.',
                 cta: { label: 'See pricing', href: '#pricing' },
@@ -1598,7 +1600,7 @@ export default function LandingPage() {
                 color: '#7C3AED',
                 bg: 'rgba(124,58,237,.06)',
                 border: 'rgba(124,58,237,.2)',
-                icon: '📦',
+                icon: <Package size={16} strokeWidth={2} color='#7C3AED'/>,
                 title: 'Save more with report packs',
                 body: 'Comparing multiple locations? Grab a 3-pack for $59 ($19.67 each) or a 10-pack for $149 ($14.90 each). Use credits on any location, any time.',
                 cta: { label: 'See pricing', href: '#pricing' },
@@ -1606,7 +1608,7 @@ export default function LandingPage() {
             ].map(s => (
               <div key={s.step} style={{ background:'#FAFAFA', border:`1.5px solid ${s.border}`, borderRadius:20, padding:'26px 24px', display:'flex', flexDirection:'column' as const, gap:14 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <div style={{ width:34, height:34, borderRadius:10, background:s.bg, border:`1px solid ${s.border}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>
+                  <div style={{ width:34, height:34, borderRadius:10, background:s.bg, border:`1px solid ${s.border}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
                     {s.icon}
                   </div>
                   <span style={{ fontSize:11, fontWeight:800, color:s.color, textTransform:'uppercase' as const, letterSpacing:'.08em' }}>Step {s.step}</span>
@@ -1654,7 +1656,7 @@ export default function LandingPage() {
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:0, marginBottom:64 }}>
               {[
                 { icon: 'globe',    label: 'Live Data' },
-                { icon: 'activity', label: 'AI Processing' },
+                { icon: 'activity', label: '8 AI Agents' },
                 { icon: 'barChart', label: 'Scoring Engine' },
                 { icon: 'shield',   label: 'Your Verdict' },
               ].map((step, i) => (
@@ -1797,13 +1799,13 @@ export default function LandingPage() {
                 Why this exists
               </div>
               <h2 style={{ fontSize: isMobile ? 26 : 36, fontWeight:900, color:L.slate, letterSpacing:'-.04em', lineHeight:1.15, marginBottom:18 }}>
-                Built after getting a location wrong.
+                Built after a location cost us $180,000.
               </h2>
               <p style={{ fontSize:15, color:L.muted, lineHeight:1.8, marginBottom:16 }}>
-                Locatalyze was built in Perth after a location decision that looked right on paper — good street, decent foot traffic, affordable rent — but missed three things that mattered: the rent-to-revenue ceiling, an established competitor moving into the same block, and demographic data that didn&apos;t match the concept.
+                In 2021, we signed a lease in Perth that looked right on paper — good street, solid foot traffic, rent that felt manageable. Eighteen months later, the business closed. Three things we didn&apos;t check: the rent-to-revenue ceiling was too tight, an established competitor moved into the same block three months later, and the demographics skewed 15 years older than our target customer.
               </p>
               <p style={{ fontSize:15, color:L.muted, lineHeight:1.8 }}>
-                The tool that should have existed before that decision is the one we built. It doesn&apos;t make the choice for you — it gives you the data to make it clearly.
+                The data that would have changed the decision existed — it just wasn&apos;t assembled anywhere. Locatalyze is the tool we wish we&apos;d had. It doesn&apos;t make the choice for you — it gives you the numbers to make it clearly.
               </p>
             </div>
 
@@ -1883,7 +1885,7 @@ export default function LandingPage() {
               </div>
               <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>$19.67 per report · save 32%</p>
               <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>Compare 3 locations</p>
-              {['Everything in Single Report','Compare locations side-by-side','Use credits any time','No expiry'].map(f => (
+              {['Everything in Single Report','Compare up to 3 locations side-by-side','Use credits on any address','Credits never expire'].map(f => (
                 <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
               ))}
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E', textDecoration:'none' }}>Get 3-Pack — $59</a>
@@ -1903,6 +1905,42 @@ export default function LandingPage() {
             </div>
           </div>
           <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report includes a free preview — verdict, competitor map, and score. No card required.</p>
+
+          {/* FAQ */}
+          <div style={{ maxWidth: 640, margin: '48px auto 0' }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: L.slate, textTransform: 'uppercase' as const, letterSpacing: '.08em', textAlign: 'center', marginBottom: 24 }}>Common questions</p>
+            {[
+              {
+                q: "What's free vs paid?",
+                a: "The free report includes your GO / CAUTION / NO verdict, a competitor map within 500m, and a top-level feasibility score. Paid reports ($29) unlock the full financial model, break-even analysis, 3-year revenue projections, SWOT analysis, and a shareable PDF.",
+              },
+              {
+                q: "Do credits expire?",
+                a: "No. Report credits have no expiry date. Buy a 3-pack or 10-pack and use them whenever you're ready — across any Australian address.",
+              },
+              {
+                q: "What is your refund policy?",
+                a: "If a report fails to generate due to a technical error on our end, we'll refund the credit or regenerate the report at no charge. Because reports are generated on demand using live data, completed reports are non-refundable.",
+              },
+              {
+                q: "What does 'Compare locations side-by-side' mean?",
+                a: "When you have two or more reports in your dashboard, you can view them together to compare scores, rent-to-revenue ratios, and verdicts across different addresses. This helps you shortlist before committing to a site visit.",
+              },
+              {
+                q: "Is this financial advice?",
+                a: "No. Locatalyze is a directional analysis tool — not a licensed financial adviser. Use reports as a second opinion before you speak to your accountant or solicitor, not as a substitute for professional advice.",
+              },
+            ].map((item, i) => (
+              <details key={i} style={{ borderTop: `1px solid ${L.border}`, padding: '16px 0' }}>
+                <summary style={{ fontSize: 14, fontWeight: 700, color: L.slate, cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                  {item.q}
+                  <span style={{ fontSize: 18, color: L.muted, flexShrink: 0, lineHeight: 1 }}>+</span>
+                </summary>
+                <p style={{ fontSize: 13, color: L.muted, lineHeight: 1.75, marginTop: 10, paddingRight: 24 }}>{item.a}</p>
+              </details>
+            ))}
+            <div style={{ borderTop: `1px solid ${L.border}` }}/>
+          </div>
         </div>
       </section>
 
