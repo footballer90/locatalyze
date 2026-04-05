@@ -3861,33 +3861,45 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 <div style={{
                   marginTop: 12, borderRadius: 14,
                   background: S.n900,
-                  border: `1.5px solid rgba(20,184,166,0.25)`,
+                  border: '1.5px solid rgba(239,68,68,0.3)',
                   overflow: 'hidden',
                 }}>
-                  {/* Top band */}
-                  <div style={{ padding: '18px 22px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' as const }}>
-                      <div style={{ flex: 1, minWidth: 220 }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase' as const, letterSpacing: '0.09em', marginBottom: 6 }}>
-                          This location doesn&apos;t work — but it could.
+                  {/* Top band — aggressive, direct */}
+                  <div style={{ padding: '20px 22px 18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const }}>
+                      <div style={{ flex: 1, minWidth: 240 }}>
+                        {/* Hard verdict label */}
+                        <p style={{ fontSize: 11, fontWeight: 800, color: '#F87171', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 10 }}>
+                          This location is not viable at this rent.
                         </p>
-                        <p style={{ fontSize: 16, fontWeight: 900, color: '#F9FAFB', letterSpacing: '-0.02em', lineHeight: 1.3, marginBottom: 6 }}>
-                          See exactly what needs to change to make it viable.
-                        </p>
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>
-                          The NO verdict is based on current rent and demand estimates. Three specific levers could flip it — unlock the full model to see the exact thresholds.
-                        </p>
+                        {/* Three direct action lines */}
+                        {[
+                          rtr != null
+                            ? `Rent-to-revenue is ${Math.round(rtr)}% — needs to drop below 12% to work`
+                            : 'Rent-to-revenue ratio is above the viable threshold',
+                          profitGap != null
+                            ? `Monthly shortfall to break-even: see exact figure`
+                            : 'Revenue gap to break-even is locked in the full model',
+                          _beDaily != null
+                            ? `Needs ${_beDaily} customers/day — see if demand can support it`
+                            : 'Required demand shift to reach break-even — locked',
+                        ].map((line, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 7 }}>
+                            <span style={{ fontSize: 12, color: S.brandLight, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>→</span>
+                            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{line}</p>
+                          </div>
+                        ))}
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 7, flexShrink: 0, paddingTop: 2 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0, alignSelf: 'center' }}>
                         <a href={`/upgrade?report=${rid}`} style={{
-                          display: 'inline-block', padding: '12px 22px', borderRadius: 9,
-                          background: S.brand, color: '#fff', fontSize: 13, fontWeight: 800,
+                          display: 'inline-block', padding: '13px 24px', borderRadius: 9,
+                          background: S.brand, color: '#fff', fontSize: 14, fontWeight: 800,
                           textDecoration: 'none', whiteSpace: 'nowrap' as const,
-                          boxShadow: '0 3px 16px rgba(15,118,110,0.45)',
+                          boxShadow: '0 4px 18px rgba(15,118,110,0.5)',
                         }}>
-                          Unlock full model — $29
+                          Unlock full breakdown — $29
                         </a>
-                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center' as const }}>
+                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center' as const }}>
                           or <a href="/upgrade" style={{ color: S.brandLight, textDecoration: 'underline' }}>3-pack $59</a> · no expiry
                         </p>
                       </div>
@@ -3895,23 +3907,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
 
                   {/* Levers row */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                     {levers.map((lv, i) => (
                       <div key={lv.label} style={{
-                        padding: '14px 16px',
-                        borderRight: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                        padding: '12px 16px',
+                        borderRight: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                        background: 'rgba(255,255,255,0.015)',
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                          <span style={{
-                            width: 22, height: 22, borderRadius: 6,
-                            background: 'rgba(20,184,166,0.15)',
-                            border: '1px solid rgba(20,184,166,0.25)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 11, color: S.brandLight, fontWeight: 800, flexShrink: 0,
-                          }}>{lv.icon}</span>
-                          <p style={{ fontSize: 12, fontWeight: 800, color: '#F9FAFB', lineHeight: 1.2 }}>{lv.label}</p>
-                        </div>
-                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.55 }}>{lv.detail}</p>
+                        <p style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.5)', marginBottom: 3 }}>{lv.label}</p>
+                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', lineHeight: 1.5 }}>{lv.detail}</p>
                       </div>
                     ))}
                   </div>

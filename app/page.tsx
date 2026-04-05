@@ -122,10 +122,17 @@ const RP_CASES = [
 function ReportPreview() {
   const [caseIdx, setCaseIdx]   = useState(0)
   const [animKey, setAnimKey]   = useState(0)
-  const [score, setScore]       = useState(RP_CASES[0].score)
+  const [score, setScore]       = useState(0)          // start at 0 — animate to real value after mount
   const [snapping, setSnapping] = useState(false)
   const [visible, setVisible]   = useState(false)
   const rpRef                   = useRef<HTMLDivElement>(null)
+
+  // Animate score ring from 0 → target on mount and case switch
+  useEffect(() => {
+    setScore(0)
+    const t = setTimeout(() => setScore(RP_CASES[caseIdx].score), 80)
+    return () => clearTimeout(t)
+  }, [caseIdx])
 
   useEffect(() => {
     const el = rpRef.current
@@ -146,15 +153,11 @@ function ReportPreview() {
     }, 200)
   }
 
-useEffect(() => {
+  useEffect(() => {
     if (!visible) return
     const t = setInterval(() => switchTo((caseIdx + 1) % RP_CASES.length), 4800)
     return () => clearInterval(t)
   }, [caseIdx, visible])
-
-  useEffect(() => {
-    setScore(RP_CASES[caseIdx].score)
-  }, [caseIdx])
 
   const c   = RP_CASES[caseIdx]
   const r   = 34
@@ -231,7 +234,7 @@ useEffect(() => {
                       style={{ transition:'stroke-dashoffset 0.85s cubic-bezier(.4,0,.2,1)', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{score}</span>
+                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{c.score}</span>
                     <span style={{ fontSize:8, color:'rgba(255,255,255,.4)' }}>/100</span>
                   </div>
                 </div>
@@ -1452,10 +1455,10 @@ export default function LandingPage() {
                 The wrong location<br/>costs <span style={{ color: L.emerald }}>$200,000+.</span>
               </h1>
               <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, lineHeight: 1.75, marginBottom: 8, maxWidth: 440 }}>
-                Get a <strong style={{ color: L.slate }}>GO / CAUTION / NO</strong> decision for any Australian address in 90 seconds. Unlock full financials + projections for <strong style={{ color: L.emerald }}>$29</strong>.
+                Get a <strong style={{ color: L.slate }}>GO / CAUTION / NO</strong> decision for any Australian address in 90 seconds.
               </p>
-              <p style={{ fontSize: isMobile ? 13 : 14, color: '#94A3B8', lineHeight: 1.65, marginBottom: 16, maxWidth: 440 }}>
-                Before you commit to a lease — get a second opinion on the numbers. This report is not a guarantee, but it's the data point most founders wish they'd had.
+              <p style={{ fontSize: isMobile ? 15 : 17, color: L.slate, lineHeight: 1.65, marginBottom: 16, maxWidth: 440, fontWeight: 600 }}>
+                Unlock the full financial model before you commit to a lease — <span style={{ color: L.emerald }}>$29</span>.
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
                 {[
