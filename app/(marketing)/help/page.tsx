@@ -76,15 +76,15 @@ const FAQS = [
     items: [
       {
         q: 'What plans are available?',
-        a: 'Your first report is free. Paid options: Single Report ($29 — one location, full analysis + PDF), 3-Pack ($59 — $19.67 each, save 32%, ideal for comparing locations), 10-Pack ($149 — $14.90 each, save 49%, for agencies and multi-site research). Monthly subscriptions are also available for power users: Pro ($149/month) and Business ($199/month). All purchases are one-time unless you choose a subscription.',
+        a: 'Your first report is free. Paid options: Single Report ($29 — one location, full analysis + PDF), 3-Pack ($59 — $19.67 each, save 32%, ideal for comparing locations), 10-Pack ($149 — $14.90 each, save 49%, for agencies and multi-site research). All three are one-time purchases — no subscription required. Monthly subscriptions exist for commercial agents and franchise operators who run 15+ reports a month, but most users never need one.',
       },
       {
         q: 'How do I unlock a full report?',
         a: 'Click "Unlock full report — $29" on any report page, or visit the Upgrade page to purchase a report pack. Payment is processed securely by Stripe. Your report unlocks instantly after payment.',
       },
       {
-        q: 'Can I cancel my subscription?',
-        a: 'Yes, cancel anytime from your Profile page. You keep access until the end of your current billing period. There are no cancellation fees and no questions asked.',
+        q: 'Can I cancel a subscription if I have one?',
+        a: 'Yes. Monthly subscriptions (available for high-volume commercial users) can be cancelled anytime from your Profile page. You keep access until the end of the current billing period. If you bought a report pack (Single, 3-Pack, or 10-Pack), there is nothing to cancel — your credits stay in your account and never expire.',
       },
       {
         q: 'Do deleted reports restore my free quota?',
@@ -109,11 +109,11 @@ const FAQS = [
       },
       {
         q: 'Can I download my report as a PDF?',
-        a: 'Yes, PDF export is available on Pro and Business plans. Click the Download button on any report page. The PDF includes all sections: verdict, score breakdown, executive narrative, financial model, competitor analysis, SWOT, and 3-year projection.',
+        a: 'Yes. PDF export is included in all paid reports — Single Report ($29), 3-Pack, and 10-Pack. Click the Download button on any unlocked report page. The PDF includes all sections: verdict, score breakdown, executive narrative, financial model, competitor analysis, SWOT, and 3-year projection.',
       },
       {
         q: 'Can I compare multiple locations?',
-        a: 'Yes. The Location Comparison tool (available on Pro and Business plans) lets you select up to 5 reports and view them side by side — verdict, location score, revenue estimate, profit, break-even, and score breakdown. The tool also surfaces which location is the strongest opportunity and why.',
+        a: 'Yes. The Location Comparison tool is available to any user with two or more reports. Select up to 3 reports and view them side by side — verdict, location score, revenue estimate, profit, break-even, and score breakdown. The 3-Pack ($59) is the most popular way to unlock comparison for shortlisted sites.',
       },
       {
         q: 'Can I share a report with someone who does not have an account?',

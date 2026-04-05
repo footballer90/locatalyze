@@ -1453,7 +1453,7 @@ export default function LandingPage() {
                 Get a <strong style={{ color: L.slate }}>GO / CAUTION / NO</strong> decision for any Australian address in 90 seconds. Unlock full financials + projections for <strong style={{ color: L.emerald }}>$29</strong>.
               </p>
               <p style={{ fontSize: isMobile ? 13 : 14, color: '#94A3B8', lineHeight: 1.65, marginBottom: 16, maxWidth: 440 }}>
-                Competition density, break-even customers, revenue projections, rent risk — all in one report, before you shortlist a site or meet an agent.
+                Before you commit to a lease — get a second opinion on the numbers. This report is not a guarantee, but it's the data point most founders wish they'd had.
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:20 }}>
                 {[
@@ -1910,16 +1910,19 @@ export default function LandingPage() {
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>
         <div style={{ maxWidth: 560, margin: '0 auto', padding: pad }}>
           <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 14, lineHeight: 1.1 }}>
-            Research smarter.<br/>Shortlist with confidence.
+            Know before you sign.
           </h2>
-          <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, marginBottom: 32, lineHeight: 1.75 }}>
-            See the competition, demand, and financial picture for any Australian address in about 90 seconds — so you go to site visits and agent meetings better prepared.
+          <p style={{ fontSize: isMobile ? 15 : 17, color: L.muted, marginBottom: 8, lineHeight: 1.75 }}>
+            Get a GO / CAUTION / NO verdict for any Australian address in about 90 seconds — then unlock the full financial model for $29 if you want to go deeper.
+          </p>
+          <p style={{ fontSize: isMobile ? 13 : 14, color: '#94A3B8', marginBottom: 32, lineHeight: 1.65 }}>
+            This report is a second opinion — not a guarantee. Use it before you shortlist a site, meet an agent, or talk to your accountant.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: L.emerald, color: '#fff', borderRadius: 14, padding: isMobile ? '15px 28px' : '17px 38px', fontWeight: 800, fontSize: isMobile ? 15 : 17, boxShadow: '0 6px 28px rgba(16,185,129,.3)', textDecoration: 'none' }}>
-            Check if your location is worth it →
+            Check your location — free →
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, fontSize: 12, color: '#94A3B8', marginTop: 14, flexWrap: 'wrap' }}>
-            <span>First report free</span><span>·</span><span>Full unlock from $29</span><span>·</span><span>Results in ~90 seconds</span>
+            <span>Free verdict · no card required</span><span>·</span><span>Full unlock $29</span><span>·</span><span>Results in ~90 seconds</span>
           </div>
         </div>
       </section>

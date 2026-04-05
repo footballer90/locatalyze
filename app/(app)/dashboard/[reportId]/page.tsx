@@ -4124,6 +4124,66 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )}
             </Card>
 
+            {/* ── Locked financial teaser — shown only on free reports ─────────────
+                 This is deliberate: we show blurred-out financial rows so users
+                 can see the shape of what they're missing without giving data away.
+                 The goal is curiosity → upgrade, not frustration. ──────────────── */}
+            {userPlan.isFree && (
+              <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', border: `1.5px solid ${S.n200}`, background: S.white }}>
+                {/* Blurred financial data preview */}
+                <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none', padding: '24px 28px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 16 }}>Full Financial Model</p>
+                  {[
+                    { label: 'Estimated Monthly Revenue', value: '$24,800', color: S.brand },
+                    { label: 'Est. Net Profit / Month',   value: '$6,200',  color: S.emerald },
+                    { label: 'Break-even (customers/day)',value: '47',       color: S.n800 },
+                    { label: 'Break-even timeline',       value: '11 months', color: S.n800 },
+                    { label: 'Rent-to-Revenue Ratio',     value: '10.5%',   color: S.emerald },
+                    { label: '3-Year ROI',                value: '+38%',    color: S.emerald },
+                  ].map(row => (
+                    <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${S.n100}` }}>
+                      <span style={{ fontSize: 13, color: S.n500 }}>{row.label}</span>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: row.color, fontFamily: S.mono }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Lock overlay */}
+                <div style={{
+                  position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(3px)',
+                }}>
+                  <div style={{ textAlign: 'center', padding: '28px 32px', maxWidth: 380 }}>
+                    <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', marginBottom: 6 }}>
+                      Financial model locked
+                    </p>
+                    <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.65, marginBottom: 6 }}>
+                      Revenue, net profit, break-even customers, and 3-year projections — all calculated for this specific address.
+                    </p>
+                    <p style={{ fontSize: 12, color: S.amber, fontWeight: 700, marginBottom: 18 }}>
+                      Before you commit to a lease — see if the numbers actually work.
+                    </p>
+                    <a href={`/upgrade?report=${report.report_id ?? report.id}`} style={{
+                      display: 'inline-block', padding: '12px 28px', borderRadius: 10,
+                      background: S.brand, color: '#fff', fontSize: 14, fontWeight: 800,
+                      textDecoration: 'none', boxShadow: '0 4px 16px rgba(15,118,110,0.3)',
+                      letterSpacing: '-0.01em',
+                    }}>
+                      Unlock full report — $29
+                    </a>
+                    <p style={{ fontSize: 11, color: S.n400, marginTop: 10 }}>
+                      Or save with a{' '}
+                      <a href="/upgrade" style={{ color: S.brand, fontWeight: 600, textDecoration: 'none' }}>3-pack ($59)</a>
+                      {' '}·{' '}
+                      <a href="/upgrade" style={{ color: S.brand, fontWeight: 600, textDecoration: 'none' }}>10-pack ($149)</a>
+                      {' '}· Credits never expire
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* SWOT — locked for free users */}
             {report.swot_analysis && (
               <PaywallGate locked={userPlan.isFree} label="SWOT Analysis" reportId={report.report_id ?? report.id}>
@@ -4597,7 +4657,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     ))}
                   </div>
                   {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).length > 3 && (
-                    <PaywallGate locked={userPlan.isFree} label="Full Competitor Analysis — Pro">
+                    <PaywallGate locked={userPlan.isFree} label="Full Competitor Analysis" reportId={report.report_id ?? report.id}>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
                         {((competitors as any)?.validNearbyBusinesses ?? competitors?.nearbyBusinesses ?? []).slice(3).map((c: any, i: number) => (
                           <CompetitorCard key={i + 3} c={c} idx={i + 3} />
