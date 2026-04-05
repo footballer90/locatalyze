@@ -3809,6 +3809,51 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         <div style={{ marginBottom: 24 }}>
           <RecommendationPanel report={report} confidence={confidence} />
           <ReferralPrompt reportScore={report.overall_score ?? 0} verdict={report.verdict ?? ''} />
+
+          {/* ── Post-verdict upgrade nudge — shown immediately after verdict for free users ──
+               This is the highest-conversion placement: user just saw GO/CAUTION/NO and
+               wants to understand WHY and WHAT it means financially. ─────────────────── */}
+          {userPlan.isFree && (() => {
+            const nv = normalizeVerdict(report.verdict)
+            const headline =
+              nv === 'GO'      ? 'This location looks viable — see the full financial breakdown before you call the agent.' :
+              nv === 'CAUTION' ? 'There are real risks here — see the exact cost and revenue numbers before you commit.' :
+                                 'The numbers are difficult at this rent — see what would need to change.'
+            const sub =
+              nv === 'GO'      ? 'Full cost breakdown, 3-year projections, SWOT analysis and a PDF you can share with your accountant.' :
+              nv === 'CAUTION' ? 'Understand the exact revenue gap, staffing cost assumptions, and scenarios that shift this verdict.' :
+                                 'See the break-even ceiling and what rent level would make this viable — before you walk away or negotiate.'
+            const borderColor = nv === 'GO' ? S.emeraldBdr : nv === 'CAUTION' ? S.amberBdr : S.redBdr
+            const accentColor = nv === 'GO' ? S.emerald    : nv === 'CAUTION' ? S.amber    : S.red
+            const bgColor     = nv === 'GO' ? S.emeraldBg  : nv === 'CAUTION' ? S.amberBg  : S.redBg
+            return (
+              <div style={{
+                marginTop: 12, padding: '16px 20px', borderRadius: 12,
+                background: bgColor, border: `1.5px solid ${borderColor}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const,
+              }}>
+                <div style={{ flex: 1, minWidth: 220 }}>
+                  <p style={{ fontSize: 14, fontWeight: 800, color: S.n900, marginBottom: 4, lineHeight: 1.4 }}>
+                    🔒 {headline}
+                  </p>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.6 }}>{sub}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
+                  <a href={`/upgrade?report=${report.report_id ?? report.id}`} style={{
+                    display: 'inline-block', padding: '11px 22px', borderRadius: 9,
+                    background: S.brand, color: '#fff', fontSize: 13, fontWeight: 800,
+                    textDecoration: 'none', whiteSpace: 'nowrap' as const,
+                    boxShadow: '0 3px 12px rgba(15,118,110,0.3)',
+                  }}>
+                    Unlock full report — $29
+                  </a>
+                  <p style={{ fontSize: 11, color: accentColor, fontWeight: 600, textAlign: 'center' }}>
+                    Or <a href="/upgrade" style={{ color: accentColor, textDecoration: 'underline' }}>3-pack $59</a> · credits never expire
+                  </p>
+                </div>
+              </div>
+            )
+          })()}
         </div>
 
         {/* ═══ SECTION 2: KEY METRICS (ranges) ═══ */}
@@ -4124,60 +4169,66 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )}
             </Card>
 
-            {/* ── Locked financial teaser — shown only on free reports ─────────────
-                 This is deliberate: we show blurred-out financial rows so users
-                 can see the shape of what they're missing without giving data away.
-                 The goal is curiosity → upgrade, not frustration. ──────────────── */}
+            {/* ── Locked SWOT + scenario teaser — shown only on free reports ──────
+                 Revenue/profit/break-even are already shown above the tabs, so we
+                 DON'T blur those. Instead we show the shape of SWOT and 3-year
+                 scenarios — both genuinely locked — to drive curiosity → upgrade. */}
             {userPlan.isFree && (
               <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', border: `1.5px solid ${S.n200}`, background: S.white }}>
-                {/* Blurred financial data preview */}
-                <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none', padding: '24px 28px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 16 }}>Full Financial Model</p>
-                  {[
-                    { label: 'Estimated Monthly Revenue', value: '$24,800', color: S.brand },
-                    { label: 'Est. Net Profit / Month',   value: '$6,200',  color: S.emerald },
-                    { label: 'Break-even (customers/day)',value: '47',       color: S.n800 },
-                    { label: 'Break-even timeline',       value: '11 months', color: S.n800 },
-                    { label: 'Rent-to-Revenue Ratio',     value: '10.5%',   color: S.emerald },
-                    { label: '3-Year ROI',                value: '+38%',    color: S.emerald },
-                  ].map(row => (
-                    <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${S.n100}` }}>
-                      <span style={{ fontSize: 13, color: S.n500 }}>{row.label}</span>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: row.color, fontFamily: S.mono }}>{row.value}</span>
-                    </div>
-                  ))}
+                {/* Blurred SWOT + scenario preview — real structure, no fake numbers */}
+                <div style={{ filter: 'blur(7px)', userSelect: 'none', pointerEvents: 'none', padding: '24px 28px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14 }}>SWOT Analysis</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
+                    {[
+                      { label: 'Strengths', bg: S.emeraldBg, clr: S.emerald },
+                      { label: 'Weaknesses', bg: S.redBg, clr: '#991B1B' },
+                      { label: 'Opportunities', bg: S.brandFaded, clr: S.brand },
+                      { label: 'Threats', bg: S.amberBg, clr: '#92400E' },
+                    ].map(q => (
+                      <div key={q.label} style={{ background: q.bg, borderRadius: 10, padding: '12px 14px' }}>
+                        <p style={{ fontSize: 10, fontWeight: 800, color: q.clr, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{q.label}</p>
+                        {[1,2,3].map(i => <div key={i} style={{ height: 9, background: q.clr, opacity: 0.15, borderRadius: 4, marginBottom: 6 }} />)}
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>3-Year Scenarios</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                    {['Worst case', 'Base case', 'Best case'].map(s => (
+                      <div key={s} style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '10px 12px' }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: S.n500, marginBottom: 6 }}>{s}</p>
+                        <div style={{ height: 22, background: S.n200, borderRadius: 4, marginBottom: 4 }} />
+                        <div style={{ height: 14, background: S.n200, borderRadius: 4, width: '70%' }} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
                 {/* Lock overlay */}
                 <div style={{
                   position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(3px)',
+                  background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(2px)',
                 }}>
-                  <div style={{ textAlign: 'center', padding: '28px 32px', maxWidth: 380 }}>
-                    <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
-                    <p style={{ fontSize: 16, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', marginBottom: 6 }}>
-                      Financial model locked
+                  <div style={{ textAlign: 'center', padding: '24px 28px', maxWidth: 360 }}>
+                    <div style={{ fontSize: 26, marginBottom: 8 }}>🔒</div>
+                    <p style={{ fontSize: 15, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', marginBottom: 5 }}>
+                      SWOT analysis + 3-year scenarios locked
                     </p>
-                    <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.65, marginBottom: 6 }}>
-                      Revenue, net profit, break-even customers, and 3-year projections — all calculated for this specific address.
-                    </p>
-                    <p style={{ fontSize: 12, color: S.amber, fontWeight: 700, marginBottom: 18 }}>
-                      Before you commit to a lease — see if the numbers actually work.
+                    <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.65, marginBottom: 16 }}>
+                      Unlock to see full strengths, weaknesses, opportunities and threats — plus worst, base and best-case projections over 36 months.
                     </p>
                     <a href={`/upgrade?report=${report.report_id ?? report.id}`} style={{
-                      display: 'inline-block', padding: '12px 28px', borderRadius: 10,
-                      background: S.brand, color: '#fff', fontSize: 14, fontWeight: 800,
-                      textDecoration: 'none', boxShadow: '0 4px 16px rgba(15,118,110,0.3)',
-                      letterSpacing: '-0.01em',
+                      display: 'inline-block', padding: '11px 26px', borderRadius: 9,
+                      background: S.brand, color: '#fff', fontSize: 13, fontWeight: 800,
+                      textDecoration: 'none', boxShadow: '0 3px 14px rgba(15,118,110,0.3)',
                     }}>
                       Unlock full report — $29
                     </a>
-                    <p style={{ fontSize: 11, color: S.n400, marginTop: 10 }}>
-                      Or save with a{' '}
+                    <p style={{ fontSize: 11, color: S.n400, marginTop: 8 }}>
                       <a href="/upgrade" style={{ color: S.brand, fontWeight: 600, textDecoration: 'none' }}>3-pack ($59)</a>
                       {' '}·{' '}
                       <a href="/upgrade" style={{ color: S.brand, fontWeight: 600, textDecoration: 'none' }}>10-pack ($149)</a>
-                      {' '}· Credits never expire
+                      {' '}· credits never expire
                     </p>
                   </div>
                 </div>
@@ -4212,6 +4263,38 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </Card>
               </PaywallGate>
             )}
+
+            {/* ── Comparison CTA — drives 3-pack purchases ──────────────────────────
+                 Shown to all users (not just free) since even paid single-report users
+                 benefit from buying a pack to compare. Free users see the stronger copy. */}
+            <div style={{
+              background: S.n900, borderRadius: 16, padding: '24px 28px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const,
+            }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+                  Before you decide
+                </p>
+                <p style={{ fontSize: 16, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em', marginBottom: 5, lineHeight: 1.3 }}>
+                  Are you comparing locations?
+                </p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+                  Most founders shortlist 2–3 sites before committing. A 3-pack ($59) gives you a full report on each — $19.67 per location — and lets you compare them side by side before signing anything.
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+                <a href="/upgrade" style={{
+                  display: 'inline-block', padding: '12px 22px', borderRadius: 9, whiteSpace: 'nowrap' as const,
+                  background: S.white, color: S.brand, fontSize: 13, fontWeight: 800,
+                  textDecoration: 'none', boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                }}>
+                  Get 3-pack — $59
+                </a>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
+                  $19.67/report · save 32% · no expiry
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
