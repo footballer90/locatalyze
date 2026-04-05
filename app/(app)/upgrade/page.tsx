@@ -115,6 +115,35 @@ export default function UpgradePage() {
           </div>
         )}
 
+        {/* ── Free vs Paid comparison ────────────────────────────────────────── */}
+        <div style={{ width: '100%', maxWidth: 900, marginBottom: 32, background: S.white, border: `1.5px solid ${S.n200}`, borderRadius: 20, padding: '22px 28px' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 14 }}>What you already have vs what you unlock</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+            <div style={{ paddingRight: 24, borderRight: `1px solid ${S.n200}` }}>
+              <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 10 }}>Free (you have this)</p>
+              {['GO / CAUTION / NO verdict','Competitor map (500m radius)','Basic suburb insights'].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 16, height: 16, borderRadius: '50%', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 8, color: S.emerald, fontWeight: 900 }}>✓</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: S.n700 }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ paddingLeft: 24 }}>
+              <p style={{ fontSize: 11, fontWeight: 800, color: S.brand, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 10 }}>Paid — unlock from $29</p>
+              {['Full financial model','Revenue projections','Break-even analysis','SWOT & AI insights','PDF export'].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#F0FDFA', border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 8, color: S.brand, fontWeight: 900 }}>+</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: S.n700 }}>{f}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* ── Report packs (primary) ─────────────────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20, width: '100%', maxWidth: 900 }}>
           {REPORT_PACKS.map(pack => (
@@ -164,15 +193,17 @@ export default function UpgradePage() {
           <p style={{ fontSize: 13, color: S.n400, textAlign: 'center', marginBottom: 24 }}>Every paid report includes all of the following</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             {[
-              { icon: '📊', title: 'Full Financial Model', desc: 'Revenue, costs, profit projections with staffing and opex built in' },
-              { icon: '📈', title: 'Break-even Analysis', desc: 'Exactly how many customers/day you need and how many months to payback' },
-              { icon: '🔮', title: '3-Year Projections', desc: 'Worst, base, and optimistic scenarios with sensitivity analysis' },
-              { icon: '⚔️', title: 'Competitive Positioning', desc: 'Competitor strength scoring, market gaps, and SWOT analysis' },
-              { icon: '📄', title: 'PDF Export', desc: 'Professionally formatted report you can share with partners and banks' },
-              { icon: '⚖️', title: 'Location Comparison', desc: 'Compare up to 3 locations side by side with a recommendation' },
+              { title: 'Full Financial Model', desc: 'Revenue, costs, profit projections with staffing and opex built in' },
+              { title: 'Break-even Analysis', desc: 'Exactly how many customers/day you need and how many months to payback' },
+              { title: '3-Year Projections', desc: 'Worst, base, and optimistic scenarios with sensitivity analysis' },
+              { title: 'Competitive Positioning', desc: 'Competitor strength scoring, market gaps, and SWOT analysis' },
+              { title: 'PDF Export', desc: 'Professionally formatted report you can share with partners and banks' },
+              { title: 'Location Comparison', desc: 'Compare up to 3 locations side by side with a recommendation' },
             ].map(item => (
               <div key={item.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '18px 16px' }}>
-                <p style={{ fontSize: 22, marginBottom: 8 }}>{item.icon}</p>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 11, color: S.brand, fontWeight: 900 }}>✓</span>
+                </div>
                 <p style={{ fontSize: 13, fontWeight: 700, color: S.n800, marginBottom: 4 }}>{item.title}</p>
                 <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>{item.desc}</p>
               </div>
@@ -228,7 +259,7 @@ export default function UpgradePage() {
         </div>
 
         <div style={{ marginTop: 32, display: 'flex', gap: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {['🔒 Secure checkout via Stripe', '⚡ Instant access after payment', '💳 All major cards accepted'].map(b => (
+          {['Secure checkout via Stripe', 'Instant access after payment', 'All major cards accepted'].map(b => (
             <span key={b} style={{ fontSize: 12, color: S.n500, fontWeight: 500 }}>{b}</span>
           ))}
         </div>

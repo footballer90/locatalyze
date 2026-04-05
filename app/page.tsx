@@ -1863,9 +1863,35 @@ export default function LandingPage() {
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>Simple, transparent pricing</h2>
             <p style={{ fontSize: 15, color: L.muted }}>Start free. Upgrade only when you need more.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, maxWidth: 780, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4,1fr)', gap: 14, maxWidth: 1060, margin: '0 auto' }}>
+
+            {/* ── Free ── */}
+            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 20px', display:'flex', flexDirection:'column' as const }}>
+              <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:8 }}>Free</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
+                <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$0</p>
+              </div>
+              <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>No card required</p>
+              {[
+                { label:'GO / CAUTION / NO verdict', included:true },
+                { label:'Competitor map (500m radius)', included:true },
+                { label:'Basic suburb insights', included:true },
+                { label:'Full financial model', included:false },
+                { label:'Revenue projections', included:false },
+                { label:'Break-even analysis', included:false },
+                { label:'SWOT & AI insights', included:false },
+                { label:'PDF export', included:false },
+              ].map(f => (
+                <p key={f.label} style={{ fontSize:12, color: f.included ? '#334155' : '#CBD5E1', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>
+                  <span style={{ color: f.included ? L.emerald : '#CBD5E1', fontWeight:700, flexShrink:0 }}>{f.included ? '✓' : '—'}</span> {f.label}
+                </p>
+              ))}
+              <div style={{ flexGrow: 1 }}/>
+              <a href="/onboarding" style={{ display:'block', marginTop:18, textAlign:'center', padding:'10px', border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.slate, textDecoration:'none' }}>Start free</a>
+            </div>
+
             {/* Single Report */}
-            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 24px' }}>
+            <div style={{ background:'#fff', border:`1.5px solid ${L.border}`, borderRadius:22, padding:'26px 20px' }}>
               <p style={{ fontSize:11, fontWeight:700, color:L.muted, textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }}>Single Report</p>
               <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:4 }}>
                 <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$29</p>
