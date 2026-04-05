@@ -3815,17 +3815,122 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                wants to understand WHY and WHAT it means financially. ─────────────────── */}
           {userPlan.isFree && (() => {
             const nv = normalizeVerdict(report.verdict)
+            const rid = report.report_id ?? report.id
+
+            // ── NO verdict: curiosity + actionable "flip" card ──────────────────────────
+            if (nv === 'NO') {
+              // Compute levers from available data — these labels are always shown;
+              // the specific numbers are blurred to drive unlock.
+              const rentMonthly   = report.monthly_rent ?? (fin as any).monthly_rent ?? null
+              const revMonthly    = displayRevenue
+              const profitGap     = displayNetProfit != null && displayNetProfit < 0
+                ? Math.abs(displayNetProfit)
+                : null
+              // Rent-to-revenue ratio: if > 20% → rent is the primary lever
+              const rtr = (rentMonthly && revMonthly && revMonthly > 0)
+                ? (rentMonthly / revMonthly) * 100
+                : null
+              // Revenue gap: how much more revenue would flip to breakeven
+              const beGapLabel = _beDaily != null
+                ? `Needs ${_beDaily} customers/day to break even`
+                : 'Revenue needs to increase to cover fixed costs'
+
+              const levers = [
+                {
+                  icon: '↓',
+                  label: 'Rent reduction needed',
+                  detail: rtr != null
+                    ? `Current rent-to-revenue ratio: ${Math.round(rtr)}% — safe threshold is 12%`
+                    : 'Rent is above the safe 12% of revenue threshold',
+                },
+                {
+                  icon: '↑',
+                  label: 'Revenue increase required',
+                  detail: profitGap != null
+                    ? `${beGapLabel} — monthly shortfall is locked, unlock to see exact figure`
+                    : beGapLabel,
+                },
+                {
+                  icon: '⟳',
+                  label: 'What-if scenarios',
+                  detail: `How lower rent, higher ticket size, or different hours shift the verdict`,
+                },
+              ]
+
+              return (
+                <div style={{
+                  marginTop: 12, borderRadius: 14,
+                  background: S.n900,
+                  border: `1.5px solid rgba(20,184,166,0.25)`,
+                  overflow: 'hidden',
+                }}>
+                  {/* Top band */}
+                  <div style={{ padding: '18px 22px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' as const }}>
+                      <div style={{ flex: 1, minWidth: 220 }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase' as const, letterSpacing: '0.09em', marginBottom: 6 }}>
+                          This location doesn&apos;t work — but it could.
+                        </p>
+                        <p style={{ fontSize: 16, fontWeight: 900, color: '#F9FAFB', letterSpacing: '-0.02em', lineHeight: 1.3, marginBottom: 6 }}>
+                          See exactly what needs to change to make it viable.
+                        </p>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>
+                          The NO verdict is based on current rent and demand estimates. Three specific levers could flip it — unlock the full model to see the exact thresholds.
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 7, flexShrink: 0, paddingTop: 2 }}>
+                        <a href={`/upgrade?report=${rid}`} style={{
+                          display: 'inline-block', padding: '12px 22px', borderRadius: 9,
+                          background: S.brand, color: '#fff', fontSize: 13, fontWeight: 800,
+                          textDecoration: 'none', whiteSpace: 'nowrap' as const,
+                          boxShadow: '0 3px 16px rgba(15,118,110,0.45)',
+                        }}>
+                          Unlock full model — $29
+                        </a>
+                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center' as const }}>
+                          or <a href="/upgrade" style={{ color: S.brandLight, textDecoration: 'underline' }}>3-pack $59</a> · no expiry
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Levers row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
+                    {levers.map((lv, i) => (
+                      <div key={lv.label} style={{
+                        padding: '14px 16px',
+                        borderRight: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <span style={{
+                            width: 22, height: 22, borderRadius: 6,
+                            background: 'rgba(20,184,166,0.15)',
+                            border: '1px solid rgba(20,184,166,0.25)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 11, color: S.brandLight, fontWeight: 800, flexShrink: 0,
+                          }}>{lv.icon}</span>
+                          <p style={{ fontSize: 12, fontWeight: 800, color: '#F9FAFB', lineHeight: 1.2 }}>{lv.label}</p>
+                        </div>
+                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.55 }}>{lv.detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
+
+            // ── GO / CAUTION: standard nudge ──────────────────────────────────────────
             const headline =
-              nv === 'GO'      ? 'This location looks viable — see the full financial breakdown before you call the agent.' :
-              nv === 'CAUTION' ? 'There are real risks here — see the exact cost and revenue numbers before you commit.' :
-                                 'The numbers are difficult at this rent — see what would need to change.'
+              nv === 'GO'
+                ? 'This location looks viable — see the full financial breakdown before you call the agent.'
+                : 'There are real risks here — see the exact cost and revenue numbers before you commit.'
             const sub =
-              nv === 'GO'      ? 'Full cost breakdown, 3-year projections, SWOT analysis and a PDF you can share with your accountant.' :
-              nv === 'CAUTION' ? 'Understand the exact revenue gap, staffing cost assumptions, and scenarios that shift this verdict.' :
-                                 'See the break-even ceiling and what rent level would make this viable — before you walk away or negotiate.'
-            const borderColor = nv === 'GO' ? S.emeraldBdr : nv === 'CAUTION' ? S.amberBdr : S.redBdr
-            const accentColor = nv === 'GO' ? S.emerald    : nv === 'CAUTION' ? S.amber    : S.red
-            const bgColor     = nv === 'GO' ? S.emeraldBg  : nv === 'CAUTION' ? S.amberBg  : S.redBg
+              nv === 'GO'
+                ? 'Full cost breakdown, 3-year projections, SWOT analysis and a PDF you can share with your accountant.'
+                : 'Understand the exact revenue gap, staffing cost assumptions, and scenarios that shift this verdict.'
+            const borderColor = nv === 'GO' ? S.emeraldBdr : S.amberBdr
+            const accentColor = nv === 'GO' ? S.emerald    : S.amber
+            const bgColor     = nv === 'GO' ? S.emeraldBg  : S.amberBg
             return (
               <div style={{
                 marginTop: 12, padding: '16px 20px', borderRadius: 12,
@@ -3839,7 +3944,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.6 }}>{sub}</p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
-                  <a href={`/upgrade?report=${report.report_id ?? report.id}`} style={{
+                  <a href={`/upgrade?report=${rid}`} style={{
                     display: 'inline-block', padding: '11px 22px', borderRadius: 9,
                     background: S.brand, color: '#fff', fontSize: 13, fontWeight: 800,
                     textDecoration: 'none', whiteSpace: 'nowrap' as const,
@@ -3847,7 +3952,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   }}>
                     Unlock full report — $29
                   </a>
-                  <p style={{ fontSize: 11, color: accentColor, fontWeight: 600, textAlign: 'center' }}>
+                  <p style={{ fontSize: 11, color: accentColor, fontWeight: 600, textAlign: 'center' as const }}>
                     Or <a href="/upgrade" style={{ color: accentColor, textDecoration: 'underline' }}>3-pack $59</a> · credits never expire
                   </p>
                 </div>
