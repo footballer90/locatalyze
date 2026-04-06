@@ -466,6 +466,49 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
             </p>
           </div>
         )}
+
+        {/* Bottleneck one-liner — only when seating data available and insight is meaningful */}
+        {(() => {
+          const _ovInputData = safeInputData(report.input_data)
+          const _ovSeats = _ovInputData?.seatingCapacity ? Number(_ovInputData.seatingCapacity) : 0
+          if (!_ovSeats) return null
+          const _ovBiz    = (report.business_type ?? '').toLowerCase()
+          const _ovTurns  = ({ cafe:3, bakery:3, takeaway:6, restaurant:2, bar:2, gym:4 } as Record<string,number>)[_ovBiz] ?? 2
+          if (!_ovTurns) return null
+          const _ovTicket = fin.avgTicketSize ?? C?.avgTicketSize ?? null
+          if (!_ovTicket) return null
+          let _ovUtil = 0.60
+          const _ovDemand  = C?.scores?.demand ?? report.score_demand ?? null
+          const _ovCompCnt = (C as any)?.competitorCount ?? null
+          if (_ovDemand  != null && _ovDemand > 65)   _ovUtil += 0.10
+          if (_ovDemand  != null && _ovDemand < 40)   _ovUtil -= 0.10
+          if (_ovCompCnt != null && _ovCompCnt < 3)   _ovUtil += 0.05
+          if (_ovCompCnt != null && _ovCompCnt >= 5)  _ovUtil -= 0.10
+          _ovUtil = Math.min(0.80, Math.max(0.35, _ovUtil))
+          const _ovCeiling   = Math.round(_ovSeats * _ovTurns * _ovTicket * _ovUtil * 30)
+          const _ovProjected = fin.monthlyRevenue ?? null
+          const _ovBreakeven: number | null = C?.totalCosts ?? fin.totalMonthlyCosts ?? null
+          // Only show if there's a meaningful signal
+          const _ovHardCap = _ovBreakeven != null && _ovCeiling < _ovBreakeven
+          const _ovDemandLimited = _ovProjected != null && _ovProjected < _ovCeiling * 0.75
+          if (!_ovHardCap && !_ovDemandLimited && normVerdict !== 'CAPACITY_LIMITED' as any) {
+            // For GO/CAUTION with no strong signal, skip
+            if (normVerdict === 'GO' && !_ovHardCap) return null
+          }
+          const msg = _ovHardCap
+            ? `Based on current inputs, full capacity (~A$${_ovCeiling.toLocaleString()}/mo) appears insufficient to reach break-even at A$${_ovBreakeven!.toLocaleString()}/mo.`
+            : _ovDemandLimited
+            ? `Demand-limited — model estimates this suburb may not generate enough demand to fill your ${_ovSeats}-seat venue (ceiling ~A$${_ovCeiling.toLocaleString()}/mo).`
+            : null
+          if (!msg) return null
+          const isHard = _ovHardCap
+          return (
+            <div style={{ marginTop: 10, padding: '9px 14px', background: isHard ? S.redBg : S.amberBg, border: `1px solid ${isHard ? S.redBdr : S.amberBdr}`, borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={isHard ? S.red : S.amber} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p style={{ fontSize: 12, color: isHard ? S.red : '#92400E', lineHeight: 1.55, fontWeight: 500 }}>{msg}</p>
+            </div>
+          )
+        })()}
       </div>
 
       {/* Body: WHY + ACTIONS */}
@@ -3817,45 +3860,48 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             const nv = normalizeVerdict(report.verdict)
             const rid = report.report_id ?? report.id
 
-            // ── NO verdict: curiosity + actionable "flip" card ──────────────────────────
+            // ── NO verdict: numeric, unavoidable, capacity-aware ────────────────────────
             if (nv === 'NO') {
-              // Compute levers from available data — these labels are always shown;
-              // the specific numbers are blurred to drive unlock.
-              const rentMonthly   = report.monthly_rent ?? (fin as any).monthly_rent ?? null
-              const revMonthly    = displayRevenue
-              const profitGap     = displayNetProfit != null && displayNetProfit < 0
-                ? Math.abs(displayNetProfit)
-                : null
-              // Rent-to-revenue ratio: if > 20% → rent is the primary lever
+              const rentMonthly = report.monthly_rent ?? (fin as any).monthly_rent ?? null
+              const revMonthly  = displayRevenue
               const rtr = (rentMonthly && revMonthly && revMonthly > 0)
-                ? (rentMonthly / revMonthly) * 100
-                : null
-              // Revenue gap: how much more revenue would flip to breakeven
-              const beGapLabel = _beDaily != null
-                ? `Needs ${_beDaily} customers/day to break even`
-                : 'Revenue needs to increase to cover fixed costs'
+                ? (rentMonthly / revMonthly) * 100 : null
 
-              const levers = [
-                {
-                  icon: '↓',
-                  label: 'Rent reduction needed',
-                  detail: rtr != null
-                    ? `Current rent-to-revenue ratio: ${Math.round(rtr)}% — safe threshold is 12%`
-                    : 'Rent is above the safe 12% of revenue threshold',
-                },
-                {
-                  icon: '↑',
-                  label: 'Revenue increase required',
-                  detail: profitGap != null
-                    ? `${beGapLabel} — monthly shortfall is locked, unlock to see exact figure`
-                    : beGapLabel,
-                },
-                {
-                  icon: '⟳',
-                  label: 'What-if scenarios',
-                  detail: `How lower rent, higher ticket size, or different hours shift the verdict`,
-                },
-              ]
+              // Capacity ceiling for NO verdict context
+              const _noSeats   = _inputData?.seatingCapacity ? Number(_inputData.seatingCapacity) : 0
+              const _noBiz     = (report.business_type ?? '').toLowerCase()
+              const _noTurns   = ({ cafe:3, bakery:3, takeaway:6, restaurant:2, bar:2, gym:4 } as Record<string,number>)[_noBiz] ?? 2
+              const _noTicket  = fin.avgTicketSize ?? C?.avgTicketSize ?? null
+              const _noCompCnt = (C as any)?.competitorCount ?? null
+              let _noUtil = 0.60
+              const _noDemandScore = C?.scores?.demand ?? report.score_demand ?? null
+              if (_noDemandScore != null && _noDemandScore > 65) _noUtil += 0.10
+              if (_noDemandScore != null && _noDemandScore < 40) _noUtil -= 0.10
+              if (_noCompCnt     != null && _noCompCnt < 3)      _noUtil += 0.05
+              if (_noCompCnt     != null && _noCompCnt >= 5)     _noUtil -= 0.10
+              _noUtil = Math.min(0.80, Math.max(0.35, _noUtil))
+              const _noCeiling = (_noSeats > 0 && _noTicket && _noTurns)
+                ? Math.round(_noSeats * _noTurns * _noTicket * _noUtil * 30) : null
+              const _noBreakeven: number | null = (C?.totalCosts != null && C.totalCosts > 0)
+                ? C.totalCosts : (fin.totalMonthlyCosts ?? null)
+              const hardCap = _noCeiling != null && _noBreakeven != null && _noCeiling < _noBreakeven
+
+              // 3 lines — all numeric where possible, hedged where model uncertainty is high
+              const line1 = hardCap && _noCeiling != null && _noBreakeven != null
+                ? `Based on current inputs, full capacity generates ~A$${_noCeiling.toLocaleString()}/mo — break-even would require A$${_noBreakeven.toLocaleString()}/mo`
+                : rtr != null
+                ? `Rent-to-revenue is ${Math.round(rtr)}% against a 12% safe threshold — at current demand assumptions, this rent is unlikely to be sustainable`
+                : 'Based on current assumptions, rent appears above the sustainable 12%-of-revenue threshold'
+
+              const line2 = (_beDaily != null && _currentDailyCustomers != null)
+                ? `Model estimates ${_currentDailyCustomers} customers/day at this location — break-even requires ${_beDaily}/day`
+                : _beDaily != null
+                ? `Break-even is estimated at ${_beDaily} customers/day — unlock to compare against local demand estimates`
+                : 'The revenue gap to break-even is in the full model — unlock to see the shortfall'
+
+              const line3 = hardCap
+                ? `Venue size is an additional constraint — even at higher demand, physical capacity limits upside at this rent`
+                : `Unlock what-if scenarios — how lower rent, higher ticket size, or different hours affect the outcome`
 
               return (
                 <div style={{
@@ -3864,26 +3910,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   border: '1.5px solid rgba(239,68,68,0.3)',
                   overflow: 'hidden',
                 }}>
-                  {/* Top band — aggressive, direct */}
+                  {/* Top band */}
                   <div style={{ padding: '20px 22px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const }}>
                       <div style={{ flex: 1, minWidth: 240 }}>
-                        {/* Hard verdict label */}
                         <p style={{ fontSize: 11, fontWeight: 800, color: '#F87171', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 10 }}>
-                          This location is not viable at this rent.
+                          {hardCap ? 'Based on current assumptions, break-even is unlikely even at full capacity.' : 'Based on current assumptions, this location is unlikely to be viable at this rent.'}
                         </p>
-                        {/* Three direct action lines */}
-                        {[
-                          rtr != null
-                            ? `Rent-to-revenue is ${Math.round(rtr)}% — needs to drop below 12% to work`
-                            : 'Rent-to-revenue ratio is above the viable threshold',
-                          profitGap != null
-                            ? `Monthly shortfall to break-even: see exact figure`
-                            : 'Revenue gap to break-even is locked in the full model',
-                          _beDaily != null
-                            ? `Needs ${_beDaily} customers/day — see if demand can support it`
-                            : 'Required demand shift to reach break-even — locked',
-                        ].map((line, i) => (
+                        {[line1, line2, line3].map((line, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 7 }}>
                             <span style={{ fontSize: 12, color: S.brandLight, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>→</span>
                             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{line}</p>
@@ -3908,7 +3942,11 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
                   {/* Levers row */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    {levers.map((lv, i) => (
+                    {[
+                      { label: 'Rent reduction needed',   detail: rtr != null ? `At ${Math.round(rtr)}% rent-to-revenue, rent must drop ${Math.max(0,Math.round(rtr-12))}pp to be viable` : 'Rent exceeds the 12% revenue threshold' },
+                      { label: 'Revenue increase required', detail: _beDaily != null ? `${_beDaily} customers/day needed — see exact gap` : 'Revenue must rise to cover fixed costs — see full model' },
+                      { label: 'Capacity ceiling',         detail: _noCeiling ? `Max possible revenue: A$${_noCeiling.toLocaleString()}/mo at ${Math.round(_noUtil*100)}% utilisation` : 'Unlock capacity modelling in the full report' },
+                    ].map((lv, i) => (
                       <div key={lv.label} style={{
                         padding: '12px 16px',
                         borderRight: i < 2 ? '1px solid rgba(255,255,255,0.05)' : 'none',
@@ -5171,6 +5209,207 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 })}
               </div>
             )}
+
+            {/* ── Revenue Intelligence Panel ── */}
+            {(() => {
+              const seats = _inputData?.seatingCapacity ? Number(_inputData.seatingCapacity) : 0
+              if (!seats || seats <= 0) return null
+              const bizType = (report.business_type ?? '').toLowerCase()
+              const turnsMap: Record<string, number> = {
+                cafe: 3, bakery: 3, takeaway: 6,
+                restaurant: 2, bar: 2,
+                gym: 4, fitness: 4,
+                retail: 0, salon: 0, pharmacy: 0,
+              }
+              const turns = turnsMap[bizType] ?? 2
+              if (turns === 0) return null
+
+              // Dynamic utilisation — external inputs only (demand score + competition)
+              // NEVER influenced by verdict: that would create circular logic
+              const _nv          = normalizeVerdict(report.verdict)
+              const _demandScore = C?.scores?.demand ?? report.score_demand ?? null
+              const _compCount   = (C as any)?.competitorCount ?? null
+              let util = 0.60
+              if (_demandScore != null && _demandScore > 65) util += 0.10
+              if (_demandScore != null && _demandScore < 40) util -= 0.10
+              if (_compCount   != null && _compCount < 3)    util += 0.05
+              if (_compCount   != null && _compCount >= 5)   util -= 0.10
+              util = Math.min(0.80, Math.max(0.35, util))
+
+              const ticket    = fin.avgTicketSize ?? C?.avgTicketSize ?? null
+              const sqm       = Math.round(seats * 2.2)
+              const ceiling   = ticket ? Math.round(seats * turns * ticket * util * 30) : null
+              const projected = fin.monthlyRevenue ?? null
+              // Break-even monthly = totalCosts (point where revenue = costs)
+              const breakeven: number | null = (C?.totalCosts != null && C.totalCosts > 0)
+                ? C.totalCosts
+                : (fin.totalMonthlyCosts ?? null)
+
+              // Bottleneck classification
+              type BN = 'DEMAND_LIMITED' | 'CAPACITY_LIMITED' | 'BALANCED'
+              const bottleneck: BN | null = (ceiling && projected)
+                ? projected < ceiling * 0.75   ? 'DEMAND_LIMITED'
+                  : projected >= ceiling * 0.85 ? 'CAPACITY_LIMITED'
+                  : 'BALANCED'
+                : null
+
+              const BL_CFG = {
+                DEMAND_LIMITED:   { label: 'Demand-limited',  color: S.amber,   bg: S.amberBg,   bdr: S.amberBdr,   txt: '#92400E' as string },
+                CAPACITY_LIMITED: { label: 'Capacity-limited', color: S.red,     bg: S.redBg,     bdr: S.redBdr,     txt: S.red     as string },
+                BALANCED:         { label: 'Well matched',     color: S.emerald, bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald as string },
+              }
+              const bl = bottleneck ? BL_CFG[bottleneck] : null
+
+              const bottleneckSentence = bottleneck === 'DEMAND_LIMITED'
+                ? `This suburb cannot generate enough demand to fill your ${seats}-seat venue — demand is the binding constraint, not space.`
+                : bottleneck === 'CAPACITY_LIMITED'
+                ? `Your ${seats}-seat venue limits monthly revenue to A$${ceiling?.toLocaleString()} — demand exists but you can't physically serve more without expanding.`
+                : bottleneck === 'BALANCED'
+                ? `Demand and seating capacity are well matched — growth here requires improving both simultaneously.`
+                : null
+
+              // Revenue Triangle: single horizontal scale
+              const triangleMax = Math.max(ceiling ?? 0, projected ?? 0, breakeven ?? 0, 1)
+              const ceilingPct  = ceiling   ? Math.min(99, Math.round((ceiling   / triangleMax) * 100)) : null
+              const projPct     = projected ? Math.min(99, Math.round((projected  / triangleMax) * 100)) : null
+              const bePct       = breakeven ? Math.min(97, Math.round((breakeven / triangleMax) * 100)) : null
+              const projColor   = _nv === 'NO' ? '#FCA5A5' : _nv === 'CAUTION' ? '#FDE68A' : '#99F6E4'
+
+              return (
+                <Card>
+                  {/* Header */}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <div>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Revenue Intelligence</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: S.n800 }}>
+                        {seats} seats · {sqm}m² · {turns} turns/day · {Math.round(util * 100)}% utilisation
+                      </p>
+                    </div>
+                    {bl && (
+                      <div style={{ padding: '4px 12px', background: bl.bg, border: `1px solid ${bl.bdr}`, borderRadius: 20, flexShrink: 0 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: bl.color }}>{bl.label}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottleneck sentence — only when meaningful */}
+                  {bottleneckSentence && bl && (
+                    <div style={{ padding: '10px 14px', borderRadius: 8, background: bl.bg, border: `1px solid ${bl.bdr}`, marginBottom: 16 }}>
+                      <p style={{ fontSize: 13, color: bl.txt, lineHeight: 1.55, fontWeight: 500 }}>{bottleneckSentence}</p>
+                    </div>
+                  )}
+
+                  {/* Revenue Triangle — one unified bar */}
+                  {triangleMax > 1 && (
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ position: 'relative', height: 32, background: S.n100, borderRadius: 8 }}>
+                        {/* Projected fill */}
+                        {projPct != null && (
+                          <div style={{
+                            position: 'absolute', left: 0, top: 0, bottom: 0,
+                            width: `${projPct}%`, background: projColor,
+                            borderRadius: 8, transition: 'width 0.6s ease',
+                          }} />
+                        )}
+                        {/* Break-even marker */}
+                        {bePct != null && (
+                          <div style={{ position: 'absolute', top: -6, bottom: -6, left: `${bePct}%`, width: 2, background: S.red, zIndex: 2, borderRadius: 1 }}>
+                            <div style={{ position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)', fontSize: 8, fontWeight: 900, color: S.red, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>B/E</div>
+                          </div>
+                        )}
+                        {/* Capacity ceiling marker */}
+                        {ceilingPct != null && (
+                          <div style={{ position: 'absolute', top: -6, bottom: -6, left: `${ceilingPct}%`, width: 2, background: S.n400, zIndex: 2, borderRadius: 1, borderTop: '2px dashed' }}>
+                            <div style={{ position: 'absolute', bottom: -16, left: '50%', transform: 'translateX(-50%)', fontSize: 8, fontWeight: 900, color: S.n400, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>MAX</div>
+                          </div>
+                        )}
+                      </div>
+                      {/* Legend */}
+                      <div style={{ display: 'flex', gap: 14, marginTop: 22, flexWrap: 'wrap' as const }}>
+                        {projected != null && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                            <div style={{ width: 12, height: 8, borderRadius: 2, background: projColor }} />
+                            <span style={{ fontSize: 11, color: S.n500, fontWeight: 600 }}>Projected A${projected.toLocaleString()}/mo</span>
+                          </div>
+                        )}
+                        {breakeven != null && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                            <div style={{ width: 2, height: 12, background: S.red, borderRadius: 1 }} />
+                            <span style={{ fontSize: 11, color: S.n500, fontWeight: 600 }}>Break-even A${breakeven.toLocaleString()}/mo</span>
+                          </div>
+                        )}
+                        {ceiling != null && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                            <div style={{ width: 2, height: 12, background: S.n400, borderRadius: 1 }} />
+                            <span style={{ fontSize: 11, color: S.n500, fontWeight: 600 }}>Capacity ceiling A${ceiling.toLocaleString()}/mo</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 3 metric tiles with per-metric confidence */}
+                  {(() => {
+                    // Confidence derivation — external inputs only, never from verdict
+                    // Ceiling: HIGH if user provided ticket size, MEDIUM if from compute engine, LOW if benchmark
+                    const _ticketSrc = _inputData?.avgTicketSize ? 'user'
+                      : C?.avgTicketSize ? 'engine' : 'benchmark'
+                    const ceilConf: 'high'|'medium'|'low' = !ticket ? 'low'
+                      : _ticketSrc === 'user' ? 'high'
+                      : _ticketSrc === 'engine' ? 'medium' : 'low'
+                    // Projected revenue: HIGH if engine has real demand, MEDIUM if estimated, LOW if benchmark default
+                    const _revSrc = C?.provenance?.revenue
+                    const projConf: 'high'|'medium'|'low' = !projected ? 'low'
+                      : _revSrc && !_revSrc.isBenchmark ? 'medium'
+                      : (fin as any).isEstimated ? 'low' : 'medium'
+                    // Constraint: lower of the two
+                    const confRank = { high: 2, medium: 1, low: 0 }
+                    const constraintConf: 'high'|'medium'|'low' = bottleneck
+                      ? (confRank[ceilConf] <= confRank[projConf] ? ceilConf : projConf)
+                      : 'low'
+                    const CONF_DOT = {
+                      high:   { color: S.emerald, label: 'High confidence'   },
+                      medium: { color: S.amber,   label: 'Medium confidence'  },
+                      low:    { color: S.n400,    label: 'Low confidence — benchmark estimate' },
+                    }
+                    const ConfLine = ({ conf }: { conf: 'high'|'medium'|'low' }) => (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
+                        <div style={{ width: 5, height: 5, borderRadius: '50%', background: CONF_DOT[conf].color, flexShrink: 0 }} />
+                        <span style={{ fontSize: 10, color: CONF_DOT[conf].color, fontWeight: 600 }}>{CONF_DOT[conf].label}</span>
+                      </div>
+                    )
+                    return (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                        <div style={{ padding: '12px 14px', background: S.n50, borderRadius: 10, border: `1px solid ${S.n200}` }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Capacity Ceiling</p>
+                          <p style={{ fontSize: 18, fontWeight: 700, color: S.n900, fontFamily: S.mono }}>
+                            {ceiling ? `A$${ceiling.toLocaleString()}` : ticket ? '—' : 'Need ticket'}
+                          </p>
+                          <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>{Math.round(util * 100)}% util · {turns} turns/day</p>
+                          <ConfLine conf={ceilConf} />
+                        </div>
+                        <div style={{ padding: '12px 14px', background: S.n50, borderRadius: 10, border: `1px solid ${S.n200}` }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Projected Revenue</p>
+                          <p style={{ fontSize: 18, fontWeight: 700, color: S.n900, fontFamily: S.mono }}>
+                            {projected ? `A$${projected.toLocaleString()}` : '—'}
+                          </p>
+                          <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>demand model output</p>
+                          <ConfLine conf={projConf} />
+                        </div>
+                        <div style={{ padding: '12px 14px', borderRadius: 10, background: bl?.bg ?? S.n50, border: `1px solid ${bl?.bdr ?? S.n200}` }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Binding Constraint</p>
+                          <p style={{ fontSize: 18, fontWeight: 700, color: bl?.color ?? S.n400, fontFamily: S.mono }}>
+                            {bottleneck === 'DEMAND_LIMITED' ? 'Demand' : bottleneck === 'CAPACITY_LIMITED' ? 'Seats' : bottleneck === 'BALANCED' ? 'Matched' : '—'}
+                          </p>
+                          <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>what limits revenue</p>
+                          <ConfLine conf={constraintConf} />
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </Card>
+              )
+            })()}
 
             {/* A4 Monthly cost breakdown */}
             {fin.monthlyCostBreakdown && (
