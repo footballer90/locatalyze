@@ -442,6 +442,30 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {/* Sections */}
             {post.sections.map((section: Section, i: number) => renderSection(section, i))}
 
+            {/* Author bio — shown when authorBio is present */}
+            {post.author && post.authorBio && (
+              <div style={{
+                marginTop: 48, padding: '24px 28px',
+                background: S.n50, border: `1px solid ${S.n200}`,
+                borderRadius: 14, display: 'flex', gap: 20, alignItems: 'flex-start',
+              }}>
+                <div style={{
+                  width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
+                  background: `linear-gradient(135deg, ${S.brand}, #0891B2)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 18, fontWeight: 900, color: '#fff',
+                }}>
+                  {post.author.split(' ').map((n: string) => n[0]).join('')}
+                </div>
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>About the author</p>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 2 }}>{post.author}</p>
+                  {post.authorRole && <p style={{ fontSize: 12, fontWeight: 600, color: S.brand, marginBottom: 10 }}>{post.authorRole}</p>}
+                  <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.75 }}>{post.authorBio}</p>
+                </div>
+              </div>
+            )}
+
             {/* CTA */}
             <div style={{
               background: `linear-gradient(135deg, ${S.brand}, #0891B2)`,

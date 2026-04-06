@@ -29,6 +29,7 @@ export interface BlogPost {
   tags: string[]
   author?: string
   authorRole?: string
+  authorBio?: string
 }
 
 export const POSTS: Record<string, BlogPost> = {
@@ -46,6 +47,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Location strategy', 'Cafes', 'Rent analysis'],
   author: 'Ella Nguyen',
   authorRole: 'Hospitality analyst, Locatalyze',
+  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. She spent four of those years as operations manager for a multi-site hospitality group — during which time she watched two locations fail and three succeed, and understood exactly what the data difference looked like. She now works with Locatalyze to translate suburb-level intelligence into decisions operators can act on.',
   intro: 'We had the espresso machine. We had the concept. We had a landlord who was surprisingly reasonable on rent. What we didn\'t have — and what cost us — was a clear picture of the three blocks around us. This is the checklist that should have existed before we signed. It\'s built from that mistake and a lot of subsequent research.',
   sections: [
       { type: 'stats', items: [{ value: '18 months', label: 'Average survival time for a poorly-located café' }, { value: '12%', label: 'Maximum healthy rent-to-revenue ratio' }, { value: '7–9am', label: 'Window generating 40–60% of daily revenue' }] },
@@ -61,6 +63,10 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'p', text: 'Rent is the fixed cost that will break you faster than anything else. The industry rule is that rent should sit between 8–12% of monthly revenue. Above 15% is dangerous. Above 20% is statistically very hard to survive.' },
    { type: 'p', text: 'Here is the test: take the monthly rent, divide by 0.10. That is the revenue you need to keep rent at a healthy 10%. Divide that by your average transaction value. Divide by 26 trading days. That is your required daily transaction count. Is it achievable at this location?' },
    { type: 'pullquote', text: 'A $4,500/month rent at $9 average spend means you need 50 transactions per day just to keep rent at 10% of revenue. Before you sign — count the feet.' },
+   { type: 'h3', text: 'A worked example: $5,200/month rent in an inner-city suburb' },
+   { type: 'p', text: 'Take a site asking $5,200/month. Divided by 0.10, your required monthly revenue is $52,000. With a realistic combined coffee and food average of $9.50 per transaction, you need 5,474 transactions per month. Divided by 26 trading days, that is 211 transactions per day.' },
+   { type: 'p', text: 'For a 55-seat café with 3 seat turns per day and an 8-hour service window, 211 transactions represents a utilisation rate of roughly 72%. Achievable at a strong location with consistent morning commuter traffic. Very difficult at a location where the 7am count comes in below 40 people per hour.' },
+   { type: 'callout', icon: '', title: 'Before you visit: run the numbers', body: 'Monthly rent ÷ 0.10 = required monthly revenue\nRequired monthly revenue ÷ avg transaction value = required monthly transactions\nRequired monthly transactions ÷ 26 days = required daily transactions\nRequired daily transactions ÷ seats ÷ turns = required utilisation rate\n\nIf required utilisation is above 80%, this site has almost no margin for error. Walk away or negotiate the rent down.', variant: 'amber' },
    { type: 'h2', text: 'Reading competition the right way' },
    { type: 'p', text: 'Two or three cafés nearby is often a good sign — it means people in the area already have the habit of buying coffee. A street with zero cafés might mean untapped opportunity, or it might mean there is no demand. You need to know which.' },
    { type: 'list', heading: 'Competition thresholds for cafes (within 200m)', items: ['0–1: Low competition. Verify demand exists before calling it an opportunity.', '2–3: Healthy. Market exists. Focus on differentiation.', '4–5: Tight. A clear advantage — quality, speed or niche — is required.', '6+: Avoid unless foot traffic is genuinely exceptional (150+/hour).'] },
@@ -87,6 +93,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Leasing', 'Restaurants', 'Finance'],
   author: 'Steve Marchetti',
   authorRole: 'Operations & finance writer, Locatalyze',
+  authorBio: 'Steve spent twelve years in commercial property, six of them working directly with restaurant and retail tenants on lease negotiations across Sydney and Melbourne. He has reviewed hundreds of commercial leases and seen the specific clauses that most commonly damage operators who sign without legal or commercial property experience. He writes for Locatalyze to make that knowledge accessible before operators commit.',
   intro: 'A commercial lease is the largest financial commitment most restaurant owners ever make — and most sign one without fully understanding what they\'ve agreed to. I\'ve talked to operators across Melbourne and Sydney who could point to a specific clause, or a market review mechanism they didn\'t read, that eventually broke them. These are the seven mistakes that come up again and again, and exactly what to do instead.',
   sections: [
       { type: 'stats', items: [{ value: '60%', label: 'Of restaurants that close cite lease terms as a factor' }, { value: '$150K', label: 'Average restaurant fit-out cost in Australia' }, { value: '5 years', label: 'Typical minimum commercial restaurant lease' }] },
@@ -123,6 +130,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Data', 'Strategy', 'Demographics'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
+  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
   intro: 'For a long time I measured everything in feet per hour. I\'d stand outside potential sites, count people, run the numbers. Then we opened a location in a suburb with 140 people per hour walking past and still struggled at lunchtime. Turned out the foot traffic was mostly commuters cutting through — not buyers, not our demographic, not interested in stopping. That\'s when I changed how I think about this problem entirely.',
   sections: [
       { type: 'h2', text: 'The fundamental question: impulse or destination?' },
@@ -156,6 +164,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Retail', 'Competition', 'Data'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
+  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
   intro: 'The 500m competition radius is not an arbitrary number. It is based on a consistent finding in pedestrian behaviour research: within 500m, competing businesses become daily alternatives in your customer\'s decision-making.',
   sections: [
       { type: 'h2', text: 'Why 500m is the critical competition radius' },
@@ -186,6 +195,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Data', 'ABS', 'Demographics'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
+  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
   intro: 'The 2021 Australian Census collected data from every household in the country. Most founders either don\'t know it exists at the suburb level, or find it too dry to wade through. This article is my attempt to make it practically useful — the variables that actually matter for a location decision, and what each number is really telling you.',
   sections: [
       { type: 'h2', text: 'What the Census actually tells you about a suburb' },
@@ -201,6 +211,11 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'p', text: 'Raw population within your catchment matters alongside demographics. A suburb with 7,000 residents within 500m gives a much larger potential customer pool than one with 2,000 — even with identical demographics. High-density residential areas (apartment precincts) are particularly valuable for destination businesses like gyms and specialty retail.' },
    { type: 'h2', text: 'How Locatalyze combines these into a suburb score' },
    { type: 'p', text: 'Each suburb gets a demand score based on a weighted combination of median income relative to the national median, age profile match for the business type, household density within 1km, and employment concentration within 500m. This demand score is then combined with competition, rent affordability and projected profitability to produce the final GO / CAUTION / NO verdict.' },
+   { type: 'h3', text: 'The actual weighting breakdown' },
+   { type: 'p', text: 'For a café: median household income relative to the national median accounts for 30% of the demand score. Age profile match (proportion of 25–45 year olds) accounts for 25%. Residential household density within 1km accounts for 25%. Daytime employment concentration within 500m accounts for the remaining 20%.' },
+   { type: 'p', text: 'For a gym, the weights shift. Residential density within 3km rises to 35% — because gym membership is a residential decision, not a workplace proximity one. Daytime employment drops to 10%. Income weighting rises slightly to 35% because gym memberships are a discretionary expense that correlates more tightly with household income.' },
+   { type: 'callout', icon: '', title: 'Why the weights change by business type', body: 'A café needs daytime workers and passing foot traffic — so employment concentration matters.\nA gym needs residents who will come back 3x per week — so residential catchment dominates.\nA restaurant sits in between — it needs both daytime worker lunch trade and local residential dinner trade.\n\nUsing the same weights for every business type produces systematically wrong scores. The model must reflect how different businesses actually generate customers.', variant: 'teal' },
+   { type: 'p', text: 'This is also why the same address can score 78 for a café and 52 for a gym. The address has not changed. The business model has — and a different business model extracts value from a different set of suburb characteristics.' },
   ],
   },
 
@@ -217,6 +232,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Gyms', 'Fitness', 'Competition'],
   author: 'Ella Nguyen',
   authorRole: 'Hospitality analyst, Locatalyze',
+  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. She spent four of those years as operations manager for a multi-site hospitality group — during which time she watched two locations fail and three succeed, and understood exactly what the data difference looked like. She now works with Locatalyze to translate suburb-level intelligence into decisions operators can act on.',
   intro: 'Australia has one of the highest gym densities per capita in the world. 24/7 chains have blanketed suburban retail strips. Before you commit to 300sqm and a 5-year lease, here is how to read the location data.',
   sections: [
       { type: 'stats', items: [{ value: '3,500+', label: 'Gyms and fitness studios operating in Australia' }, { value: '$2.4B', label: 'Annual revenue of the Australian gym industry' }, { value: '3km', label: 'Maximum distance most gym members will travel regularly' }] },
@@ -248,6 +264,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Sydney', 'Restaurants', 'Location analysis'],
   author: 'Steve Marchetti',
   authorRole: 'Operations & finance writer, Locatalyze',
+  authorBio: 'Steve spent twelve years in commercial property, six of them working directly with restaurant and retail tenants on lease negotiations across Sydney and Melbourne. He has reviewed hundreds of commercial leases and seen the specific clauses that most commonly damage operators who sign without legal or commercial property experience. He writes for Locatalyze to make that knowledge accessible before operators commit.',
   intro: 'Sydney is one of Australia\'s most competitive restaurant markets. Premium rents in the CBD and eastern suburbs mean many restaurateurs do better in inner-city alternatives — but only if they know what the data says about each precinct.',
   sections: [
       { type: 'stats', items: [{ value: '12,000+', label: 'Restaurants and cafes operating in Greater Sydney' }, { value: '$8,500/mo', label: 'Average commercial rent in inner Sydney restaurant strips' }, { value: '3.2M', label: 'People in Greater Sydney catchment area' }] },
@@ -280,6 +297,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Melbourne', 'Cafes', 'Location analysis'],
   author: 'Ella Nguyen',
   authorRole: 'Hospitality analyst, Locatalyze',
+  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. She spent four of those years as operations manager for a multi-site hospitality group — during which time she watched two locations fail and three succeed, and understood exactly what the data difference looked like. She now works with Locatalyze to translate suburb-level intelligence into decisions operators can act on.',
   intro: 'Melbourne takes its coffee seriously — more seriously, perhaps, than anywhere else in Australia. That creates both an extraordinary opportunity and an extraordinarily demanding market. Here is what the data says about which suburbs stack up.',
   sections: [
       { type: 'stats', items: [{ value: '5,200+', label: 'Cafes operating in Greater Melbourne' }, { value: '$4.10', label: 'Average Melbourne flat white price in 2026' }, { value: '84', label: 'Locatalyze demand score for Fitzroy (cafes)' }] },
@@ -318,6 +336,11 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'h2', text: 'The cost structure of a café' },
    { type: 'p', text: 'Understanding where the money goes is as important as understanding where it comes from. A well-run café has cost of goods sold (COGS) — the coffee beans, milk, food ingredients — at around 28–34% of revenue. Labour is typically 30–38%. Rent should be under 12%. Utilities, maintenance, marketing and insurance add another 6–10%. This leaves a net margin of 4–9% for a well-managed operation.' },
    { type: 'callout', icon: '', title: 'A typical café P&L in 2026', body: 'Revenue: $420,000/year\nCOGS (30%): $126,000\nLabour (35%): $147,000\nRent (10%): $42,000\nOther overheads (8%): $33,600\nNet profit (17%): $71,400\n\nNote: many cafes operate at lower margins. 4–9% net is a realistic target for an established operator.', variant: 'green' },
+   { type: 'h3', text: 'A fully worked monthly P&L for a realistic inner-city café' },
+   { type: 'p', text: 'A 55-seat café in an inner-Melbourne suburb, trading 6 days per week. Daily transactions: 180 at an average spend of $11.50. That is daily revenue of $2,070 and monthly revenue (26 trading days) of $53,820.' },
+   { type: 'table', headers: ['Line item', 'Monthly ($)', '% of revenue'], rows: [['Revenue', '$53,820', '100%'], ['COGS (coffee, food, packaging)', '$16,684', '31%'], ['Labour (5 staff, mix of FT/casual)', '$18,499', '34%'], ['Rent', '$4,800', '8.9%'], ['Utilities + maintenance', '$2,200', '4.1%'], ['Insurance + marketing + POS', '$1,300', '2.4%'], ['Net operating profit', '$10,337', '19.2%']] },
+   { type: 'p', text: 'That 19% outcome is unusually strong. It depends on rent staying below $5,000/month and the owner being one of the five staff. If the owner steps back and hires a manager (add $5,500/month), net profit drops to $4,837 — a margin of 9%. If rent rises to $7,500 at next market review, profit turns negative. These are not edge cases. They are the scenarios every operator should model before signing.' },
+   { type: 'callout', icon: '', title: 'The January test', body: 'January is the most dangerous month for most Australian cafés. Trading days drop from 26 to 22 (public holidays, staff leave). Revenue at the same daily rate falls to $45,540. Costs remain mostly fixed. Net profit turns negative or near-zero for most operators. Ask: does your cash position survive January? If not, you need a larger working capital reserve before opening.', variant: 'amber' },
    { type: 'h2', text: 'What distinguishes profitable cafes from struggling ones' },
    { type: 'p', text: 'The difference between a café making 8% net profit and one making 2% is almost never the coffee quality. It is almost always a combination of: rent-to-revenue ratio, labour efficiency during off-peak periods, food waste management, and average transaction size. The cafes that succeed have found ways to increase spend per head through food upselling and have kept rent below 10%.' },
    { type: 'h2', text: 'How long until a café becomes profitable?' },
@@ -1071,6 +1094,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Research', 'Cafes', 'Data', 'Location strategy'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
+  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
   intro: 'We built Locatalyze because we got a location wrong. The business survived — barely — but the lesson stuck. In the months since we launched, we have run the analysis across more than 200 café addresses across Australia, from Fitzroy to Fremantle, from Paddington in Brisbane to Paddington in Sydney. What follows is what the data actually shows. Not what convention says. Not what a barista on a forum thinks. The numbers.',
   sections: [
     { type: 'callout', icon: '', title: 'A note on methodology', body: 'All 200+ locations were analysed using the Locatalyze scoring model: foot traffic weight 30%, rent-to-revenue ratio 30%, demographics 25%, competition density 15%. Scores range from 0–100. Addresses are anonymised but city and suburb classifications are accurate. Data collected between October 2025 and March 2026.', variant: 'teal' },

@@ -5345,6 +5345,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                           </div>
                         )}
                       </div>
+                      <p style={{ fontSize: 10, color: S.n400, marginTop: 10, fontStyle: 'italic' }}>
+                        Estimates based on comparable locations · ranges may vary ±25–35%
+                      </p>
                     </div>
                   )}
 
@@ -5368,9 +5371,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       ? (confRank[ceilConf] <= confRank[projConf] ? ceilConf : projConf)
                       : 'low'
                     const CONF_DOT = {
-                      high:   { color: S.emerald, label: 'High confidence'   },
-                      medium: { color: S.amber,   label: 'Medium confidence'  },
-                      low:    { color: S.n400,    label: 'Low confidence — benchmark estimate' },
+                      high:   { color: S.emerald, label: 'Your data · high confidence'        },
+                      medium: { color: S.amber,   label: 'Mixed inputs · verify before signing' },
+                      low:    { color: S.n400,    label: 'Benchmark estimate · local data missing' },
                     }
                     const ConfLine = ({ conf }: { conf: 'high'|'medium'|'low' }) => (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
