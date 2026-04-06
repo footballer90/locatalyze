@@ -145,7 +145,8 @@ function parseAustralianAddress(address: string): {
 function validatePayload(body: any): { valid: true; data: any } | { valid: false; error: string } {
   if (!body || typeof body !== 'object') return { valid: false, error: 'Invalid request body' }
   const { businessType, address, monthlyRent, setupBudget, avgTicketSize, userId, lat, lng,
-    operatingHours, seatingCapacity, businessMode, avgOrderValue, locationAccess } = body
+    operatingHours, seatingCapacity, businessMode, avgOrderValue, locationAccess,
+    rentSource, estimatedSqm } = body
   if (!businessType || typeof businessType !== 'string' || businessType.trim().length < 2)
     return { valid: false, error: 'Business type is required' }
   if (!address || typeof address !== 'string' || address.trim().length < 5)
@@ -189,6 +190,8 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
       businessMode:    typeof businessMode    === 'string' ? businessMode    : null,
       avgOrderValue:   typeof avgOrderValue   === 'number' ? avgOrderValue   : (avgOrderValue ? Number(avgOrderValue) || null : null),
       locationAccess:  typeof locationAccess  === 'string' ? locationAccess  : null,
+      rentSource:      typeof rentSource      === 'string' ? rentSource      : 'benchmark',
+      estimatedSqm:    typeof estimatedSqm    === 'number' ? estimatedSqm    : (estimatedSqm ? Number(estimatedSqm) || null : null),
     }
   }
 }
@@ -293,6 +296,8 @@ export async function POST(request: NextRequest) {
       businessMode:    data.businessMode    ?? null,
       avgOrderValue:   data.avgOrderValue   ?? null,
       locationAccess:  data.locationAccess  ?? null,
+      rentSource:      data.rentSource      ?? 'benchmark',
+      estimatedSqm:    data.estimatedSqm    ?? null,
     },
   }
 
@@ -331,6 +336,8 @@ export async function POST(request: NextRequest) {
     businessMode:    data.businessMode    ?? null,
     avgOrderValue:   data.avgOrderValue   ?? null,
     locationAccess:  data.locationAccess  ?? null,
+    rentSource:      data.rentSource      ?? 'benchmark',
+    estimatedSqm:    data.estimatedSqm    ?? null,
   })
 
   after(async () => {

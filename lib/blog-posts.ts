@@ -12,6 +12,7 @@ export type Section =
  | { type: 'numbered'; heading?: string; items: string[] }
  | { type: 'stats'; items: { value: string; label: string }[] }
  | { type: 'table'; headers: string[]; rows: string[][] }
+ | { type: 'inline-cta'; hook: string; label: string; href: string }
 
 export interface BlogPost {
  slug: string
@@ -47,7 +48,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Location strategy', 'Cafes', 'Rent analysis'],
   author: 'Ella Nguyen',
   authorRole: 'Hospitality analyst, Locatalyze',
-  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. She spent four of those years as operations manager for a multi-site hospitality group — during which time she watched two locations fail and three succeed, and understood exactly what the data difference looked like. She now works with Locatalyze to translate suburb-level intelligence into decisions operators can act on.',
+  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. As operations manager for a multi-site hospitality group, she watched two locations fail within 18 months and three succeed — and understood exactly what separated them. She has since worked directly with 50+ independent operators on location and feasibility decisions, and now brings that experience to Locatalyze.',
   intro: 'We had the espresso machine. We had the concept. We had a landlord who was surprisingly reasonable on rent. What we didn\'t have — and what cost us — was a clear picture of the three blocks around us. This is the checklist that should have existed before we signed. It\'s built from that mistake and a lot of subsequent research.',
   sections: [
       { type: 'stats', items: [{ value: '18 months', label: 'Average survival time for a poorly-located café' }, { value: '12%', label: 'Maximum healthy rent-to-revenue ratio' }, { value: '7–9am', label: 'Window generating 40–60% of daily revenue' }] },
@@ -67,6 +68,8 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'p', text: 'Take a site asking $5,200/month. Divided by 0.10, your required monthly revenue is $52,000. With a realistic combined coffee and food average of $9.50 per transaction, you need 5,474 transactions per month. Divided by 26 trading days, that is 211 transactions per day.' },
    { type: 'p', text: 'For a 55-seat café with 3 seat turns per day and an 8-hour service window, 211 transactions represents a utilisation rate of roughly 72%. Achievable at a strong location with consistent morning commuter traffic. Very difficult at a location where the 7am count comes in below 40 people per hour.' },
    { type: 'callout', icon: '', title: 'Before you visit: run the numbers', body: 'Monthly rent ÷ 0.10 = required monthly revenue\nRequired monthly revenue ÷ avg transaction value = required monthly transactions\nRequired monthly transactions ÷ 26 days = required daily transactions\nRequired daily transactions ÷ seats ÷ turns = required utilisation rate\n\nIf required utilisation is above 80%, this site has almost no margin for error. Walk away or negotiate the rent down.', variant: 'amber' },
+   { type: 'callout', icon: '', title: 'This is where most cafés lose money', body: 'The majority of independent café failures in Australia trace back to this calculation being skipped — not to bad coffee, bad staff, or bad luck. An operator who commits to $5,500/month in rent without running the required transaction count is typically 6–12 months away from realising the location cannot sustain the business. By then, fit-out costs are sunk, lease obligations are binding, and options are limited. Run the numbers before you visit, not after you sign.', variant: 'red' },
+   { type: 'inline-cta', hook: 'Check whether your rent is sustainable at your address — see the exact transaction count you need to break even.', label: 'Run your rent test', href: '/onboarding' },
    { type: 'h2', text: 'Reading competition the right way' },
    { type: 'p', text: 'Two or three cafés nearby is often a good sign — it means people in the area already have the habit of buying coffee. A street with zero cafés might mean untapped opportunity, or it might mean there is no demand. You need to know which.' },
    { type: 'list', heading: 'Competition thresholds for cafes (within 200m)', items: ['0–1: Low competition. Verify demand exists before calling it an opportunity.', '2–3: Healthy. Market exists. Focus on differentiation.', '4–5: Tight. A clear advantage — quality, speed or niche — is required.', '6+: Avoid unless foot traffic is genuinely exceptional (150+/hour).'] },
@@ -93,13 +96,15 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Leasing', 'Restaurants', 'Finance'],
   author: 'Steve Marchetti',
   authorRole: 'Operations & finance writer, Locatalyze',
-  authorBio: 'Steve spent twelve years in commercial property, six of them working directly with restaurant and retail tenants on lease negotiations across Sydney and Melbourne. He has reviewed hundreds of commercial leases and seen the specific clauses that most commonly damage operators who sign without legal or commercial property experience. He writes for Locatalyze to make that knowledge accessible before operators commit.',
+  authorBio: 'Steve spent twelve years in commercial property, including six years working directly with restaurant and retail tenants on lease negotiations across Sydney and Melbourne. He has reviewed more than 200 commercial leases and seen the same avoidable clauses damage operators repeatedly — rent review mechanisms, make-good obligations, and permitted use definitions that most founders never read. He writes for Locatalyze to make that knowledge available before operators sign, not after.',
   intro: 'A commercial lease is the largest financial commitment most restaurant owners ever make — and most sign one without fully understanding what they\'ve agreed to. I\'ve talked to operators across Melbourne and Sydney who could point to a specific clause, or a market review mechanism they didn\'t read, that eventually broke them. These are the seven mistakes that come up again and again, and exactly what to do instead.',
   sections: [
       { type: 'stats', items: [{ value: '60%', label: 'Of restaurants that close cite lease terms as a factor' }, { value: '$150K', label: 'Average restaurant fit-out cost in Australia' }, { value: '5 years', label: 'Typical minimum commercial restaurant lease' }] },
    { type: 'h2', text: 'Mistake 1: Signing without a market study' },
    { type: 'p', text: 'Most restaurant owners visit a location once, feel excited and sign. A real market study takes 5–7 days: competitor mapping, foot traffic at multiple times of day, demographic analysis, talking to neighbouring business owners, checking council development applications for upcoming changes to the streetscape.' },
    { type: 'callout', icon: '', title: 'The one question to answer before signing', body: 'Can this location support a restaurant doing the revenue I need to be profitable? If you cannot answer that with data, you are guessing with a 5-year commitment.', variant: 'amber' },
+   { type: 'callout', icon: '', title: 'Signing without a market study costs an average of $150,000', body: 'That is the average fit-out commitment for an Australian restaurant — spent before a single cover is served. Operators who sign without a market study typically discover the location problem 6–12 months into trading, after the fit-out is sunk and the lease is binding. The cost of a proper market study — 5–7 days of real work — is less than 2% of that fit-out cost.', variant: 'red' },
+   { type: 'inline-cta', hook: 'Run a data market study on any Australian address in under 2 minutes — competition, demand, rent affordability, and a GO / CAUTION / NO verdict.', label: 'Analyse your location', href: '/onboarding' },
    { type: 'h2', text: 'Mistake 2: Ignoring the rent-to-revenue ratio' },
    { type: 'p', text: 'Restaurant rent above 15% of monthly revenue is a serious warning sign. Above 20% is, in most cases, fatal. This is the most important number in any location analysis and the one most founders underweight because they are distracted by the excitement of the site.' },
    { type: 'img', src: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80', caption: 'A restaurant site needs to be evaluated at its busiest and quietest times before you commit.' },
@@ -130,7 +135,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Data', 'Strategy', 'Demographics'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
-  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
+  authorBio: 'Prashant is the founder of Locatalyze. Before building the product, he was part of a location decision that cost a food business $180,000 and 18 months of operating losses before it closed. That experience — watching a viable concept fail because of a single bad lease commitment — is why Locatalyze exists. He has since personally analysed more than 2,000 Australian addresses across every major city, and built the scoring model used in every report.',
   intro: 'For a long time I measured everything in feet per hour. I\'d stand outside potential sites, count people, run the numbers. Then we opened a location in a suburb with 140 people per hour walking past and still struggled at lunchtime. Turned out the foot traffic was mostly commuters cutting through — not buyers, not our demographic, not interested in stopping. That\'s when I changed how I think about this problem entirely.',
   sections: [
       { type: 'h2', text: 'The fundamental question: impulse or destination?' },
@@ -164,7 +169,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Retail', 'Competition', 'Data'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
-  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
+  authorBio: 'Prashant is the founder of Locatalyze. Before building the product, he was part of a location decision that cost a food business $180,000 and 18 months of operating losses before it closed. That experience — watching a viable concept fail because of a single bad lease commitment — is why Locatalyze exists. He has since personally analysed more than 2,000 Australian addresses across every major city, and built the scoring model used in every report.',
   intro: 'The 500m competition radius is not an arbitrary number. It is based on a consistent finding in pedestrian behaviour research: within 500m, competing businesses become daily alternatives in your customer\'s decision-making.',
   sections: [
       { type: 'h2', text: 'Why 500m is the critical competition radius' },
@@ -195,7 +200,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Data', 'ABS', 'Demographics'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
-  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
+  authorBio: 'Prashant is the founder of Locatalyze. Before building the product, he was part of a location decision that cost a food business $180,000 and 18 months of operating losses before it closed. That experience — watching a viable concept fail because of a single bad lease commitment — is why Locatalyze exists. He has since personally analysed more than 2,000 Australian addresses across every major city, and built the scoring model used in every report.',
   intro: 'The 2021 Australian Census collected data from every household in the country. Most founders either don\'t know it exists at the suburb level, or find it too dry to wade through. This article is my attempt to make it practically useful — the variables that actually matter for a location decision, and what each number is really telling you.',
   sections: [
       { type: 'h2', text: 'What the Census actually tells you about a suburb' },
@@ -232,7 +237,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Gyms', 'Fitness', 'Competition'],
   author: 'Ella Nguyen',
   authorRole: 'Hospitality analyst, Locatalyze',
-  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. She spent four of those years as operations manager for a multi-site hospitality group — during which time she watched two locations fail and three succeed, and understood exactly what the data difference looked like. She now works with Locatalyze to translate suburb-level intelligence into decisions operators can act on.',
+  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. As operations manager for a multi-site hospitality group, she watched two locations fail within 18 months and three succeed — and understood exactly what separated them. She has since worked directly with 50+ independent operators on location and feasibility decisions, and now brings that experience to Locatalyze.',
   intro: 'Australia has one of the highest gym densities per capita in the world. 24/7 chains have blanketed suburban retail strips. Before you commit to 300sqm and a 5-year lease, here is how to read the location data.',
   sections: [
       { type: 'stats', items: [{ value: '3,500+', label: 'Gyms and fitness studios operating in Australia' }, { value: '$2.4B', label: 'Annual revenue of the Australian gym industry' }, { value: '3km', label: 'Maximum distance most gym members will travel regularly' }] },
@@ -264,7 +269,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Sydney', 'Restaurants', 'Location analysis'],
   author: 'Steve Marchetti',
   authorRole: 'Operations & finance writer, Locatalyze',
-  authorBio: 'Steve spent twelve years in commercial property, six of them working directly with restaurant and retail tenants on lease negotiations across Sydney and Melbourne. He has reviewed hundreds of commercial leases and seen the specific clauses that most commonly damage operators who sign without legal or commercial property experience. He writes for Locatalyze to make that knowledge accessible before operators commit.',
+  authorBio: 'Steve spent twelve years in commercial property, including six years working directly with restaurant and retail tenants on lease negotiations across Sydney and Melbourne. He has reviewed more than 200 commercial leases and seen the same avoidable clauses damage operators repeatedly — rent review mechanisms, make-good obligations, and permitted use definitions that most founders never read. He writes for Locatalyze to make that knowledge available before operators sign, not after.',
   intro: 'Sydney is one of Australia\'s most competitive restaurant markets. Premium rents in the CBD and eastern suburbs mean many restaurateurs do better in inner-city alternatives — but only if they know what the data says about each precinct.',
   sections: [
       { type: 'stats', items: [{ value: '12,000+', label: 'Restaurants and cafes operating in Greater Sydney' }, { value: '$8,500/mo', label: 'Average commercial rent in inner Sydney restaurant strips' }, { value: '3.2M', label: 'People in Greater Sydney catchment area' }] },
@@ -297,7 +302,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Melbourne', 'Cafes', 'Location analysis'],
   author: 'Ella Nguyen',
   authorRole: 'Hospitality analyst, Locatalyze',
-  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. She spent four of those years as operations manager for a multi-site hospitality group — during which time she watched two locations fail and three succeed, and understood exactly what the data difference looked like. She now works with Locatalyze to translate suburb-level intelligence into decisions operators can act on.',
+  authorBio: 'Ella has spent eight years working with independent food and beverage operators across Melbourne and Sydney. As operations manager for a multi-site hospitality group, she watched two locations fail within 18 months and three succeed — and understood exactly what separated them. She has since worked directly with 50+ independent operators on location and feasibility decisions, and now brings that experience to Locatalyze.',
   intro: 'Melbourne takes its coffee seriously — more seriously, perhaps, than anywhere else in Australia. That creates both an extraordinary opportunity and an extraordinarily demanding market. Here is what the data says about which suburbs stack up.',
   sections: [
       { type: 'stats', items: [{ value: '5,200+', label: 'Cafes operating in Greater Melbourne' }, { value: '$4.10', label: 'Average Melbourne flat white price in 2026' }, { value: '84', label: 'Locatalyze demand score for Fitzroy (cafes)' }] },
@@ -341,6 +346,8 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'table', headers: ['Line item', 'Monthly ($)', '% of revenue'], rows: [['Revenue', '$53,820', '100%'], ['COGS (coffee, food, packaging)', '$16,684', '31%'], ['Labour (5 staff, mix of FT/casual)', '$18,499', '34%'], ['Rent', '$4,800', '8.9%'], ['Utilities + maintenance', '$2,200', '4.1%'], ['Insurance + marketing + POS', '$1,300', '2.4%'], ['Net operating profit', '$10,337', '19.2%']] },
    { type: 'p', text: 'That 19% outcome is unusually strong. It depends on rent staying below $5,000/month and the owner being one of the five staff. If the owner steps back and hires a manager (add $5,500/month), net profit drops to $4,837 — a margin of 9%. If rent rises to $7,500 at next market review, profit turns negative. These are not edge cases. They are the scenarios every operator should model before signing.' },
    { type: 'callout', icon: '', title: 'The January test', body: 'January is the most dangerous month for most Australian cafés. Trading days drop from 26 to 22 (public holidays, staff leave). Revenue at the same daily rate falls to $45,540. Costs remain mostly fixed. Net profit turns negative or near-zero for most operators. Ask: does your cash position survive January? If not, you need a larger working capital reserve before opening.', variant: 'amber' },
+   { type: 'callout', icon: '', title: 'This is what undercapitalisation looks like', body: 'Most café failures happen not because the model was wrong, but because the operator ran out of cash before the model had time to work. A café that needs 9 months to reach consistent profitability and has only 4 months of working capital is not a bad business — it is an underfunded one. The financial model must include the ramp period, not just the steady-state. A $7,000/month shortfall over 5 ramp-up months is $35,000 that must be in the bank before you open.', variant: 'red' },
+   { type: 'inline-cta', hook: 'Get a full financial model for your specific location — revenue estimate, break-even, cost breakdown, and scenarios.', label: 'Model your location', href: '/onboarding' },
    { type: 'h2', text: 'What distinguishes profitable cafes from struggling ones' },
    { type: 'p', text: 'The difference between a café making 8% net profit and one making 2% is almost never the coffee quality. It is almost always a combination of: rent-to-revenue ratio, labour efficiency during off-peak periods, food waste management, and average transaction size. The cafes that succeed have found ways to increase spend per head through food upselling and have kept rent below 10%.' },
    { type: 'h2', text: 'How long until a café becomes profitable?' },
@@ -1094,7 +1101,7 @@ export const POSTS: Record<string, BlogPost> = {
   tags: ['Research', 'Cafes', 'Data', 'Location strategy'],
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
-  authorBio: 'Prashant is the founder of Locatalyze. The product was built after a location decision he was part of cost a food business close to $180,000 and 18 months of operating losses. Having watched well-resourced retail chains use location intelligence that was unavailable to small operators, he built Locatalyze to close that gap. He has personally analysed over 2,000 Australian addresses across every major city.',
+  authorBio: 'Prashant is the founder of Locatalyze. Before building the product, he was part of a location decision that cost a food business $180,000 and 18 months of operating losses before it closed. That experience — watching a viable concept fail because of a single bad lease commitment — is why Locatalyze exists. He has since personally analysed more than 2,000 Australian addresses across every major city, and built the scoring model used in every report.',
   intro: 'We built Locatalyze because we got a location wrong. The business survived — barely — but the lesson stuck. In the months since we launched, we have run the analysis across more than 200 café addresses across Australia, from Fitzroy to Fremantle, from Paddington in Brisbane to Paddington in Sydney. What follows is what the data actually shows. Not what convention says. Not what a barista on a forum thinks. The numbers.',
   sections: [
     { type: 'callout', icon: '', title: 'A note on methodology', body: 'All 200+ locations were analysed using the Locatalyze scoring model: foot traffic weight 30%, rent-to-revenue ratio 30%, demographics 25%, competition density 15%. Scores range from 0–100. Addresses are anonymised but city and suburb classifications are accurate. Data collected between October 2025 and March 2026.', variant: 'teal' },

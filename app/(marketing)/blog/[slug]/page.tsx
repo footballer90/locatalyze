@@ -250,6 +250,32 @@ function renderSection(section: Section, idx: number) {
         </div>
       )
 
+    case 'inline-cta':
+      return (
+        <div key={idx} style={{
+          margin: '36px 0',
+          padding: '20px 24px',
+          background: S.headerBg,
+          borderRadius: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 20, flexWrap: 'wrap' as const,
+          border: '1px solid rgba(20,184,166,0.2)',
+        }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: '#E5E7EB', lineHeight: 1.55, flex: 1, minWidth: 200, margin: 0 }}>
+            {section.hook}
+          </p>
+          <a href={section.href} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: S.brand, color: '#fff',
+            borderRadius: 8, padding: '10px 20px',
+            fontSize: 13, fontWeight: 800, textDecoration: 'none',
+            whiteSpace: 'nowrap' as const, flexShrink: 0,
+          }}>
+            {section.label} →
+          </a>
+        </div>
+      )
+
     default:
       return null
   }

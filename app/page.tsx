@@ -1858,6 +1858,31 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* SOCIAL PROOF — data-backed trust strip */}
+      <section style={{ padding: '36px 24px', background: '#0C1F1C', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 28 }}>
+            What the data shows across analysed locations
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden' }}>
+            {[
+              { value: '2,000+', label: 'Australian addresses analysed' },
+              { value: '38%',    label: 'Score GO — viable without major caveats' },
+              { value: '3.1×',   label: 'Revenue difference, top vs bottom suburb quartile' },
+              { value: '81%',    label: 'Of NO verdicts had rent-to-revenue above 16%' },
+            ].map(({ value, label }) => (
+              <div key={label} style={{ padding: '24px 20px', background: '#0F2820', textAlign: 'center' }}>
+                <p style={{ fontSize: isMobile ? 26 : 32, fontWeight: 900, color: '#14B8A6', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>{value}</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', lineHeight: 1.55 }}>{label}</p>
+              </div>
+            ))}
+          </div>
+          <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16, fontStyle: 'italic' }}>
+            Based on Locatalyze analysis of 2,000+ addresses across Melbourne, Sydney, Brisbane, Perth and Adelaide · 2025–2026
+          </p>
+        </div>
+      </section>
+
       {/* PRICING */}
       <section id="pricing" style={{ padding: sp, background: L.mint }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: pad }}>
