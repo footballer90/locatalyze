@@ -3682,6 +3682,49 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // FAILED STATE — show before main render so no fake NO GO appears
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (report?.status === 'failed' && !report.verdict) {
+    return (
+      <div style={{ minHeight: '100vh', background: S.headerBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: S.font }}>
+        <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }`}</style>
+        <div style={{ textAlign: 'center', maxWidth: 460, width: '100%', padding: '48px 24px', animation: 'fadeIn 0.4s ease' }}>
+          {/* Error icon */}
+          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, marginBottom: 10, letterSpacing: '-0.03em' }}>
+            Analysis failed
+          </h2>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginBottom: 8, lineHeight: 1.65 }}>
+            The analysis engine could not complete this report.
+          </p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginBottom: 32, lineHeight: 1.5 }}>
+            This is usually a temporary issue — try re-running the analysis.
+          </p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => router.push('/onboarding')}
+              style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '11px 28px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}
+            >
+              Run analysis again →
+            </button>
+            <button
+              onClick={() => router.push('/dashboard')}
+              style={{ background: 'transparent', color: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '11px 22px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: S.font }}
+            >
+              My reports
+            </button>
+          </div>
+          <p style={{ marginTop: 32, fontSize: 11, color: 'rgba(255,255,255,0.15)' }}>
+            Report ID: {report.report_id ?? report.id}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // RENDER
   // ═══════════════════════════════════════════════════════════════════════════
   return (
@@ -4822,7 +4865,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <ThreatBreakdown computed={C} />
 
             {/* Saturation bar */}
-            {((competitors as any)?.validCount ?? competitors?.count ?? 0) >= 0 && (
+            {competitors && ((competitors as any)?.validCount ?? competitors?.count ?? 0) >= 0 && (
               <Card>
                 <SectionHeading sub="Competitive density relative to typical benchmarks for this business type — non-business POIs excluded.">Market Saturation</SectionHeading>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
@@ -4836,7 +4879,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 800, color: (competitors as any)?.intensityLabel === 'LOW' ? S.emerald : (competitors as any)?.intensityLabel === 'MEDIUM' ? S.amber : S.red, width: 80, textAlign: 'right' }}>{(competitors as any)?.intensityLabel ?? competitors?.intensityLabel ?? 'UNKNOWN'}</span>
                 </div>
-                {competitors.pricing_bands && (
+                {competitors?.pricing_bands && (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginTop: 14 }}>
                     {[
                       { label: 'Budget competitors', value: competitors.pricing_bands.budget_count ?? 0, color: S.emerald },
@@ -4851,7 +4894,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                 )}
                 {/* Only show threat summary if it aligns with the validated competitor count — suppress when 0 direct competitors */}
-                {competitors.threat_summary && (competitors as any).validCount > 0 && (
+                {competitors?.threat_summary && (competitors as any).validCount > 0 && (
                   <div style={{ marginTop: 14, padding: '12px 16px', background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
                     <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>{competitors.threat_summary}</p>
                   </div>
