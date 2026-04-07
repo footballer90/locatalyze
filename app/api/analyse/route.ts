@@ -12,8 +12,9 @@ try {
   }
 } catch {}
 
-// Fire-and-forget: return in <1s, n8n saves result directly to Supabase
-export const maxDuration = 10
+// after() keeps function alive post-response — maxDuration covers total execution
+// n8n sequential pipeline can take 60-90s; give it 55s to at least receive the payload
+export const maxDuration = 60
 
 const FREE_LIMIT = 1
 
@@ -347,22 +348,53 @@ export async function POST(request: NextRequest) {
         .eq('report_id', reportId)
 
       console.log('[Analyse] Calling n8n:', webhookUrl)
-      const n8nRes = await fetch(webhookUrl, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'User-Agent': 'Locatalyze/1.0' },
-        body:    n8nPayload,
-        signal:  AbortSignal.timeout(8000), // n8n ACKs in < 1s now
-      })
-      console.log('[Analyse] n8n response status:', n8nRes.status)
-      if (!n8nRes.ok) throw new Error(`n8n returned HTTP ${n8nRes.status}`)
-      await sb.from('reports')
-        .update({ progress_step: 'Analysing your location' })
-        .eq('report_id', reportId)
+
+      // Strategy: send the payload to n8n, but don't require an immediate HTTP response.
+      // n8n sequential workflows can take 60-120s before they send HTTP 200 back.
+      // We abort after 55s — by then the full JSON payload has been delivered to n8n
+      // (it's < 2KB so it's sent in the first packet). n8n continues processing and
+      // writes results directly to Supabase. An AbortError is NOT treated as a failure.
+      const controller = new AbortController()
+      const payloadSentTimeout = setTimeout(() => controller.abort(), 55000)
+
+      let hardFail = false
+      try {
+        const n8nRes = await fetch(webhookUrl, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'User-Agent': 'Locatalyze/1.0' },
+          body:    n8nPayload,
+          signal:  controller.signal,
+        })
+        clearTimeout(payloadSentTimeout)
+        console.log('[Analyse] n8n acked:', n8nRes.status)
+        if (!n8nRes.ok) {
+          console.error('[Analyse] n8n returned non-2xx:', n8nRes.status)
+          hardFail = true
+        }
+      } catch (fetchErr: any) {
+        clearTimeout(payloadSentTimeout)
+        if (fetchErr?.name === 'AbortError') {
+          // We timed out waiting for n8n's response — but n8n received the payload
+          // and is processing asynchronously. Do NOT mark as failed.
+          console.log('[Analyse] n8n payload sent, waiting for async result via Supabase realtime')
+        } else {
+          // True connection error (ECONNREFUSED, DNS failure, etc.)
+          console.error('[Analyse] n8n unreachable:', fetchErr?.message)
+          hardFail = true
+        }
+      }
+
+      if (hardFail) {
+        await sb.from('reports')
+          .update({ status: 'failed', progress_step: 'Analysis engine error — please try again' })
+          .eq('report_id', reportId)
+      } else {
+        await sb.from('reports')
+          .update({ progress_step: 'Analysing your location' })
+          .eq('report_id', reportId)
+      }
     } catch (err: any) {
-      console.error('[Analyse] n8n webhook error:', err?.message)
-      await sb.from('reports')
-        .update({ status: 'failed', progress_step: 'Analysis engine error — please try again' })
-        .eq('report_id', reportId)
+      console.error('[Analyse] after() error:', err?.message)
     }
   })
 
