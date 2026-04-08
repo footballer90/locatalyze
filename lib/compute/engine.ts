@@ -446,18 +446,20 @@ function buildRevenueChannels(
     if (totalPct > 0) {
       return a5channels.map(ch => {
         const pct = round((ch.percentage ?? 0) / totalPct * 100)
-        return { channel: ch.channel, pct, monthly: round(revenue * pct / 100) }
+        return { channel: ch.channel, pct, monthly: round(revenue * pct / 100), isBenchmark: false }
       })
     }
   }
 
   // Fall back to benchmark channel labels with equal-ish split
+  // isBenchmark: true — these splits are industry averages, not this business's actual mix
   const labels = bm.revenueChannelLabels
   const splits: number[] = labels.length === 3 ? [60, 28, 12] : [50, 30, 20]
   return labels.map((label, i) => ({
-    channel: label,
-    pct:     splits[i] ?? Math.floor(100 / labels.length),
-    monthly: round(revenue * (splits[i] ?? Math.floor(100 / labels.length)) / 100),
+    channel:     label,
+    pct:         splits[i] ?? Math.floor(100 / labels.length),
+    monthly:     round(revenue * (splits[i] ?? Math.floor(100 / labels.length)) / 100),
+    isBenchmark: true,
   }))
 }
 
@@ -554,7 +556,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   const bizKey  = resolveBizKey(input.businessType)
   const bm      = BIZ_BENCHMARKS[bizKey] ?? BIZ_BENCHMARKS['other']
 
-  const { a1 = {}, a2 = {}, a3 = {}, a4 = {}, a5 = {} } =
+  const { a1 = {}, a2 = {}, a3 = {}, a4 = {}, a5 = {}, a6 = {} } =
     input.agentOutputs as Record<string, Record<string, any>>
 
   // ── STEP 1: Resolve revenue ──────────────────────────────────────────────
@@ -943,6 +945,32 @@ export function computeEngine(input: ComputeInput): ComputedResult {
         0, 100,
       )
     }
+  }
+
+  // ── STEP 9c: A6 demographics income adjustment ───────────────────────────
+  //
+  // A6 provides suburb-level demographics (ABS-adjacent).
+  // Median income signals spending power — used as a modest ±8pt adjustment
+  // on adjustedDemandScore. Small weight so demographics don't override
+  // market research; they refine it.
+  //
+  //   AUD income tiers:
+  //     ≥ 110,000 → high spending power   → +8 pts
+  //     ≥  80,000 → moderate-high         → +4 pts
+  //     ≥  60,000 → moderate (neutral)    →  0 pts
+  //     ≥  45,000 → below average         → -4 pts
+  //     <  45,000 → low spending power    → -8 pts
+  //
+  // Only applied when A6 returned valid data (income > 0).
+  const a6MedianIncome = Number(a6?.median_household_income ?? a6?.median_income ?? 0) || null
+  if (a6MedianIncome != null && a6MedianIncome > 0 && adjustedDemandScore != null) {
+    const incomeAdj =
+      a6MedianIncome >= 110000 ?  8 :
+      a6MedianIncome >=  80000 ?  4 :
+      a6MedianIncome >=  60000 ?  0 :
+      a6MedianIncome >=  45000 ? -4 : -8
+    adjustedDemandScore = clamp(adjustedDemandScore + incomeAdj, 0, 100)
+    console.log('[computeEngine] A6 demographics income adjustment', { median_income: a6MedianIncome, adj: incomeAdj, result: adjustedDemandScore })
   }
 
   const marketSignals: ComputedResult['marketSignals'] = {

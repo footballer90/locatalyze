@@ -99,9 +99,10 @@ export type CompetitorDataQuality =
 // ── Sub-shapes ────────────────────────────────────────────────────────────────
 
 export interface RevenueChannel {
-  channel: string   // e.g. "Memberships", "Personal Training", "Retail"
-  pct:     number   // 0–100
-  monthly: number   // AUD
+  channel:     string   // e.g. "Memberships", "Personal Training", "Retail"
+  pct:         number   // 0–100
+  monthly:     number   // AUD
+  isBenchmark: boolean  // true = industry-average split, not from A5 agent data
 }
 
 export interface ScenarioRow {

@@ -3543,7 +3543,11 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       revenueChannels:   C.revenueChannels.map((ch: any) => ({
         channel:           ch.channel,
         revenue_split_pct: ch.pct,
-        monthly_revenue:   `A$${Number(ch.monthly).toLocaleString('en-AU')}`,
+        // Use k-notation for benchmark channels — exact dollars imply precision we don't have
+        monthly_revenue:   ch.isBenchmark
+          ? `~A$${Math.round(Number(ch.monthly) / 1000)}k`
+          : `A$${Number(ch.monthly).toLocaleString('en-AU')}`,
+        isBenchmark:       ch.isBenchmark ?? false,
       })),
       sensitivityAnalysis: {
         worst_case: { assumption: C.scenarios.worst.assumption, monthly_revenue: C.scenarios.worst.monthly_revenue, monthly_profit_loss: C.scenarios.worst.monthly_profit, daily_customers: C.scenarios.worst.customers_needed },
@@ -5623,24 +5627,35 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               })()}
             </Card>
 
-            {/* Revenue Channels (A5) */}
-            {fin.monthlyRevenue && (fin.revenueChannels?.length > 0) && (
-              <Card>
-                <SectionHeading sub="Projected revenue split across channels at base demand.">Revenue Channels</SectionHeading>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {fin.revenueChannels.map((ch: any, i: number) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 110, fontSize: 13, color: S.n700, fontWeight: 500, flexShrink: 0 }}>{ch.channel}</div>
-                      <div style={{ flex: 1, height: 8, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${ch.revenue_split_pct ?? 0}%`, background: i === 0 ? S.brand : i === 1 ? S.blue : S.amber, borderRadius: 100 }} />
-                      </div>
-                      <div style={{ width: 36, fontSize: 12, fontWeight: 700, color: S.n500, textAlign: 'right' }}>{ch.revenue_split_pct}%</div>
-                      <div style={{ width: 80, fontSize: 13, fontWeight: 700, color: S.n800, textAlign: 'right', fontFamily: S.mono }}>{ch.monthly_revenue}</div>
+            {/* Revenue Channels (A5 or benchmark fallback) */}
+            {fin.monthlyRevenue && (fin.revenueChannels?.length > 0) && (() => {
+              const _anyBench = fin.revenueChannels.some((ch: any) => ch.isBenchmark)
+              return (
+                <Card>
+                  <SectionHeading sub={_anyBench ? 'Industry-average channel split — your actual mix will differ.' : 'Projected revenue split across channels at base demand.'}>Revenue Channels</SectionHeading>
+                  {_anyBench && (
+                    <div style={{ background: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: 8, padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <span style={{ fontSize: 14, flexShrink: 0 }}>⚠️</span>
+                      <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, margin: 0 }}>
+                        <strong>Benchmark split — not verified for this business.</strong> A5 agent did not return channel data, so these percentages use industry-average ratios for this business type. Your actual channel mix may differ significantly.
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </Card>
-            )}
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {fin.revenueChannels.map((ch: any, i: number) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{ width: 110, fontSize: 13, color: S.n700, fontWeight: 500, flexShrink: 0 }}>{ch.channel}</div>
+                        <div style={{ flex: 1, height: 8, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${ch.revenue_split_pct ?? 0}%`, background: i === 0 ? S.brand : i === 1 ? S.blue : S.amber, borderRadius: 100 }} />
+                        </div>
+                        <div style={{ width: 36, fontSize: 12, fontWeight: 700, color: S.n500, textAlign: 'right' }}>{ch.revenue_split_pct}%</div>
+                        <div style={{ width: 80, fontSize: 13, fontWeight: 700, color: ch.isBenchmark ? S.amber : S.n800, textAlign: 'right', fontFamily: S.mono, fontStyle: ch.isBenchmark ? 'italic' : 'normal' }}>{ch.monthly_revenue}</div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )
+            })()}
 
             {/* Pricing Strategies (A5) */}
             {fin.pricingStrategies?.length > 0 && (

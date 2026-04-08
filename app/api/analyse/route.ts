@@ -336,8 +336,8 @@ export async function POST(request: NextRequest) {
     country:   'Australia',
     currency:  'A$',
     // Coordinates from Mapbox — eliminates re-geocoding in A2
-    lat: data.lat ?? '',
-    lng: data.lng ?? '',
+    lat: data.lat ?? null,
+    lng: data.lng ?? null,
     // Accuracy inputs — agents can use these for context
     operatingHours:  data.operatingHours  ?? null,
     seatingCapacity: data.seatingCapacity ?? null,
