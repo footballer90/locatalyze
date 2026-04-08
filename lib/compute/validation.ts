@@ -349,7 +349,7 @@ export function buildSectionConfidence(
     competitionGaps.push('Limited competitor data — fewer than 3 results were returned from live sources')
   }
 
-  if (result.competitorPressure.avgConfidence < 0.6 && result.competitorPressure.sources.length > 0) {
+  if ((result.competitorPressure.avgConfidence ?? 1) < 0.6 && result.competitorPressure.sources.length > 0) {
     competitionScore -= 15
     competitionGaps.push('Competitor data is primarily from OpenStreetMap (lower accuracy) — Google Places data was unavailable')
   }
@@ -469,7 +469,7 @@ export function buildProvenance(
           ? 'Unavailable'
           : 'Partial live data',
       sourceLabel: competitorSourceLabel(result.competitorDataQuality, result.competitorPressure.sources),
-      confidence:  competitorConfidenceScore(result.competitorDataQuality, result.competitorPressure.avgConfidence),
+      confidence:  competitorConfidenceScore(result.competitorDataQuality, result.competitorPressure.avgConfidence ?? 0),
       isBenchmark: false,
       note:        competitorNote(result.competitorDataQuality, result.validCompetitorCount, result.competitorPressure),
     },
@@ -615,7 +615,7 @@ function competitorNote(
     return `Limited competitor data — ${count} competitor(s) found from partial coverage. Actual competition may be higher.`
   }
   const sourceList = pressure.sources.join(', ') || 'live APIs'
-  const confidencePct = Math.round(pressure.avgConfidence * 100)
+  const confidencePct = Math.round((pressure.avgConfidence ?? 0) * 100)
   return `${count} competitor(s) found from ${sourceList} (${confidencePct}% data confidence). Confidence-weighted count used for scoring.`
 }
 

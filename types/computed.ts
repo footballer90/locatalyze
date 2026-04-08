@@ -270,11 +270,11 @@ export interface ComputedResult {
   // Present only when lat/lng were available and live API calls succeeded.
   competitorPressure: {
     density:              'low' | 'medium' | 'high' | 'unknown'
-    rawCount500m:         number
-    rawCount1km:          number
-    weightedCount500m:    number   // authoritative count used for scoring
-    weightedCount1km:     number
-    avgConfidence:        number   // 0–1; data quality indicator
+    rawCount500m:         number | null   // null = no live data attempted (not zero competitors)
+    rawCount1km:          number | null
+    weightedCount500m:    number | null   // authoritative count used for scoring
+    weightedCount1km:     number | null
+    avgConfidence:        number | null   // 0–1; null = no live data
     pressureFactor:       number   // 0.75–1.00 revenue multiplier applied
     revenueAdjusted:      boolean  // true when pressureFactor < 1.0
     adjustedDemandScore:  number | null   // blended A3 + density demand signal

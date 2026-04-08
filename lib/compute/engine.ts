@@ -817,9 +817,11 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   //   - Mixed (5 Google + 5 Geoa)  → effectiveCount =  8.0
   // This prevents OSM data quality issues from triggering "high competition" scores.
 
+  // Round to integer — weighted float (e.g. 7.3) is meaningful for scoring
+  // but must display as a whole number to users ("7 competitors", not "7.3")
   const validCompetitorCount: number = liveCD != null
-    ? liveCD.weightedCount1km   // weighted, post-cluster — most reliable
-    : a1CompetitorCount          // A1 agent fallback
+    ? Math.round(liveCD.weightedCount1km)   // weighted, post-cluster — rounded for display
+    : a1CompetitorCount                      // A1 agent fallback
 
   const competitorDataQuality: CompetitorDataQuality =
     liveCD != null
@@ -1099,11 +1101,12 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     },
     competitorPressure: {
       density:            liveCD?.density            ?? 'unknown',
-      rawCount500m:       liveCD?.rawCount500m        ?? 0,
-      rawCount1km:        liveCD?.rawCount1km         ?? 0,
-      weightedCount500m:  liveCD?.weightedCount500m   ?? 0,
-      weightedCount1km:   liveCD?.weightedCount1km    ?? 0,
-      avgConfidence:      liveCD?.avgConfidence       ?? 0,
+      // null means "no live data attempted" — distinct from verified zero competitors
+      rawCount500m:       liveCD?.rawCount500m        ?? null,
+      rawCount1km:        liveCD?.rawCount1km         ?? null,
+      weightedCount500m:  liveCD?.weightedCount500m   ?? null,
+      weightedCount1km:   liveCD?.weightedCount1km    ?? null,
+      avgConfidence:      liveCD?.avgConfidence       ?? null,
       pressureFactor,
       revenueAdjusted:    pressureFactor < 1.0,
       adjustedDemandScore,
