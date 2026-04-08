@@ -726,30 +726,52 @@ function ExecutiveNarrative({ computed, report }: {
     : computed.modelConfidence === 'benchmark_default' ? 'benchmark_default'
     : 'low'
 
-  // Build each sentence from real data, using confidence-aware display
-  // Sentence 1: Core financial finding — numbers shown as ranges for low/benchmark confidence
-  const s1 = np != null && revenue != null
-    ? np >= 0
-      ? `This ${bt} in ${suburb} is projected to be profitable — ${_narrativeTier === 'high' ? `returning A$${Math.round(np).toLocaleString('en-AU')}/month net` : _narrativeTier === 'medium' ? `estimated net profit in the A$${Math.round(np * 0.85 / 100) * 100}–A$${Math.round(np * 1.15 / 100) * 100}/month range` : 'with positive margins at benchmark assumptions'}${revenue ? ` on revenue of ${displayMoney(revenue, _narrativeTier).display}` : ''}.`
-      : `This ${bt} in ${suburb} is projected at a loss at current assumptions — ${_narrativeTier === 'high' ? `A$${Math.round(Math.abs(np)).toLocaleString('en-AU')}/month shortfall` : 'costs exceed benchmark revenue estimates'}. ${displayMoney(revenue, _narrativeTier).display} estimated revenue does not cover operating costs.`
-    : `This ${bt} in ${suburb} could not be fully modelled — revenue or cost data was insufficient for a complete financial picture.`
-
-  // Sentence 2: The primary driver of the verdict
-  const primaryReason = reasons[0] ?? null
-  const s2 = primaryReason
-    ? `The primary driver of this ${verdict} verdict is: ${primaryReason.toLowerCase().replace(/\.$/, '')}.`
+  // Pull specific model fields for data-cited narrative
+  const costs        = computed.totalCosts ?? null
+  const costBd       = computed.costBreakdown ?? null
+  const revSrc       = computed.provenance?.revenue?.sourceLabel ?? null
+  const compSrc      = computed.competitorDataQuality === 'live_verified' ? 'Google Places' : null
+  const demandScore  = computed.scores?.demand ?? null
+  const rentPct      = (rent > 0 && revenue && revenue > 0) ? Math.round(rent / revenue * 100) : null
+  const topCostDriver = costBd
+    ? (Object.entries({ Staff: costBd.staff ?? 0, 'COGS': costBd.cogs ?? 0, 'Rent': costBd.rent ?? 0, 'Other': costBd.other ?? 0 })
+        .sort((a, b) => b[1] - a[1])[0])
     : null
 
-  // Sentence 3: Break-even context
-  const s3 = breakEven != null && breakEven > 0 && dailyCust != null
-    ? dailyCust >= breakEven
-      ? `At ${dailyCust} estimated customers per day against a break-even threshold of ${breakEven}, the model shows you are above the minimum needed to cover fixed costs.`
-      : `The model estimates ${dailyCust} customers per day — below the ${breakEven} daily customers needed to cover fixed costs.`
+  // ── Sentence 1: Revenue vs costs — cite source ───────────────────────────────
+  const s1 = (() => {
+    if (np == null || revenue == null) return `This ${bt} in ${suburb} could not be fully modelled — revenue or cost data was missing.`
+    const revDisplay = displayMoney(revenue, _narrativeTier).display
+    const srcNote    = _narrativeTier === 'benchmark_default' ? ` (${revSrc ?? 'industry benchmark'} — not verified locally)` : revSrc ? ` (${revSrc})` : ''
+    if (np >= 0) {
+      const npNote = _narrativeTier === 'high' ? ` — A$${Math.round(np).toLocaleString('en-AU')}/month net` : ''
+      return `At ${revDisplay}/month revenue${srcNote}, estimated costs of ${costs != null ? displayMoney(costs, _narrativeTier).display : 'N/A'}/month leave this ${bt} in ${suburb} with a ${np === 0 ? 'break-even' : 'positive'} margin${npNote}.`
+    } else {
+      const gap = Math.abs(np)
+      const gapNote = _narrativeTier === 'high' ? `A$${Math.round(gap).toLocaleString('en-AU')}` : `~A$${Math.round(gap / 1000)}k`
+      return `Revenue of ${revDisplay}/month${srcNote} falls ${gapNote}/month short of estimated costs${costs != null ? ` (${displayMoney(costs, _narrativeTier).display})` : ''}${topCostDriver && topCostDriver[1] > 0 ? ` — ${topCostDriver[0]} is the largest cost at ${displayMoney(topCostDriver[1], _narrativeTier).display}/month` : ''}.`
+    }
+  })()
+
+  // ── Sentence 2: Competition — cite source and count ──────────────────────────
+  const s2 = compCount > 0
+    ? `${Math.round(compCount)} ${bt} competitor${Math.round(compCount) === 1 ? '' : 's'} confirmed within ${computed.competitorRadius ?? 600}m${compSrc ? ` via ${compSrc}` : ''} — ${compCount > 10 ? 'a highly saturated market' : compCount > 5 ? 'moderate competitive pressure' : 'limited direct competition'}.`
     : null
 
-  // Sentence 4: Competition context
-  const s4 = compCount > 0
-    ? `${compCount} direct competitor${compCount === 1 ? '' : 's'} ${compCount > 8 ? 'create a highly contested market' : compCount > 4 ? 'make this a moderately competitive location' : 'suggest limited direct competition'} within the trade area.`
+  // ── Sentence 3: Demand — cite score if available ─────────────────────────────
+  const s3 = (() => {
+    if (breakEven != null && breakEven > 0 && dailyCust != null) {
+      const gap = dailyCust - breakEven
+      if (gap < 0) return `Model projects ${dailyCust} customers/day — ${Math.abs(gap)} short of the ${breakEven}/day needed to cover fixed costs.`
+      return `At ${dailyCust} projected customers/day, the location clears the ${breakEven}/day break-even threshold by ${gap} customers.`
+    }
+    if (demandScore != null) return `Demand score: ${demandScore}/100${demandScore < 50 ? ' — below the threshold for confident revenue forecasting in this area' : ' — consistent with reasonable footfall assumptions'}.`
+    return null
+  })()
+
+  // ── Sentence 4: Rent ratio — always data-anchored ────────────────────────────
+  const s4 = rentPct != null
+    ? `Rent (A$${rent.toLocaleString('en-AU')}/month) is ${rentPct}% of estimated revenue — ${rentPct <= 10 ? 'well within the safe zone' : rentPct <= 15 ? 'manageable' : rentPct <= 20 ? 'above typical thresholds — leaves thin margins' : 'a red flag — exceeds the 20% danger zone'}.`
     : null
 
   const verdictColor = verdict === 'GO' ? S2.emerald : verdict === 'NO' ? S2.red : S2.amber
@@ -769,9 +791,13 @@ function ExecutiveNarrative({ computed, report }: {
         <span style={{ fontSize: 11, color: S2.n400, marginLeft: 'auto' }}>Generated from {computed.meta?.engineVersion ?? 'engine'}</span>
       </div>
 
-      <p style={{ fontSize: 14, color: S2.n700, lineHeight: 1.7, margin: 0 }}>
-        {s1}{s2 ? ` ${s2}` : ''}{s3 ? ` ${s3}` : ''}{s4 ? ` ${s4}` : ''}
-      </p>
+      {/* Data-cited narrative: each sentence explicitly traces to a model output */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <p style={{ fontSize: 14, color: S2.n700, lineHeight: 1.65, margin: 0 }}>{s1}</p>
+        {s2 && <p style={{ fontSize: 13, color: S2.n700, lineHeight: 1.6, margin: 0, opacity: 0.9 }}>{s2}</p>}
+        {s3 && <p style={{ fontSize: 13, color: S2.n700, lineHeight: 1.6, margin: 0, opacity: 0.9 }}>{s3}</p>}
+        {s4 && <p style={{ fontSize: 13, color: S2.n700, lineHeight: 1.6, margin: 0, opacity: 0.9 }}>{s4}</p>}
+      </div>
 
       {(conditions.length > 0 || failures.length > 0) && (
         <div style={{ marginTop: 14, display: 'flex', gap: 16, flexWrap: 'wrap' as const }}>
@@ -3232,7 +3258,17 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     }
   }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, _scoreComp, _scoreDem, report?.business_type])
 
-  const adjVc = verdictCfg(adjCalc.verdict)
+  // Hysteresis: only show a verdict flip when score moves by ≥8 points.
+  // Without this, crossing a single scoring threshold (e.g. rent% from 17.9%→18.1%)
+  // flips the verdict which feels broken even though it's mathematically correct.
+  const _origScore      = report?.overall_score ?? 50
+  const _adjScoreDelta  = adjCalc.overall - _origScore
+  const _normalizedOrigVerdict = normalizeVerdict(report?.verdict ?? null) as 'GO' | 'CAUTION' | 'NO'
+  const _verdictFlipped = Math.abs(_adjScoreDelta) >= 8 && adjCalc.verdict !== _normalizedOrigVerdict
+  // Displayed verdict in what-if: use adjusted only when it has meaningfully shifted
+  const _adjDisplayVerdict: 'GO' | 'CAUTION' | 'NO' =
+    _verdictFlipped ? adjCalc.verdict : _normalizedOrigVerdict
+  const adjVc = verdictCfg(_adjDisplayVerdict)
   const isChanged = adjCalc.changed
 
   // Sync map business type + radii from report / computed_result
@@ -4181,12 +4217,23 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               {isChanged && (
                 <div style={{ marginTop: 24, padding: '16px 20px', background: adjVc.bg, border: `1.5px solid ${adjVc.border}`, borderRadius: 12, display: 'grid', gridTemplateColumns: 'auto repeat(4,1fr)', gap: 16, alignItems: 'center' }}>
                   <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: adjVc.text, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>New Verdict</p>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: adjVc.text, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
+                      {_verdictFlipped ? 'New Verdict' : 'Scenario Score'}
+                    </p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontSize: 24, fontWeight: 900, color: adjVc.text }}>{adjCalc.overall}</span>
                       <span style={{ fontSize: 14, fontWeight: 800, color: adjVc.text }}>{adjVc.label}</span>
                     </div>
-                    <p style={{ fontSize: 11, color: adjVc.text, opacity: 0.7, marginTop: 2 }}>was {report.overall_score} {vc.label}</p>
+                    <p style={{ fontSize: 11, color: adjVc.text, opacity: 0.7, marginTop: 2 }}>
+                      {_verdictFlipped
+                        ? `was ${_origScore} ${vc.label}`
+                        : `${_adjScoreDelta > 0 ? '+' : ''}${_adjScoreDelta} pts — same verdict`}
+                    </p>
+                    {!_verdictFlipped && Math.abs(_adjScoreDelta) > 0 && (
+                      <p style={{ fontSize: 10, color: adjVc.text, opacity: 0.6, marginTop: 3 }}>
+                        needs {_adjScoreDelta > 0 ? 8 - _adjScoreDelta : 8 + _adjScoreDelta}+ more pts to flip
+                      </p>
+                    )}
                   </div>
                   {[
                     { label: 'Monthly Revenue', orig: fin.monthlyRevenue, adj: adjCalc.monthlyRevenue, format: (v: number) => '$' + (v/1000).toFixed(1) + 'k' },
@@ -4243,26 +4290,35 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   <div style={{ padding: '16px 0' }}>
                     <p style={{ fontSize: 16, fontWeight: 700, color: S.n500 }}>{_financialsSuppressed.reason}</p>
                   </div>
+                ) : _confidenceTier === 'benchmark_default' ? (
+                  // ── Benchmark: amber treatment — visually different from verified data ──
+                  // The number is real (industry average) but it is NOT a forecast for this business.
+                  // Amber signals "caution / estimate". Smaller font + "~" prefix (via fmtK) signals approximation.
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                      <p style={{ fontSize: 34, fontWeight: 700, fontStyle: 'italic', color: S.amber, fontFamily: S.mono, letterSpacing: '-0.03em', lineHeight: 1 }}>
+                        {_dNetProfit.display}
+                      </p>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.06em', paddingBottom: 2 }}>est.</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: S.amber, marginTop: 6, lineHeight: 1.4 }}>
+                      Industry average for {(report.business_type ?? 'this type').toLowerCase()} businesses — <strong>not verified against this location.</strong> Re-run with local revenue data to get an accurate figure.
+                    </p>
+                  </>
                 ) : (
                   <>
                     <p style={{ fontSize: _dNetProfit.isRange ? 32 : 48, fontWeight: 900, color: (displayNetProfit ?? 0) >= 0 ? S.emerald : S.red, fontFamily: S.mono, letterSpacing: '-0.04em', lineHeight: 1 }}>
                       {_dNetProfit.display}
                     </p>
                     <p style={{ fontSize: 13, color: S.n400, marginTop: 8 }}>
-                      {_confidenceTier === 'benchmark_default'
-                        ? `Estimated from Australian ${((report.business_type ?? 'business').toLowerCase().split(/[\s\/]/)[0])} industry data — not local sales`
-                        : _confidenceTier === 'low'
-                        ? 'Limited data — treat as directional only'
+                      {_confidenceTier === 'low'
+                        ? 'Limited live data — treat range as directional, verify locally'
                         : 'Based on market demand analysis for this location'}
                     </p>
-                    {(_confidenceTier === 'benchmark_default' || _confidenceTier === 'low') && (
+                    {_confidenceTier === 'low' && (
                       <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 20 }}>
                         <div style={{ width: 5, height: 5, borderRadius: '50%', background: S.amber }} />
-                        <span style={{ fontSize: 11, fontWeight: 700, color: S.amber }}>
-                          {_confidenceTier === 'benchmark_default'
-                            ? `ESTIMATED — ${((report.business_type ?? 'business').toLowerCase().split(/[\s\/]/)[0])} benchmarks`
-                            : 'LOW CONFIDENCE — verify locally'}
-                        </span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: S.amber }}>LOW DATA — range may shift ±20%</span>
                       </div>
                     )}
                   </>
