@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import type { ComputedResult } from '@/types/computed'
+import { whatIfCalc, scoreRent, scoreProfitability, compositeScore, resolveBizKey as resolveClientBizKey, CLIENT_BENCHMARKS } from '@/lib/compute/client-calc'
+import { displayMoney, displayPercent, displayCustomers, getConfidenceTier, gateSection, shouldSuppressFinancials, type ConfidenceTier, type DisplayNumber } from '@/lib/compute/display-discipline'
 
 const MapboxMap = dynamic(() => import('@/components/MapboxMap'), { ssr: false })
 const MapInsightPanel = dynamic(() => import('@/components/MapInsightPanel'), { ssr: false })
@@ -377,16 +379,18 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
       else if (_whyCompCount <= 12) reasons.push(`${_whyCompCount} competitors within ${_whyRadius}m — moderate saturation, differentiation needed`)
       else reasons.push(`${_whyCompCount} competitors within ${_whyRadius}m — highly saturated market`)
     }
+    // Confidence-aware: avoid exact $ amounts when data is benchmark only
+    const _confLevel = confidence.level
     if (fin.monthlyNetProfit != null) {
-      if (fin.monthlyNetProfit > 2000) reasons.push(`Projected net profit of ${fmt(fin.monthlyNetProfit)}/month at baseline demand`)
-      else if (fin.monthlyNetProfit > 0) reasons.push(`Marginal profitability at ${fmt(fin.monthlyNetProfit)}/month — thin buffer`)
+      if (fin.monthlyNetProfit > 2000) reasons.push(_confLevel === 'high' ? `Projected net profit of ${fmt(fin.monthlyNetProfit)}/month at baseline demand` : 'Projected to be profitable at benchmark assumptions — verify with local sales data')
+      else if (fin.monthlyNetProfit > 0) reasons.push('Marginal profitability at baseline — thin buffer, verify revenue assumptions locally')
       else reasons.push(`Negative profitability at baseline — business does not cover costs`)
     }
     const demographics = rd.demographics
     if (demographics?.medianIncome) {
-      if (demographics.medianIncome >= 100000) reasons.push(`High-income area (median ${fmt(demographics.medianIncome)}/yr) — strong spending power`)
-      else if (demographics.medianIncome >= 70000) reasons.push(`Moderate-income area (median ${fmt(demographics.medianIncome)}/yr)`)
-      else reasons.push(`Lower-income area (median ${fmt(demographics.medianIncome)}/yr) — price sensitivity likely`)
+      if (demographics.medianIncome >= 100000) reasons.push(`High-income area — strong local spending power`)
+      else if (demographics.medianIncome >= 70000) reasons.push(`Moderate-income area — average consumer spending`)
+      else reasons.push(`Lower-income area — price sensitivity likely, verify average spend assumptions`)
     }
     return reasons
   })()
@@ -467,45 +471,22 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
           </div>
         )}
 
-        {/* Bottleneck one-liner — only when seating data available and insight is meaningful */}
+        {/* Bottleneck one-liner — reads from compute engine, NO inline math */}
         {(() => {
-          const _ovInputData = safeInputData(report.input_data)
-          const _ovSeats = _ovInputData?.seatingCapacity ? Number(_ovInputData.seatingCapacity) : 0
-          if (!_ovSeats) return null
-          const _ovBiz    = (report.business_type ?? '').toLowerCase()
-          const _ovTurns  = ({ cafe:3, bakery:3, takeaway:6, restaurant:2, bar:2, gym:4 } as Record<string,number>)[_ovBiz] ?? 2
-          if (!_ovTurns) return null
-          const _ovTicket = fin.avgTicketSize ?? C?.avgTicketSize ?? null
-          if (!_ovTicket) return null
-          let _ovUtil = 0.60
-          const _ovDemand  = C?.scores?.demand ?? report.score_demand ?? null
-          const _ovCompCnt = (C as any)?.competitorCount ?? null
-          if (_ovDemand  != null && _ovDemand > 65)   _ovUtil += 0.10
-          if (_ovDemand  != null && _ovDemand < 40)   _ovUtil -= 0.10
-          if (_ovCompCnt != null && _ovCompCnt < 3)   _ovUtil += 0.05
-          if (_ovCompCnt != null && _ovCompCnt >= 5)  _ovUtil -= 0.10
-          _ovUtil = Math.min(0.80, Math.max(0.35, _ovUtil))
-          const _ovCeiling   = Math.round(_ovSeats * _ovTurns * _ovTicket * _ovUtil * 30)
-          const _ovProjected = fin.monthlyRevenue ?? null
-          const _ovBreakeven: number | null = C?.totalCosts ?? fin.totalMonthlyCosts ?? null
-          // Only show if there's a meaningful signal
-          const _ovHardCap = _ovBreakeven != null && _ovCeiling < _ovBreakeven
-          const _ovDemandLimited = _ovProjected != null && _ovProjected < _ovCeiling * 0.75
-          if (!_ovHardCap && !_ovDemandLimited && normVerdict !== 'CAPACITY_LIMITED' as any) {
-            // For GO/CAUTION with no strong signal, skip
-            if (normVerdict === 'GO' && !_ovHardCap) return null
-          }
-          const msg = _ovHardCap
-            ? `Based on current inputs, full capacity (~A$${_ovCeiling.toLocaleString()}/mo) appears insufficient to reach break-even at A$${_ovBreakeven!.toLocaleString()}/mo.`
-            : _ovDemandLimited
-            ? `Demand-limited — model estimates this suburb may not generate enough demand to fill your ${_ovSeats}-seat venue (ceiling ~A$${_ovCeiling.toLocaleString()}/mo).`
-            : null
-          if (!msg) return null
-          const isHard = _ovHardCap
+          if (!C) return null
+          // The compute engine already determines if revenue < totalCosts (loss scenario)
+          // and if break-even is unreachable. We just surface that here.
+          const projected = C.revenue
+          const breakeven = C.totalCosts
+          if (!projected || !breakeven) return null
+          // Only show warning when projected revenue cannot cover costs
+          if (projected >= breakeven) return null
+          const deficit = breakeven - projected
+          const msg = `Projected revenue of A$${projected.toLocaleString()}/mo falls short of estimated costs (A$${breakeven.toLocaleString()}/mo) by A$${deficit.toLocaleString()}/mo at baseline demand.`
           return (
-            <div style={{ marginTop: 10, padding: '9px 14px', background: isHard ? S.redBg : S.amberBg, border: `1px solid ${isHard ? S.redBdr : S.amberBdr}`, borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={isHard ? S.red : S.amber} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <p style={{ fontSize: 12, color: isHard ? S.red : '#92400E', lineHeight: 1.55, fontWeight: 500 }}>{msg}</p>
+            <div style={{ marginTop: 10, padding: '9px 14px', background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={S.red} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p style={{ fontSize: 12, color: S.red, lineHeight: 1.55, fontWeight: 500 }}>{msg}</p>
             </div>
           )
         })()}
@@ -738,14 +719,19 @@ function ExecutiveNarrative({ computed, report }: {
   const conditions = computed.verdictConditions ?? []
   const failures   = computed.verdictFailureModes ?? []
 
-  const fmt = (n: number) => 'A$' + Math.round(n).toLocaleString('en-AU')
+  // Derive confidence tier from computed — same logic as main component
+  const _narrativeTier: import('@/lib/compute/display-discipline').ConfidenceTier =
+    computed.modelConfidence === 'high' ? 'high'
+    : computed.modelConfidence === 'medium' ? 'medium'
+    : computed.modelConfidence === 'benchmark_default' ? 'benchmark_default'
+    : 'low'
 
-  // Build each sentence from real data
-  // Sentence 1: Core financial finding
+  // Build each sentence from real data, using confidence-aware display
+  // Sentence 1: Core financial finding — numbers shown as ranges for low/benchmark confidence
   const s1 = np != null && revenue != null
     ? np >= 0
-      ? `Based on industry benchmarks for ${bt} businesses in ${suburb}, this location projects a monthly net profit of ${fmt(np)} on revenue of ${fmt(revenue)}.`
-      : `This ${bt} in ${suburb} projects a monthly net loss of ${fmt(Math.abs(np))} — revenue of ${fmt(revenue)} falls short of estimated operating costs.`
+      ? `This ${bt} in ${suburb} is projected to be profitable — ${_narrativeTier === 'high' ? `returning A$${Math.round(np).toLocaleString('en-AU')}/month net` : _narrativeTier === 'medium' ? `estimated net profit in the A$${Math.round(np * 0.85 / 100) * 100}–A$${Math.round(np * 1.15 / 100) * 100}/month range` : 'with positive margins at benchmark assumptions'}${revenue ? ` on revenue of ${displayMoney(revenue, _narrativeTier).display}` : ''}.`
+      : `This ${bt} in ${suburb} is projected at a loss at current assumptions — ${_narrativeTier === 'high' ? `A$${Math.round(Math.abs(np)).toLocaleString('en-AU')}/month shortfall` : 'costs exceed benchmark revenue estimates'}. ${displayMoney(revenue, _narrativeTier).display} estimated revenue does not cover operating costs.`
     : `This ${bt} in ${suburb} could not be fully modelled — revenue or cost data was insufficient for a complete financial picture.`
 
   // Sentence 2: The primary driver of the verdict
@@ -1182,10 +1168,10 @@ function KeyInsights({ report, computed, fin, competitors, market }: {
 // ═══════════════════════════════════════════════════════════════════════════════
 // DECISION ENGINE — "Should You Open Here?" (THE premium section)
 // ═══════════════════════════════════════════════════════════════════════════════
-function DecisionEngine({ report, computed, fin, competitors, market }: {
+function DecisionEngine({ report, computed, fin, competitors, market, demographics: demoProp }: {
   report: Report
   computed: import('@/types/computed').ComputedResult | null
-  fin: any; competitors: any; market: any
+  fin: any; competitors: any; market: any; demographics?: any
 }) {
   const C = computed
   const _bt = (report.business_type ?? 'business').toLowerCase()
@@ -1227,10 +1213,13 @@ function DecisionEngine({ report, computed, fin, competitors, market }: {
     }
   }
 
-  // Revenue + rent
+  // Revenue + rent — computed_result is authoritative; fin is already mapped from C in v2 path
   const netProfit = C?.netProfit ?? fin?.monthlyNetProfit ?? null
   const revenue = C?.revenue ?? fin?.monthlyRevenue ?? null
-  const rentPct = fin?.rent?.toRevenuePercent
+  // Rent-to-revenue: prefer computed value; fin.rent.toRevenuePercent is mapped from C in v2
+  const rentPct = C && revenue && revenue > 0 && (report.monthly_rent ?? 0) > 0
+    ? Math.round((report.monthly_rent! / revenue) * 1000) / 10
+    : (fin?.rent?.toRevenuePercent ?? null)
   const isBenchmark = C?.provenance?.revenue?.isBenchmark ?? fin?.isEstimated
 
   if (netProfit != null && netProfit > 5000) {
@@ -1277,9 +1266,8 @@ function DecisionEngine({ report, computed, fin, competitors, market }: {
     })
   }
 
-  // Demographics
-  const demographics = (report.result_data as any)?.a6_output ?? (report.result_data as any)?.demographics
-  const income = demographics?.median_income ?? demographics?.medianIncome
+  // Demographics — use the prop (already parsed in parent), never raw result_data
+  const income = demoProp?.median_income ?? demoProp?.medianIncome ?? null
   if (income && income < 55000) {
     avoidReasons.push({
       data: `Median household income is $${Math.round(income / 1000)}k/year`,
@@ -2242,14 +2230,15 @@ function ProjectionBars({ projections }: { projections: any }) {
 }
 
 // ─── P&L waterfall ────────────────────────────────────────────────────────────
-function PLWaterfall({ fin, submittedRent }: { fin: any; submittedRent?: number | null }) {
-  const revenue = fin.monthlyRevenue ?? 0
-  const rent = submittedRent ?? fin.rent?.amount ?? (fin.totalMonthlyCosts ? fin.totalMonthlyCosts * 0.35 : 0)
-  const opBase = fin.totalMonthlyCosts ?? (rent * 1.45)
-  const cogs = fin.cogs ?? (opBase > rent ? (opBase - rent) * 0.52 : 0)
-  const labour = fin.labour ?? (opBase > rent ? (opBase - rent) * 0.35 : 0)
-  const other = Math.max(0, (opBase ?? 0) - rent - cogs - labour)
-  const profit = fin.monthlyNetProfit ?? 0
+function PLWaterfall({ fin, submittedRent, computed }: { fin: any; submittedRent?: number | null; computed?: ComputedResult | null }) {
+  // Prefer computed_result cost breakdown (engine-validated) over legacy fin guesses
+  const C = computed
+  const revenue = C?.revenue ?? fin.monthlyRevenue ?? 0
+  const rent = submittedRent ?? (C ? C.costBreakdown.rent : fin.rent?.amount) ?? 0
+  const cogs = C?.costBreakdown.cogs ?? fin.cogs ?? 0
+  const labour = C?.costBreakdown.staff ?? fin.labour ?? 0
+  const other = C?.costBreakdown.other ?? Math.max(0, (C?.totalCosts ?? fin.totalMonthlyCosts ?? 0) - rent - cogs - labour)
+  const profit = C?.netProfit ?? fin.monthlyNetProfit ?? 0
   if (!revenue) return null
   const bars = [
     { label: 'Revenue', value: revenue, color: S.brand },
@@ -3176,39 +3165,26 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const handleAnchorsUpdate = useCallback((a: Anchor[]) => setMapAnchors(a), [])
 
   // ── Recalculation sliders ──────────────────────────────────────────────────
+  // Uses shared whatIfCalc() from lib/compute/client-calc.ts — same formulas
+  // as the server-side compute engine (benchmark path).
   const [sliderOpen, setSliderOpen] = useState(false)
   const [adjRent, setAdjRent] = useState<number | null>(null)
   const [adjTicket, setAdjTicket] = useState<number | null>(null)
   const [adjCustomers, setAdjCustomers] = useState<number | null>(null)
 
-  const GROSS_MARGIN = 0.62
-  const COST_MULTIPLIER = 1.45
-  const TRADING_DAYS = 30
-
-  // Business-type defaults so sliders always have sensible ranges even when backend data is sparse
-  const _btLower = (report?.business_type ?? '').toLowerCase()
-  const _btDefaults = _btLower.includes('restaurant') || _btLower.includes('dining')
-    ? { ticket: 38, customers: 55 }
-    : _btLower.includes('cafe') || _btLower.includes('coffee')
-    ? { ticket: 18, customers: 85 }
-    : _btLower.includes('retail') || _btLower.includes('shop')
-    ? { ticket: 55, customers: 35 }
-    : _btLower.includes('bar') || _btLower.includes('pub')
-    ? { ticket: 28, customers: 65 }
-    : { ticket: 25, customers: 60 }
+  // Resolve benchmark defaults for slider ranges
+  const _btBizKey = resolveClientBizKey(report?.business_type ?? 'other')
+  const _btBenchmark = CLIENT_BENCHMARKS[_btBizKey] ?? CLIENT_BENCHMARKS['other']
 
   const _fin = safeResultData(report?.result_data)?.financials || {}
   const _cr = report?.computed_result as any // engine v2 — referenced before C is declared
   const baseRent = report?.monthly_rent ?? _fin?.rent?.submitted ?? 2500
-  // Ticket: compute engine → fin derived → business type default
-  const _rawTicket = (_cr?.avgTicketSize ?? null) || (_fin?.avgTicketSize ?? null)
-    || (_fin?.baselineCustomers
-        ? Math.round((_fin.monthlyRevenue || 0) / ((_fin.baselineCustomers || 1) * TRADING_DAYS))
-        : null)
-  const baseTicket = (_rawTicket && _rawTicket > 0) ? Math.round(_rawTicket) : _btDefaults.ticket
-  // Customers: compute engine → fin baseline → default
-  const _rawCustomers = (_cr?.dailyCustomers ?? null) || (_fin?.baselineCustomers ?? null)
-  const baseCustomers = (_rawCustomers && _rawCustomers > 0) ? Math.round(_rawCustomers) : _btDefaults.customers
+  // Ticket: compute engine → fin derived → business type benchmark
+  const _rawTicket = (_cr?.avgTicketSize ?? null) || (_fin?.avgTicketSize ?? null) || null
+  const baseTicket = (_rawTicket && _rawTicket > 0) ? Math.round(_rawTicket) : _btBenchmark.avgTicketSize
+  // Customers: compute engine → fin baseline → business type benchmark
+  const _rawCustomers = (_cr?.dailyCustomers ?? null) || (_fin?.baselineCustomers ?? null) || null
+  const baseCustomers = (_rawCustomers && _rawCustomers > 0) ? Math.round(_rawCustomers) : _btBenchmark.dailyCustomersBase
   const _scoreComp = report?.score_competition ?? 50
   const _scoreDem = report?.score_demand ?? 50
 
@@ -3216,22 +3192,45 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     const rent = adjRent ?? baseRent
     const ticket = adjTicket ?? baseTicket
     const customers = adjCustomers ?? baseCustomers
-    const monthlyRevenue = Math.round(customers * ticket * TRADING_DAYS)
-    const totalMonthlyCosts = Math.round(rent * COST_MULTIPLIER)
-    const monthlyGrossProfit = Math.round(monthlyRevenue * GROSS_MARGIN)
-    const monthlyNetProfit = Math.round(monthlyGrossProfit - totalMonthlyCosts)
-    const profitMargin = parseFloat(((monthlyNetProfit / Math.max(monthlyRevenue, 1)) * 100).toFixed(1))
-    const rentToRevRatio = parseFloat((rent / Math.max(monthlyRevenue, 1)).toFixed(3))
-    const rentPct = parseFloat((rentToRevRatio * 100).toFixed(1))
-    const breakEvenMonthly = Math.round(totalMonthlyCosts / GROSS_MARGIN)
-    const breakEvenDaily = Math.ceil(breakEvenMonthly / (Math.max(ticket, 1) * TRADING_DAYS))
-    const scoreRent = rentPct <= 12 ? 90 : rentPct <= 20 ? 70 : rentPct <= 30 ? 40 : 10
-    const scoreProfitability = monthlyNetProfit > 2000 ? 90 : monthlyNetProfit >= 1000 ? 70 : monthlyNetProfit > 0 ? 50 : 10
-    const overall = Math.round(scoreRent * 0.30 + scoreProfitability * 0.25 + _scoreComp * 0.25 + _scoreDem * 0.20)
-    const verdict = overall >= 70 ? 'GO' : overall >= 45 ? 'CAUTION' : 'NO'
+
+    // Use shared whatIfCalc — same formulas as compute engine
+    const calc = whatIfCalc({
+      businessType: report?.business_type ?? 'other',
+      monthlyRent: rent,
+      avgTicketSize: ticket,
+      dailyCustomers: customers,
+    })
+
+    const rentScore = scoreRent(calc.rentToRevenuePct)
+    const profitScore = scoreProfitability(calc.netProfit)
+    const { overall, verdict } = compositeScore({
+      rent: rentScore,
+      profitability: profitScore,
+      competition: _scoreComp,
+      demand: _scoreDem,
+    })
     const changed = (adjRent != null && adjRent !== baseRent) || (adjTicket != null && adjTicket !== baseTicket) || (adjCustomers != null && adjCustomers !== baseCustomers)
-    return { rent, ticket, customers, monthlyRevenue, totalMonthlyCosts, monthlyGrossProfit, monthlyNetProfit, profitMargin, rentToRevRatio, rentPct, breakEvenMonthly, breakEvenDaily, scoreRent, scoreProfitability, overall, verdict, changed }
-  }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, _scoreComp, _scoreDem])
+
+    return {
+      rent,
+      ticket,
+      customers,
+      monthlyRevenue: calc.monthlyRevenue,
+      totalMonthlyCosts: calc.totalCosts,
+      monthlyGrossProfit: Math.round(calc.monthlyRevenue * calc.grossMarginPct / 100),
+      monthlyNetProfit: calc.netProfit,
+      profitMargin: calc.profitMarginPct,
+      rentToRevRatio: calc.rentToRevenuePct / 100,
+      rentPct: calc.rentToRevenuePct,
+      breakEvenMonthly: 0, // not used in UI
+      breakEvenDaily: calc.breakEvenDaily,
+      scoreRent: rentScore,
+      scoreProfitability: profitScore,
+      overall,
+      verdict,
+      changed,
+    }
+  }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, _scoreComp, _scoreDem, report?.business_type])
 
   const adjVc = verdictCfg(adjCalc.verdict)
   const isChanged = adjCalc.changed
@@ -3631,10 +3630,23 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       ? Math.round(_beDaily * fin.avgTicketSize * 30)
       : (report.breakeven_monthly ?? null)
 
+  // ── Display Discipline Layer ──────────────────────────────────────────────
+  // Confidence tier determines precision: exact numbers, ranges, or suppressed.
+  const _confidenceTier: ConfidenceTier = getConfidenceTier(C)
+  const _financialsSuppressed = shouldSuppressFinancials(C)
+  const _financialGate = gateSection('Financial projections', C, { requiredFields: ['revenue'] })
+
   // ── Display variables — UI reads ONLY these, never raw fin fields directly ────
+  // Raw values (for calculations/comparisons — NOT for rendering to user)
   const displayRevenue:      number | null = fin.monthlyRevenue    ?? null
   const displayNetProfit:    number | null = fin.monthlyNetProfit  ?? null
   const displayProfitMargin: string | null = fin.profitMargin ? `${fin.profitMargin}%` : null
+
+  // Confidence-aware formatted values (for rendering to user)
+  const _dRevenue   = displayMoney(displayRevenue, _confidenceTier)
+  const _dNetProfit = displayMoney(displayNetProfit, _confidenceTier)
+  const _dMargin    = displayPercent(fin.profitMargin ? parseFloat(fin.profitMargin) : null, _confidenceTier)
+  const _dCustomers = displayCustomers(fin.baselineCustomers, _confidenceTier)
 
   // Profitability score — from computed_result.scores when available, else derived
   const computedScoreProfitability: number = C
@@ -3903,35 +3915,21 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             const nv = normalizeVerdict(report.verdict)
             const rid = report.report_id ?? report.id
 
-            // ── NO verdict: numeric, unavoidable, capacity-aware ────────────────────────
+            // ── NO verdict: numeric, unavoidable — reads from compute engine only ───────
             if (nv === 'NO') {
-              const rentMonthly = report.monthly_rent ?? (fin as any).monthly_rent ?? null
+              const rentMonthly = report.monthly_rent ?? 0
               const revMonthly  = displayRevenue
               const rtr = (rentMonthly && revMonthly && revMonthly > 0)
                 ? (rentMonthly / revMonthly) * 100 : null
 
-              // Capacity ceiling for NO verdict context
-              const _noSeats   = _inputData?.seatingCapacity ? Number(_inputData.seatingCapacity) : 0
-              const _noBiz     = (report.business_type ?? '').toLowerCase()
-              const _noTurns   = ({ cafe:3, bakery:3, takeaway:6, restaurant:2, bar:2, gym:4 } as Record<string,number>)[_noBiz] ?? 2
-              const _noTicket  = fin.avgTicketSize ?? C?.avgTicketSize ?? null
-              const _noCompCnt = (C as any)?.competitorCount ?? null
-              let _noUtil = 0.60
-              const _noDemandScore = C?.scores?.demand ?? report.score_demand ?? null
-              if (_noDemandScore != null && _noDemandScore > 65) _noUtil += 0.10
-              if (_noDemandScore != null && _noDemandScore < 40) _noUtil -= 0.10
-              if (_noCompCnt     != null && _noCompCnt < 3)      _noUtil += 0.05
-              if (_noCompCnt     != null && _noCompCnt >= 5)     _noUtil -= 0.10
-              _noUtil = Math.min(0.80, Math.max(0.35, _noUtil))
-              const _noCeiling = (_noSeats > 0 && _noTicket && _noTurns)
-                ? Math.round(_noSeats * _noTurns * _noTicket * _noUtil * 30) : null
-              const _noBreakeven: number | null = (C?.totalCosts != null && C.totalCosts > 0)
-                ? C.totalCosts : (fin.totalMonthlyCosts ?? null)
-              const hardCap = _noCeiling != null && _noBreakeven != null && _noCeiling < _noBreakeven
+              // Use compute engine values directly — no inline capacity calculation
+              const _noBreakeven: number | null = C?.totalCosts ?? null
+              const _noDeficit = (_noBreakeven != null && revMonthly != null && revMonthly < _noBreakeven)
+                ? _noBreakeven - revMonthly : null
 
-              // 3 lines — all numeric where possible, hedged where model uncertainty is high
-              const line1 = hardCap && _noCeiling != null && _noBreakeven != null
-                ? `Based on current inputs, full capacity generates ~A$${_noCeiling.toLocaleString()}/mo — break-even would require A$${_noBreakeven.toLocaleString()}/mo`
+              // 3 lines — all from engine data, hedged where confidence is low
+              const line1 = _noDeficit != null && _noBreakeven != null
+                ? `Projected revenue of ${_dRevenue.display}/mo falls A$${_noDeficit.toLocaleString()} short of estimated costs (A$${_noBreakeven.toLocaleString()}/mo)`
                 : rtr != null
                 ? `Rent-to-revenue is ${Math.round(rtr)}% against a 12% safe threshold — at current demand assumptions, this rent is unlikely to be sustainable`
                 : 'Based on current assumptions, rent appears above the sustainable 12%-of-revenue threshold'
@@ -3942,9 +3940,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 ? `Break-even is estimated at ${_beDaily} customers/day — unlock to compare against local demand estimates`
                 : 'The revenue gap to break-even is in the full model — unlock to see the shortfall'
 
-              const line3 = hardCap
-                ? `Venue size is an additional constraint — even at higher demand, physical capacity limits upside at this rent`
-                : `Unlock what-if scenarios — how lower rent, higher ticket size, or different hours affect the outcome`
+              const line3 = `Unlock what-if scenarios — how lower rent, higher ticket size, or different hours affect the outcome`
 
               return (
                 <div style={{
@@ -3958,7 +3954,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const }}>
                       <div style={{ flex: 1, minWidth: 240 }}>
                         <p style={{ fontSize: 11, fontWeight: 800, color: '#F87171', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 10 }}>
-                          {hardCap ? 'Based on current assumptions, break-even is unlikely even at full capacity.' : 'Based on current assumptions, this location is unlikely to be viable at this rent.'}
+                          {_noDeficit != null ? 'Based on current assumptions, projected revenue does not cover costs at this location.' : 'Based on current assumptions, this location is unlikely to be viable at this rent.'}
                         </p>
                         {[line1, line2, line3].map((line, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 7 }}>
@@ -3988,7 +3984,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     {[
                       { label: 'Rent reduction needed',   detail: rtr != null ? `At ${Math.round(rtr)}% rent-to-revenue, rent must drop ${Math.max(0,Math.round(rtr-12))}pp to be viable` : 'Rent exceeds the 12% revenue threshold' },
                       { label: 'Revenue increase required', detail: _beDaily != null ? `${_beDaily} customers/day needed — see exact gap` : 'Revenue must rise to cover fixed costs — see full model' },
-                      { label: 'Capacity ceiling',         detail: _noCeiling ? `Max possible revenue: A$${_noCeiling.toLocaleString()}/mo at ${Math.round(_noUtil*100)}% utilisation` : 'Unlock capacity modelling in the full report' },
+                      { label: 'Revenue gap',              detail: _noDeficit != null ? `Revenue falls A$${_noDeficit.toLocaleString()}/mo short of costs` : 'Unlock the full financial model to see the gap' },
                     ].map((lv, i) => (
                       <div key={lv.label} style={{
                         padding: '12px 16px',
@@ -4053,8 +4049,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <RevenueRangeTile revenueRange={C.revenueRange} />
             <Tile
               label="Net Profit / Mo"
-              value={displayNetProfit != null ? fmt(displayNetProfit) : '--'}
-              sub={(fin as any).isEstimated ? 'benchmark estimate' : (displayProfitMargin ?? '')}
+              value={_dNetProfit.display}
+              sub={_dNetProfit.qualifier ?? (displayProfitMargin ?? '')}
               color={(displayNetProfit ?? 0) >= 0 ? S.emerald : S.red}
               mono
             />
@@ -4071,18 +4067,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {[
               {
                 l: 'Monthly Revenue',
-                v: displayRevenue != null
-                  ? ((fin as any).isEstimated && (fin as any).monthlyRevenueLow && (fin as any).monthlyRevenueHigh
-                      ? `${fmt((fin as any).monthlyRevenueLow)} – ${fmt((fin as any).monthlyRevenueHigh)}`
-                      : fmt(displayRevenue))
-                  : 'Data unavailable',
+                v: _dRevenue.display,
                 sub: (fin as any).isEstimated ? 'industry benchmark' : 'market demand model',
                 color: S.n900,
               },
               {
                 l: 'Net Profit / Mo',
-                v: displayNetProfit != null ? fmt(displayNetProfit) : 'Data unavailable',
-                sub: (fin as any).isEstimated ? 'industry benchmark' : (displayProfitMargin ?? ''),
+                v: _dNetProfit.display,
+                sub: _dNetProfit.qualifier ?? (displayProfitMargin ?? ''),
                 color: (displayNetProfit ?? 0) >= 0 ? S.emerald : S.red,
               },
               {
@@ -4216,10 +4208,17 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   })}
                 </div>
               )}
-              <p style={{ fontSize: 12, color: S.n400, marginTop: 14, textAlign: 'center' }}>
+              {(_confidenceTier === 'benchmark_default' || _confidenceTier === 'low') && (
+                <div style={{ marginTop: 12, padding: '8px 14px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8 }}>
+                  <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.5 }}>
+                    <strong>Directional only —</strong> base figures come from industry benchmarks, not local sales data. Results show the direction of change, not precise outcomes. Small slider moves can cross score thresholds — treat verdict changes as indicators, not conclusions.
+                  </p>
+                </div>
+              )}
+              <p style={{ fontSize: 12, color: S.n400, marginTop: 10, textAlign: 'center' }}>
                 Recalculation runs in your browser — no data is sent. Base values:{' '}
                 {_cr?.avgTicketSize ? 'from compute engine' : _fin?.avgTicketSize ? 'from financial model' : 'industry benchmark defaults'}
-                {' '}· {GROSS_MARGIN * 100}% gross margin · {TRADING_DAYS} trading days/month
+                {' '}· {_btBenchmark.grossMarginPct}% gross margin · 30 trading days/month
               </p>
             </div>
           )}
@@ -4236,25 +4235,42 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {/* Monthly financials hero */}
               <Card style={{ padding: '24px 28px' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Net Profit / Month</p>
-                <p style={{ fontSize: 48, fontWeight: 900, color: (displayNetProfit ?? 0) >= 0 ? S.emerald : S.red, fontFamily: S.mono, letterSpacing: '-0.04em', lineHeight: 1 }}>
-                  {displayNetProfit != null ? (displayNetProfit < 0 ? '−' : '') + 'A$' + Math.abs(displayNetProfit).toLocaleString('en-AU') : 'Data unavailable'}
+                <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+                  Net Profit / Month
+                  {_dNetProfit.qualifier && <span style={{ marginLeft: 8, fontSize: 10, color: S.amber, fontWeight: 600 }}>({_dNetProfit.qualifier})</span>}
                 </p>
-                <p style={{ fontSize: 13, color: S.n400, marginTop: 8 }}>
-                  {fin.isEstimated
-                    ? `Estimated from Australian ${((report.business_type ?? 'business').toLowerCase().split(/[\s\/]/)[0])} industry data — not local sales`
-                    : 'Based on market demand analysis for this location'}
-                </p>
-                {fin.isEstimated && (
-                  <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 20 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: S.amber }} />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: S.amber }}>ESTIMATED — based on {((report.business_type ?? 'business').toLowerCase().split(/[\s\/]/)[0])} benchmarks</span>
+                {_financialsSuppressed.suppress ? (
+                  <div style={{ padding: '16px 0' }}>
+                    <p style={{ fontSize: 16, fontWeight: 700, color: S.n500 }}>{_financialsSuppressed.reason}</p>
                   </div>
+                ) : (
+                  <>
+                    <p style={{ fontSize: _dNetProfit.isRange ? 32 : 48, fontWeight: 900, color: (displayNetProfit ?? 0) >= 0 ? S.emerald : S.red, fontFamily: S.mono, letterSpacing: '-0.04em', lineHeight: 1 }}>
+                      {_dNetProfit.display}
+                    </p>
+                    <p style={{ fontSize: 13, color: S.n400, marginTop: 8 }}>
+                      {_confidenceTier === 'benchmark_default'
+                        ? `Estimated from Australian ${((report.business_type ?? 'business').toLowerCase().split(/[\s\/]/)[0])} industry data — not local sales`
+                        : _confidenceTier === 'low'
+                        ? 'Limited data — treat as directional only'
+                        : 'Based on market demand analysis for this location'}
+                    </p>
+                    {(_confidenceTier === 'benchmark_default' || _confidenceTier === 'low') && (
+                      <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 20 }}>
+                        <div style={{ width: 5, height: 5, borderRadius: '50%', background: S.amber }} />
+                        <span style={{ fontSize: 11, fontWeight: 700, color: S.amber }}>
+                          {_confidenceTier === 'benchmark_default'
+                            ? `ESTIMATED — ${((report.business_type ?? 'business').toLowerCase().split(/[\s\/]/)[0])} benchmarks`
+                            : 'LOW CONFIDENCE — verify locally'}
+                        </span>
+                      </div>
+                    )}
+                  </>
                 )}
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${S.n100}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Monthly Revenue</p>
-                    <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>{displayRevenue != null ? 'A$' + displayRevenue.toLocaleString('en-AU') : 'N/A'}</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>{_dRevenue.display}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Break-even</p>
@@ -4264,7 +4280,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Gross Margin</p>
-                    <p style={{ fontSize: 16, fontWeight: 900, color: S.emerald, fontFamily: S.mono }}>{fin.grossMarginPct ?? '--'}</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: S.emerald, fontFamily: S.mono }}>{_dMargin.display}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>ROI at 36mo</p>
@@ -4300,7 +4316,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             </div>
 
             {/* DECISION ENGINE — the premium "Should You Open Here?" section */}
-            <DecisionEngine report={report} computed={C} fin={fin} competitors={competitors} market={market} />
+            <DecisionEngine report={report} computed={C} fin={fin} competitors={competitors} market={market} demographics={demographics} />
 
             {/* Key insights — the "worth paying for" section */}
             <KeyInsights report={report} computed={C} fin={fin} competitors={competitors} market={market} />
@@ -4830,12 +4846,43 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {C?.sectionConfidence?.competition && <SectionConfBadge section={C.sectionConfidence.competition} />}
 
+            {/* Live density reconciliation banner — shown when A1 agent data is missing
+                but the compute engine has confirmed live competitor density via Google/Geoapify.
+                Prevents contradiction: competition tab showing "0 competitors" while Overview
+                shows a low competition score derived from 7+ live-verified competitors. */}
+            {(() => {
+              const _liveCount = C?.validCompetitorCount
+              const _a1Count   = (competitors as any)?.validCount ?? null
+              const _liveVerif = C?.competitorDataQuality === 'live_verified'
+              if (_liveVerif && _liveCount && _liveCount > 0 && (_a1Count == null || _a1Count === 0)) {
+                return (
+                  <div style={{ padding: '14px 18px', background: S.blueBg, border: `1px solid ${S.blueBdr}`, borderRadius: 12, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={S.blue} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: S.blue, marginBottom: 4 }}>
+                        Live map data: {Math.round(_liveCount)} competitor{_liveCount !== 1 ? 's' : ''} detected nearby
+                      </p>
+                      <p style={{ fontSize: 12, color: S.blue, opacity: 0.8, lineHeight: 1.55 }}>
+                        Google Places + Geoapify detected {C.competitorPressure?.rawCount1km ?? Math.round(_liveCount)} businesses within {C.competitorRadius ?? 1000}m. The A1 competitor profiling agent did not return named cards for this area — competitor density is confirmed but individual profiles are unavailable. Scores in the Overview tab use the live count.
+                      </p>
+                    </div>
+                  </div>
+                )
+              }
+              return null
+            })()}
+
             {/* Header stats */}
-            {competitors && (() => {
-              const _vc  = (competitors as any)?.validCount ?? 0
-              const _dc  = (competitors as any)?.directCompetitorCount ?? 0
+            {(competitors || C?.validCompetitorCount) && (() => {
+              // Prefer live-verified count from compute engine over A1 agent (which may have failed)
+              const _liveVerified = C?.competitorDataQuality === 'live_verified' && (C?.validCompetitorCount ?? 0) > 0
+              const _vc  = _liveVerified ? Math.round(C!.validCompetitorCount) : ((competitors as any)?.validCount ?? 0)
+              const _dc  = _liveVerified ? Math.round(C!.validCompetitorCount) : ((competitors as any)?.directCompetitorCount ?? 0)
               const _exc = (competitors as any)?.filteredOutCount ?? 0
-              const _sat = (competitors as any)?.intensityLabel ?? 'LOW'
+              // Saturation: derive from live count when A1 label is missing
+              const _a1Sat = (competitors as any)?.intensityLabel ?? null
+              const _liveSat = _vc > 12 ? 'HIGH' : _vc > 5 ? 'MEDIUM' : 'LOW'
+              const _sat = _a1Sat ?? _liveSat
               const _satColor = _sat === 'LOW' ? S.emerald : _sat === 'MEDIUM' ? S.amber : S.red
               const _bt  = (report.business_type ?? 'business').toLowerCase()
               return (
@@ -5199,39 +5246,59 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
             {C?.sectionConfidence?.financials && <SectionConfBadge section={C.sectionConfidence.financials} />}
 
-            {/* Financial Trust — assumptions, what must be true, failure modes */}
-            <FinancialTrust computed={C} fin={fin} report={report} />
+            {/* Agent-failure gate: if financials cannot be computed, show CTA instead of broken data */}
+            {_financialsSuppressed.suppress ? (
+              <Card style={{ padding: '32px 28px', textAlign: 'center' as const }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={S.amber} strokeWidth="1.5" strokeLinecap="round" style={{ margin: '0 auto 16px' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p style={{ fontSize: 16, fontWeight: 800, color: S.n700, marginBottom: 8 }}>Financial projections unavailable</p>
+                <p style={{ fontSize: 14, color: S.n500, lineHeight: 1.6, maxWidth: 460, margin: '0 auto' }}>{_financialsSuppressed.reason}</p>
+                <button onClick={() => router.push('/dashboard/new')} style={{ marginTop: 20, padding: '10px 24px', background: S.brand, color: S.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>
+                  Re-run analysis with complete inputs
+                </button>
+              </Card>
+            ) : (<>
 
-            <RentRatioPanel rent={report.monthly_rent ?? areaContext?.medianRent?.monthly} revenue={fin.monthlyRevenue} />
-
-            {fin.isEstimated && (
+            {/* Confidence caveat banner */}
+            {_financialGate.caveat && (
               <div style={{ padding: '12px 16px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.amber} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 2 }}>Financial estimates based on industry benchmarks</p>
-                  <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>{(fin as any).confidenceNote ?? 'Run the full analysis for location-specific revenue modelling.'}</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 2 }}>
+                    {_confidenceTier === 'benchmark_default' ? 'Financial estimates based on industry benchmarks' : 'Limited data — estimates are directional'}
+                  </p>
+                  <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>{_financialGate.caveat}</p>
                 </div>
               </div>
             )}
-            {/* Key financials tiles */}
+
+            {/* Financial Trust — assumptions, what must be true, failure modes */}
+            <FinancialTrust computed={C} fin={fin} report={report} />
+
+            <RentRatioPanel rent={report.monthly_rent ?? areaContext?.medianRent?.monthly} revenue={displayRevenue} />
+
+            {/* Key financials tiles — use confidence-aware display */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
               <Tile
                 label="Monthly Revenue"
-                value={fin.monthlyRevenue != null
-                  ? (fin.isEstimated && fin.monthlyRevenueLow && fin.monthlyRevenueHigh
-                      ? `${fmt(fin.monthlyRevenueLow)} – ${fmt(fin.monthlyRevenueHigh)}`
-                      : `A$${fin.monthlyRevenue.toLocaleString()}`)
-                  : 'Data unavailable'}
+                value={_dRevenue.display}
                 mono color={S.n900}
                 sub={(fin as any).isEstimated ? 'industry benchmark — not local sales' : 'market demand model'}
               />
-              <Tile label="Monthly Costs" value={fin.totalMonthlyCosts != null ? `A$${fin.totalMonthlyCosts.toLocaleString()}` : 'Data unavailable'} mono color={S.red} sub="all operating costs" />
-              <Tile label="Net Profit / Mo" value={fin.monthlyNetProfit != null ? ((fin.monthlyNetProfit < 0 ? '−' : '') + 'A$' + Math.abs(fin.monthlyNetProfit).toLocaleString()) : 'Data unavailable'} mono color={(fin.monthlyNetProfit ?? 0) >= 0 ? S.emerald : S.red} sub={(fin as any).isEstimated ? 'industry benchmark — not local sales' : 'financial model'} />
-              <Tile label="Gross Margin" value={
-                (fin.grossMarginPct && typeof fin.grossMarginPct === 'string' && fin.grossMarginPct.includes('%'))
-                  ? fin.grossMarginPct
-                  : 'Data unavailable'
-              } color={S.brand} />
+              <Tile label="Monthly Costs"
+                value={fin.totalMonthlyCosts != null ? displayMoney(fin.totalMonthlyCosts, _confidenceTier).display : 'Data unavailable'}
+                mono color={S.red}
+                sub={_confidenceTier === 'benchmark_default' ? 'industry benchmark estimate' : _confidenceTier === 'low' ? 'directional — verify locally' : 'all operating costs'}
+              />
+              <Tile label="Net Profit / Mo"
+                value={_dNetProfit.display}
+                mono color={(displayNetProfit ?? 0) >= 0 ? S.emerald : S.red}
+                sub={_dNetProfit.qualifier ?? ((fin as any).isEstimated ? 'industry benchmark' : 'financial model')}
+              />
+              <Tile label="Gross Margin"
+                value={_dMargin.display}
+                sub={_dMargin.qualifier ?? undefined}
+                color={S.brand}
+              />
             </div>
             {/* Provenance row — shows data source for each key metric when trust layer is available */}
             {C?.provenance && Object.keys(C.provenance).length > 0 && (
@@ -5482,7 +5549,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading badge="engine">Monthly P&L Waterfall</SectionHeading>
               {fin.monthlyRevenue && (
                 <div style={{ marginBottom: 20 }}>
-                  <PLWaterfall fin={fin} submittedRent={report.monthly_rent} />
+                  <PLWaterfall fin={fin} submittedRent={report.monthly_rent} computed={C} />
                 </div>
               )}
               {/* Only render profitability text if it doesn't contradict the computed net profit */}
@@ -5607,7 +5674,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading>Rent Breakdown</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 16 }}>
                 <Tile label="Monthly Rent" value={fmt(report.monthly_rent)} mono />
-                <Tile label="% of Revenue" value={fin.rent?.toRevenuePercent != null ? `${fin.rent.toRevenuePercent}%` : '--'} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
+                <Tile label="% of Revenue" value={fin.rent?.toRevenuePercent != null ? displayPercent(fin.rent.toRevenuePercent, _confidenceTier).display : '--'} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
                 <Tile label="Rating" value={fin.rent?.label ?? '--'} color={fin.rent?.label === 'EXCELLENT' ? S.emerald : fin.rent?.label === 'GOOD' ? S.blue : fin.rent?.label === 'MARGINAL' ? S.amber : S.red} />
               </div>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{report.rent_analysis}</p>
@@ -5618,9 +5685,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               {/* Single canonical break-even values — _beDailyForGauge = required, _currentDailyCustomers = projected */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 24, alignItems: 'center', marginBottom: 16 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
-                  <Tile label="Break-even / Day" value={_beDailyForGauge != null ? `${_beDailyForGauge} cust.` : '--'} mono sub="customers needed" />
-                  <Tile label="Projected / Day" value={_currentDailyCustomers != null ? `${_currentDailyCustomers} cust.` : '--'} mono sub="at base demand" color={(_currentDailyCustomers ?? 0) >= (_beDailyForGauge ?? Infinity) ? S.emerald : S.red} />
-                  <Tile label="Revenue / Month" value={_beMonthly != null ? fmt(_beMonthly) : '--'} mono sub="needed to break even" />
+                  <Tile label="Break-even / Day" value={_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} cust.` : '--'} mono sub="customers needed" />
+                  <Tile label="Projected / Day" value={_currentDailyCustomers != null ? `${_dCustomers.display} cust.` : '--'} mono sub="at base demand" color={(_currentDailyCustomers ?? 0) >= (_beDailyForGauge ?? Infinity) ? S.emerald : S.red} />
+                  <Tile label="Revenue / Month" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : '--'} mono sub="needed to break even" />
                 </div>
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, textAlign: 'center' }}>Projected vs Break-even</p>
@@ -5652,9 +5719,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                         <div key={sc.key} style={{ background: sc.bg, border: `1px solid ${sc.border}`, borderRadius: 12, padding: '16px 18px' }}>
                           <p style={{ fontSize: 10, fontWeight: 800, color: sc.text, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>{sc.label}</p>
                           <p style={{ fontSize: 10, color: sc.text, opacity: 0.6, marginBottom: 2 }}>Revenue</p>
-                          <p style={{ fontSize: 17, fontWeight: 900, color: sc.text, marginBottom: 10, fontFamily: S.mono }}>{fmt(s.monthlyRevenue)}</p>
+                          <p style={{ fontSize: _confidenceTier === 'high' ? 17 : 14, fontWeight: 900, color: sc.text, marginBottom: 10, fontFamily: S.mono }}>{displayMoney(s.monthlyRevenue, _confidenceTier).display}</p>
                           <p style={{ fontSize: 10, color: sc.text, opacity: 0.6, marginBottom: 2 }}>Net Profit</p>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: sc.text, fontFamily: S.mono }}>{fmt(s.monthlyNet)}</p>
+                          <p style={{ fontSize: _confidenceTier === 'high' ? 14 : 12, fontWeight: 700, color: sc.text, fontFamily: S.mono }}>{displayMoney(s.monthlyNet, _confidenceTier).display}</p>
                         </div>
                       )
                     })}
@@ -5717,6 +5784,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 </table>
               </Card>
             )}
+          </>)}
           </div>
           </PaywallGate>
         )}
