@@ -73,12 +73,13 @@ function parseAustralianAddress(address: string): {
       postcode = m[2] || ''
       city     = STATE_CITY[state] || ''
       const suburbInSeg = seg.replace(m[0], '').replace(/,/g, '').trim()
-      area = suburbInSeg || (i > 1 ? parts[i - 1] : parts[1])
+      // FIX: use parts[i-1] when i>=1, not parts[1] when state is at index 1
+      area = suburbInSeg || (i >= 1 ? parts[i - 1] : parts[0])
       break
     }
   }
 
-  // Pass 2 – look for full state names (e.g. "Western Australia")
+  // Pass 2 – look for full state names (e.g. "Western Australia", "Queensland")
   if (!state) {
     for (let i = parts.length - 1; i >= 1; i--) {
       const segLower = parts[i].toLowerCase().trim()
@@ -86,7 +87,13 @@ function parseAustralianAddress(address: string): {
       if (abbrev) {
         state = abbrev
         city  = STATE_CITY[abbrev] || ''
-        area  = i > 1 ? parts[i - 1] : parts[1]
+        // FIX: when state is at index 1, use parts[0] (the suburb), not parts[1] (the state)
+        area  = i >= 1 ? parts[i - 1] : parts[0]
+        // Also extract postcode from next segment if present (e.g. "Rockhampton, Queensland, 4700")
+        if (!postcode && i + 1 < parts.length) {
+          const nextSeg = parts[i + 1].trim()
+          if (/^\d{4}$/.test(nextSeg)) postcode = nextSeg
+        }
         break
       }
     }

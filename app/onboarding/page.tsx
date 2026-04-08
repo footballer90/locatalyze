@@ -190,6 +190,29 @@ export default function OnboardingPage() {
 
   const selectedBiz = BUSINESS_TYPES.find(b => b.id === businessType)
 
+  // ── Live benchmark rent ──────────────────────────────────────────────────────
+  // When seats are known we derive sqm (seats × 2.2) → more accurate rent estimate
+  // than the generic shopSize default. Falls back to business type shopSize × $65/sqm.
+  const benchmarkRent = useMemo(() => {
+    const seats = parseInt(seatingCapacity)
+    if (seats > 0 && businessType && ['restaurant', 'bar', 'cafe', 'bakery'].includes(businessType)) {
+      const sqm = Math.round(seats * 2.2)
+      return sqm * 65
+    }
+    return selectedBiz ? selectedBiz.shopSize * 65 : null
+  }, [selectedBiz, seatingCapacity, businessType])
+
+  // Estimated sqm — derived from seats when available, else business type default
+  const estimatedSqm = useMemo(() => {
+    const seats = parseInt(seatingCapacity)
+    if (seats > 0 && businessType && ['restaurant', 'bar', 'cafe', 'bakery'].includes(businessType)) {
+      return Math.round(seats * 2.2)
+    }
+    return selectedBiz?.shopSize ?? null
+  }, [selectedBiz, seatingCapacity, businessType])
+
+  const fmtRent = (n: number) => `$${n.toLocaleString('en-AU')}`
+
   // Run the full analysis using current form state (or supplied overrides from sessionStorage)
   const runAnalysis = useCallback(async (override?: { businessType: string | null; address: string; coords: { lat: number; lng: number } | null; monthlyRent: string }) => {
     const bt = override?.businessType ?? businessType
@@ -214,9 +237,19 @@ export default function OnboardingPage() {
       const biz = BUSINESS_TYPES.find(b => b.id === bt)
       if (!biz) { setAnalysing(false); return }
 
-      const monthlyRentNum = rent ? (parseInt(rent) || biz.shopSize * 65) : biz.shopSize * 65
+      // Derive sqm from seats when available (seats × 2.2m²) — more accurate rent estimate
+      const seatCount = seatingCapacity ? parseInt(seatingCapacity) || null : null
+      const sqmFromSeats = (seatCount && ['cafe','restaurant','bar','bakery'].includes(bt))
+        ? Math.round(seatCount * 2.2) : null
+      const fallbackRent = sqmFromSeats
+        ? sqmFromSeats * 65                  // seat-derived sqm × $65/sqm benchmark
+        : biz.shopSize * 65                  // business type default
+      const rentRaw = rent ? parseInt(rent.replace(/[^0-9]/g, '')) : null
+      const monthlyRentNum = (rentRaw && rentRaw >= 100) ? rentRaw : fallbackRent
+      const rentSource = (rentRaw && rentRaw >= 100) ? 'user_provided' : sqmFromSeats ? 'seat_derived' : 'benchmark'
+
       const setupBudget = biz.setupMid
-      const avgTicketSize = biz.avgTicket
+      const avgTicketSize = avgOrderValue ? parseFloat(avgOrderValue) || biz.avgTicket : biz.avgTicket
 
       const res = await fetch('/api/analyse', {
         method: 'POST',
@@ -231,10 +264,13 @@ export default function OnboardingPage() {
           lat: (override?.coords ?? coords)?.lat ?? null,
           lng: (override?.coords ?? coords)?.lng ?? null,
           operatingHours:  operatingHours  || null,
-          seatingCapacity: seatingCapacity ? parseInt(seatingCapacity) || null : null,
+          seatingCapacity: seatCount,
           businessMode:    businessMode    || null,
           avgOrderValue:   avgOrderValue   ? parseFloat(avgOrderValue) || null : null,
           locationAccess:  locationAccess  || null,
+          // Accuracy metadata — passed to n8n for model calibration
+          rentSource,
+          estimatedSqm: sqmFromSeats ?? biz.shopSize,
         }),
       })
 
@@ -514,17 +550,42 @@ export default function OnboardingPage() {
 
           {address && (
             <div style={{ marginBottom: 20, animation: 'fadeIn 300ms ease-out' }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: S.n700, marginBottom: 8 }}>Know your monthly rent? (optional)</label>
-              <input
-                type="text"
-                placeholder="$3,500"
-                value={monthlyRent}
-                onChange={(e) => setMonthlyRent(e.target.value)}
-                style={{
-                  width: '100%', padding: '10px 12px', fontSize: 14, border: `1px solid ${S.n200}`, borderRadius: 6, backgroundColor: S.white,
-                  color: S.n900, fontFamily: S.font, boxSizing: 'border-box'
-                }}
-              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: S.n700 }}>Monthly rent</label>
+                {!monthlyRent && benchmarkRent ? (
+                  <span style={{ fontSize: 11, color: S.brand, fontWeight: 600 }}>
+                    Using {fmtRent(benchmarkRent)}/mo estimate
+                  </span>
+                ) : monthlyRent ? (
+                  <span style={{ fontSize: 11, color: S.emerald, fontWeight: 600 }}>
+                    Your quote — used in model
+                  </span>
+                ) : null}
+              </div>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: S.n400, pointerEvents: 'none' }}>$</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder={benchmarkRent ? benchmarkRent.toLocaleString('en-AU') : '3,500'}
+                  value={monthlyRent}
+                  onChange={(e) => setMonthlyRent(e.target.value.replace(/[^0-9]/g, ''))}
+                  style={{
+                    width: '100%', padding: '10px 12px 10px 24px', fontSize: 14,
+                    border: `1px solid ${monthlyRent ? S.brand : S.n200}`, borderRadius: 6,
+                    backgroundColor: S.white, color: S.n900, fontFamily: S.font,
+                    boxSizing: 'border-box' as const, transition: 'border-color 150ms',
+                  }}
+                />
+              </div>
+              <p style={{ fontSize: 11, color: S.n400, marginTop: 4, lineHeight: 1.4 }}>
+                {monthlyRent
+                  ? `Your actual rent — this replaces the ${fmtRent(benchmarkRent ?? 0)} suburb estimate in the financial model.`
+                  : benchmarkRent
+                    ? `Leave blank to use our ${fmtRent(benchmarkRent)}/mo estimate based on ${estimatedSqm}m² ${selectedBiz?.label ?? 'business'} benchmarks. Enter your quote for a more accurate result.`
+                    : 'Optional. Enter your actual rent quote for a more accurate financial model.'
+                }
+              </p>
             </div>
           )}
 
