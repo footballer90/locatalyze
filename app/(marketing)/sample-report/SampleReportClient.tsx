@@ -153,7 +153,7 @@ export default function SampleReportClient() {
         <nav style={{ padding: '0 24px', height: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1F2937' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
-              <div style={{ width: 26, height: 26, borderRadius: 7, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div>
+              <div style={{ width: 26, height: 26, borderRadius: 7, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
               <span style={{ fontWeight: 800, fontSize: 14, color: '#fff', letterSpacing: '-0.02em' }}>Locatalyze</span>
             </Link>
             <span style={{ color: '#374151' }}>›</span>
