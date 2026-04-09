@@ -144,7 +144,7 @@ const DATA: Record<Verdict, ReportData> = {
       { k: 'Suburb',       v: 'Subiaco',  hi: ''    },
       { k: 'Avg Income',   v: '$88,000',  hi: D.e   },
       { k: 'Population',   v: '18,000',   hi: ''    },
-      { k: 'Foot Traffic', v: '80 / 100', hi: D.e   },
+      { k: 'Location Activity', v: '80 / 100', hi: D.e   },
       { k: 'Competition',  v: 'Low',      hi: D.e   },
       { k: 'Rent/mo',      v: '$3,500',   hi: ''    },
     ],
@@ -593,7 +593,8 @@ export default function ReportDemoSection() {
   }, [])
 
   useEffect(() => {
-    if (!visible) return
+    // Only animate once the section is scrolled into view — prevents 0/100 flash on mount
+    if (!visible) { setScore(0); return }
     setScore(0)
     const target = d.score
     let n = 0
@@ -602,7 +603,7 @@ export default function ReportDemoSection() {
       if (n >= target) clearInterval(id)
     }, 14)
     return () => clearInterval(id)
-  }, [verdict])
+  }, [visible, verdict])
 
   useEffect(() => {
     setFired(false)
@@ -754,7 +755,7 @@ export default function ReportDemoSection() {
                   {vc.label}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1, opacity: visible ? 1 : 0, transition: 'opacity 0.3s' }}>
+                  <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1, opacity: (visible && score > 0) ? 1 : 0, transition: 'opacity 0.3s' }}>
                     {score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
                   </div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: D.text3, letterSpacing: '.07em', textTransform: 'uppercase' }}>

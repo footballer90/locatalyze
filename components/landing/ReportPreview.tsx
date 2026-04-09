@@ -88,16 +88,20 @@ export default function ReportPreview() {
   }, [caseIdx, visible])
 
   useEffect(() => {
+    // Gate on visible — prevents 0/100 flash when component is above the fold on mount
     if (!visible) { setScore(0); return }
     setScore(0)
-    const target = RP_CASES[caseIdx].score
-    let s = 0
-    const id = setInterval(() => {
-      s = Math.min(s + 2, target)
-      setScore(s)
-      if (s >= target) clearInterval(id)
-    }, 14)
-    return () => clearInterval(id)
+    // Small delay so first render paints at score=0 with opacity:0, avoiding flash
+    const delay = setTimeout(() => {
+      const target = RP_CASES[caseIdx].score
+      let s = 0
+      const id = setInterval(() => {
+        s = Math.min(s + 2, target)
+        setScore(s)
+        if (s >= target) clearInterval(id)
+      }, 14)
+    }, 50)
+    return () => clearTimeout(delay)
   }, [animKey, visible])
 
   const c   = RP_CASES[caseIdx]
@@ -161,7 +165,7 @@ export default function ReportPreview() {
                   <p style={{ fontSize:9.5, color:c.color, opacity:.75, marginTop:1 }}>{c.verdictSub}</p>
                 </div>
               </div>
-              <div style={{ textAlign:'center' as const }}>
+              <div style={{ textAlign:'center' as const, opacity: score > 0 ? 1 : 0, transition: 'opacity 0.2s' }}>
         <div style={{ position:'relative', width:74, height:74 }}>
          <svg width="74" height="74" style={{ transform:'rotate(-90deg)' }}>
           <circle cx="37" cy="37" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth="6"/>

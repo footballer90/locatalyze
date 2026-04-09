@@ -1836,13 +1836,13 @@ function LocationIntelligence({ computed, report }: {
   if (footfall) {
     const isGood = footfall.toLowerCase().includes('high') || footfall.toLowerCase().includes('very high')
     signals.push({
-      label: 'Foot Traffic',
+      label: 'Location Activity',
       value: footfall,
       implication: isGood
-        ? `High pedestrian flow increases walk-in conversion for ${bt}s — reduces reliance on destination marketing`
+        ? `High location activity signals strong walk-in conversion for ${bt}s — reduces reliance on destination marketing`
         : footfall.toLowerCase().includes('low')
-        ? `Low foot traffic means you must drive customers here through marketing, delivery apps, or destination appeal — impulse walk-ins will be rare`
-        : `Moderate foot traffic — supplement with online presence and delivery channels for consistent volume`,
+        ? `Low location activity means you must drive customers here through marketing, delivery apps, or destination appeal — impulse walk-ins will be rare`
+        : `Moderate location activity — supplement with online presence and delivery channels for consistent volume`,
       positive: isGood,
     })
   }
@@ -4673,19 +4673,19 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {/* Location & lifestyle signals */}
             <Card>
-              <SectionHeading sub="Foot traffic, transit access, and anchor tenant signals for this address.">Lifestyle & Access Signals</SectionHeading>
+              <SectionHeading sub="Location activity, transit access, and anchor tenant signals for this address.">Lifestyle & Access Signals</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12 }}>
                 {(() => {
                   const signals = [
                     {
-                      label: 'Foot Traffic',
+                      label: 'Location Activity',
                       value: C?.locationSignals?.footfallSignal ?? areaContext?.footfallSignal,
                       meaning: (v: string | null) => {
-                        if (!v) return 'No foot traffic data available'
+                        if (!v) return 'No location activity data available'
                         const _v = v.toLowerCase()
                         if (_v.includes('high') || _v.includes('very')) return 'Strong walk-in potential — customers discover businesses organically'
-                        if (_v.includes('moderate') || _v.includes('medium')) return 'Moderate foot traffic — signage and marketing will be important'
-                        return 'Low foot traffic — marketing-driven acquisition will be essential'
+                        if (_v.includes('moderate') || _v.includes('medium')) return 'Moderate location activity — signage and marketing will be important'
+                        return 'Low location activity — marketing-driven acquisition will be essential'
                       },
                     },
                     {
