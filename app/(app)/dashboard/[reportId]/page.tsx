@@ -3680,12 +3680,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const _financialsSuppressed = shouldSuppressFinancials(C)
   const _financialGate = gateSection('Financial projections', C, { requiredFields: ['revenue'] })
 
-  // ── Display Discipline Layer ──────────────────────────────────────────────
-  // Confidence tier determines precision: exact numbers, ranges, or suppressed.
-  const _confidenceTier: ConfidenceTier = getConfidenceTier(C)
-  const _financialsSuppressed = shouldSuppressFinancials(C)
-  const _financialGate = gateSection('Financial projections', C, { requiredFields: ['revenue'] })
-
   // ── Display variables — UI reads ONLY these, never raw fin fields directly ────
   // Raw values (for calculations/comparisons — NOT for rendering to user)
   const displayRevenue:      number | null = fin.monthlyRevenue    ?? null
