@@ -1,0 +1,226 @@
+{
+  "name": "Locatalyze – Master Orchestrator v5 (Sequential) FIXED",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "locatalyze/analyse",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c7c41ac0-a8af-4630-bd03-c1c395a0b26c",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [180, 300],
+      "webhookId": "dbc877e0-f9ee-4ef5-a696-61ff2b90db9b"
+    },
+    {
+      "parameters": {},
+      "id": "c1db720d-3c90-4887-9635-7fe4fa090797",
+      "name": "Parse Inputs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"status\": \"queued\", \"reportId\": $json.reportId }",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "74e1bf13-71e6-4a7f-b045-2897e8658d44",
+      "name": "Return Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {},
+      "id": "6e13b2d7-30e6-465d-b8bd-28ae8d2d6fc9",
+      "name": "Call A1 – Competitor Intel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {},
+      "id": "13244c63-96f8-45f3-8e77-dc556647be57",
+      "name": "Store A1 – Competitor Intel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {},
+      "id": "8b15384b-d68f-43f8-85b2-0d77ff343935",
+      "name": "Call A2 – Rent & Real Estate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1280, 300]
+    },
+    {
+      "parameters": {},
+      "id": "90661f04-5696-44d8-99cb-e44f08bec885",
+      "name": "Store A2 – Rent & Real Estate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1500, 300]
+    },
+    {
+      "parameters": {},
+      "id": "0ce78a4d-0ba5-4b17-b1d5-16609720686b",
+      "name": "Call A3 – Market & Demand",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1720, 300]
+    },
+    {
+      "parameters": {},
+      "id": "6a91fdc0-23a0-4762-b28a-b9c5b05b5869",
+      "name": "Store A3 – Market & Demand",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1940, 300]
+    },
+    {
+      "parameters": {},
+      "id": "ef45a19a-7752-4c22-903a-951097cd9c2e",
+      "name": "Call A4 – Cost Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [2160, 300]
+    },
+    {
+      "parameters": {},
+      "id": "6a20fd40-c682-4959-a457-325b2cffa034",
+      "name": "Store A4 – Cost Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [2380, 300]
+    },
+    {
+      "parameters": {},
+      "id": "9c26f71a-f949-43d9-8361-0b3a9b2898e7",
+      "name": "Call A5 – Revenue & Profit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [2600, 300]
+    },
+    {
+      "parameters": {},
+      "id": "fe382082-7653-49d3-a4da-78217830484a",
+      "name": "Store A5 – Revenue & Profit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [2820, 300]
+    },
+    {
+      "parameters": {},
+      "id": "318ce9db-24a2-46a9-8eca-db08c6980443",
+      "name": "Call A6 – Demographics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [3040, 300]
+    },
+    {
+      "parameters": {},
+      "id": "ea5429ff-7000-4cbf-a688-00da3a786f38",
+      "name": "Store A6 – Demographics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [3260, 300]
+    },
+    {
+      "parameters": {},
+      "id": "64411e39-4d10-4108-bf82-87e1440abe16",
+      "name": "Trigger Compute",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [3480, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [{ "node": "Parse Inputs", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse Inputs": {
+      "main": [
+        [{ "node": "Return Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Return Response": {
+      "main": [
+        [{ "node": "Call A1 – Competitor Intel", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call A1 – Competitor Intel": {
+      "main": [
+        [{ "node": "Store A1 – Competitor Intel", "type": "main", "index": 0 }]
+      ]
+    },
+    "Store A1 – Competitor Intel": {
+      "main": [
+        [{ "node": "Call A2 – Rent & Real Estate", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call A2 – Rent & Real Estate": {
+      "main": [
+        [{ "node": "Store A2 – Rent & Real Estate", "type": "main", "index": 0 }]
+      ]
+    },
+    "Store A2 – Rent & Real Estate": {
+      "main": [
+        [{ "node": "Call A3 – Market & Demand", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call A3 – Market & Demand": {
+      "main": [
+        [{ "node": "Store A3 – Market & Demand", "type": "main", "index": 0 }]
+      ]
+    },
+    "Store A3 – Market & Demand": {
+      "main": [
+        [{ "node": "Call A4 – Cost Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call A4 – Cost Analysis": {
+      "main": [
+        [{ "node": "Store A4 – Cost Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "Store A4 – Cost Analysis": {
+      "main": [
+        [{ "node": "Call A5 – Revenue & Profit", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call A5 – Revenue & Profit": {
+      "main": [
+        [{ "node": "Store A5 – Revenue & Profit", "type": "main", "index": 0 }]
+      ]
+    },
+    "Store A5 – Revenue & Profit": {
+      "main": [
+        [{ "node": "Call A6 – Demographics", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call A6 – Demographics": {
+      "main": [
+        [{ "node": "Store A6 – Demographics", "type": "main", "index": 0 }]
+      ]
+    },
+    "Store A6 – Demographics": {
+      "main": [
+        [{ "node": "Trigger Compute", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "47c1d50f888129a94941ea005fbf33aa32f3907b2e424805c897da07d513c157"
+  }
+}

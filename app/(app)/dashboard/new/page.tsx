@@ -6,6 +6,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import type { MapInsights, Competitor } from '@/components/MapboxMap'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { whatIfCalc, breakEvenMonthsCalc } from '@/lib/compute/client-calc'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -211,12 +212,26 @@ export default function OnboardingPage() {
       ? parseInt(form.monthlyRent.replace(/[^0-9]/g, ''))
    : estimateRent(form.address, shopSize)
     const ticketSize = form.adv.ticketSize ? parseFloat(form.adv.ticketSize) : biz.avgTicket
-    const customers = biz.baseCustomers
-    const monthlyRevenue = Math.round(customers * ticketSize * 26)
-    const netProfit = Math.round(monthlyRevenue * 0.62 - estRent * 1.45)
+
+    // Use shared whatIfCalc — same formulas as the compute engine (benchmark path)
+    const calc = whatIfCalc({
+      businessType: biz.id,
+      monthlyRent: estRent,
+      avgTicketSize: ticketSize,
+      // dailyCustomers: null → uses benchmark default for this business type
+    })
+
     const setupCost = form.budgetRange || biz.setupMid
-    const payback = netProfit > 0 ? Math.ceil(setupCost / netProfit) : 99
-    return { estRent, ticketSize, customers, monthlyRevenue, netProfit, payback, shopSize }
+    const payback = breakEvenMonthsCalc(setupCost, calc.netProfit) ?? 99
+    return {
+      estRent,
+      ticketSize,
+      customers: calc.dailyCustomers,
+      monthlyRevenue: calc.monthlyRevenue,
+      netProfit: calc.netProfit,
+      payback,
+      shopSize,
+    }
   }, [form, selectedBiz])
 
   const confidence = useMemo(() => confidenceScore(form), [form])
