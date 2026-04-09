@@ -125,10 +125,25 @@ export function whatIfCalc(input: WhatIfInput): WhatIfResult {
     ? Math.round((rent / monthlyRevenue) * 1000) / 10
     : 0
 
+<<<<<<< HEAD
   // Break-even daily customers = totalCosts / (ticket × grossMargin × 30)
   const contributionPerCustomer = avgTicketSize * (grossMarginPct / 100)
   const breakEvenDaily = contributionPerCustomer > 0
     ? Math.ceil(totalCosts / (contributionPerCustomer * 30))
+=======
+  // Break-even daily customers — mirrors engine.ts lines 712-727 EXACTLY.
+  // Uses FIXED costs only (staff + rent) in the numerator; variable costs
+  // (COGS, other %) auto-adjust with volume so they don't belong here.
+  // Contribution margin subtracts otherCostsPct from gross margin.
+  //
+  //   fixedCosts         = staffCosts + rent
+  //   contributionMargin = avgTicket × max(0.01, grossMarginPct% - otherCostsPct)
+  //   breakEvenDaily     = ceil(fixedCosts / (contributionMargin × 30))
+  const fixedCostsOnly          = staff + rent
+  const contributionPerCustomer = avgTicketSize * Math.max(0.01, (grossMarginPct / 100) - bm.otherCostsPct)
+  const breakEvenDaily = contributionPerCustomer > 0
+    ? Math.ceil(fixedCostsOnly / (contributionPerCustomer * 30))
+>>>>>>> fix: break-even formula in client-calc + _beMonthly reads from engine
     : 0
 
   // Break-even months = setupBudget / netProfit (only if profitable + budget known)

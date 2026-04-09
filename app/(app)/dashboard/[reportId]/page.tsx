@@ -3662,13 +3662,23 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const projections  = fin.projections  || {}
   const riskScenarios = fin.riskScenarios || {}
 
-  // Break-even — always read from fin (populated by whichever path ran above)
+  // Break-even — always read from computed_result (engine is authoritative).
+  // No inline math: the engine already stores both daily and monthly values.
   const _beDaily: number | null =
-    fin.customerVolume?.daily_customers_needed_breakeven ?? report.breakeven_daily ?? null
+    C?.breakEvenDaily
+    ?? fin.customerVolume?.daily_customers_needed_breakeven
+    ?? report.breakeven_daily
+    ?? null
   const _beMonthly: number | null =
-    (_beDaily && fin.avgTicketSize)
-      ? Math.round(_beDaily * fin.avgTicketSize * 30)
-      : (report.breakeven_monthly ?? null)
+    C?.breakEvenMonths
+    ?? report.breakeven_monthly
+    ?? null
+
+  // ── Display Discipline Layer ──────────────────────────────────────────────
+  // Confidence tier determines precision: exact numbers, ranges, or suppressed.
+  const _confidenceTier: ConfidenceTier = getConfidenceTier(C)
+  const _financialsSuppressed = shouldSuppressFinancials(C)
+  const _financialGate = gateSection('Financial projections', C, { requiredFields: ['revenue'] })
 
   // ── Display Discipline Layer ──────────────────────────────────────────────
   // Confidence tier determines precision: exact numbers, ranges, or suppressed.
