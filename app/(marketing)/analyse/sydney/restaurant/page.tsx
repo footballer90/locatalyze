@@ -39,7 +39,7 @@ const TOP_SUBURBS = [
     rank: 1, name: 'Surry Hills', postcode: '2010', score: 88, verdict: 'GO' as const,
   income: '$95,000', rent: '$10,500–$15,000/mo', competition: '14 within 500m',
   footTraffic: 89, demographics: 90, rentFit: 74, competitionScore: 68,
-    breakEven: '$4,200/day', payback: '13 months', annualProfit: '$312,000',
+    breakEven: '$4,200/day', payback: '10 months', annualProfit: '$312,000',
   angle: 'Sydney\'s highest-density dining precinct — for the right concept',
   detail: [
       'Surry Hills is where Sydney\'s restaurant industry concentrates. Crown Street and its surrounding blocks contain more quality restaurants per square kilometre than anywhere else in Australia outside Melbourne\'s CBD. For a restaurant operator, this density is simultaneously the best and worst thing about the suburb: best because it validates extraordinary demand, worst because differentiation is existential.',
@@ -53,7 +53,7 @@ const TOP_SUBURBS = [
     rank: 2, name: 'Newtown', postcode: '2042', score: 84, verdict: 'GO' as const,
   income: '$88,000', rent: '$9,000–$13,000/mo', competition: '12 within 500m',
   footTraffic: 87, demographics: 83, rentFit: 76, competitionScore: 71,
-    breakEven: '$3,800/day', payback: '12 months', annualProfit: '$276,000',
+    breakEven: '$3,800/day', payback: '11 months', annualProfit: '$276,000',
   angle: 'Diverse dining culture, slightly lower rents than Surry Hills',
   detail: [
       'Newtown\'s restaurant market is defined by its diversity and its resistance to corporate homogenisation. King Street has resisted chain restaurants more successfully than any other Sydney strip — independent operators dominate, which means the dining culture is genuine rather than manufactured. This creates an environment where a well-executed independent restaurant can build a loyal following that chains simply cannot replicate.',
@@ -67,7 +67,7 @@ const TOP_SUBURBS = [
     rank: 3, name: 'Glebe', postcode: '2037', score: 80, verdict: 'GO' as const,
   income: '$82,000', rent: '$7,000–$9,500/mo', competition: '6 within 500m',
   footTraffic: 78, demographics: 79, rentFit: 83, competitionScore: 80,
-    breakEven: '$3,200/day', payback: '11 months', annualProfit: '$252,000',
+    breakEven: '$3,200/day', payback: '12 months', annualProfit: '$252,000',
   angle: 'Best restaurant unit economics in inner Sydney',
   detail: [
       'Glebe is consistently underestimated as a restaurant location. The suburb\'s proximity to USYD and RPA hospital creates a dual demand engine — university-connected diners who value quality over pretension, and healthcare professionals who dine out regularly and have the income to support mid-to-premium price points. Neither group is well-served by the current Glebe Point Road restaurant offer, which is thinner than the demand would support.',
@@ -81,7 +81,7 @@ const TOP_SUBURBS = [
     rank: 4, name: 'Potts Point', postcode: '2011', score: 76, verdict: 'GO' as const,
   income: '$105,000', rent: '$8,500–$12,000/mo', competition: '9 within 500m',
   footTraffic: 74, demographics: 88, rentFit: 72, competitionScore: 68,
-    breakEven: '$4,000/day', payback: '14 months', annualProfit: '$228,000',
+    breakEven: '$4,000/day', payback: '13 months', annualProfit: '$228,000',
   angle: 'Highest income demographic, destination dining supported',
   detail: [
       'Potts Point has Sydney\'s highest median household income of any inner suburb at $105,000, and a dining culture that punches above its geographic footprint. Macleay Street and Challis Avenue have produced some of Sydney\'s most acclaimed restaurants precisely because the local demographic is willing to spend on quality, travels for a destination dining experience, and is deeply engaged with food media and restaurant culture.',
@@ -270,14 +270,14 @@ export default function SydneyRestaurantPage() {
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 14 }}>Case Study: Contemporary Restaurant, Surry Hills</h2>
      <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 18, overflow: 'hidden' }}>
-      <div style={{ background: 'linear-gradient(135deg,#1C0A00,#92400E)', padding: '22px 28px' }}><p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(253,230,138,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Modelled scenario — Locatalyze financial engine</p><h3 style={{ fontSize: 18, fontWeight: 800, color: '#FFFBEB' }}>60-seat contemporary restaurant, Crown Street Surry Hills NSW 2010</h3><p style={{ fontSize: 13, color: 'rgba(253,230,138,0.6)' }}>120 sqm · $12,000/mo rent · $72 avg spend · 5 nights/week · $250k setup</p></div>
+      <div style={{ background: 'linear-gradient(135deg,#1C0A00,#92400E)', padding: '22px 28px' }}><p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(253,230,138,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Modelled scenario — Locatalyze financial engine</p><h3 style={{ fontSize: 18, fontWeight: 800, color: '#FFFBEB' }}>60-seat contemporary restaurant, Crown Street Surry Hills NSW 2010</h3><p style={{ fontSize: 13, color: 'rgba(253,230,138,0.6)' }}>120 sqm · $12,000/mo rent · $90 avg spend · 5 nights/week · $250k setup</p></div>
       <div style={{ padding: '24px 28px' }}>
        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 10, marginBottom: 8 }}>
-        {[['Monthly revenue','$112,320',S.emerald],['Monthly costs','$84,240',S.red],['Monthly profit','$28,080',S.emerald],['Net margin','25%',S.emerald],['Annual profit','$336,960',S.emerald],['Payback','12 months',S.brand]].map(([l,v,c]) => <div key={l as string} style={{ background: S.n50, borderRadius: 10, padding: '10px 12px' }}><p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>{l}</p><p style={{ fontSize: 16, fontWeight: 900, color: c as string }}>{v}</p></div>)}
+        {[['Monthly revenue','$112,320',S.emerald],['Monthly costs','$84,240',S.red],['Monthly profit','$28,080',S.emerald],['Net margin','25%',S.emerald],['Annual profit','$336,960',S.emerald],['Payback','9 months',S.brand]].map(([l,v,c]) => <div key={l as string} style={{ background: S.n50, borderRadius: 10, padding: '10px 12px' }}><p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>{l}</p><p style={{ fontSize: 16, fontWeight: 900, color: c as string }}>{v}</p></div>)}
        </div>
-              <DataNote text="Revenue: 60 seats × 80% occupancy × $72 avg × 26 service days. Labour 35% of revenue ($39,312). COGS 28% ($31,450). Rent $12,000. Overheads $1,478."/>
-       <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginTop: 14, marginBottom: 12 }}>At $12,000/month rent on $112,320 revenue, the rent-to-revenue ratio is 10.7% — tight but viable. The key assumptions are 80% occupancy over 26 service days and $72 average spend. Both are achievable at Surry Hills with a well-executed concept, but neither is guaranteed in the first six months of trading.</p>
-       <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}><p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 60% occupancy</p><p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to $4,800. A $85,000 cash reserve covers 18 months of this scenario. This is not pessimism — it is the reality of a new Surry Hills restaurant with no pre-existing brand recognition. Capital adequacy determines survival here more than almost any other factor.</p></div>
+              <DataNote text="Revenue: 60 seats × 80% occupancy × $90 avg × 26 service days = $112,320. Labour 35% of revenue ($39,312). COGS 28% ($31,450). Rent $12,000. Overheads $1,478."/>
+       <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginTop: 14, marginBottom: 12 }}>At $12,000/month rent on $112,320 revenue, the rent-to-revenue ratio is 10.7% — tight but viable. The key assumptions are 80% occupancy over 26 service days and $90 average spend. Both are achievable at Surry Hills with a well-executed concept, but neither is guaranteed in the first six months of trading.</p>
+       <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}><p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 60% occupancy</p><p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>At 60% occupancy, monthly revenue falls to $84,240. Fixed costs (rent $12,000 + overheads $1,478) stay constant; variable labour and COGS fall proportionally. Monthly profit at 60% occupancy: $17,691 — viable, but the model assumes you reach 60% quickly. The real risk is the first 3–4 months before consistent covers are established. A $50,000 working capital reserve covers that ramp-up exposure.</p></div>
       </div>
           </div>
         </section>
