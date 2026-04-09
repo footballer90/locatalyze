@@ -139,7 +139,7 @@ export default function SampleReportClient() {
       {/* Sample banner */}
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-          Sample report — fictional address, real report structure. Your report is generated live with Google Maps data and your own inputs.{' '}
+          Sample report — fictional address, real report structure. Named competitors with Google Maps ratings are shown in the Competition tab.{' '}
           <Link href="/onboarding" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
             Run yours free →
           </Link>
@@ -168,10 +168,12 @@ export default function SampleReportClient() {
         <div style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start', marginBottom: 24 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' as const }}>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Sample report</span>
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: S.mono }}>214 Oxford Street, Leederville WA 6007</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitors fetched 9 Apr 2026 11:23 AWST · Google Maps</span>
               </div>
               <h1 style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
                 Specialty Café
@@ -340,6 +342,7 @@ export default function SampleReportClient() {
                       </div>
                     </div>
                     <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>Four café operators within 500m is manageable for a specialty concept with clear positioning. Two of the four score below 4.0 on Google Maps — indicating an unmet quality ceiling in the precinct.</p>
+                    <button onClick={() => setActiveTab('competition')} style={{ marginTop: 8, fontSize: 11, color: S.brand, fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: S.font }}>View named competitors + ratings →</button>
                   </Card>
 
                   <Card style={{ marginBottom: 0 }}>
@@ -587,7 +590,7 @@ export default function SampleReportClient() {
             {/* Data sources */}
             <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Data sources</p>
-              {['Google Maps · Geoapify', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks', 'REIWA commercial rents'].map(src => (
+              {['Google Maps · Geoapify', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks', 'REIWA commercial rents · WA'].map(src => (
                 <p key={src} style={{ fontSize: 11, color: S.n500, padding: '4px 0', borderBottom: `1px solid ${S.n100}` }}>{src}</p>
               ))}
             </div>

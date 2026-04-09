@@ -111,7 +111,7 @@ export default function MethodologyPage() {
       We pull ABS-aligned demographic estimates for your suburb — median household income, age distribution, population density, and a consumer affordability index. These are cross-referenced against your business type to assess market fit.
           </Step>
           <Step n="04" title="Rent benchmarking">
-      Your submitted monthly rent is compared against commercial rental benchmarks for the suburb and business category, sourced from publicly available property listings. We calculate rent as a percentage of projected revenue and rate it EXCELLENT / GOOD / MARGINAL / POOR.
+      Your submitted monthly rent is compared against commercial rental benchmarks for the suburb and business category. Rent data sources vary by state: REIWA for WA, RealCommercial and Domain listings for NSW/VIC/QLD/SA/ACT. We calculate rent as a percentage of projected revenue and rate it EXCELLENT / GOOD / MARGINAL / POOR.
           </Step>
           <Step n="05" title="Model calibration (optional but impactful)">
       If you fill in the "Calibrate your model" section, the financial engine replaces generic benchmarks with your actual inputs. Average order value overrides the industry benchmark for your category — changing revenue projections and break-even thresholds. Operating hours apply a demand multiplier (e.g. breakfast/lunch = 65% of an all-day operator's baseline; all-day = 135%). Location access type applies a footfall multiplier (transport hub = +10%; side street = −25%; arcade = −30%). Each field you provide raises the Model Accuracy score displayed on the report.
@@ -133,7 +133,7 @@ export default function MethodologyPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
       <DataCard icon="" title="Google Maps Platform" badge="Live API" desc="Competitor locations, ratings, review counts, and price levels queried live for your specific coordinates within a 500m radius." />
       <DataCard icon="" title="ABS Census Estimates" badge="2021–2026" desc="Population demographics, median income, household size and age distribution aligned to Australian Bureau of Statistics data." />
-      <DataCard icon="" title="Commercial Rent Database" badge="Benchmarks" desc="Suburb-level commercial rent benchmarks built from publicly available property listings. Your submitted rent is validated against these." />
+      <DataCard icon="" title="Commercial Rent Database" badge="Benchmarks" desc="Suburb-level commercial rent benchmarks built from publicly available property listings. Sources vary by state: REIWA for WA, RealCommercial and Domain for NSW/VIC/QLD/SA/ACT. Your submitted rent is validated against the relevant state benchmark." />
       <DataCard icon="" title="Industry Benchmarks" badge="By category" desc="Daily customers baseline, average ticket size, COGS %, gross margin, and staffing cost ratios segmented by business type. Used as the fallback when you do not provide your own figures." />
       <DataCard icon="" title="Deterministic Compute Engine" badge="Rules-based" desc="A rules-based financial model (not AI) that builds the P&L from your calibrated inputs. Formulas are deterministic and documented — no black box outputs." />
       <DataCard icon="" title="AI Narrative Layer" badge="AI Analysis" desc="AI generates the written analysis only — SWOT, market narrative, risk scenarios, and 3-year projection. Financial figures come from the compute engine, not AI." />
