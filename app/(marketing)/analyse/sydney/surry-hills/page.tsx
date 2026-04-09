@@ -354,12 +354,12 @@ export default function SurryHillsPage() {
         </div>
       </section>
 
-      <section style={{ padding: '48px 24px' }}>
+      <section style={{ padding: '48px 24px', backgroundColor: C.white }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: C.n900 }}>
             Market Fundamentals
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', fontSize: '16px', lineHeight: '1.7', color: C.n900 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', fontSize: '16px', lineHeight: '1.7', color: C.muted }}>
             <p>
               Surry Hills has been Sydney's premier inner-city hospitality market for over 15 years. Crown Street generates 18,000+ daily foot traffic (20,000+ on weekends), with concentrated pedestrian movement between venues. This is not random foot traffic - it is deliberate destination shopping. Customers come specifically for dining and hospitality experiences. Conversion rates are higher than any other Sydney location. The market is proven, mature, and defensible.
             </p>
@@ -440,7 +440,7 @@ export default function SurryHillsPage() {
         </div>
       </section>
 
-      <section style={{ padding: '48px 24px' }}>
+      <section style={{ padding: '48px 24px', backgroundColor: C.white }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: C.n900 }}>
             Who Should NOT Open Here

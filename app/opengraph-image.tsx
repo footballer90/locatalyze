@@ -58,7 +58,7 @@ export default async function Image() {
               background: 'linear-gradient(135deg, #0F766E, #14B8A6)',
        display: 'flex', alignItems: 'center', justifyContent: 'center',
        fontSize: 20, fontWeight: 900, color: 'white',
-      }}>L</div>
+      }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div>
             <span style={{ fontSize: 22, fontWeight: 800, color: '#F0FDF9', letterSpacing: '-0.03em' }}>
        Locatalyze
             </span>

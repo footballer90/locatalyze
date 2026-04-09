@@ -8,23 +8,14 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="w-8 h-8 rounded-xl bg-gray-900 flex items-center justify-center">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
+          <span style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg,#0F766E,#14B8A6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 26 26" fill="none">
+              <path d="M13 2C13 2 5.5 9 5.5 14.2C5.5 18.5 8.8 22 13 22C17.2 22 20.5 18.5 20.5 14.2C20.5 9 13 2 13 2Z" fill="white" opacity="0.95"/>
+              <circle cx="13" cy="14.5" r="4" fill="rgba(0,0,0,0.22)"/>
             </svg>
           </span>
           <span className="font-semibold text-[15px] text-gray-900 tracking-tight">
-            Locatalyze
+            Loca<span style={{ color: '#0F766E' }}>talyze</span>
           </span>
         </Link>
 

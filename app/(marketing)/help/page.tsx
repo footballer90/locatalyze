@@ -196,7 +196,7 @@ export default function HelpPage() {
               background: `linear-gradient(135deg,${S.brand},${S.brandLight})`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#fff', fontWeight: 900, fontSize: 13,
-            }}>L</div>
+            }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div>
             <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>Locatalyze</span>
           </Link>
           <div style={{
