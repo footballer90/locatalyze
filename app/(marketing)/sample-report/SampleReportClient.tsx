@@ -587,7 +587,7 @@ export default function SampleReportClient() {
             {/* Data sources */}
             <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Data sources</p>
-              {['OpenStreetMap · Geoapify', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks', 'REIWA commercial rents'].map(src => (
+              {['Google Maps · Geoapify', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks', 'REIWA commercial rents'].map(src => (
                 <p key={src} style={{ fontSize: 11, color: S.n500, padding: '4px 0', borderBottom: `1px solid ${S.n100}` }}>{src}</p>
               ))}
             </div>

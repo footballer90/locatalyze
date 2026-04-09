@@ -364,7 +364,7 @@ export default function AdelaideAnalysePage() {
             </div>
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>How does Locatalyze work for Adelaide locations?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze analyses competitor density within 500m using OpenStreetMap data, pulls ABS 2021 Census demographics for the SA2 region, and builds a financial model from your submitted rent and business type. The output is a GO, CAUTION, or NO verdict with a full score breakdown.</p>
+              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze analyses competitor density within 500m using Google Maps and Geoapify data, pulls ABS 2021 Census demographics for the SA2 region, and builds a financial model from your submitted rent and business type. The output is a GO, CAUTION, or NO verdict with a full score breakdown.</p>
             </div>
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>What is average commercial rent in Adelaide?</h3>

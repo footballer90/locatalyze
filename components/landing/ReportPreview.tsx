@@ -11,7 +11,7 @@ const RP_CASES = [
   color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
   gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
   metrics: [
-      { l: 'Est. revenue range', v: '$55k–$95k/mo', highlight: false },
+      { l: 'Est. revenue range', v: '$68k–$84k/mo', highlight: false },
    { l: 'Break-even (est.)', v: '35–50/day', highlight: false },
    { l: 'Break-even',    v: '38/day',  highlight: false },
       { l: 'Note', v: 'Estimate only', highlight: true },

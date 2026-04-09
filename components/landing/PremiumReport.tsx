@@ -9,9 +9,9 @@ const PR_DATA = {
   verdictColor: '#059669', verdictBg: '#ECFDF5', verdictBorder: '#A7F3D0',
   accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
   kpis: [
-      { label: 'Est. monthly revenue', value: '$55k–$95k', sub: 'range estimate', up: true },
+      { label: 'Est. monthly revenue', value: '$68k–$84k', sub: 'range estimate', up: true },
    { label: 'Monthly Profit',  value: '$24,800', sub: '27% margin',    up: true  },
-      { label: 'Est. annual revenue', value: '$660k–$1.1m', sub: 'range estimate', up: true },
+      { label: 'Est. annual revenue', value: '$816k–$1.0m', sub: 'range estimate', up: true },
    { label: 'Break-even (est.)',  value: '35–50/day',  sub: 'assumptions-based', up: true },
   ],
     revenue: [58, 67, 74, 80, 86, 91],

@@ -94,8 +94,12 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Sydney CBD', postcode: '2000', score: 44, verdict: 'CAUTION' as const, reason: 'Lunch trade has recovered post-COVID but evening dining in the CBD remains 30% below pre-2020 levels (Destination NSW data). High rents, declining evening foot traffic, and intense competition from both established institutions and new entrants make this a very difficult market for new restaurants without significant capital and brand recognition.' },
- { name: 'Parramatta', postcode: '2150', score: 36, verdict: 'NO' as const, reason: 'Lower average dining spend ($42 per head versus $68 Sydney inner average) combined with strong chain restaurant competition makes independent restaurant economics very challenging. Rent-to-revenue ratios for new entrants typically exceed 20%.' },
+  { name: 'Sydney CBD', postcode: '2000', score: 44, verdict: 'CAUTION' as const,
+    footTraffic: 72, demographics: 65, rentFit: 18, competitionScore: 42,
+    reason: 'Lunch trade has recovered post-COVID but evening dining in the CBD remains 30% below pre-2020 levels (Destination NSW data). High rents ($22,000+/mo), declining evening foot traffic, and intense competition from both established institutions and new entrants make this a very difficult market for new restaurants without significant capital and brand recognition.' },
+  { name: 'Parramatta', postcode: '2150', score: 36, verdict: 'NO' as const,
+    footTraffic: 62, demographics: 38, rentFit: 28, competitionScore: 30,
+    reason: 'Lower average dining spend ($42 per head versus $68 Sydney inner average) combined with strong chain restaurant competition makes independent restaurant economics very challenging. Rent-to-revenue ratios for new entrants typically exceed 20%. Score breakdown: footfall is adequate but demographics, rent fit, and competition all score poorly for independent operators.' },
 ]
 
 const S = { brand: '#0F766E', brandLight: '#14B8A6', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
@@ -260,9 +264,34 @@ export default function SydneyRestaurantPage() {
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 8 }}>Sydney Locations to Avoid for Restaurants</h2>
      {RISK_SUBURBS.map(sub => (
-            <div key={sub.name} style={{ background: S.white, border: `1.5px solid ${sub.verdict === 'NO' ? S.redBdr : S.amberBdr}`, borderRadius: 14, padding: '20px 24px', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'start' }}>
-       <div><div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}><h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900 }}>{sub.name}, NSW {sub.postcode}</h3><VerdictBadge v={sub.verdict}/></div><p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>{sub.reason}</p></div>
-       <div style={{ textAlign: 'center', minWidth: 56 }}><div style={{ fontSize: 36, fontWeight: 900, color: sub.verdict === 'NO' ? S.red : S.amber, lineHeight: 1 }}>{sub.score}</div><div style={{ fontSize: 10, color: S.muted }}>/100</div></div>
+            <div key={sub.name} style={{ background: S.white, border: `1.5px solid ${sub.verdict === 'NO' ? S.redBdr : S.amberBdr}`, borderRadius: 14, padding: '20px 24px', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 20, alignItems: 'start' }}>
+       <div>
+         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+           <h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900 }}>{sub.name}, NSW {sub.postcode}</h3>
+           <VerdictBadge v={sub.verdict}/>
+         </div>
+         <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>{sub.reason}</p>
+       </div>
+       <div style={{ minWidth: 156 }}>
+         <div style={{ textAlign: 'center', marginBottom: 12 }}>
+           <div style={{ fontSize: 36, fontWeight: 900, color: sub.verdict === 'NO' ? S.red : S.amber, lineHeight: 1 }}>{sub.score}</div>
+           <div style={{ fontSize: 10, color: S.muted }}>/100</div>
+         </div>
+         {([['Foot traffic', sub.footTraffic], ['Demographics', sub.demographics], ['Rent fit', sub.rentFit], ['Competition', sub.competitionScore]] as [string, number][]).map(([label, val]) => {
+           const barColor = val >= 70 ? S.emerald : val >= 45 ? S.amber : S.red
+           return (
+             <div key={label} style={{ marginBottom: 8 }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                 <span style={{ fontSize: 11, color: S.muted }}>{label}</span>
+                 <span style={{ fontSize: 11, fontWeight: 700, color: barColor }}>{val}</span>
+               </div>
+               <div style={{ height: 4, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
+                 <div style={{ height: '100%', width: `${val}%`, background: barColor, borderRadius: 100 }}/>
+               </div>
+             </div>
+           )
+         })}
+       </div>
       </div>
           ))}
         </section>

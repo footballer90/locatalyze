@@ -288,7 +288,7 @@ export default function TermsPageClient() {
               The Platform uses publicly available geographic data, algorithmic financial modelling, and artificial intelligence (AI) to generate indicative feasibility reports for commercial locations in Australia. These reports are provided as a starting point for user research only.
             </p>
             <p style={S.p}>
-              The data sources used by Locatalyze include Nominatim/OpenStreetMap (geocoding), Geoapify (competitor proximity), Australian Bureau of Statistics (demographic estimates), and OpenAI GPT-4o-mini (AI-generated analysis text). These sources may be incomplete, outdated, or inaccurate.
+              The data sources used by Locatalyze include Google Maps Platform (competitor discovery and ratings), Geoapify (proximity calculations), Nominatim/OpenStreetMap (address geocoding), Australian Bureau of Statistics (demographic estimates), and OpenAI GPT-4o-mini (AI-generated analysis text). These sources may be incomplete, outdated, or inaccurate.
             </p>
           </div>
 

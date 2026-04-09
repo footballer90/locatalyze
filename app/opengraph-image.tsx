@@ -135,7 +135,7 @@ export default async function Image() {
           <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 14 }}/>
 
      {[
-            ['Est. revenue', '$55k–$95k/mo'],
+            ['Est. revenue', '$68k–$84k/mo'],
       ['Break-even', '35–50/day'],
       ['Break-even', '38 / day'],
      ].map(([label, value]) => (

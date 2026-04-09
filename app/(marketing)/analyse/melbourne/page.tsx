@@ -368,7 +368,7 @@ export default function MelbourneAnalysePage() {
             </div>
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>How does Locatalyze analyse Melbourne locations?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze uses real competitor data from OpenStreetMap, ABS 2021 Census demographics for each SA2 region, and a financial model built from your submitted rent and business type. The result is a GO, CAUTION, or NO verdict with a full score breakdown and 3-year projection.</p>
+              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze uses real competitor data from Google Maps and Geoapify, ABS 2021 Census demographics for each SA2 region, and a financial model built from your submitted rent and business type. The result is a GO, CAUTION, or NO verdict with a full score breakdown and 3-year projection.</p>
             </div>
           </div>
         </section>

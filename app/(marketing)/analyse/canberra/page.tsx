@@ -368,7 +368,7 @@ export default function CanberraAnalysePage() {
             </div>
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>How does Locatalyze analyse Canberra locations?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze uses OpenStreetMap competitor data for your specific location, ABS 2021 Census demographics for the ACT SA2 region, and a financial model built from your submitted inputs. The result includes a GO, CAUTION, or NO verdict with competitor score, demographics score, rent affordability score, and a 3-year projection.</p>
+              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze uses Google Maps and Geoapify competitor data for your specific location, ABS 2021 Census demographics for the ACT SA2 region, and a financial model built from your submitted inputs. The result includes a GO, CAUTION, or NO verdict with competitor score, demographics score, rent affordability score, and a 3-year projection.</p>
             </div>
           </div>
         </section>

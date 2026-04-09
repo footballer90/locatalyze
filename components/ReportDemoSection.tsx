@@ -84,7 +84,7 @@ const DATA: Record<Verdict, ReportData> = {
     type:  'Cafe / Hospitality',
     score: 82,
     metrics: [
-      { l: 'Est. monthly revenue', v: '$55k–$95k', d: 'range estimate', c: D.e },
+      { l: 'Est. monthly revenue', v: '$68k–$84k', d: 'range estimate', c: D.e },
       { l: 'Monthly Profit',   v: '$24,800',  d: '27% margin',        c: D.e },
       { l: 'Break-even (est.)',   v: '35–50/day', d: 'assumptions-based', c: D.e },
       { l: 'Competitors 800m', v: '4',        d: 'Low density',       c: D.e },
@@ -98,9 +98,9 @@ const DATA: Record<Verdict, ReportData> = {
       { name: 'Profitability', val: 90, color: D.e     },
     ],
     finCards: [
-      { l: 'Est. monthly revenue', v: '$55k–$95k', s: 'range estimate' },
+      { l: 'Est. monthly revenue', v: '$68k–$84k', s: 'range estimate' },
       { l: 'Monthly Profit',  v: '$24,800',  s: 'After all costs'   },
-      { l: 'Est. annual revenue', v: '$660k–$1.1m', s: 'range estimate' },
+      { l: 'Est. annual revenue', v: '$816k–$1.0m', s: 'range estimate' },
       { l: 'Setup Cost Est.', v: '$185,000', s: 'Fit-out + equip.'  },
     ],
     finRows: [
@@ -110,7 +110,7 @@ const DATA: Record<Verdict, ReportData> = {
       { l: 'Utilities & ops', v: '$4,800'  },
       { l: 'Marketing',       v: '$2,000'  },
       { l: 'Total Expenses',  v: '$58,136', div: true },
-      { l: 'Est. gross revenue', v: '$55k–$95k', div: true },
+      { l: 'Est. gross revenue', v: '$68k–$84k', div: true },
       { l: 'Net Profit',      v: '$24,800', div: true, hi: true, pos: true },
     ],
     mapMarkers: [
