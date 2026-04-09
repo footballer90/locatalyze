@@ -39,7 +39,7 @@ const TOP_SUBURBS = [
     rank: 1, name: 'Surry Hills', postcode: '2010', score: 88, verdict: 'GO' as const,
   income: '$95,000', rent: '$10,500–$15,000/mo', competition: '14 within 500m',
   footTraffic: 89, demographics: 90, rentFit: 74, competitionScore: 68,
-    breakEven: '$4,200/day', payback: '10 months', annualProfit: '$312,000',
+    breakEven: '$4,200/day', payback: '10 months', annualProfit: '$324,960',
   angle: 'Sydney\'s highest-density dining precinct — for the right concept',
   detail: [
       'Surry Hills is where Sydney\'s restaurant industry concentrates. Crown Street and its surrounding blocks contain more quality restaurants per square kilometre than anywhere else in Australia outside Melbourne\'s CBD. For a restaurant operator, this density is simultaneously the best and worst thing about the suburb: best because it validates extraordinary demand, worst because differentiation is existential.',
@@ -159,7 +159,7 @@ export default function SydneyRestaurantPage() {
    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
    {SCHEMAS.map((s, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}/>)}
    <nav style={{ background: S.white, borderBottom: `1px solid ${S.border}`, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}><div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 14 }}>L</div><span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span></Link>
+    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}><div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 14 }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div><span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span></Link>
     <Link href="/onboarding" style={{ background: S.brand, color: S.white, borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
    </nav>
 
@@ -298,7 +298,7 @@ export default function SydneyRestaurantPage() {
 
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 8 }}>Case Study: Contemporary Restaurant, Surry Hills</h2>
-          <p style={{ fontSize: 13, color: S.muted, marginBottom: 14, lineHeight: 1.6 }}>This case study models a specific Crown Street location at <strong>$12,000/month rent</strong> — below the Surry Hills median of $13,000+. Monthly profit ($28,080) and annual profit ($336,960) are higher than the suburb score above ($26,000/mo · $312,000/yr), which uses median-rent assumptions. Same suburb, different input.</p>
+          <p style={{ fontSize: 13, color: S.muted, marginBottom: 14, lineHeight: 1.6 }}>This case study models a specific Crown Street location at <strong>$12,000/month rent</strong> — $1,000/month below the Surry Hills median of $13,000+. That $1,000/month difference accounts for the $12,000/year gap between the suburb score ($27,080/mo · $324,960/yr, median-rent assumptions) and this case study ($28,080/mo · $336,960/yr). Same suburb, different rent input.</p>
      <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 18, overflow: 'hidden' }}>
       <div style={{ background: 'linear-gradient(135deg,#1C0A00,#92400E)', padding: '22px 28px' }}><p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(253,230,138,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Modelled scenario — Locatalyze financial engine</p><h3 style={{ fontSize: 18, fontWeight: 800, color: '#FFFBEB' }}>60-seat contemporary restaurant, Crown Street Surry Hills NSW 2010</h3><p style={{ fontSize: 13, color: 'rgba(253,230,138,0.6)' }}>120 sqm · $12,000/mo rent · $90 avg spend · 5 nights/week · $250k setup</p></div>
       <div style={{ padding: '24px 28px' }}>

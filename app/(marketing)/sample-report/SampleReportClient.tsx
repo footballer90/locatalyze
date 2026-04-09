@@ -153,7 +153,7 @@ export default function SampleReportClient() {
         <nav style={{ padding: '0 24px', height: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1F2937' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
-              <div style={{ width: 26, height: 26, borderRadius: 7, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}>L</div>
+              <div style={{ width: 26, height: 26, borderRadius: 7, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div>
               <span style={{ fontWeight: 800, fontSize: 14, color: '#fff', letterSpacing: '-0.02em' }}>Locatalyze</span>
             </Link>
             <span style={{ color: '#374151' }}>›</span>
@@ -186,7 +186,7 @@ export default function SampleReportClient() {
                 <span style={{ fontSize: 11, color: 'rgba(5,150,105,0.7)', fontWeight: 600 }}>LOW RISK</span>
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 480 }}>
-                Leederville's Oxford Street is one of Perth's strongest café corridors. The rent-to-revenue ratio of 8.4% is well within the healthy range, foot traffic density is high, and competition is manageable. The demographic profile — median income $96,000, age skew 25–44 — aligns closely with consistent specialty coffee spend.
+                Leederville's Oxford Street is one of Perth's strongest café corridors. The rent-to-revenue ratio of 11.2% sits within the healthy range for specialty coffee, foot traffic density is high, and competition is manageable. The demographic profile — median income $96,000, age skew 25–44 — aligns closely with consistent specialty coffee spend.
               </p>
             </div>
             {/* Score ring */}
@@ -211,10 +211,10 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: '~$91,200',  s: 'benchmark estimate' },
-              { l: 'Net Profit / Mo',  v: '$18,400',   s: 'est. ±15%' },
+              { l: 'Monthly Revenue',  v: '~$68,000',  s: 'benchmark estimate' },
+              { l: 'Net Profit / Mo',  v: '~$12,000',  s: 'est. ±15%' },
               { l: 'Break-even Daily', v: '38 cust.',  s: 'to cover costs' },
-              { l: 'Payback Period',   v: '8 months',  s: 'from opening' },
+              { l: 'Payback Period',   v: '12 months', s: 'excl. ramp-up' },
             ].map(m => (
               <div key={m.l} style={{ padding: '14px 16px', background: '#161D27' }}>
                 <p style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{m.l}</p>
@@ -402,39 +402,42 @@ export default function SampleReportClient() {
                   </p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Revenue"         value="~$91,200" sub="benchmark est." mono />
-                  <Tile label="Operating Costs" value="$72,800"  color={S.red}     sub="rent + labour + COGS" mono />
-                  <Tile label="Gross Profit"    value="$56,544"  color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value="$18,400"  color={S.emerald} sub="~±15% · model est." mono />
+                  <Tile label="Revenue"         value="~$68,000" sub="benchmark est." mono />
+                  <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
+                  <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
+                  <Tile label="Net Profit"      value="~$12,000" color={S.emerald} sub="~±15% · model est." mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />
-                  <Tile label="Rent-to-Revenue" value="8.4%"      color={S.emerald} />
+                  <Tile label="Rent-to-Revenue" value="11.2%"     color={S.emerald} />
                   <Tile label="Setup Budget"    value="$147,200"  mono sub="assumed fit-out" />
-                  <Tile label="Payback Period"  value="8 months"  color={S.brand} sub="$147,200 ÷ $18,400/mo" />
+                  <Tile label="Payback Period"  value="12 months" color={S.brand} sub="$147,200 ÷ $12,000/mo · no ramp-up" />
                 </div>
-                <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 12 }}>
-                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 240 daily customers at $13 average spend over 26 trading days, monthly revenue of $91,200 gives a rent-to-revenue ratio of 8.4% — well inside the healthy threshold. Payback of 8 months assumes a $147,200 fit-out cost ($147,200 ÷ $18,400/mo net profit). The model assumes standard hospitality COGS of 38% and labour at 35% of revenue.</p>
+                <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 150 daily customers at $17.50 average spend over 26 trading days, monthly revenue of ~$68,000 gives a rent-to-revenue ratio of 11.2% — within the healthy threshold for specialty coffee. Payback of 12 months assumes a $147,200 fit-out cost ($147,200 ÷ $12,000/mo net profit). The model assumes COGS of 38% and fixed labour of $20,000/month (2 FT + 2 casual).</p>
+                </div>
+                <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
+                  <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>⏱ Payback assumes full trading from day 1. Allow 3–4 additional months for ramp-up to full customer volume — bringing realistic payback to 15–16 months.</p>
                 </div>
               </Card>
               <Card>
                 <SectionLabel>Break-even Analysis</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
                   <Tile label="Break-even / Day"   value="38 cust."   mono />
-                  <Tile label="Modelled / Day"     value="240 cust."  color={S.emerald} mono />
-                  <Tile label="Surplus"            value="+202 cust." color={S.emerald} mono />
+                  <Tile label="Modelled / Day"     value="150 cust."  color={S.emerald} mono />
+                  <Tile label="Surplus"            value="+112 cust." color={S.emerald} mono />
                 </div>
                 <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 16px' }}>
-                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>The modelled daily customer count of 240 is 6.3× the break-even threshold of 38. Even at 50% of projected demand (120 customers/day), the location remains comfortably above break-even. This gives significant downside protection in the ramp-up period.</p>
+                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>The modelled daily customer count of 150 is 3.9× the break-even threshold of 38. Even at 50% of projected demand (75 customers/day), the location remains above break-even. This gives meaningful downside protection during the ramp-up period.</p>
                 </div>
               </Card>
               <Card>
                 <SectionLabel>Risk Scenarios</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
                   {[
-                    { label: 'Best Case',  pct: '130% demand', rev: '$118,560', profit: '$31,760', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
-                    { label: 'Base Case', pct: '100% demand', rev: '$91,200',  profit: '$18,400', bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
-                    { label: 'Worst Case', pct: '70% demand',  rev: '$63,840',  profit: '$4,240',  bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
+                    { label: 'Best Case',  pct: '130% demand', rev: '$88,400', profit: '$24,600', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
+                    { label: 'Base Case',  pct: '100% demand', rev: '$68,000', profit: '$12,000', bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
+                    { label: 'Worst Case', pct: '70% demand',  rev: '$47,600', profit: '$5,400',  bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
                   ].map(sc => (
                     <div key={sc.label} style={{ background: sc.bg, border: `1px solid ${sc.border}`, borderRadius: 10, padding: '14px 15px' }}>
                       <p style={{ fontSize: 9, fontWeight: 800, color: sc.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>{sc.label}</p>
