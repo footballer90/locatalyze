@@ -292,7 +292,7 @@ export default function OnboardingPage() {
       setAnalysisError('Something went wrong. Please check your connection and try again.')
       setAnalysing(false)
     }
-  }, [businessType, address, monthlyRent, router])
+  }, [businessType, address, monthlyRent, router, coords, operatingHours, seatingCapacity, businessMode, avgOrderValue, locationAccess])
 
   useEffect(() => {
     const saved = sessionStorage.getItem('onboarding_data')

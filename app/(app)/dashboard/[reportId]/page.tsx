@@ -1251,7 +1251,7 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
   if (netProfit != null && netProfit > 5000) {
     proceedReasons.push({
       data: `Projected net profit of ${fmt(netProfit)}/month`,
-      implication: `Breakeven within ${C?.breakEvenMonths ?? '--'} months, building equity quickly`,
+      implication: C?.breakEvenMonths ? `Breakeven within ${C.breakEvenMonths} months, building equity quickly` : 'Strong margin — recoup setup costs ahead of industry average',
       action: 'Lock in a 3+ year lease with capped annual increases to protect this margin'
     })
   } else if (netProfit != null && netProfit < 0) {
@@ -4354,7 +4354,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>ROI at 36mo</p>
-                    <p style={{ fontSize: 16, fontWeight: 900, color: fin.roiTimeline?.roi36?.startsWith('+') ? S.emerald : S.red, fontFamily: S.mono }}>{fin.roiTimeline?.roi36 ?? '--'}</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: fin.roiTimeline?.roi36?.startsWith('+') ? S.emerald : fin.roiTimeline?.roi36 ? S.red : S.n400, fontFamily: S.mono }}>{fin.roiTimeline?.roi36 ?? 'N/A'}</p>
                   </div>
                 </div>
               </Card>
@@ -5202,13 +5202,13 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
                   {(() => {
                     const _validCompCount = (competitors as any)?.validCount ?? competitors?.count ?? 0
-                    const _resolvedThreat = _validCompCount === 0 ? 'Low (0 direct)' : (market.competitorThreat ?? '--')
+                    const _resolvedThreat = _validCompCount === 0 ? 'Low (0 direct)' : (market.competitorThreat ?? 'N/A')
                     const _threatColor = _validCompCount === 0 ? S.emerald
                       : (market.competitorThreat === 'High' ? S.red : market.competitorThreat === 'Low' ? S.emerald : S.amber)
                     return [
-                      { label: 'Demand Trend', value: market.demandTrend ?? '--', color: market.demandTrend === 'Rising' ? S.emerald : market.demandTrend === 'Declining' ? S.red : S.amber },
-                      { label: 'Market Maturity', value: market.marketMaturity ?? '--', color: S.n800 },
-                      { label: 'Best Entry Timing', value: market.bestEntryTiming ?? '--', color: market.bestEntryTiming === 'Immediate' ? S.emerald : S.amber },
+                      { label: 'Demand Trend', value: market.demandTrend ?? 'N/A', color: market.demandTrend === 'Rising' ? S.emerald : market.demandTrend === 'Declining' ? S.red : S.amber },
+                      { label: 'Market Maturity', value: market.marketMaturity ?? 'N/A', color: S.n800 },
+                      { label: 'Best Entry Timing', value: market.bestEntryTiming ?? 'N/A', color: market.bestEntryTiming === 'Immediate' ? S.emerald : S.amber },
                       { label: 'Competitor Threat', value: _resolvedThreat, color: _threatColor },
                     ].map(m => <Tile key={m.label} label={m.label} value={m.value} color={m.color} />)
                   })()}
@@ -5756,7 +5756,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 16 }}>
                 <Tile label="Monthly Rent" value={fmt(report.monthly_rent)} mono />
                 <Tile label="% of Revenue" value={fin.rent?.toRevenuePercent != null ? displayPercent(fin.rent.toRevenuePercent, _confidenceTier).display : '--'} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
-                <Tile label="Rating" value={fin.rent?.label ?? '--'} color={fin.rent?.label === 'EXCELLENT' ? S.emerald : fin.rent?.label === 'GOOD' ? S.blue : fin.rent?.label === 'MARGINAL' ? S.amber : S.red} />
+                <Tile label="Rating" value={fin.rent?.label ?? 'N/A'} color={fin.rent?.label === 'EXCELLENT' ? S.emerald : fin.rent?.label === 'GOOD' ? S.blue : fin.rent?.label === 'MARGINAL' ? S.amber : fin.rent?.label ? S.red : S.n400} />
               </div>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{report.rent_analysis}</p>
             </Card>
@@ -5950,7 +5950,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
                     <div style={{ background: S.n50, borderRadius: 10, padding: '14px', border: `1px solid ${S.n100}`, textAlign: 'center' }}>
                       <p style={{ fontSize: 28, fontWeight: 900, color: S.n900, fontFamily: S.mono, letterSpacing: '-0.03em' }}>
-                        {mapInsights?.competitorCount500m ?? competitors?.count ?? '--'}
+                        {mapInsights?.competitorCount500m ?? competitors?.count ?? '0'}
                       </p>
                       <p style={{ fontSize: 10, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>within {mapRadius ?? C?.competitorRadius ?? 500}m</p>
                     </div>
@@ -5960,7 +5960,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                         color: (mapInsights?.density ?? competitors?.intensityLabel?.toLowerCase()) === 'high' ? S.red
                           : (mapInsights?.density ?? competitors?.intensityLabel?.toLowerCase()) === 'medium' ? S.amber : S.emerald,
                       }}>
-                        {mapInsights?.density ?? competitors?.intensityLabel ?? '--'}
+                        {mapInsights?.density ?? competitors?.intensityLabel ?? 'N/A'}
                       </p>
                       <p style={{ fontSize: 10, color: S.n400, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>density</p>
                     </div>
