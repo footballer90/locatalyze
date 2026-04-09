@@ -211,8 +211,8 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: '$91,200',   s: 'estimated' },
-              { l: 'Net Profit / Mo',  v: '$18,400',   s: '20.2% margin' },
+              { l: 'Monthly Revenue',  v: '~$91,200',  s: 'benchmark estimate' },
+              { l: 'Net Profit / Mo',  v: '$18,400',   s: 'est. ±15%' },
               { l: 'Break-even Daily', v: '38 cust.',  s: 'to cover costs' },
               { l: 'Payback Period',   v: '8 months',  s: 'from opening' },
             ].map(m => (
@@ -223,6 +223,9 @@ export default function SampleReportClient() {
               </div>
             ))}
           </div>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4, fontStyle: 'italic' }}>
+            Revenue and profit are model estimates from industry benchmarks — not financial forecasts. Actual results will vary.
+          </p>
         </div>
       </div>
 
@@ -298,6 +301,9 @@ export default function SampleReportClient() {
                       <ScoreBar label="Profitability"       score={82} weight="25%" />
                       <ScoreBar label="Competition"         score={79} weight="25%" />
                       <ScoreBar label="Area Demographics"   score={86} weight="20%" />
+                      <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6, fontStyle: 'italic' }}>
+                        Sub-scores have ±5 accuracy given benchmark data quality. Weighted total: 88×0.30 + 82×0.25 + 79×0.25 + 86×0.20 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                      </p>
                     </div>
                     {/* Simple radar placeholder */}
                     <div style={{ textAlign: 'center' }}>
@@ -390,11 +396,16 @@ export default function SampleReportClient() {
             {activeTab === 'financials' && <>
               <Card>
                 <SectionLabel>Monthly P&L</SectionLabel>
+                <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
+                  <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>
+                    ⚠ These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. A ±15% variance on net profit is typical at this confidence level.
+                  </p>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Revenue"         value="$91,200"  sub="estimated monthly" mono />
+                  <Tile label="Revenue"         value="~$91,200" sub="benchmark est." mono />
                   <Tile label="Operating Costs" value="$72,800"  color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="$56,544"  color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value="$18,400"  color={S.emerald} sub="20.2% net margin" mono />
+                  <Tile label="Net Profit"      value="$18,400"  color={S.emerald} sub="~±15% · model est." mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />
