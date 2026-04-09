@@ -393,13 +393,14 @@ export default function SampleReportClient() {
                   <Tile label="Gross Profit"    value="$56,544"  color={S.blue}    sub="62% gross margin" mono />
                   <Tile label="Net Profit"      value="$18,400"  color={S.emerald} sub="20.2% net margin" mono />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Monthly Rent"    value="$7,600"   mono />
-                  <Tile label="Rent-to-Revenue" value="8.4%"     color={S.emerald} />
-                  <Tile label="Payback Period"  value="8 months" color={S.brand} />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
+                  <Tile label="Monthly Rent"    value="$7,600"    mono />
+                  <Tile label="Rent-to-Revenue" value="8.4%"      color={S.emerald} />
+                  <Tile label="Setup Budget"    value="$147,200"  mono sub="assumed fit-out" />
+                  <Tile label="Payback Period"  value="8 months"  color={S.brand} sub="$147,200 ÷ $18,400/mo" />
                 </div>
                 <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 12 }}>
-                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 240 daily customers at $13 average spend over 26 trading days, monthly revenue of $91,200 gives a rent-to-revenue ratio of 8.4% — well inside the healthy threshold. The model assumes standard hospitality COGS of 38% and labour at 35% of revenue.</p>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 240 daily customers at $13 average spend over 26 trading days, monthly revenue of $91,200 gives a rent-to-revenue ratio of 8.4% — well inside the healthy threshold. Payback of 8 months assumes a $147,200 fit-out cost ($147,200 ÷ $18,400/mo net profit). The model assumes standard hospitality COGS of 38% and labour at 35% of revenue.</p>
                 </div>
               </Card>
               <Card>

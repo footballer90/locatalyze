@@ -268,7 +268,8 @@ export default function SydneyRestaurantPage() {
         </section>
 
         <section style={{ marginBottom: 44 }}>
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 14 }}>Case Study: Contemporary Restaurant, Surry Hills</h2>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 8 }}>Case Study: Contemporary Restaurant, Surry Hills</h2>
+          <p style={{ fontSize: 13, color: S.muted, marginBottom: 14, lineHeight: 1.6 }}>This case study models a specific Crown Street location at <strong>$12,000/month rent</strong> — below the Surry Hills median of $13,000+. Monthly profit ($28,080) and annual profit ($336,960) are higher than the suburb score above ($26,000/mo · $312,000/yr), which uses median-rent assumptions. Same suburb, different input.</p>
      <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 18, overflow: 'hidden' }}>
       <div style={{ background: 'linear-gradient(135deg,#1C0A00,#92400E)', padding: '22px 28px' }}><p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(253,230,138,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Modelled scenario — Locatalyze financial engine</p><h3 style={{ fontSize: 18, fontWeight: 800, color: '#FFFBEB' }}>60-seat contemporary restaurant, Crown Street Surry Hills NSW 2010</h3><p style={{ fontSize: 13, color: 'rgba(253,230,138,0.6)' }}>120 sqm · $12,000/mo rent · $90 avg spend · 5 nights/week · $250k setup</p></div>
       <div style={{ padding: '24px 28px' }}>
