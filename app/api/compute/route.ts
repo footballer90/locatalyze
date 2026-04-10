@@ -101,7 +101,25 @@ export async function POST(request: NextRequest) {
   }
 
   const modeLabel = bodyAgentOutputs ? 'full-payload' : 'self-contained'
-  console.log(`[compute] ${reportId} mode=${modeLabel} — a1=${!!agentOutputs.a1} a4=${!!agentOutputs.a4} a5=${!!agentOutputs.a5}`)
+
+  // Detailed agent field presence logging — helps diagnose partial agent failures
+  const a4obj = agentOutputs.a4 as Record<string, any> | null | undefined
+  const a5obj = agentOutputs.a5 as Record<string, any> | null | undefined
+  const a4HasCosts   = !!(a4obj?.total_monthly_costs ?? a4obj?.totalMonthlyCosts)
+  const a4HasRevenue = !!(a4obj?.financial_projections?.estimated_monthly_revenue)
+  const a5HasRevenue = !!(a5obj?.monthly_revenue ?? a5obj?.projected_monthly_revenue)
+  console.log(
+    `[compute] ${reportId} mode=${modeLabel} — ` +
+    `a1=${!!agentOutputs.a1} a3=${!!agentOutputs.a3} ` +
+    `a4=${!!agentOutputs.a4}(costs=${a4HasCosts} rev=${a4HasRevenue}) ` +
+    `a5=${!!agentOutputs.a5}(rev=${a5HasRevenue})`
+  )
+  if (!a4HasCosts) {
+    console.warn(`[compute] ${reportId} — A4 missing total_monthly_costs. Falling back to benchmark costs.`)
+  }
+  if (!a5HasRevenue && !a4HasRevenue) {
+    console.warn(`[compute] ${reportId} — Both A5 and A4 missing revenue estimates. Report revenue will be benchmark-only.`)
+  }
 
   // ── Agent failure detection ───────────────────────────────────────────────
   // Warn when all primary agents returned empty/missing — the compute engine

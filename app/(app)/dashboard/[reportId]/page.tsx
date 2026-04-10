@@ -1305,7 +1305,7 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
   // Conditions from engine
   if (C?.verdictConditions) conditions.push(...C.verdictConditions)
   if (conditions.length === 0) {
-    if (C?.breakEvenDaily) conditions.push(`Achieve ${C.breakEvenDaily} customers/day consistently within 3 months`)
+    if (C?.breakEvenDaily != null) conditions.push(`Achieve ${C.breakEvenDaily} customers/day consistently within 3 months`)
     if (revenue) conditions.push(`Maintain monthly revenue above ${fmt(Math.round(revenue * 0.80))}`)
     if (strongCount > 2) conditions.push('Offer a clear point of differentiation from the ' + strongCount + ' strong operators')
   }
@@ -1589,7 +1589,7 @@ function FinancialTrust({ computed, fin, report }: {
 
   // What needs to be true
   const mustBeTrue: string[] = []
-  if (C.breakEvenDaily) mustBeTrue.push(`Average ${C.breakEvenDaily}+ customers per day from month 3 onward`)
+  if (C.breakEvenDaily != null) mustBeTrue.push(`Average ${C.breakEvenDaily}+ customers per day from month 3 onward`)
   if (C.revenue) mustBeTrue.push(`Monthly revenue stays above ${fmt(Math.round(C.revenue * 0.80))} (80% of projection)`)
   if (C.costBreakdown?.staff) mustBeTrue.push(`Staff costs do not exceed $${Math.round(C.costBreakdown.staff * 1.15).toLocaleString()}/month`)
   mustBeTrue.push('No major competitor opens within 200m during the first 12 months')
@@ -2344,13 +2344,13 @@ function AssumptionsPanel({ report }: { report: Report }) {
       ? 'ABS 2021 Census – state-level estimate'
       : 'ABS 2021 Census'
   const items = [
-    { label: 'Business type', value: report.business_type || '--' },
-    { label: 'Address', value: report.location_name || '--' },
+    { label: 'Business type', value: report.business_type || 'Not specified' },
+    { label: 'Address', value: report.location_name || 'Not specified' },
     { label: 'Monthly rent (input)', value: fmt(report.monthly_rent) },
     { label: 'Avg ticket size', value: fmt(fin.avgTicketSize) },
-    { label: 'Est. daily customers', value: report.breakeven_daily ? `${report.breakeven_daily} / day` : '--' },
+    { label: 'Est. daily customers', value: report.breakeven_daily != null ? `${report.breakeven_daily} / day` : 'Not available' },
     { label: 'Monthly revenue', value: fmt(fin.monthlyRevenue) },
-    { label: 'Profit margin', value: fin.profitMargin ? `${fin.profitMargin}%` : '--' },
+    { label: 'Profit margin', value: fin.profitMargin != null ? `${fin.profitMargin}%` : 'Not available' },
     { label: 'Competitor data', value: `OpenStreetMap Overpass API – ${(report as any).computed_result?.competitorRadius ?? 500}m radius` },
     { label: 'Demographics source', value: demoSource },
     { label: 'Geocoding source', value: 'OpenStreetMap Nominatim' },
@@ -4100,7 +4100,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             />
             <Tile
               label="Break-even Daily"
-              value={(_beDaily ?? (fin as any).breakEvenDailyEst) ? `${_beDaily ?? (fin as any).breakEvenDailyEst} cust.` : '--'}
+              value={(_beDaily ?? (fin as any).breakEvenDailyEst) != null ? `${_beDaily ?? (fin as any).breakEvenDailyEst} cust.` : 'Not available'}
               sub="customers/day needed"
               color={S.n900}
               mono
@@ -4254,7 +4254,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     return (
                       <div key={m.label} style={{ textAlign: 'center' }}>
                         <p style={{ fontSize: 11, color: adjVc.text, opacity: 0.65, marginBottom: 4 }}>{m.label}</p>
-                        <p style={{ fontSize: 15, fontWeight: 900, color: adjVc.text, fontFamily: S.mono }}>{m.adj != null ? m.format(m.adj) : '--'}</p>
+                        <p style={{ fontSize: 15, fontWeight: 900, color: adjVc.text, fontFamily: S.mono }}>{m.adj != null ? m.format(m.adj) : 'N/A'}</p>
                         {delta !== 0 && m.orig != null && (
                           <p style={{ fontSize: 11, color: better ? S.emerald : S.red, fontWeight: 700, marginTop: 2 }}>{m.format(Math.abs(delta))}</p>
                         )}
@@ -5103,9 +5103,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <Card>
                 <SectionHeading sub="Area median rent from A2 agent based on comparable commercial listings.">Area Rent Analysis</SectionHeading>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }}>
-                  <Tile label="Median Monthly Rent" value={areaContext.medianRent.monthly != null ? `A$${(areaContext.medianRent.monthly).toLocaleString()}` : '--'} mono color={S.brand} />
-                  <Tile label="Range (Low)" value={areaContext.medianRent.price_range?.min_monthly != null ? `A$${areaContext.medianRent.price_range.min_monthly.toLocaleString()}` : '--'} mono />
-                  <Tile label="Range (High)" value={areaContext.medianRent.price_range?.max_monthly != null ? `A$${areaContext.medianRent.price_range.max_monthly.toLocaleString()}` : '--'} mono color={S.red} />
+                  <Tile label="Median Monthly Rent" value={areaContext.medianRent.monthly != null ? `A$${(areaContext.medianRent.monthly).toLocaleString()}` : 'Not available'} mono color={S.brand} />
+                  <Tile label="Range (Low)" value={areaContext.medianRent.price_range?.min_monthly != null ? `A$${areaContext.medianRent.price_range.min_monthly.toLocaleString()}` : 'Not available'} mono />
+                  <Tile label="Range (High)" value={areaContext.medianRent.price_range?.max_monthly != null ? `A$${areaContext.medianRent.price_range.max_monthly.toLocaleString()}` : 'Not available'} mono color={S.red} />
                 </div>
                 <RentRatioPanel rent={areaContext.medianRent.monthly} revenue={displayRevenue} />
               </Card>
@@ -5749,7 +5749,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading>Rent Breakdown</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 16 }}>
                 <Tile label="Monthly Rent" value={fmt(report.monthly_rent)} mono />
-                <Tile label="% of Revenue" value={fin.rent?.toRevenuePercent != null ? displayPercent(fin.rent.toRevenuePercent, _confidenceTier).display : '--'} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
+                <Tile label="% of Revenue" value={fin.rent?.toRevenuePercent != null ? displayPercent(fin.rent.toRevenuePercent, _confidenceTier).display : 'Not available'} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
                 <Tile label="Rating" value={fin.rent?.label ?? 'N/A'} color={fin.rent?.label === 'EXCELLENT' ? S.emerald : fin.rent?.label === 'GOOD' ? S.blue : fin.rent?.label === 'MARGINAL' ? S.amber : fin.rent?.label ? S.red : S.n400} />
               </div>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{report.rent_analysis}</p>
@@ -5760,9 +5760,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               {/* Single canonical break-even values — _beDailyForGauge = required, _currentDailyCustomers = projected */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 24, alignItems: 'center', marginBottom: 16 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
-                  <Tile label="Break-even / Day" value={_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} cust.` : '--'} mono sub="customers needed" />
-                  <Tile label="Projected / Day" value={_currentDailyCustomers != null ? `${_dCustomers.display} cust.` : '--'} mono sub="at base demand" color={(_currentDailyCustomers ?? 0) >= (_beDailyForGauge ?? Infinity) ? S.emerald : S.red} />
-                  <Tile label="Revenue / Month" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : '--'} mono sub="needed to break even" />
+                  <Tile label="Break-even / Day" value={_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} cust.` : 'Not available'} mono sub="customers needed" />
+                  <Tile label="Projected / Day" value={_currentDailyCustomers != null ? `${_dCustomers.display} cust.` : 'Not available'} mono sub="at base demand" color={(_currentDailyCustomers ?? 0) >= (_beDailyForGauge ?? Infinity) ? S.emerald : S.red} />
+                  <Tile label="Revenue / Month" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : 'Not available'} mono sub="needed to break even" />
                 </div>
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, textAlign: 'center' }}>Projected vs Break-even</p>
