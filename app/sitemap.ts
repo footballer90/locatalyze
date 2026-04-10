@@ -82,7 +82,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/analyse/melbourne/broadmeadows`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
     { url: `${BASE}/analyse/melbourne/hoppers-crossing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
     { url: `${BASE}/analyse/melbourne/narre-warren`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/melbourne/cafe`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${BASE}/analyse/melbourne/cafe`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${BASE}/analyse/melbourne/restaurant`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
 
     // ── Brisbane suburb pages ───────────────────────────────────────────────────
     { url: `${BASE}/analyse/brisbane/brisbane-cbd`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
@@ -101,6 +102,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/analyse/perth/perth-cbd`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
     { url: `${BASE}/analyse/perth/mount-lawley`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
     { url: `${BASE}/analyse/perth/cafe`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
+    { url: `${BASE}/analyse/perth/restaurant`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
 
     // ── Adelaide / other capitals ───────────────────────────────────────────────
     { url: `${BASE}/analyse/adelaide/restaurant`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
