@@ -201,7 +201,7 @@ function ReportPreview() {
           <div style={{ position:'relative', zIndex:2 }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
               <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(255,255,255,.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:900, color:'#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div>
+                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(255,255,255,.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:900, color:'#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
                 <span style={{ fontSize:11, fontWeight:800, color:'rgba(255,255,255,.7)', letterSpacing:'.03em' }}>Locatalyze Report</span>
               </div>
               <span style={{ fontSize:10, color:'rgba(255,255,255,.35)', background:'rgba(255,255,255,.08)', borderRadius:6, padding:'2px 8px' }}>
@@ -485,7 +485,7 @@ function DarkShowcase() {
               <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ display: 'flex', gap: 4 }}>{['#FF5F57','#FFBD2E','#28CA41'].map(c=><div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}</div>
                 <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>locatalyze.com/analyse</div>
-                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 900, color: '#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: \'13px\', height: \'13px\' }} /></div>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 900, color: '#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
               </div>
               <div style={{ background: '#0A1210', minHeight: 280 }}>
                 <ShowcaseDeviceUI ui={tab.ui} ak={ak}/>
