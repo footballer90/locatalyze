@@ -6,6 +6,43 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SINGLE SOURCE OF TRUTH — all financial figures for this sample report
+// Update numbers HERE only. Do not hardcode figures elsewhere in this file.
+// Derivation:
+//   revenue     = customers × ticket × tradingDays = 150 × 17.50 × 26 = 68,250 ≈ 68,000
+//   cogs        = revenue × cogsRate               = 68,000 × 0.38   = 25,840
+//   grossProfit = revenue × grossMarginRate        = 68,000 × 0.62   = 42,160
+//   fixedCosts  = rent + staff + overheads         = 7,600 + 20,000 + 2,560 = 30,160
+//   totalCosts  = fixedCosts + cogs                = 30,160 + 25,840 = 56,000
+//   netProfit   = revenue − totalCosts             = 68,000 − 56,000 = 12,000
+//   rentRatio   = rent / revenue                   = 7,600 / 68,000  = 11.2%
+//   beDaily     = (fixedCosts/mo ÷ tradingDays) ÷ (ticket × grossMarginRate)
+//               = (30,160 ÷ 26) ÷ (17.50 × 0.62) = 1,160 ÷ 10.85   ≈ 107
+//   payback     = setupBudget / netProfit           = 147,200 / 12,000 = 12.3 → 12 mo
+// ─────────────────────────────────────────────────────────────────────────────
+const M = {
+  // Inputs
+  rent:         7_600,
+  customers:    150,
+  ticket:       17.50,
+  tradingDays:  26,
+  cogsRate:     0.38,
+  setupBudget:  147_200,
+  // Derived — do not edit independently
+  revenue:      68_000,
+  grossProfit:  42_200,
+  totalCosts:   56_000,
+  netProfit:    12_000,
+  rentRatio:    '11.2%',
+  beDaily:      107,
+  paybackMonths: 12,
+  // Scenarios (operating leverage: fixed $30,160 + variable 38%)
+  best:   { label: 'Best Case',   pct: '130% demand', rev: '$88,400', costs: '$63,800', profit: '$24,600' },
+  base:   { label: 'Base Case',   pct: '100% demand', rev: '$68,000', costs: '$56,000', profit: '$12,000' },
+  stress: { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '~$3,600' },
+} as const
+
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
@@ -211,10 +248,10 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: '~$68,000',  s: 'benchmark estimate' },
-              { l: 'Net Profit / Mo',  v: '~$12,000',  s: 'est. ±15%' },
-              { l: 'Break-even Daily', v: '107 cust.', s: 'to cover costs' },
-              { l: 'Payback Period',   v: '12 months', s: 'excl. ramp-up' },
+              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'benchmark estimate' },
+              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'est. ±15%' },
+              { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'to cover costs' },
+              { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
               <div key={m.l} style={{ padding: '14px 16px', background: '#161D27' }}>
                 <p style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{m.l}</p>
@@ -405,13 +442,13 @@ export default function SampleReportClient() {
                   <Tile label="Revenue"         value="~$68,000" sub="benchmark est." mono />
                   <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value="~$12,000" color={S.emerald} sub="~±15% · model est." mono />
+                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="~±15% · model est." mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />
                   <Tile label="Rent-to-Revenue" value="11.2%"     color={S.emerald} />
                   <Tile label="Setup Budget"    value="$147,200"  mono sub="assumed fit-out" />
-                  <Tile label="Payback Period"  value="12 months" color={S.brand} sub="$147,200 ÷ $12,000/mo · no ramp-up" />
+                  <Tile label="Payback Period"  value={`${M.paybackMonths} months`} color={S.brand} sub={`$${M.setupBudget.toLocaleString()} ÷ $${M.netProfit.toLocaleString()}/mo · no ramp-up`} />
                 </div>
                 <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
                   <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 150 daily customers at $17.50 average spend over 26 trading days, monthly revenue of ~$68,000 gives a rent-to-revenue ratio of 11.2% — within the healthy threshold for specialty coffee. Payback of 12 months assumes a $147,200 fit-out cost ($147,200 ÷ $12,000/mo net profit). The model assumes COGS of 38% and fixed labour of $20,000/month (2 FT + 2 casual).</p>
@@ -435,9 +472,9 @@ export default function SampleReportClient() {
                 <SectionLabel>Risk Scenarios</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
                   {[
-                    { label: 'Best Case',   pct: '130% demand', rev: '$88,400', costs: '$63,800', profit: '$24,600', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
-                    { label: 'Base Case',   pct: '100% demand', rev: '$68,000', costs: '$56,000', profit: '$12,000', bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
-                    { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '~$3,600', bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
+                    { ...M.best,   bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
+                    { ...M.base,   bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
+                    { ...M.stress, bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
                   ].map(sc => (
                     <div key={sc.label} style={{ background: sc.bg, border: `1px solid ${sc.border}`, borderRadius: 10, padding: '14px 15px' }}>
                       <p style={{ fontSize: 9, fontWeight: 800, color: sc.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>{sc.label}</p>
@@ -581,11 +618,11 @@ export default function SampleReportClient() {
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
               {[
-                { label: 'Monthly Revenue',  value: '~$68,000',  color: S.n900 },
-                { label: 'Net Profit / Mo',  value: '~$12,000',  color: S.emerald },
-                { label: 'Rent-to-Revenue',  value: '11.2%',     color: S.amber },
-                { label: 'Break-even / Day', value: '107 cust.', color: S.n900 },
-                { label: 'Payback Period',   value: '12 mo †',   color: S.n900 },
+                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900 },
+                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald },
+                { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber },
+                { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900 },
+                { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900 },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
                   <span style={{ fontSize: 12, color: S.n500 }}>{item.label}</span>
