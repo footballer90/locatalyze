@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
    body: JSON.stringify({
         from: 'Locatalyze Contact <noreply@locatalyze.com>',
-    to: ['hello@locatalyze.com'],
+    to: ['pg4441@gmail.com'],
     subject: `New contact: ${reason} — ${name}`,
         html: `
           <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:580px;margin:0 auto;padding:32px 24px;background:#FAFAF9;">
