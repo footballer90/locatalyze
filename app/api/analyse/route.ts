@@ -173,8 +173,29 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   }
 
   const parsed = parseAustralianAddress(address)
-  const latNum = typeof lat === 'number' ? lat : (lat ? parseFloat(lat) : null)
-  const lngNum = typeof lng === 'number' ? lng : (lng ? parseFloat(lng) : null)
+  let latNum = typeof lat === 'number' ? lat : (lat ? parseFloat(lat) : null)
+  let lngNum = typeof lng === 'number' ? lng : (lng ? parseFloat(lng) : null)
+
+  // ── Coordinate × state cross-validation ─────────────────────────────────────
+  // If the user's Mapbox pin is in the wrong state (e.g. lng=138.66 but state=NSW),
+  // null out the coordinates so the compute engine falls back to text-based search
+  // rather than running A1 competitor search in one state and A3/A5 in another.
+  const STATE_LNG_BOUNDS: Record<string, [number, number]> = {
+    NSW: [140, 154], VIC: [140, 150], QLD: [137, 155],
+    SA:  [129, 142], WA:  [112, 130], TAS: [143, 149],
+    NT:  [129, 139], ACT: [148, 150],
+  }
+  if (lngNum !== null && isFinite(lngNum) && parsed.state && STATE_LNG_BOUNDS[parsed.state]) {
+    const [minLng, maxLng] = STATE_LNG_BOUNDS[parsed.state]
+    if (lngNum < minLng || lngNum > maxLng) {
+      console.warn(
+        `[analyse] Coordinate mismatch: lng=${lngNum} is outside expected range for ` +
+        `${parsed.state} (${minLng}–${maxLng}). Nulling coordinates to prevent cross-state data contamination.`
+      )
+      latNum = null
+      lngNum = null
+    }
+  }
 
   return {
     valid: true,
@@ -330,6 +351,7 @@ export async function POST(request: NextRequest) {
     // Parsed address components — used by A2 SerpApi queries
     locality:  data.locality,
     area:      data.area,
+    suburb:    data.area,     // alias — A3/A5 should use suburb-level search, not city
     city:      data.city,
     state:     data.state,
     postcode:  data.postcode,

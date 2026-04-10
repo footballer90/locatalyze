@@ -103,6 +103,26 @@ export async function POST(request: NextRequest) {
   const modeLabel = bodyAgentOutputs ? 'full-payload' : 'self-contained'
   console.log(`[compute] ${reportId} mode=${modeLabel} — a1=${!!agentOutputs.a1} a4=${!!agentOutputs.a4} a5=${!!agentOutputs.a5}`)
 
+  // ── Agent failure detection ───────────────────────────────────────────────
+  // Warn when all primary agents returned empty/missing — the compute engine
+  // will still run (benchmark fallbacks), but the report quality will be low.
+  const agentKeys = ['a1', 'a3', 'a4', 'a5'] as const
+  const emptyAgents = agentKeys.filter(k => {
+    const v = agentOutputs[k]
+    return v == null || (typeof v === 'object' && Object.keys(v).length === 0)
+  })
+  if (emptyAgents.length === agentKeys.length) {
+    console.error(
+      `[compute] ${reportId} CRITICAL — ALL primary agents returned empty (${emptyAgents.join(', ')}). ` +
+      `Report will be benchmark-only. Check n8n pipeline for webhook failures.`
+    )
+  } else if (emptyAgents.length >= 2) {
+    console.warn(
+      `[compute] ${reportId} WARNING — ${emptyAgents.length} agents returned empty: ${emptyAgents.join(', ')}. ` +
+      `Report quality degraded — using benchmark fallbacks.`
+    )
+  }
+
   // ── 6. Build ComputeInput ─────────────────────────────────────────────────
   const inp = (report.input_data ?? {}) as Record<string, any>
 
@@ -239,12 +259,27 @@ export async function POST(request: NextRequest) {
   )
 
   // ── 9. Write to Supabase ──────────────────────────────────────────────────
+  // Quality gate: when dataCompleteness is very low (all agents failed), flag
+  // the report so the UI can show a "limited data" warning to the user.
+  // We still write 'complete' so the report loads — but we annotate it clearly.
+  const allAgentsFailed = emptyAgents.length === agentKeys.length
+  const lowConfidence   = computedResult.dataCompleteness < 20 || allAgentsFailed
+  const progressStep    = lowConfidence ? 'Complete — limited data' : 'Complete'
+
+  if (lowConfidence) {
+    console.warn(
+      `[compute] ${reportId} — low-confidence completion: ` +
+      `dataCompleteness=${computedResult.dataCompleteness}% allAgentsFailed=${allAgentsFailed}. ` +
+      `progress_step set to "${progressStep}".`
+    )
+  }
+
   const updatePayload: Record<string, any> = {
     computed_result:   computedResult,
     engine_version:    computedResult.meta.engineVersion,
     benchmark_version: computedResult.meta.benchmarkVersion,
     status:            'complete',
-    progress_step:     'Complete',
+    progress_step:     progressStep,
     // Legacy columns — keep in sync so old code paths don't break
     overall_score:       computedResult.scores.overall,
     score_rent:          computedResult.scores.rent,
