@@ -438,24 +438,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Trust strip ── */}
-        <div style={S.trustStrip}>
-          {[
-            { color: '#14B8A6', text: 'Built in Australia',   sub: 'Perth, WA' },
-      { color: '#34D399', text: 'ABS Census data',     sub: '2021 · quarterly updates' },
-      { color: '#60A5FA', text: 'Data sources', sub: 'ABS Census · business listings · rent estimates' },
-      { color: '#A78BFA', text: 'Secure platform',     sub: 'Encrypted in transit + at rest' },
-      { color: '#34D399', text: 'Location analysis',    sub: 'Suburb-level scoring' },
-     ].map(item => (
-            <div key={item.text} style={S.trustItem}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: item.color, flexShrink: 0, marginTop: 3 }} />
-       <div>
-                <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#D1D5DB' }}>{item.text}</span>
-        <span style={{ display: 'block', fontSize: 11, color: '#6B7280', marginTop: 1 }}>{item.sub}</span>
-       </div>
-            </div>
-          ))}
-        </div>
 
         {/* ── Bottom bar ── */}
         <div style={S.bottom}>
