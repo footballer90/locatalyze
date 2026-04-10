@@ -30,15 +30,14 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
   )
 }
 
-function DataCard({ icon, title, desc, badge }: { icon: string; title: string; desc: string; badge?: string }) {
+function DataCard({ title, desc, badge }: { icon?: string; title: string; desc: string; badge?: string }) {
   return (
     <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '20px 18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-    <span style={{ fontSize: 26 }}>{icon}</span>
-        {badge && (
+      {badge && (
+        <div style={{ marginBottom: 10 }}>
           <span style={{ fontSize: 10, fontWeight: 700, color: S.brand, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 100, padding: '2px 8px' }}>{badge}</span>
-    )}
-      </div>
+        </div>
+      )}
       <p style={{ fontSize: 14, fontWeight: 700, color: S.n800, marginBottom: 6 }}>{title}</p>
       <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.7 }}>{desc}</p>
     </div>
@@ -82,7 +81,7 @@ export default function MethodologyPage() {
       <div style={{ background: `linear-gradient(180deg,${S.brandFaded} 0%,${S.white} 100%)`, padding: '60px 24px 48px', textAlign: 'center' }}>
     <div style={{ maxWidth: 620, margin: '0 auto' }}>
      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.white, border: `1px solid ${S.brandBorder}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 700, color: S.brand, marginBottom: 20 }}>
-      🔬 Data & Methodology
+      Data &amp; Methodology
           </div>
           <h1 style={{ fontSize: 40, fontWeight: 900, color: S.n900, letterSpacing: '-0.04em', lineHeight: 1.15, marginBottom: 16 }}>
       How Locatalyze analyses<br />your location

@@ -618,18 +618,21 @@ export default function SampleReportClient() {
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
               {[
-                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900 },
-                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald },
-                { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber },
-                { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900 },
-                { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900 },
+                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: '±20% model est.' },
+                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: '±15% model est.' },
+                { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber,  sub: 'of revenue' },
+                { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900,   sub: 'fixed cost threshold' },
+                { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900,   sub: 'excl. ramp-up' },
               ].map(item => (
-                <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
-                  <span style={{ fontSize: 12, color: S.n500 }}>{item.label}</span>
+                <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
+                  <div>
+                    <span style={{ fontSize: 12, color: S.n500, display: 'block' }}>{item.label}</span>
+                    <span style={{ fontSize: 9, color: S.n400 }}>{item.sub}</span>
+                  </div>
                   <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
                 </div>
               ))}
-              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Excl. ramp-up. Allow 3–4 additional months to reach full volume.</p>
+              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Excl. ramp-up. Allow 3–4 additional months to reach full volume. All figures are model estimates — not financial forecasts.</p>
             </div>
 
             {/* CTA */}
@@ -662,7 +665,7 @@ export default function SampleReportClient() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Run my free analysis →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · 3 reports · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · first report free · 60 seconds</p>
         </div>
       </div>
     </div>
