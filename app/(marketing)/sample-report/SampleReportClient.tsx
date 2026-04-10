@@ -213,7 +213,7 @@ export default function SampleReportClient() {
             {[
               { l: 'Monthly Revenue',  v: '~$68,000',  s: 'benchmark estimate' },
               { l: 'Net Profit / Mo',  v: '~$12,000',  s: 'est. ±15%' },
-              { l: 'Break-even Daily', v: '38 cust.',  s: 'to cover costs' },
+              { l: 'Break-even Daily', v: '107 cust.', s: 'to cover costs' },
               { l: 'Payback Period',   v: '12 months', s: 'excl. ramp-up' },
             ].map(m => (
               <div key={m.l} style={{ padding: '14px 16px', background: '#161D27' }}>
@@ -267,22 +267,22 @@ export default function SampleReportClient() {
                   <Card style={{ padding: 16 }}>
                     <SectionLabel>Rent Analysis</SectionLabel>
                     {/* Rent ratio panel */}
-                    <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 12, padding: '16px 18px', marginBottom: 12 }}>
+                    <div style={{ background: S.amberBg, border: `1.5px solid ${S.amberBdr}`, borderRadius: 12, padding: '16px 18px', marginBottom: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                         <div>
-                          <p style={{ fontSize: 10, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Rent-to-Revenue Ratio</p>
-                          <p style={{ fontSize: 11, color: S.emerald, opacity: 0.75 }}>Benchmark: under 12% healthy</p>
+                          <p style={{ fontSize: 10, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Rent-to-Revenue Ratio</p>
+                          <p style={{ fontSize: 11, color: S.amber, opacity: 0.85 }}>Benchmark: under 12% healthy · 1% margin to threshold</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: 32, fontWeight: 900, color: S.emerald, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>8.4%</div>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
-                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.emerald }} />
-                            <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.06em' }}>HEALTHY</span>
+                          <div style={{ fontSize: 32, fontWeight: 900, color: S.amber, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>11.2%</div>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.amberBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.amber }} />
+                            <span style={{ fontSize: 10, fontWeight: 800, color: S.amber, letterSpacing: '0.06em' }}>MONITOR</span>
                           </div>
                         </div>
                       </div>
                       <div style={{ height: 7, background: 'rgba(255,255,255,0.5)', borderRadius: 4, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: '34%', background: S.emerald, borderRadius: 4, opacity: 0.8 }} />
+                        <div style={{ height: '100%', width: '93%', background: S.amber, borderRadius: 4, opacity: 0.7 }} />
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -372,7 +372,7 @@ export default function SampleReportClient() {
                   <SectionLabel>SWOT Analysis</SectionLabel>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     {[
-                      { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 8.4% — well below the 12% danger threshold', 'Demographics align strongly: 25–44, $96K median income'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
+                      { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold', 'Demographics align strongly: 25–44, $96K median income'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
                       { key: 'Weaknesses', items: ['4 existing café competitors require clear positioning', 'Parking on Oxford Street is limited', 'Weekend foot traffic lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
                       { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Apartment development expanding catchment', 'Wholesale supply to nearby offices is adjacent revenue'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
                       { key: 'Threats', items: ['Rent review clause could push costs above 12% at renewal', 'New entrant risk if concept succeeds', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
