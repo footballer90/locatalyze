@@ -248,7 +248,7 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'benchmark estimate' },
+              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'est. ±20%' },
               { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'est. ±15%' },
               { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'to cover costs' },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
@@ -261,7 +261,7 @@ export default function SampleReportClient() {
             ))}
           </div>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4, fontStyle: 'italic' }}>
-            Revenue and profit are model estimates from industry benchmarks — not financial forecasts. Actual results will vary.
+            Revenue (±20%) and profit (±15%) are model estimates from industry benchmarks — not financial forecasts. Actual results will vary.
           </p>
         </div>
       </div>
@@ -435,11 +435,11 @@ export default function SampleReportClient() {
                 <SectionLabel>Monthly P&L</SectionLabel>
                 <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
                   <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>
-                    ⚠ These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. A ±15% variance on net profit is typical at this confidence level.
+                    ⚠ These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. Revenue carries ±20% uncertainty (the input); net profit carries ±15% (the output after fixed costs). Higher revenue uncertainty does not imply lower profit uncertainty — operating leverage compounds both.
                   </p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Revenue"         value="~$68,000" sub="benchmark est." mono />
+                  <Tile label="Revenue"         value="~$68,000" sub="~±20% · model est." mono />
                   <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
                   <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="~±15% · model est." mono />
