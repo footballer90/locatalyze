@@ -301,8 +301,8 @@ export default function SampleReportClient() {
                       <ScoreBar label="Profitability"       score={82} weight="25%" />
                       <ScoreBar label="Competition"         score={79} weight="25%" />
                       <ScoreBar label="Area Demographics"   score={86} weight="20%" />
-                      <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6, fontStyle: 'italic' }}>
-                        Sub-scores have ±5 accuracy given benchmark data quality. Weighted total: 88×0.30 + 82×0.25 + 79×0.25 + 86×0.20 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                      <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (88) — rent/revenue ratio of 11.2% vs 15% danger threshold. Profitability (82) — net margin of 17.6% and 1.4× break-even cushion. Competition (79) — 6 verified competitors within 1km, moderate saturation. Area Demographics (86) — median household income and foot-traffic signals. Sub-scores have ±5pt accuracy given benchmark data. Weighted total: 88×0.30 + 82×0.25 + 79×0.25 + 86×0.20 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
                     {/* Simple radar placeholder */}
@@ -423,27 +423,29 @@ export default function SampleReportClient() {
               <Card>
                 <SectionLabel>Break-even Analysis</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
-                  <Tile label="Break-even / Day"   value="38 cust."   mono />
+                  <Tile label="Break-even / Day"   value="107 cust."  mono />
                   <Tile label="Modelled / Day"     value="150 cust."  color={S.emerald} mono />
-                  <Tile label="Surplus"            value="+112 cust." color={S.emerald} mono />
+                  <Tile label="Surplus"            value="+43 cust."  color={S.emerald} mono />
                 </div>
                 <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 16px' }}>
-                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>The modelled daily customer count of 150 is 3.9× the break-even threshold of 38. Even at 50% of projected demand (75 customers/day), the location remains above break-even. This gives meaningful downside protection during the ramp-up period.</p>
+                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>The modelled daily customer count of 150 is 1.4× the break-even threshold of 107 — calculated from fixed costs of $30,160/month ($7,600 rent + $20,000 labour + $2,560 overhead) divided by contribution margin of $10.85/customer ($17.50 × 62% gross margin). At 80% of projected demand (120 customers/day), this location remains above break-even. This provides meaningful downside protection during the ramp-up period.</p>
                 </div>
               </Card>
               <Card>
                 <SectionLabel>Risk Scenarios</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
                   {[
-                    { label: 'Best Case',  pct: '130% demand', rev: '$88,400', profit: '$24,600', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
-                    { label: 'Base Case',  pct: '100% demand', rev: '$68,000', profit: '$12,000', bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
-                    { label: 'Worst Case', pct: '70% demand',  rev: '$47,600', profit: '$5,400',  bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
+                    { label: 'Best Case',   pct: '130% demand', rev: '$88,400', costs: '$63,800', profit: '$24,600', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
+                    { label: 'Base Case',   pct: '100% demand', rev: '$68,000', costs: '$56,000', profit: '$12,000', bg: S.blueBg,    border: S.blueBdr,    color: S.blue },
+                    { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '~$3,600', bg: S.amberBg,   border: S.amberBdr,   color: S.amber },
                   ].map(sc => (
                     <div key={sc.label} style={{ background: sc.bg, border: `1px solid ${sc.border}`, borderRadius: 10, padding: '14px 15px' }}>
                       <p style={{ fontSize: 9, fontWeight: 800, color: sc.color, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>{sc.label}</p>
                       <p style={{ fontSize: 10, color: sc.color, opacity: 0.7, marginBottom: 8 }}>{sc.pct}</p>
                       <p style={{ fontSize: 9, color: sc.color, opacity: 0.6, marginBottom: 2 }}>Revenue</p>
                       <p style={{ fontSize: 15, fontWeight: 900, color: sc.color, marginBottom: 6, fontFamily: S.mono }}>{sc.rev}</p>
+                      <p style={{ fontSize: 9, color: sc.color, opacity: 0.6, marginBottom: 2 }}>Costs</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: sc.color, opacity: 0.8, marginBottom: 6, fontFamily: S.mono }}>{sc.costs}</p>
                       <p style={{ fontSize: 9, color: sc.color, opacity: 0.6, marginBottom: 2 }}>Net Profit</p>
                       <p style={{ fontSize: 13, fontWeight: 700, color: sc.color, fontFamily: S.mono }}>{sc.profit}</p>
                     </div>
@@ -579,17 +581,18 @@ export default function SampleReportClient() {
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
               {[
-                { label: 'Monthly Revenue',  value: '$91,200',  color: S.n900 },
-                { label: 'Net Profit / Mo',  value: '$18,400',  color: S.emerald },
-                { label: 'Rent-to-Revenue',  value: '8.4%',     color: S.emerald },
-                { label: 'Break-even / Day', value: '38 cust.', color: S.n900 },
-                { label: 'Payback Period',   value: '8 months', color: S.n900 },
+                { label: 'Monthly Revenue',  value: '~$68,000',  color: S.n900 },
+                { label: 'Net Profit / Mo',  value: '~$12,000',  color: S.emerald },
+                { label: 'Rent-to-Revenue',  value: '11.2%',     color: S.amber },
+                { label: 'Break-even / Day', value: '107 cust.', color: S.n900 },
+                { label: 'Payback Period',   value: '12 mo †',   color: S.n900 },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
                   <span style={{ fontSize: 12, color: S.n500 }}>{item.label}</span>
                   <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
                 </div>
               ))}
+              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Excl. ramp-up. Allow 3–4 additional months to reach full volume.</p>
             </div>
 
             {/* CTA */}
@@ -604,7 +607,7 @@ export default function SampleReportClient() {
             {/* Data sources */}
             <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Data sources</p>
-              {['Google Maps · Geoapify', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks', 'REIWA commercial rents · WA'].map(src => (
+              {['Google Places (competitors)', 'Geoapify / OSM (density)', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks'].map(src => (
                 <p key={src} style={{ fontSize: 11, color: S.n500, padding: '4px 0', borderBottom: `1px solid ${S.n100}` }}>{src}</p>
               ))}
             </div>
