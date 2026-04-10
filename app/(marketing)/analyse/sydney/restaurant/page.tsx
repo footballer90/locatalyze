@@ -39,7 +39,7 @@ const TOP_SUBURBS = [
     rank: 1, name: 'Surry Hills', postcode: '2010', score: 88, verdict: 'GO' as const,
   income: '$95,000', rent: '$10,500–$15,000/mo', competition: '14 within 500m',
   footTraffic: 89, demographics: 90, rentFit: 74, competitionScore: 68,
-    breakEven: '$4,200/day', payback: '10 months', annualProfit: '$324,960',
+    breakEven: '$4,200/day', payback: '10 months', annualProfit: '$325K–$337K',
   angle: 'Sydney\'s highest-density dining precinct — for the right concept',
   detail: [
       'Surry Hills is where Sydney\'s restaurant industry concentrates. Crown Street and its surrounding blocks contain more quality restaurants per square kilometre than anywhere else in Australia outside Melbourne\'s CBD. For a restaurant operator, this density is simultaneously the best and worst thing about the suburb: best because it validates extraordinary demand, worst because differentiation is existential.',
