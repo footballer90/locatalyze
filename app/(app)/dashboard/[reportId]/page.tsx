@@ -359,6 +359,12 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
   const isGateCaution = normVerdict === 'CAUTION' && gateTriggered != null
   const verdictDisplayLabel = isGateCaution ? 'PROCEED — VERIFY FIRST' : vc.label
 
+  // ── Low-confidence override — data < 45% means we cannot call risk LOW ───────
+  const isLowConfidence = confidence.level === 'low'
+  const effectiveRiskDesc = isLowConfidence
+    ? 'LOW DATA — VERIFY LOCALLY'
+    : isGateCaution ? '' : vc.desc
+
   // ── Why reasons: use pre-computed verdictReasons from engine when available ──
   const whyReasons: string[] = (() => {
     // Engine v2: use validated, specific reasons from compute engine
@@ -441,7 +447,7 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 18, fontWeight: 900, color: vc.text, letterSpacing: '0.04em' }}>{verdictDisplayLabel}</span>
-                {!isGateCaution && <span style={{ fontSize: 12, color: vc.text, opacity: 0.6 }}>{vc.desc}</span>}
+                {effectiveRiskDesc && <span style={{ fontSize: 12, color: isLowConfidence ? '#D97706' : vc.text, opacity: isLowConfidence ? 1 : 0.6, fontWeight: isLowConfidence ? 700 : 400 }}>{effectiveRiskDesc}</span>}
               </div>
               <p style={{ fontSize: 13, color: S.n700, marginTop: 2 }}>
                 {report.business_type} — {report.location_name}
@@ -468,6 +474,32 @@ function RecommendationPanel({ report, confidence }: { report: Report; confidenc
               <span style={{ fontWeight: 800 }}>Why not GO: </span>
               {gateExplain[gateTriggered] ?? `Data gate triggered: ${gateTriggered.replace(/_/g, ' ')}.`}
             </p>
+          </div>
+        )}
+
+        {/* ── Low-confidence system warning ─────────────────────────────────── */}
+        {isLowConfidence && (
+          <div style={{ marginTop: 12, padding: '14px 16px', background: '#FFFBEB', border: '2px solid #FCD34D', borderRadius: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#92400E', marginBottom: 4 }}>
+                  Insufficient data — {confidence.pct}% of expected data available
+                </p>
+                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.65 }}>
+                  This {normVerdict} verdict is based primarily on industry benchmarks, not verified local data for this address.
+                  All financial figures, demand estimates, and scores are directional only.
+                  <strong style={{ fontWeight: 700 }}> Do not use this report to make a lease commitment without independent local verification.</strong>
+                </p>
+                {confidence.reasons.length > 0 && (
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    {confidence.reasons.slice(0, 3).map((r, i) => (
+                      <p key={i} style={{ fontSize: 11, color: '#92400E', opacity: 0.8 }}>· {r}</p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -2108,9 +2140,9 @@ const SCORE_EXPLANATIONS: Record<string, (s: number) => string> = {
   },
 }
 
-function ScoreBar({ label, score, weight }: { label: string; score: number | null; weight: string }) {
+function ScoreBar({ label, score, weight, estimated, estimatedReason }: { label: string; score: number | null; weight: string; estimated?: boolean; estimatedReason?: string }) {
   const s = score ?? 0
-  const color = scoreColor(s)
+  const color = estimated ? S.amber : scoreColor(s)
   const explain = SCORE_EXPLANATIONS[label]?.(s) ?? ''
   const tier = s >= 70 ? 'Strong' : s >= 45 ? 'Moderate' : 'Weak'
 
@@ -2120,17 +2152,22 @@ function ScoreBar({ label, score, weight }: { label: string; score: number | nul
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 13, color: S.n700, fontWeight: 600 }}>{label}</span>
           <span style={{ fontSize: 11, color: S.n400 }}>{weight}</span>
+          {estimated && (
+            <span style={{ fontSize: 10, fontWeight: 700, color: S.amber, background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 4, padding: '1px 5px', letterSpacing: '0.04em' }}>EST.</span>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color, padding: '2px 8px', background: `${color}12`, borderRadius: 6 }}>{tier}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color, padding: '2px 8px', background: `${color}12`, borderRadius: 6 }}>{estimated ? 'Estimated' : tier}</span>
           <span style={{ fontSize: 14, fontWeight: 900, color, fontFamily: S.mono }}>{s}</span>
         </div>
       </div>
       <div style={{ height: 6, background: S.n100, borderRadius: 100, overflow: 'hidden', marginBottom: 8 }}>
         <div style={{ height: '100%', width: `${s}%`, background: color, borderRadius: 100, transition: 'width 1.2s cubic-bezier(0.4,0,0.2,1)' }} />
       </div>
-      {/* Always-visible explanation */}
-      <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>{explain}</p>
+      {/* Always-visible explanation, or estimated reason when data is missing */}
+      <p style={{ fontSize: 12, color: estimated ? '#92400E' : S.n500, lineHeight: 1.5 }}>
+        {estimated && estimatedReason ? `⚠ ${estimatedReason}` : explain}
+      </p>
     </div>
   )
 }
@@ -3755,14 +3792,32 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     ?? fin.customerVolume?.daily_customers_needed_breakeven
     ?? report.breakeven_daily
     ?? null
-  const _beMonthly: number | null =
-    C?.breakEvenMonths
-    ?? report.breakeven_monthly
-    ?? null
+
+  // Break-even monthly REVENUE (not payback months).
+  // = daily_customers_needed × avg_ticket × 26 trading days
+  // C.breakEvenMonths is the payback period — do NOT use it here as a dollar amount.
+  const _beMonthly: number | null = (() => {
+    const daily  = _beDaily
+    const ticket = fin.avgTicketSize ?? C?.avgTicketSize ?? null
+    if (daily == null || ticket == null || ticket === 0) return null
+    return Math.round(daily * ticket * 26)
+  })()
 
   // ── Display Discipline Layer ──────────────────────────────────────────────
   // Confidence tier determines precision: exact numbers, ranges, or suppressed.
-  const _confidenceTier: ConfidenceTier = getConfidenceTier(C)
+  // SAFETY CAP: if the compute engine's dataCompleteness < 45, never show exact
+  // numbers — the engine may have set modelConfidence incorrectly.
+  // Tier order (lowest → highest): benchmark_default < low < medium < high
+  const _rawTier: ConfidenceTier = getConfidenceTier(C)
+  const _confidenceTier: ConfidenceTier = (() => {
+    if (!C) return 'benchmark_default'
+    const dc = C.dataCompleteness ?? 100
+    // Hard cap: < 45% data → force benchmark_default (ranges + "industry avg" qualifier)
+    if (dc < 45) return 'benchmark_default'
+    // Soft cap: < 65% data → cap at 'low' even if engine said 'medium' or 'high'
+    if (dc < 65 && (_rawTier === 'medium' || _rawTier === 'high')) return 'low'
+    return _rawTier
+  })()
   const _financialsSuppressed = shouldSuppressFinancials(C)
   const _financialGate = gateSection('Financial projections', C, { requiredFields: ['revenue'] })
 
@@ -4501,10 +4556,22 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading badge="engine" sub="Each component is weighted to produce your overall score.">Score Breakdown</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 32, alignItems: 'center' }}>
                 <div>
-                  <ScoreBar label="Rent Affordability" score={report.score_rent} weight="30%" />
-                  <ScoreBar label="Profitability" score={computedScoreProfitability} weight="25%" />
-                  <ScoreBar label="Competition" score={report.score_competition} weight="25%" />
-                  <ScoreBar label="Area Demographics" score={report.score_demand} weight="20%" />
+                  <ScoreBar label="Rent Affordability" score={report.score_rent} weight="30%"
+                    estimated={!report.monthly_rent || report.monthly_rent === 0}
+                    estimatedReason="No rent submitted — score estimated from area median rent"
+                  />
+                  <ScoreBar label="Profitability" score={computedScoreProfitability} weight="25%"
+                    estimated={_confidenceTier === 'benchmark_default'}
+                    estimatedReason="Revenue is from industry benchmarks — not verified against this address"
+                  />
+                  <ScoreBar label="Competition" score={report.score_competition} weight="25%"
+                    estimated={rd.competitors?.dataQuality === 'estimated_fallback' || rd.competitors?.dataQuality === 'no_data'}
+                    estimatedReason="Live competitor data unavailable — score estimated from area averages"
+                  />
+                  <ScoreBar label="Area Demographics" score={report.score_demand} weight="20%"
+                    estimated={rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !rd.demographics?.medianIncome)}
+                    estimatedReason="Suburb-level data unavailable — score estimated from state-level averages"
+                  />
                 </div>
                 <RadarChart color={vc.text} scores={[
                   { label: 'Rent', value: report.score_rent ?? 0 },
@@ -5039,10 +5106,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
                     <Tile key="direct" label="Direct Competitors" value={String(_dc)} sub={_vc === 0 && _exc > 0 ? `${_exc} nearby businesses, none are ${_bt}s` : `of ${_vc} ${_bt}s detected nearby`} mono color={_dc === 0 ? S.emerald : _dc <= 5 ? S.amber : S.red} />
-                    <Tile key="other" label="Other Business Types" value={String(_exc)} sub={`nearby non-${_bt} businesses excluded from analysis`} color={S.n400} mono />
+                    <Tile key="other" label="Other Business Types" value={String(_exc)} sub={`nearby non-${_bt} businesses (shown on map but excluded from score)`} color={S.n400} mono />
                     <Tile key="sat" label="Saturation" value={_sat} color={_satColor} sub={`based on ${_vc} direct competitors`} mono />
                     <Tile key="threat" label="Threat Level" value={_vc === 0 ? 'Low' : (market?.competitorThreat ?? (_sat === 'HIGH' ? 'High' : _sat === 'MEDIUM' ? 'Medium' : 'Low'))} color={_vc === 0 ? S.emerald : (_sat === 'HIGH' ? S.red : _sat === 'MEDIUM' ? S.amber : S.emerald)} mono />
                   </div>
+                  {_exc > 0 && (
+                    <p style={{ fontSize: 11, color: S.n400, fontStyle: 'italic', marginTop: 4 }}>
+                      Note: The map shows all {_dc + _exc} nearby businesses. This section counts only the {_dc} direct {_bt} competitors — the {_exc} other business types are shown on the map for context but excluded from the competition score.
+                    </p>
+                  )}
                   {_vc === 0 && _exc > 0 && (
                     <div style={{ padding: '12px 16px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.emerald} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><polyline points="20 6 9 17 4 12"/></svg>
