@@ -820,19 +820,33 @@ export default function OnboardingPage() {
                   setShowAuthModal(true)
                 }
               }}
+              disabled={analysing}
               style={{
-                width: '100%', padding: '14px 16px', backgroundColor: businessType && coords ? S.brand : S.n200,
+                width: '100%', padding: '14px 16px',
+                backgroundColor: analysing ? '#0D5D55' : (businessType && coords ? S.brand : S.n200),
                 color: businessType && coords ? S.white : S.n500, border: 'none', borderRadius: 8,
-                fontSize: 15, fontWeight: 700, cursor: businessType && coords ? 'pointer' : 'default',
-                transition: 'all 200ms', letterSpacing: '-0.01em'
+                fontSize: 15, fontWeight: 700, cursor: analysing ? 'default' : (businessType && coords ? 'pointer' : 'default'),
+                transition: 'all 200ms', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
               }}
-              onMouseEnter={(e) => { if (businessType && coords) e.currentTarget.style.backgroundColor = '#0D5D55' }}
-              onMouseLeave={(e) => { if (businessType && coords) e.currentTarget.style.backgroundColor = S.brand }}
+              onMouseEnter={(e) => { if (businessType && coords && !analysing) e.currentTarget.style.backgroundColor = '#0D5D55' }}
+              onMouseLeave={(e) => { if (businessType && coords && !analysing) e.currentTarget.style.backgroundColor = S.brand }}
             >
-              Run full analysis
-              <svg style={{ display: 'inline', marginLeft: 6, verticalAlign: 'middle' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
+              {analysing ? (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 48 48" fill="none" style={{ animation: 'spin 0.85s linear infinite', flexShrink: 0 }}>
+                    <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.25)" strokeWidth="4"/>
+                    <path d="M24 4 A20 20 0 0 1 44 24" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                  </svg>
+                  Submitting…
+                </>
+              ) : (
+                <>
+                  Run full analysis
+                  <svg style={{ flexShrink: 0 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </>
+              )}
             </button>
             <div style={{ fontSize: 11, color: S.n500, marginTop: 6, textAlign: 'center', lineHeight: 1.5 }}>
               {!businessType
@@ -891,82 +905,20 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      {analysing && (
+      {analysisError && (
         <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.96)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 2000,
-          fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif"
+          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10,
+          padding: '12px 20px', zIndex: 2000, display: 'flex', alignItems: 'center', gap: 12,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.12)', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif"
         }}>
-          <div style={{ maxWidth: 400, width: '90%' }}>
-            {/* Spinner */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
-              <svg width="44" height="44" viewBox="0 0 48 48" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
-                <circle cx="24" cy="24" r="20" stroke="#E7E5E4" strokeWidth="4"/>
-                <path d="M24 4 A20 20 0 0 1 44 24" stroke="#0F766E" strokeWidth="4" strokeLinecap="round"/>
-              </svg>
-            </div>
-
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1C1917', letterSpacing: '-0.02em', marginBottom: 4, textAlign: 'center' }}>
-              Building your location report
-            </h2>
-            <p style={{ fontSize: 13, color: '#78716C', textAlign: 'center', marginBottom: 28 }}>
-              Running 6 intelligence agents across live data sources
-            </p>
-
-            {/* Named steps */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {ANALYSIS_STEPS.map((step, i) => {
-                const isDone    = i < analysisStep
-                const isActive  = i === analysisStep
-                const isPending = i > analysisStep
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '9px 12px', borderRadius: 8,
-                      backgroundColor: isActive ? '#F0FDFA' : isDone ? '#FAFAF9' : 'transparent',
-                      border: `1px solid ${isActive ? '#99F6E4' : isDone ? '#E7E5E4' : 'transparent'}`,
-                      transition: 'all 400ms ease',
-                      opacity: isPending ? 0.4 : 1,
-                    }}
-                  >
-                    <div style={{ flexShrink: 0, width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {isDone ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      ) : isActive ? (
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#0F766E', animation: 'pulse 1.2s ease-in-out infinite' }} />
-                      ) : (
-                        <div style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#D6D3D1' }} />
-                      )}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? '#1C1917' : isDone ? '#78716C' : '#A8A29E' }}>
-                        {step.label}
-                      </div>
-                      {isActive && (
-                        <div style={{ fontSize: 11, color: '#0F766E', marginTop: 1 }}>{step.sub}</div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {analysisError && (
-              <div style={{ marginTop: 20, padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, textAlign: 'center' }}>
-                <p style={{ fontSize: 13, color: '#DC2626', marginBottom: 8 }}>{analysisError}</p>
-                <button
-                  onClick={() => { setAnalysing(false); setAnalysisError('') }}
-                  style={{ fontSize: 13, color: '#0F766E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                >
-                  ← Go back and try again
-                </button>
-              </div>
-            )}
-          </div>
+          <span style={{ fontSize: 13, color: '#DC2626' }}>{analysisError}</span>
+          <button
+            onClick={() => { setAnalysing(false); setAnalysisError('') }}
+            style={{ fontSize: 12, color: '#0F766E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, whiteSpace: 'nowrap' }}
+          >
+            Try again
+          </button>
         </div>
       )}
       <style>{`

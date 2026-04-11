@@ -3367,113 +3367,199 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       ? 'Wrapping up\u2026'
       : 'Taking longer than usual — still running'
 
+    // ── Progress ring constants ──────────────────────────────────────────────
+    const RING_R   = 54
+    const RING_C   = 2 * Math.PI * RING_R
+    const ringOffset = RING_C - (displayPct / 100) * RING_C
+
+    // ── 5 milestone markers (horizontal timeline) ───────────────────────────
+    const MILESTONES = [
+      { label: 'Address',     pct: 28 },
+      { label: 'Competitors', pct: 43 },
+      { label: 'Market',      pct: 57 },
+      { label: 'Financials',  pct: 71 },
+      { label: 'Report',      pct: 85 },
+    ]
+
+    // ── Dynamic ETA ─────────────────────────────────────────────────────────
+    const remaining = Math.max(0, 90 - elapsedSeconds)
+    const etaLabel  = elapsedSeconds < 10  ? 'About 90 seconds'
+                    : elapsedSeconds < 25  ? `About ${Math.ceil(remaining / 10) * 10} seconds`
+                    : elapsedSeconds < 60  ? `About ${Math.max(5, Math.ceil(remaining / 5) * 5)} seconds`
+                    : elapsedSeconds < 80  ? 'Almost there…'
+                    : elapsedSeconds < 100 ? 'Wrapping up…'
+                    : 'Still running — nearly done'
+
+    // ── Rotating discovery chips ─────────────────────────────────────────────
+    const DISCOVERIES = [
+      'Scanning Google Places for competitors…',
+      'Loading ABS 2021 census demographics…',
+      'Fetching commercial rent benchmarks…',
+      'Running IBISWorld cost model…',
+      'Calculating daily break-even threshold…',
+      'Mapping 500m competitor radius…',
+      'Calibrating revenue scenarios…',
+    ]
+    const discoveryIdx = Math.floor(elapsedSeconds / 5) % DISCOVERIES.length
+    const bizLabel     = report?.business_type ?? 'Business'
+    const addrLabel    = report?.address ?? report?.location_name ?? ''
+
     return (
       <div style={{ minHeight: '100vh', background: S.headerBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: S.font }}>
         <style>{`
-          @keyframes spin    { to { transform:rotate(360deg) } }
-          @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:0.35} }
-          @keyframes fadeIn  { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-          @keyframes barGlow { 0%,100%{box-shadow:0 0 8px rgba(20,184,166,0.35)} 50%{box-shadow:0 0 20px rgba(20,184,166,0.65)} }
-          @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+          @keyframes spin      { to { transform:rotate(360deg) } }
+          @keyframes pulse     { 0%,100%{opacity:1} 50%{opacity:0.35} }
+          @keyframes fadeUp    { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+          @keyframes chipFade  { 0%{opacity:0;transform:translateY(4px)} 15%,85%{opacity:1;transform:none} 100%{opacity:0;transform:translateY(-4px)} }
+          @keyframes ringGlow  { 0%,100%{filter:drop-shadow(0 0 6px rgba(20,184,166,0.4))} 50%{filter:drop-shadow(0 0 14px rgba(20,184,166,0.7))} }
         `}</style>
-        <div style={{ textAlign: 'center', maxWidth: 440, width: '100%', padding: '40px 24px' }}>
+
+        <div style={{ textAlign: 'center', maxWidth: 460, width: '100%', padding: '48px 24px', animation: 'fadeUp 0.5s ease' }}>
+
           {isFailed ? (
             <>
-              <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24 }}>✕</div>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F87171" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
               <h2 style={{ fontSize: 20, fontWeight: 800, color: S.white, marginBottom: 8 }}>Analysis failed</h2>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 24, lineHeight: 1.6 }}>{report?.progress_step || 'The analysis engine could not be reached. Please try again.'}</p>
               <button onClick={() => window.history.back()} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>Try again</button>
             </>
           ) : (
             <>
-              {/* Dual-ring spinner with pin */}
-              <div style={{ position: 'relative', width: 64, height: 64, margin: '0 auto 24px' }}>
-                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.06)', borderTopColor: S.brandLight, animation: 'spin 1s linear infinite' }} />
-                <div style={{ position: 'absolute', inset: 7, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.04)', borderBottomColor: 'rgba(20,184,166,0.35)', animation: 'spin 1.7s linear infinite reverse' }} />
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📍</div>
+              {/* ── Address chip ─────────────────────────────── */}
+              {addrLabel && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '5px 14px', marginBottom: 28 }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={S.brandLight} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontWeight: 600, letterSpacing: '0.01em', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+                    {bizLabel}{addrLabel ? ` · ${addrLabel}` : ''}
+                  </span>
+                </div>
+              )}
+
+              {/* ── Circular progress ring ───────────────────── */}
+              <div style={{ position: 'relative', width: 148, height: 148, margin: '0 auto 28px' }}>
+                {/* Outer glow ring */}
+                <svg width="148" height="148" viewBox="0 0 148 148" style={{ position: 'absolute', inset: 0, animation: 'ringGlow 2.5s ease infinite' }}>
+                  <circle cx="74" cy="74" r={RING_R} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7"/>
+                  <circle cx="74" cy="74" r={RING_R} fill="none"
+                    stroke={`url(#ringGrad)`} strokeWidth="7"
+                    strokeDasharray={RING_C}
+                    strokeDashoffset={ringOffset}
+                    strokeLinecap="round"
+                    transform="rotate(-90 74 74)"
+                    style={{ transition: 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)' }}
+                  />
+                  <defs>
+                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#0F766E"/>
+                      <stop offset="100%" stopColor="#5EEAD4"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {/* Inner spinner */}
+                <div style={{ position: 'absolute', inset: 22, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.04)', borderTopColor: 'rgba(20,184,166,0.3)', animation: 'spin 2s linear infinite' }} />
+                {/* Percentage */}
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 30, fontWeight: 900, color: S.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' as const, transition: 'all 0.4s ease' }}>{displayPct}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, fontWeight: 600 }}>%</span>
+                </div>
               </div>
 
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 8 }}>
-                Analysing your location
+              {/* ── Title + active step ──────────────────────── */}
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 6 }}>
+                Building your report
               </h2>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24, animation: 'pulse 3s ease infinite' }}>
-                {etaText}
+              <p style={{ fontSize: 13, color: S.brandLight, marginBottom: 6, fontWeight: 600, minHeight: 20 }}>
+                {STEPS.find((_, i) => i === activeIdx)?.label ?? 'Processing…'}
+              </p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 28, animation: 'pulse 3s ease infinite' }}>
+                {etaLabel}
               </p>
 
-              {/* Progress bar */}
-              <div style={{ position: 'relative', height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 4, marginBottom: 8, overflow: 'hidden' }}>
-                <div style={{
-                  position: 'absolute', left: 0, top: 0, height: '100%',
-                  width: `${displayPct}%`,
-                  background: `linear-gradient(90deg, ${S.brand}, ${S.brandLight})`,
-                  borderRadius: 4,
-                  transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)',
-                  animation: 'barGlow 2s ease infinite',
-                }} />
-                <div style={{
-                  position: 'absolute', left: 0, top: 0, height: '100%', width: '100%',
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 50%, transparent)',
-                  backgroundSize: '200% 100%',
-                  animation: 'shimmer 2.2s ease infinite',
-                }} />
+              {/* ── 5-milestone horizontal tracker ──────────── */}
+              <div style={{ position: 'relative', marginBottom: 28, padding: '0 8px' }}>
+                {/* connector line */}
+                <div style={{ position: 'absolute', top: 7, left: '8%', right: '8%', height: 2, background: 'rgba(255,255,255,0.07)', borderRadius: 2 }}>
+                  <div style={{ height: '100%', background: `linear-gradient(90deg,${S.brand},${S.brandLight})`, borderRadius: 2, width: `${Math.min(100, Math.max(0, (displayPct - 28) / (85 - 28) * 100))}%`, transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)' }}/>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+                  {MILESTONES.map((m) => {
+                    const done   = displayPct >= m.pct
+                    const active = displayPct >= m.pct - 14 && displayPct < m.pct
+                    return (
+                      <div key={m.label} style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: 6 }}>
+                        <div style={{
+                          width: 16, height: 16, borderRadius: '50%', border: `2px solid ${done ? S.emerald : active ? S.brandLight : 'rgba(255,255,255,0.15)'}`,
+                          background: done ? S.emerald : 'transparent',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'all 0.5s ease', flexShrink: 0,
+                        }}>
+                          {done && <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><polyline points="1,4 3,6.5 7,1.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                        </div>
+                        <span style={{ fontSize: 9, fontWeight: done ? 700 : 500, color: done ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+                          {m.label}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginBottom: 28, textAlign: 'right' }}>{displayPct}%</div>
 
-              {/* Step list */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, textAlign: 'left', marginBottom: 24 }}>
+              {/* ── Step list (compact) ──────────────────────── */}
+              <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 3, textAlign: 'left', marginBottom: 20 }}>
                 {STEPS.filter(s => s.key !== 'Queued').map((step) => {
                   const stepIdx  = STEPS.findIndex(s2 => s2.key === step.key)
                   const isDone   = activeIdx > stepIdx
                   const isActive = activeIdx === stepIdx
                   return (
                     <div key={step.key} style={{
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '8px 14px',
-                      background:   isActive ? 'rgba(20,184,166,0.1)' : isDone ? 'rgba(255,255,255,0.02)' : 'transparent',
-                      borderRadius: 10,
-                      border:       isActive ? '1px solid rgba(20,184,166,0.28)' : '1px solid transparent',
-                      transition:   'all 0.4s ease',
-                      animation:    isActive ? 'fadeIn 0.4s ease' : 'none',
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '6px 12px', borderRadius: 8,
+                      background: isActive ? 'rgba(20,184,166,0.1)' : 'transparent',
+                      border: isActive ? '1px solid rgba(20,184,166,0.2)' : '1px solid transparent',
+                      transition: 'all 0.4s ease',
                     }}>
-                      <div style={{ flexShrink: 0, width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ flexShrink: 0, width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {isDone ? (
-                          <div style={{ width: 18, height: 18, borderRadius: '50%', background: S.emerald, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          </div>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill={S.emerald}/><polyline points="3,7 6,10 11,4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         ) : isActive ? (
-                          <div style={{ width: 15, height: 15, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.08)', borderTopColor: S.brandLight, animation: 'spin 0.75s linear infinite' }} />
+                          <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: S.brandLight, animation: 'spin 0.75s linear infinite' }} />
                         ) : (
-                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+                          <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', margin: 'auto' }} />
                         )}
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: isActive ? 700 : isDone ? 500 : 400, color: isActive ? S.brandLight : isDone ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.18)', flex: 1 }}>
+                      <span style={{ fontSize: 12.5, fontWeight: isActive ? 700 : isDone ? 500 : 400, color: isActive ? S.brandLight : isDone ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.15)', flex: 1 }}>
                         {step.label}
                       </span>
-                      {isActive && (
-                        <span style={{ fontSize: 10, color: S.brandLight, background: 'rgba(20,184,166,0.12)', border: '1px solid rgba(20,184,166,0.22)', borderRadius: 20, padding: '2px 8px', fontWeight: 700, letterSpacing: '0.06em', animation: 'pulse 1.8s ease infinite' }}>
-                          RUNNING
-                        </span>
+                      {isDone && (
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="rgba(5,150,105,0.6)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       )}
-                      {isDone && <span style={{ fontSize: 10, color: 'rgba(5,150,105,0.55)', fontWeight: 500 }}>done</span>}
                     </div>
                   )
                 })}
               </div>
 
-              {/* Timeout warning */}
+              {/* ── Discovery chip ───────────────────────────── */}
+              <div key={discoveryIdx} style={{ height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', animation: 'chipFade 5s ease forwards' }}>
+                  {DISCOVERIES[discoveryIdx]}
+                </span>
+              </div>
+
+              {/* ── Timeout warning ──────────────────────────── */}
               {isStuck && (
-                <div style={{ background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 20, fontSize: 12, color: '#FCD34D', lineHeight: 1.7, textAlign: 'left', animation: 'fadeIn 0.5s ease' }}>
-                  <div style={{ fontWeight: 700, marginBottom: 4 }}>Still processing\u2026</div>
-                  Your report is in the queue. You can leave this page \u2014 it will be ready at this URL when complete.
-                  <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.2)', borderRadius: 12, padding: '14px 16px', marginBottom: 16, fontSize: 12, color: '#FCD34D', lineHeight: 1.7, textAlign: 'left', animation: 'fadeUp 0.5s ease' }}>
+                  <div style={{ fontWeight: 700, marginBottom: 4 }}>Still processing…</div>
+                  You can leave this page — your report will be ready at this URL when complete.
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
                     <button onClick={() => window.location.reload()} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Refresh</button>
-                    <button onClick={() => { window.location.href = '/dashboard' }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>Back to dashboard</button>
+                    <button onClick={() => { window.location.href = '/dashboard' }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>Back to dashboard</button>
                   </div>
                 </div>
               )}
 
-              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                Live via Supabase Realtime &nbsp;·&nbsp; {elapsedSeconds}s
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.1)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+                Live · {elapsedSeconds}s elapsed
               </p>
             </>
           )}
