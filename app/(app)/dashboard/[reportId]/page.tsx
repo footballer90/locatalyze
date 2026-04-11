@@ -4565,11 +4565,19 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     estimatedReason="Revenue is from industry benchmarks — not verified against this address"
                   />
                   <ScoreBar label="Competition" score={report.score_competition} weight="25%"
+<<<<<<< HEAD
                     estimated={rd.competitors?.dataQuality === 'estimated_fallback' || rd.competitors?.dataQuality === 'no_data'}
                     estimatedReason="Live competitor data unavailable — score estimated from area averages"
                   />
                   <ScoreBar label="Area Demographics" score={report.score_demand} weight="20%"
                     estimated={rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !rd.demographics?.medianIncome)}
+=======
+                    estimated={_rd.competitors?.dataQuality === 'estimated_fallback' || _rd.competitors?.dataQuality === 'no_data'}
+                    estimatedReason="Live competitor data unavailable — score estimated from area averages"
+                  />
+                  <ScoreBar label="Area Demographics" score={report.score_demand} weight="20%"
+                    estimated={_rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !_rd.demographics?.medianIncome)}
+>>>>>>> sync before pull
                     estimatedReason="Suburb-level data unavailable — score estimated from state-level averages"
                   />
                 </div>

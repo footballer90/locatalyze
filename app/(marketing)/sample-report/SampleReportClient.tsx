@@ -334,32 +334,32 @@ export default function SampleReportClient() {
                   <SectionLabel>Score Breakdown</SectionLabel>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24, alignItems: 'center' }}>
                     <div>
-                      <ScoreBar label="Rent Affordability" score={88} weight="30%" />
-                      <ScoreBar label="Profitability"       score={82} weight="25%" />
-                      <ScoreBar label="Competition"         score={79} weight="25%" />
-                      <ScoreBar label="Area Demographics"   score={86} weight="20%" />
+                      <ScoreBar label="Rent Affordability" score={90} weight="30%" />
+                      <ScoreBar label="Profitability"       score={80} weight="25%" />
+                      <ScoreBar label="Competition"         score={80} weight="25%" />
+                      <ScoreBar label="Area Demographics"   score={85} weight="20%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (88) — rent/revenue ratio of 11.2% vs 15% danger threshold. Profitability (82) — net margin of 17.6% and 1.4× break-even cushion. Competition (79) — 6 verified competitors within 1km, moderate saturation. Area Demographics (86) — median household income and foot-traffic signals. Sub-scores have ±5pt accuracy given benchmark data. Weighted total: 88×0.30 + 82×0.25 + 79×0.25 + 86×0.20 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Competition (80) — 6 verified competitors within 1km, moderate saturation. Area Demographics (85) — median household income and foot-traffic signals. Sub-scores rounded to nearest 5 (±5pt model accuracy). Weighted total: 90×0.30 + 80×0.25 + 80×0.25 + 85×0.20 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
-                    {/* Simple radar placeholder */}
+                    {/* Simple radar placeholder — 4 dimensions */}
                     <div style={{ textAlign: 'center' }}>
                       <svg width="180" height="180" viewBox="0 0 220 220">
                         {[0.25,0.5,0.75,1].map(l => {
-                          const pts = [0,1,2,3,4].map(i => {
-                            const a = (i/5)*2*Math.PI - Math.PI/2
+                          const pts = [0,1,2,3].map(i => {
+                            const a = (i/4)*2*Math.PI - Math.PI/2
                             return `${110+80*l*Math.cos(a)},${110+80*l*Math.sin(a)}`
                           }).join(' ')
                           return <polygon key={l} points={pts} fill="none" stroke="#E7E5E4" strokeWidth="1" />
                         })}
-                        {[0,1,2,3,4].map(i => {
-                          const a = (i/5)*2*Math.PI - Math.PI/2
+                        {[0,1,2,3].map(i => {
+                          const a = (i/4)*2*Math.PI - Math.PI/2
                           return <line key={i} x1={110} y1={110} x2={110+80*Math.cos(a)} y2={110+80*Math.sin(a)} stroke="#E7E5E4" strokeWidth="1" />
                         })}
                         {(() => {
-                          const scores = [88,82,79,86,80]
+                          const scores = [90,80,80,85]
                           const pts = scores.map((s,i) => {
-                            const a = (i/5)*2*Math.PI - Math.PI/2
+                            const a = (i/4)*2*Math.PI - Math.PI/2
                             const v = s/100
                             return `${110+80*v*Math.cos(a)},${110+80*v*Math.sin(a)}`
                           }).join(' ')
