@@ -290,7 +290,7 @@ export default function PerthRestaurantPage() {
               <XAxis dataKey="rent" name="Rent/mo ($)" tickFormatter={v => `$${(v/1000).toFixed(0)}K`} tick={{ fontSize: 12, fontFamily: S.font }} label={{ value: 'Monthly rent', position: 'insideBottom', offset: -4, style: { fontSize: 12, fill: S.muted } }} />
               <YAxis dataKey="revenue" name="Revenue/mo ($)" tickFormatter={v => `$${(v/1000).toFixed(0)}K`} tick={{ fontSize: 12, fontFamily: S.font }} label={{ value: 'Monthly revenue', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: S.muted } }} />
               <ZAxis range={[80, 80]} />
-              <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ fontFamily: S.font, fontSize: 13 }} formatter={(val: unknown, name: string) => [`$${Number(val).toLocaleString()}`, name]} />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ fontFamily: S.font, fontSize: 13 }} formatter={(val: unknown, name?: string | number) => [`$${Number(val).toLocaleString()}`, String(name ?? '')]} />
               <Scatter data={RENT_VS_REVENUE} fill={S.brand} name="Location" />
             </ScatterChart>
           </ResponsiveContainer>
