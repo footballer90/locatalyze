@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
         .eq('user_id', userId)
         .eq('business_type', data.businessType)
         .eq('address', data.address)
-        .eq('status', 'complete')
+        .in('status', ['complete', 'completed'])
         .gte('created_at', since)
         .order('created_at', { ascending: false })
         .limit(1)

@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
  title: 'How It Works — Data Methodology',
- description: 'See exactly how Locatalyze scores locations. Six verified data layers: competitor mapping, ABS demographics, rent benchmarks, financial modelling and AI analysis.',
+ description: 'See exactly how Locatalyze scores locations. Four scoring dimensions: competition, location & rent, market demand, and financial viability. All based on real data, not guesses.',
 }
 
 const S = {
@@ -145,19 +145,19 @@ export default function MethodologyPage() {
             <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Scoring system</p>
       <h2 style={{ fontSize: 28, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 12 }}>How your Location Score is calculated</h2>
       <p style={{ fontSize: 15, color: S.n500, lineHeight: 1.75 }}>
-              The Location Score (0–100) is a weighted composite of four dimensions. Each dimension is scored independently then combined into a final score that determines your GO / CAUTION / NO verdict. Every report also shows a separate Data Completeness % and Model Confidence label so you can see how much of the analysis relied on your own inputs versus fallback benchmarks.
+              The Location Score (0–100) is a weighted composite of five dimensions. Each dimension is scored independently then combined into a final score that determines your GO / CAUTION / NO verdict. Every report also shows a separate Data Completeness % and Model Confidence label so you can see how much of the analysis relied on your own inputs versus fallback benchmarks.
             </p>
           </div>
 
           <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
-      <ScoreRow label="Rent Affordability" weight="30%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 25% = poor. This is the single biggest predictor of long-term viability." />
+      <ScoreRow label="Rent Affordability" weight="20%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 20% = danger zone. This is the single biggest predictor of long-term viability." />
+      <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 1km, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
+      <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Population density, median income, household growth and demographic fit for your business category. High-income, growing areas score higher." />
       <ScoreRow label="Profitability" weight="25%" color={S.emerald} desc="Net profit margin after all costs. Calculated from your revenue estimate minus rent, COGS, labour and fixed costs." />
-      <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 500m, weighted by their ratings and review volume. Fewer strong competitors = higher score." />
-      <ScoreRow label="Area Demographics" weight="20%" color={S.blue} desc="Population density, median income and demographic fit for your business category. High-income, high-density areas score higher for premium categories." />
+      <ScoreRow label="Location Quality" weight="10%" color={S.n400} desc="Physical location signals: foot traffic levels, public transport access, nearby anchor tenants, and street visibility. Premium locations score higher." />
      </div>
 
           {/* Verdict thresholds */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
       {[
               { verdict: 'GO',   range: '70–100', desc: 'Strong fundamentals — conduct site visits and verify assumptions before committing.', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
        { verdict: 'CAUTION', range: '45–69', desc: 'Mixed signals. Viable with the right execution, but specific risks need mitigation.', bg: S.amberBg, border: S.amberBdr, color: S.amber },
@@ -171,7 +171,6 @@ export default function MethodologyPage() {
                 <p style={{ fontSize: 13, color: v.color, lineHeight: 1.65, opacity: 0.85 }}>{v.desc}</p>
               </div>
             ))}
-          </div>
         </section>
 
         {/* ── Financial model ── */}

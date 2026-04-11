@@ -752,7 +752,7 @@ export default function HobartCafePage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#a7f3d0', color: '#1E293B', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Analyse my Hobart address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(203,213,225,0.35)', marginTop: 10 }}>No credit card · 1 free preview · ~90 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(203,213,225,0.65)', marginTop: 10 }}>No credit card · 1 free report · ~90 seconds</p>
         </div>
 
       </div>

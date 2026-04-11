@@ -136,8 +136,8 @@ export default async function Image() {
 
      {[
             ['Est. revenue', '$68k–$84k/mo'],
-      ['Break-even', '35–50/day'],
-      ['Break-even', '38 / day'],
+      ['Daily target', '35–50 cust/day'],
+      ['Net profit/mo', '~$12k'],
      ].map(([label, value]) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
        <span style={{ fontSize: 12, color: 'rgba(204,235,229,0.45)' }}>{label}</span>

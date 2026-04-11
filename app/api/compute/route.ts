@@ -129,10 +129,11 @@ export async function POST(request: NextRequest) {
     const v = agentOutputs[k]
     return v == null || (typeof v === 'object' && Object.keys(v).length === 0)
   })
-  if (emptyAgents.length === agentKeys.length) {
+  const allAgentsFailed = emptyAgents.length === agentKeys.length
+  if (allAgentsFailed) {
     console.error(
       `[compute] ${reportId} CRITICAL — ALL primary agents returned empty (${emptyAgents.join(', ')}). ` +
-      `Report will be benchmark-only. Check n8n pipeline for webhook failures.`
+      `GO verdict will be blocked — will not mislead users with benchmark-only GO recommendation.`
     )
   } else if (emptyAgents.length >= 2) {
     console.warn(
@@ -256,6 +257,17 @@ export async function POST(request: NextRequest) {
     return err(`Compute engine failed: ${engineErr?.message ?? 'unknown'}`, 500)
   }
 
+  // Hard gate: a GO verdict on benchmark-only data actively misleads users into
+  // making lease decisions based on industry averages, not this specific location.
+  if (allAgentsFailed && computedResult.verdict === 'GO') {
+    computedResult = {
+      ...computedResult,
+      verdict: 'CAUTION' as const,
+      verdictGateTriggered: 'all_agents_failed_go_blocked',
+    }
+    console.warn(`[compute] ${reportId} — GO verdict overridden to CAUTION (benchmark-only data)`)
+  }
+
   const computeMs = Date.now() - startMs
 
   // ── Trust layer logging ───────────────────────────────────────────────────
@@ -280,7 +292,6 @@ export async function POST(request: NextRequest) {
   // Quality gate: when dataCompleteness is very low (all agents failed), flag
   // the report so the UI can show a "limited data" warning to the user.
   // We still write 'complete' so the report loads — but we annotate it clearly.
-  const allAgentsFailed = emptyAgents.length === agentKeys.length
   const lowConfidence   = computedResult.dataCompleteness < 20 || allAgentsFailed
   const progressStep    = lowConfidence ? 'Complete — limited data' : 'Complete'
 
@@ -293,7 +304,15 @@ export async function POST(request: NextRequest) {
   }
 
   const updatePayload: Record<string, any> = {
-    computed_result:   computedResult,
+    computed_result: {
+      ...computedResult,
+      benchmarkFlags: {
+        ticketSizeFromBenchmark: usedBenchmarkForTicket,
+        setupBudgetFromBenchmark: usedBenchmarkForSetup,
+        allAgentsFailed,
+        agentsEmpty: emptyAgents,
+      },
+    },
     engine_version:    computedResult.meta.engineVersion,
     benchmark_version: computedResult.meta.benchmarkVersion,
     status:            'complete',

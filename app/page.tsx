@@ -235,7 +235,7 @@ function ReportPreview() {
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
                     <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{c.score}</span>
-                    <span style={{ fontSize:8, color:'rgba(255,255,255,.4)' }}>/100</span>
+                    <span style={{ fontSize:10, color:'rgba(255,255,255,.4)' }}>/100</span>
                   </div>
                 </div>
                 <p style={{ fontSize:9, color:'rgba(255,255,255,.3)', marginTop:2 }}>{c.scoreLabel}</p>
@@ -488,7 +488,7 @@ function DarkShowcase() {
               <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ display: 'flex', gap: 4 }}>{['#FF5F57','#FFBD2E','#28CA41'].map(c=><div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}</div>
                 <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>locatalyze.com/analyse</div>
-                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 900, color: '#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
               </div>
               <div style={{ background: '#0A1210', minHeight: 280 }}>
                 <ShowcaseDeviceUI ui={tab.ui} ak={ak}/>
@@ -696,11 +696,11 @@ function DemandHeatmap({ data, color }: { data: number[]; color: string }) {
   return (
     <div>
       <div style={{ display: 'flex', gap: 3, marginBottom: 4, paddingLeft: 38 }}>
-        {days.map(d => <div key={d} style={{ flex: 1, fontSize: 8, color: L.muted, textAlign: 'center' as const, fontWeight: 600 }}>{d}</div>)}
+        {days.map(d => <div key={d} style={{ flex: 1, fontSize: 10, color: L.muted, textAlign: 'center' as const, fontWeight: 600 }}>{d}</div>)}
       </div>
       {times.map((t, ti) => (
         <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 3 }}>
-          <div style={{ width: 34, fontSize: 8, color: L.muted, textAlign: 'right' as const, paddingRight: 4, fontWeight: 600, flexShrink: 0 }}>{t}</div>
+          <div style={{ width: 34, fontSize: 10, color: L.muted, textAlign: 'right' as const, paddingRight: 4, fontWeight: 600, flexShrink: 0 }}>{t}</div>
           {days.map((_, di) => {
             const idx = ti * 7 + di
             const v = data[idx] || 0
@@ -839,7 +839,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
             <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' as const }}>
               <div style={{ textAlign: 'center' as const }}>
                 <ScoreRing score={d.score} color={d.verdictColor} size={isMobile ? 68 : 84}/>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>Feasibility Score</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,.70)', marginTop: 4 }}>Feasibility Score</p>
               </div>
               {!isMobile && (
                 <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
@@ -1216,7 +1216,7 @@ function CinematicWalkthrough() {
                     </svg>
                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
                       <span style={{ fontSize: 16, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{scoreAnim}</span>
-                      <span style={{ fontSize: 8, color: L.muted }}>/100</span>
+                      <span style={{ fontSize: 10, color: L.muted }}>/100</span>
                     </div>
                   </div>
                 </div>
@@ -1303,7 +1303,7 @@ function CinematicWalkthrough() {
               <div key={i} style={{ position: 'absolute', left: `${c.x}%`, top: `${c.y}%`, transform: 'translate(-50%,-100%)', animation: 'pin-drop .35s cubic-bezier(.175,.885,.32,1.275) both', zIndex: 4 }}>
                 <div style={{ position: 'relative', width: 20, height: 20 }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50% 50% 50% 0', background: c.color, transform: 'rotate(-45deg)', border: '2px solid #fff', boxShadow: `0 2px 8px ${c.color}60` }}/>
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', fontWeight: 900 }}>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#fff', fontWeight: 900 }}>
                     {c.threat==='High'?'!':c.threat==='Med'?'~':'OK'}
                   </div>
                 </div>
@@ -1316,7 +1316,7 @@ function CinematicWalkthrough() {
                   <div style={{ width: 24, height: 24, borderRadius: '50% 50% 50% 0', background: L.emerald, transform: 'rotate(-45deg)', border: '2.5px solid #fff', boxShadow: `0 3px 12px rgba(16,185,129,.5)` }}/>
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: '#0F766E', border: '2px solid #fff' }} /></div>
                 </div>
-                <div style={{ marginTop: 2, background: L.emerald, color: '#fff', borderRadius: 5, padding: '1px 6px', fontSize: 8, fontWeight: 800, textAlign: 'center' as const }}>You</div>
+                <div style={{ marginTop: 2, background: L.emerald, color: '#fff', borderRadius: 5, padding: '1px 6px', fontSize: 10, fontWeight: 800, textAlign: 'center' as const }}>You</div>
               </div>
             )}
 
@@ -1864,7 +1864,7 @@ export default function LandingPage() {
       {/* SOCIAL PROOF — data-backed trust strip */}
       <section style={{ padding: '36px 24px', background: '#0C1F1C', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 28 }}>
+          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 28 }}>
             What the data shows across analysed locations
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden' }}>
@@ -1880,8 +1880,8 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16, fontStyle: 'italic' }}>
-            Based on Locatalyze analysis of 2,000+ addresses across Melbourne, Sydney, Brisbane, Perth and Adelaide · 2025–2026 · <a href="/methodology" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'underline' }}>Methodology</a>
+          <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 16, fontStyle: 'italic' }}>
+            Based on Locatalyze analysis of 2,000+ addresses across Melbourne, Sydney, Brisbane, Perth and Adelaide · 2025–2026 · <a href="/methodology" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'underline' }}>Methodology</a>
           </p>
         </div>
       </section>
@@ -1961,7 +1961,7 @@ export default function LandingPage() {
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Get 10-Pack — $149</a>
             </div>
           </div>
-          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report includes a free preview — verdict, competitor map, and score. No card required.</p>
+          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report includes a free report — verdict, competitor map, and score. No card required.</p>
 
           {/* FAQ */}
           <div style={{ maxWidth: 640, margin: '48px auto 0' }}>

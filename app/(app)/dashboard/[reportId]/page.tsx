@@ -2894,7 +2894,7 @@ function useReport(reportId: string) {
         .or(`report_id.eq.${reportId},id.eq.${reportId}`)
         .order('created_at', { ascending: false }).limit(1).maybeSingle()
 
-      if (data && data.user_id && userId && data.user_id !== userId && !data.is_public) {
+      if (data && data.user_id && userId && data.user_id !== userId && data.is_public !== true) {
         setLoading(false); setNotFound(true); return
       }
       if (error) { console.error('[Report] fetch error:', error.code, error.message); return null }
@@ -4556,29 +4556,25 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading badge="engine" sub="Each component is weighted to produce your overall score.">Score Breakdown</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 32, alignItems: 'center' }}>
                 <div>
-                  <ScoreBar label="Rent Affordability" score={report.score_rent} weight="30%"
+                  <ScoreBar label="Rent Affordability" score={report.score_rent} weight="20%"
                     estimated={!report.monthly_rent || report.monthly_rent === 0}
                     estimatedReason="No rent submitted — score estimated from area median rent"
+                  />
+                  <ScoreBar label="Competition" score={report.score_competition} weight="25%"
+                    estimated={_rd.competitors?.dataQuality === 'estimated_fallback' || _rd.competitors?.dataQuality === 'no_data'}
+                    estimatedReason="Live competitor data unavailable — score estimated from area averages"
+                  />
+                  <ScoreBar label="Market Demand" score={report.score_demand} weight="20%"
+                    estimated={_rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !_rd.demographics?.medianIncome)}
+                    estimatedReason="Market demand data is from area averages — not verified against this specific location"
                   />
                   <ScoreBar label="Profitability" score={computedScoreProfitability} weight="25%"
                     estimated={_confidenceTier === 'benchmark_default'}
                     estimatedReason="Revenue is from industry benchmarks — not verified against this address"
                   />
-                  <ScoreBar label="Competition" score={report.score_competition} weight="25%"
-<<<<<<< HEAD
-                    estimated={rd.competitors?.dataQuality === 'estimated_fallback' || rd.competitors?.dataQuality === 'no_data'}
-                    estimatedReason="Live competitor data unavailable — score estimated from area averages"
-                  />
-                  <ScoreBar label="Area Demographics" score={report.score_demand} weight="20%"
-                    estimated={rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !rd.demographics?.medianIncome)}
-=======
-                    estimated={_rd.competitors?.dataQuality === 'estimated_fallback' || _rd.competitors?.dataQuality === 'no_data'}
-                    estimatedReason="Live competitor data unavailable — score estimated from area averages"
-                  />
-                  <ScoreBar label="Area Demographics" score={report.score_demand} weight="20%"
-                    estimated={_rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !_rd.demographics?.medianIncome)}
->>>>>>> sync before pull
-                    estimatedReason="Suburb-level data unavailable — score estimated from state-level averages"
+                  <ScoreBar label="Location Quality" score={report.score_cost ?? 0} weight="10%"
+                    estimated={!_rd.location?.footfallSignal}
+                    estimatedReason="Location signals (footfall, transit) are estimated from area patterns"
                   />
                 </div>
                 <RadarChart color={vc.text} scores={[

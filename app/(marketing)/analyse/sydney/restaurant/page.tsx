@@ -327,7 +327,7 @@ export default function SydneyRestaurantPage() {
           <h2 style={{ fontSize: 26, fontWeight: 900, color: '#FFFBEB', letterSpacing: '-0.03em', marginBottom: 10 }}>Ready to analyse your specific Sydney restaurant location?</h2>
      <p style={{ fontSize: 15, color: 'rgba(253,230,138,0.65)', maxWidth: 480, margin: '0 auto 26px', lineHeight: 1.75 }}>Sydney restaurants succeed and fail on location more than any other factor. Run your address through Locatalyze before you sign anything.</p>
      <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FDE68A', color: '#1C0A00', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>Analyse my Sydney address free →</Link>
-     <p style={{ fontSize: 12, color: 'rgba(253,230,138,0.35)', marginTop: 10 }}>No credit card · 1 free preview · ~90 seconds</p>
+     <p style={{ fontSize: 12, color: 'rgba(253,230,138,0.65)', marginTop: 10 }}>No credit card · 1 free report · ~90 seconds</p>
     </div>
       </div>
     </div>

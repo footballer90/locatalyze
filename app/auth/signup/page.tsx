@@ -31,7 +31,7 @@ function SignUpInner() {
 
  async function handleSubmit() {
     if (!email || !password) { setError('Please enter your email and password'); setErrorType('error'); return }
-  if (password.length < 6)  { setError('Password must be at least 6 characters'); setErrorType('error'); return }
+  if (password.length < 8)  { setError('Password must be at least 8 characters'); setErrorType('error'); return }
 
   // Only enforce CAPTCHA if site key is configured
     if (siteKey && !captchaToken) {
@@ -82,27 +82,16 @@ function SignUpInner() {
     setCaptchaToken(null)
 
     if (err) {
-      const msg = err.message.toLowerCase()
-      if (
-        msg.includes('already registered') ||
-    msg.includes('already been registered') ||
-    msg.includes('user already exists') ||
-    msg.includes('email already') ||
-    err.status === 422
-      ) {
-        setErrorType('existing')
-    setError('An account with this email already exists.')
-   } else {
-        setErrorType('error')
-    setError(err.message)
-      }
+      setErrorType('error')
+      setError('Unable to create account. Please check your details and try again.')
       return
     }
 
     if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
-      setErrorType('existing')
-   setError('An account with this email already exists.')
-   return
+      // Existing account — show identical message to prevent enumeration
+      setErrorType('error')
+      setError('Unable to create account. Please check your details and try again.')
+      return
     }
 
     setDone(true)

@@ -11,7 +11,7 @@ const PR_DATA = {
   kpis: [
       { label: 'Est. monthly revenue', value: '$78k–$88k',  sub: 'range estimate',   up: true },
       { label: 'Monthly Profit',       value: '$27,200',    sub: '~33% margin',       up: true },
-      { label: 'Est. annual revenue',  value: '$936k–$1.1m', sub: 'range estimate',  up: true },
+      { label: 'Est. annual revenue',  value: '$936k–$1.06m', sub: 'range estimate',  up: true },
       { label: 'Break-even (est.)',    value: '35–50/day',  sub: 'assumptions-based', up: true },
   ],
     revenue: [58, 67, 74, 80, 86, 91],

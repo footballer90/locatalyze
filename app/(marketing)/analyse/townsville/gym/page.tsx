@@ -738,7 +738,7 @@ export default function TownsvilleGymPage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FCD34D', color: '#7C2D12', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Analyse my Townsville address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(254,242,235,0.35)', marginTop: 10 }}>No credit card · 1 free preview · ~90 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(254,242,235,0.65)', marginTop: 10 }}>No credit card · 1 free report · ~90 seconds</p>
         </div>
 
       </div>

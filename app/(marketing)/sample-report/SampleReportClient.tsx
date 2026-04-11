@@ -176,7 +176,7 @@ export default function SampleReportClient() {
       {/* Sample banner */}
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-          Sample report — fictional address, real report structure. Named competitors with Google Maps ratings are shown in the Competition tab.{' '}
+          SAMPLE REPORT — Illustrative data only. Address "214 Oxford Street, Leederville WA 6007" is fictional. These numbers must not be used for investment or leasing decisions.{' '}
           <Link href="/onboarding" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
             Run yours free →
           </Link>
@@ -210,7 +210,7 @@ export default function SampleReportClient() {
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: S.mono }}>214 Oxford Street, Leederville WA 6007</span>
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitors fetched {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })} · Google Maps · sample data</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitor data · Google Maps · illustrative sample only</span>
               </div>
               <h1 style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
                 Specialty Café
@@ -249,7 +249,7 @@ export default function SampleReportClient() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
               { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'est. ±20%' },
-              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'est. ±15%' },
+              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'est. ±25%' },
               { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'to cover costs' },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
@@ -261,7 +261,7 @@ export default function SampleReportClient() {
             ))}
           </div>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4, fontStyle: 'italic' }}>
-            Revenue (±20%) and profit (±15%) are model estimates from industry benchmarks — not financial forecasts. Actual results will vary.
+            Revenue (±20%) and profit (±25%) are model estimates from industry benchmarks — not financial forecasts. Actual results will vary.
           </p>
         </div>
       </div>
@@ -334,15 +334,15 @@ export default function SampleReportClient() {
                   <SectionLabel>Score Breakdown</SectionLabel>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24, alignItems: 'center' }}>
                     <div>
-                      <ScoreBar label="Rent Affordability" score={90} weight="30%" />
-                      <ScoreBar label="Profitability"       score={80} weight="25%" />
+                      <ScoreBar label="Rent Affordability" score={90} weight="20%" />
                       <ScoreBar label="Competition"         score={80} weight="25%" />
-                      <ScoreBar label="Area Demographics"   score={85} weight="20%" />
+                      <ScoreBar label="Market Demand"       score={85} weight="20%" />
+                      <ScoreBar label="Profitability"       score={80} weight="25%" />
+                      <ScoreBar label="Location Quality"    score={88} weight="10%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Competition (80) — 6 verified competitors within 1km, moderate saturation. Area Demographics (85) — median household income and foot-traffic signals. Sub-scores rounded to nearest 5 (±5pt model accuracy). Weighted total: 90×0.30 + 80×0.25 + 80×0.25 + 85×0.20 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 6 verified competitors within 1km, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (88) — high footfall and excellent transit access. Sub-scores rounded to nearest 5 (±5pt model accuracy). Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 88×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>83</strong>.
                       </p>
                     </div>
-                    {/* Simple radar placeholder — 4 dimensions */}
                     <div style={{ textAlign: 'center' }}>
                       <svg width="180" height="180" viewBox="0 0 220 220">
                         {[0.25,0.5,0.75,1].map(l => {
@@ -435,14 +435,14 @@ export default function SampleReportClient() {
                 <SectionLabel>Monthly P&L</SectionLabel>
                 <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
                   <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>
-                    ⚠ These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. Revenue carries ±20% uncertainty (the input); net profit carries ±15% (the output after fixed costs). Higher revenue uncertainty does not imply lower profit uncertainty — operating leverage compounds both.
+                    ⚠ These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. Revenue carries ±20% uncertainty (the input); net profit carries ±25% (the output after fixed costs). Higher revenue uncertainty does not imply lower profit uncertainty — operating leverage compounds both.
                   </p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Revenue"         value="~$68,000" sub="~±20% · model est." mono />
                   <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="~±15% · model est." mono />
+                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="~±25% · model est." mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />
@@ -659,7 +659,7 @@ export default function SampleReportClient() {
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
               {[
                 { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: '±20% model est.' },
-                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: '±15% model est.' },
+                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: '±25% model est.' },
                 { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber,  sub: 'of revenue' },
                 { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900,   sub: 'fixed cost threshold' },
                 { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900,   sub: 'excl. ramp-up' },

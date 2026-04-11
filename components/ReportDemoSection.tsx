@@ -99,7 +99,7 @@ const DATA: Record<Verdict, ReportData> = {
     finCards: [
       { l: 'Est. monthly revenue', v: '$78k–$88k', s: 'range estimate' },
       { l: 'Monthly Profit',  v: '$27,200',  s: 'After all costs'   },
-      { l: 'Est. annual revenue', v: '$936k–$1.1m', s: 'range estimate' },
+      { l: 'Est. annual revenue', v: '$936k–$1.06m', s: 'range estimate' },
       { l: 'Setup Cost Est.', v: '$185,000', s: 'Fit-out + equip.'  },
     ],
     finRows: [

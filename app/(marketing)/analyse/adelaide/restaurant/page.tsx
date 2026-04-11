@@ -754,7 +754,7 @@ export default function AdelaideRestaurantPage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Analyse my Adelaide address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(204,235,229,0.35)', marginTop: 10 }}>No credit card · 1 free preview · ~90 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(204,235,229,0.65)', marginTop: 10 }}>No credit card · 1 free report · ~90 seconds</p>
         </div>
 
       </div>
