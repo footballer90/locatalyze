@@ -243,7 +243,7 @@ export default function ChatswoodPage() {
             Business Scores
           </h2>
           <ScoreBar label="Foot Traffic" value={87} />
-          <ScoreBar label="Demographics" value={93} />
+          <ScoreBar label="Area Demographics" value={93} />
           <ScoreBar label="Rent Viability" value={73} />
           <ScoreBar label="Competition Gap" value={66} />
           <ScoreBar label="Accessibility" value={92} />

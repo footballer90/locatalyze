@@ -119,7 +119,7 @@ export default function MarrickvillePage() {
             <div style={{ minWidth: 0 }}>
               <h3 style={{ fontSize: '14px', fontWeight: 700, color: C.n700, marginBottom: '16px' }}>Score Breakdown</h3>
               <ScoreBar label="Foot Traffic" value={79} />
-              <ScoreBar label="Demographics" value={80} />
+              <ScoreBar label="Area Demographics" value={80} />
               <ScoreBar label="Rent Viability" value={84} />
               <ScoreBar label="Competition Gap" value={76} />
               <ScoreBar label="Accessibility" value={78} />

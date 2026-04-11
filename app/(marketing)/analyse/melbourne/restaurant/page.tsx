@@ -352,8 +352,8 @@ export default function MelbourneRestaurantPage() {
 
                       {/* Score bars */}
                       <div style={{ marginBottom: 20 }}>
-                        <ScoreBar label="Foot traffic"   value={sub.footTraffic}      color={S.brand}   />
-                        <ScoreBar label="Demographics"   value={sub.demographics}     color={S.emerald} />
+                        <ScoreBar label="Profitability"   value={sub.footTraffic}      color={S.brand}   />
+                        <ScoreBar label="Area Demographics"   value={sub.demographics}     color={S.emerald} />
                         <ScoreBar label="Rent viability" value={sub.rentFit}          color={S.amber}   />
                         <ScoreBar label="Competition gap" value={sub.competitionScore} color={S.brand}   />
                       </div>

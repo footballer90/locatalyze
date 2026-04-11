@@ -347,7 +347,7 @@ export default function NewtownPage() {
             Business Scores
           </h2>
           <ScoreBar label="Foot Traffic" value={84} />
-          <ScoreBar label="Demographics" value={72} />
+          <ScoreBar label="Area Demographics" value={72} />
           <ScoreBar label="Rent Viability" value={78} />
           <ScoreBar label="Competition Gap" value={58} />
           <ScoreBar label="Accessibility" value={86} />

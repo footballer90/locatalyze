@@ -125,7 +125,7 @@ export default function ParramattaPage() {
             <div style={{ minWidth: 0 }}>
               <h3 style={{ fontSize: '14px', fontWeight: 700, color: C.n700, marginBottom: '16px' }}>Score Breakdown</h3>
               <ScoreBar label="Foot Traffic" value={86} />
-              <ScoreBar label="Demographics" value={82} />
+              <ScoreBar label="Area Demographics" value={82} />
               <ScoreBar label="Rent Viability" value={88} />
               <ScoreBar label="Competition Gap" value={79} />
               <ScoreBar label="Accessibility" value={90} />

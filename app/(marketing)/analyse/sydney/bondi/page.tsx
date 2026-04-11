@@ -277,7 +277,7 @@ export default function BondiPage() {
             Business Scores
           </h2>
           <ScoreBar label="Foot Traffic" value={85} />
-          <ScoreBar label="Demographics" value={78} />
+          <ScoreBar label="Area Demographics" value={78} />
           <ScoreBar label="Rent Viability" value={62} />
           <ScoreBar label="Competition" value={80} />
         </div>

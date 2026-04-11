@@ -537,9 +537,9 @@ export default function PerthCafePage() {
           <div style={{ fontSize: 52, fontWeight: 900, color: S.emerald, lineHeight: 1 }}>{sub.score}</div>
                     <div style={{ fontSize: 11, color: S.muted }}>/100</div>
                   </div>
-                  <ScoreBar label="Foot traffic" value={sub.footTraffic}/>
-         <ScoreBar label="Demographics" value={sub.demographics}/>
-         <ScoreBar label="Rent fit" value={sub.rentFit}/>
+                  <ScoreBar label="Profitability" value={sub.footTraffic}/>
+         <ScoreBar label="Area Demographics" value={sub.demographics}/>
+         <ScoreBar label="Rent Affordability" value={sub.rentFit}/>
          <ScoreBar label="Competition" value={sub.competitionScore}/>
         </div>
               </div>

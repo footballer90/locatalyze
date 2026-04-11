@@ -119,7 +119,7 @@ export default function AlexandriaPage() {
             <div style={{ minWidth: 0 }}>
               <h3 style={{ fontSize: '14px', fontWeight: 700, color: C.n700, marginBottom: '16px' }}>Score Breakdown</h3>
               <ScoreBar label="Foot Traffic" value={72} />
-              <ScoreBar label="Demographics" value={84} />
+              <ScoreBar label="Area Demographics" value={84} />
               <ScoreBar label="Rent Viability" value={82} />
               <ScoreBar label="Competition Gap" value={78} />
               <ScoreBar label="Accessibility" value={74} />

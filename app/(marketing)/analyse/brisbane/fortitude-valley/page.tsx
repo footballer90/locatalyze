@@ -116,7 +116,7 @@ export default function FortitudeValleyPage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 28 }}>Opportunity Score: 74/100</h2>
           <div>
             <ScoreBar label="Foot Traffic" value={82} />
-            <ScoreBar label="Demographics" value={74} />
+            <ScoreBar label="Area Demographics" value={74} />
             <ScoreBar label="Rent Viability" value={62} />
             <ScoreBar label="Competition Gap" value={68} />
           </div>

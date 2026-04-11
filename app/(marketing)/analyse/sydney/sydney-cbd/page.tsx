@@ -280,7 +280,7 @@ export default function SydneyCBDPage() {
             Business Scores
           </h2>
           <ScoreBar label="Foot Traffic" value={95} />
-          <ScoreBar label="Demographics" value={82} />
+          <ScoreBar label="Area Demographics" value={82} />
           <ScoreBar label="Rent Viability" value={38} />
           <ScoreBar label="Competition" value={89} />
         </div>

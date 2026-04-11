@@ -495,7 +495,7 @@ export default function IpswichGymPage() {
                   <p style={{ fontSize: 28, fontWeight: 900, color: S.brand, marginBottom: 0 }}>{s.score}/100</p>
                 </div>
                 <ScoreBar label="Foot Traffic" value={s.footTraffic} color={S.brand}/>
-                <ScoreBar label="Demographics" value={s.demographics}/>
+                <ScoreBar label="Area Demographics" value={s.demographics}/>
                 <ScoreBar label="Rent Fit" value={s.rentFit} color={S.emerald}/>
                 <ScoreBar label="Competition Score" value={s.competitionScore} color={S.brand}/>
                 <div style={{ marginTop: 16, padding: '12px', background: S.n50, borderRadius: 10 }}>

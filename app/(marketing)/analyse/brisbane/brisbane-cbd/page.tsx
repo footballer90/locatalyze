@@ -120,7 +120,7 @@ export default function BrisbaneCBDPage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 28 }}>Opportunity Score: 77/100</h2>
           <div>
             <ScoreBar label="Foot Traffic" value={85} />
-            <ScoreBar label="Demographics" value={82} />
+            <ScoreBar label="Area Demographics" value={82} />
             <ScoreBar label="Rent Viability" value={55} />
             <ScoreBar label="Competition Gap" value={65} />
           </div>

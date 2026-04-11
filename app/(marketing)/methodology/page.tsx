@@ -234,7 +234,7 @@ export default function MethodologyPage() {
       Ready to analyse your location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>
-      Get a full data-driven report in 60–120 seconds. Free for your first 3 locations.
+      Get a full data-driven report in about 90 seconds. First location free — no card required.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-flex', background: S.white, color: S.brand, borderRadius: 12, padding: '13px 28px', fontWeight: 800, fontSize: 15 }}>
       Analyse my location free →

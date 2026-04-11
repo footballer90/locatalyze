@@ -120,7 +120,7 @@ export default function MountLawley() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40 }}>
             <div>
               <ScoreBar label="Foot Traffic" value={87} />
-              <ScoreBar label="Demographics" value={88} />
+              <ScoreBar label="Area Demographics" value={88} />
               <ScoreBar label="Rent Viability" value={76} />
               <ScoreBar label="Competition Gap" value={83} />
             </div>

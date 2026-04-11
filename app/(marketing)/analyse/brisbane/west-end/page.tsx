@@ -116,7 +116,7 @@ export default function WestEndPage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 28 }}>Opportunity Score: 85/100 (Highest Brisbane Score)</h2>
           <div>
             <ScoreBar label="Foot Traffic" value={88} />
-            <ScoreBar label="Demographics" value={84} />
+            <ScoreBar label="Area Demographics" value={84} />
             <ScoreBar label="Rent Viability" value={76} />
             <ScoreBar label="Competition Gap" value={82} />
           </div>

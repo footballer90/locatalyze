@@ -120,7 +120,7 @@ export default function PerthCBD() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40 }}>
             <div>
               <ScoreBar label="Foot Traffic" value={82} />
-              <ScoreBar label="Demographics" value={80} />
+              <ScoreBar label="Area Demographics" value={80} />
               <ScoreBar label="Rent Viability" value={58} />
               <ScoreBar label="Competition Gap" value={62} />
             </div>

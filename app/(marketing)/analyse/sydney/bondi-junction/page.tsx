@@ -262,7 +262,7 @@ export default function BondiJunctionPage() {
             Business Scores
           </h2>
           <ScoreBar label="Foot Traffic" value={86} />
-          <ScoreBar label="Demographics" value={87} />
+          <ScoreBar label="Area Demographics" value={87} />
           <ScoreBar label="Rent Viability" value={65} />
           <ScoreBar label="Competition Gap" value={68} />
           <ScoreBar label="Accessibility" value={91} />

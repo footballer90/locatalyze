@@ -194,7 +194,7 @@ export default async function SuburbPage({ params }: Props) {
                 Score Breakdown
               </h3>
               <ScoreBar label="Foot Traffic" value={data.scores.footTraffic} />
-              <ScoreBar label="Demographics" value={data.scores.demographics} />
+              <ScoreBar label="Area Demographics" value={data.scores.demographics} />
               <ScoreBar label="Rent Viability" value={data.scores.rentViability} />
               <ScoreBar label="Competition Gap" value={data.scores.competitionGap} />
               <ScoreBar label="Accessibility" value={data.scores.accessibility} />

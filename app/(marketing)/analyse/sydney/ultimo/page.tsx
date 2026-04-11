@@ -119,7 +119,7 @@ export default function UltimoPage() {
             <div style={{ minWidth: 0 }}>
               <h3 style={{ fontSize: '14px', fontWeight: 700, color: C.n700, marginBottom: '16px' }}>Score Breakdown</h3>
               <ScoreBar label="Foot Traffic" value={72} />
-              <ScoreBar label="Demographics" value={58} />
+              <ScoreBar label="Area Demographics" value={58} />
               <ScoreBar label="Rent Viability" value={65} />
               <ScoreBar label="Competition Gap" value={74} />
               <ScoreBar label="Accessibility" value={81} />

@@ -347,7 +347,7 @@ export default function SurryHillsPage() {
             Business Scores
           </h2>
           <ScoreBar label="Foot Traffic" value={88} />
-          <ScoreBar label="Demographics" value={91} />
+          <ScoreBar label="Area Demographics" value={91} />
           <ScoreBar label="Rent Viability" value={71} />
           <ScoreBar label="Competition Gap" value={62} />
           <ScoreBar label="Accessibility" value={85} />

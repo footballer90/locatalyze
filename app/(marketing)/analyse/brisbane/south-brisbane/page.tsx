@@ -116,7 +116,7 @@ export default function SouthBrisbanePage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 28 }}>Opportunity Score: 82/100</h2>
           <div>
             <ScoreBar label="Foot Traffic" value={83} />
-            <ScoreBar label="Demographics" value={84} />
+            <ScoreBar label="Area Demographics" value={84} />
             <ScoreBar label="Rent Viability" value={72} />
             <ScoreBar label="Competition Gap" value={79} />
           </div>

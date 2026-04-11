@@ -55,7 +55,7 @@ export default function BrisbaneAnalysePage() {
         <Link href="/auth/signup" style={{ display: 'inline-block', background: S.brand, color: S.white, borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 20px rgba(15,118,110,0.35)' }}>
           Analyse your Brisbane location →
         </Link>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>Free report · No credit card · Results in 40 seconds</p>
+        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>Free report · No credit card · Results in ~90 seconds</p>
       </div>
 
       {/* MAIN CONTENT */}
@@ -182,7 +182,7 @@ export default function BrisbaneAnalysePage() {
         {/* MID CTA */}
         <div style={{ background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, borderRadius: 16, padding: '32px', marginBottom: 56, textAlign: 'center' }}>
           <h3 style={{ fontSize: 22, fontWeight: 800, color: S.white, marginBottom: 8 }}>Not sure which suburb is right for you?</h3>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>Enter your exact address and get a full GO / CAUTION / NO verdict in under 40 seconds.</p>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>Enter your exact address and get a full GO / CAUTION / NO verdict in about 90 seconds.</p>
           <Link href="/auth/signup" style={{ display: 'inline-block', background: S.white, color: S.brand, borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
             Run a free location analysis →
           </Link>
@@ -368,7 +368,7 @@ export default function BrisbaneAnalysePage() {
             </div>
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>How long does a Locatalyze analysis take?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>A full location report takes under 40 seconds. It includes competitor density data within 500m, ABS census demographics, a financial model with your submitted inputs, and a GO / CAUTION / NO verdict with score breakdown.</p>
+              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>A full location report takes about 90 seconds. It includes competitor density data within 500m, ABS census demographics, a financial model with your submitted inputs, and a GO / CAUTION / NO verdict with score breakdown.</p>
             </div>
           </div>
         </section>
@@ -377,12 +377,12 @@ export default function BrisbaneAnalysePage() {
         <section style={{ background: S.n900, borderRadius: 20, padding: '48px 32px', textAlign: 'center' }}>
           <h2 style={{ fontSize: 28, fontWeight: 900, color: S.white, marginBottom: 12 }}>Ready to analyse your exact Brisbane location?</h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginBottom: 28, maxWidth: 480, margin: '0 auto 28px' }}>
-            Stop guessing. Get a full GO / CAUTION / NO verdict with competitor data, demographics, and a 3-year financial model — in under 40 seconds.
+            Stop guessing. Get a full GO / CAUTION / NO verdict with competitor data, demographics, and a 3-year financial model — in about 90 seconds.
           </p>
           <Link href="/auth/signup" style={{ display: 'inline-block', background: S.brand, color: S.white, borderRadius: 12, padding: '14px 36px', fontSize: 15, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 20px rgba(15,118,110,0.4)' }}>
             Analyse your location free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 12 }}>No credit card · Takes 40 seconds · Full financial model included</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 12 }}>No credit card · Takes ~90 seconds · Full financial model included</p>
         </section>
 
       </div>
