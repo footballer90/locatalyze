@@ -3249,7 +3249,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const _rawCustomers = (_cr?.dailyCustomers ?? null) || (_fin?.baselineCustomers ?? null) || null
   const baseCustomers = (_rawCustomers && _rawCustomers > 0) ? Math.round(_rawCustomers) : _btBenchmark.dailyCustomersBase
   const _scoreComp = report?.score_competition ?? 50
-  const _scoreDem = report?.score_demand ?? 50
+  // Prefer engine demand score (null = no data) over legacy report field; fall back to 50 for scoring only
+  // Note: C is not yet declared here — use _cr (same reference to report.computed_result)
+  const _engineDemandScore: number | null = (_cr?.scores?.demand as number | null | undefined) ?? null
+  const _scoreDem = _engineDemandScore ?? report?.score_demand ?? 50
 
   const adjCalc = useMemo(() => {
     const rent = adjRent ?? baseRent
@@ -3695,8 +3698,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       setupCostRec:         parseMoney((_inputData as any)?.setupBudget) ?? null,
       roiTimeline:          { roi12: null, roi24: null, roi36: null },
       projections:          { year1: null, year2: null, year3: null },
+      projection:           C.projection,       // engine 3-year: { year1, year2|null, year3|null, suppressed }
       riskScenarios:        {},
       breakEvenMonths:      C.breakEvenMonths,
+      paybackMonths:        C.breakEvenMonths,  // months to recoup setup budget (null = estimated budget)
       costOptimisationTips: [],
       customerVolume:       { daily_customers_needed_breakeven: C.breakEvenDaily },
       monthlyCostBreakdown: null,
@@ -4564,9 +4569,12 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     estimated={_rd.competitors?.dataQuality === 'estimated_fallback' || _rd.competitors?.dataQuality === 'no_data'}
                     estimatedReason="Live competitor data unavailable — score estimated from area averages"
                   />
-                  <ScoreBar label="Market Demand" score={report.score_demand} weight="20%"
-                    estimated={_rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !_rd.demographics?.medianIncome)}
-                    estimatedReason="Market demand data is from area averages — not verified against this specific location"
+                  <ScoreBar
+                    label="Market Demand"
+                    score={_engineDemandScore ?? report.score_demand}
+                    weight="20%"
+                    estimated={_engineDemandScore == null || _rd.demographics?.dataQuality?.includes('abs_state_default') || (_confidenceTier === 'benchmark_default' && !_rd.demographics?.medianIncome)}
+                    estimatedReason={_engineDemandScore == null ? 'No demand data returned by A3 agent — score is unavailable' : 'Market demand data is from area averages — not verified against this specific location'}
                   />
                   <ScoreBar label="Profitability" score={computedScoreProfitability} weight="25%"
                     estimated={_confidenceTier === 'benchmark_default'}
@@ -4581,7 +4589,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   { label: 'Rent', value: report.score_rent ?? 0 },
                   { label: 'Profitability', value: computedScoreProfitability },
                   { label: 'Competition', value: report.score_competition ?? 0 },
-                  { label: 'Demand', value: report.score_demand ?? 0 },
+                  { label: 'Demand', value: _engineDemandScore ?? report.score_demand ?? 0 },
                   { label: 'Cost', value: report.score_cost ?? 0 },
                 ]} />
               </div>
@@ -5921,10 +5929,17 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading badge="engine">Break-even Analysis</SectionHeading>
               {/* Single canonical break-even values — _beDailyForGauge = required, _currentDailyCustomers = projected */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 24, alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
                   <Tile label="Break-even / Day" value={_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} cust.` : 'Not available'} mono sub="customers needed" />
                   <Tile label="Projected / Day" value={_currentDailyCustomers != null ? `${_dCustomers.display} cust.` : 'Not available'} mono sub="at base demand" color={(_currentDailyCustomers ?? 0) >= (_beDailyForGauge ?? Infinity) ? S.emerald : S.red} />
                   <Tile label="Revenue / Month" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : 'Not available'} mono sub="needed to break even" />
+                  <Tile
+                    label="Setup Payback"
+                    value={fin.paybackMonths != null ? `${fin.paybackMonths} mo` : fin.breakEvenMonths != null ? `${fin.breakEvenMonths} mo` : _inputData?.setupBudgetIsEstimated ? 'Est. budget' : 'Not available'}
+                    mono
+                    sub={fin.paybackMonths != null || fin.breakEvenMonths != null ? 'months to recoup setup cost' : _inputData?.setupBudgetIsEstimated ? 'payback suppressed — setup budget was estimated' : 'setup budget not provided'}
+                    color={fin.paybackMonths != null ? (fin.paybackMonths <= 18 ? S.emerald : fin.paybackMonths <= 36 ? S.amber : S.red) : S.n400}
+                  />
                 </div>
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, textAlign: 'center' }}>Projected vs Break-even</p>
@@ -5977,6 +5992,52 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     </div>
                   </div>
                 )}
+              </Card>
+            )}
+
+            {/* ── 3-Year Profit Projection (from compute engine) ── */}
+            {fin.projection?.year1 != null && (
+              <Card>
+                <SectionHeading badge="engine" sub={fin.projection.suppressed ? 'Year 2–3 projections suppressed — revenue is benchmark-derived, not verified locally' : 'Annual net profit based on engine financial model'}>
+                  3-Year Profit Outlook
+                </SectionHeading>
+                {fin.projection.suppressed ? (
+                  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' as const }}>
+                    {/* Year 1 only */}
+                    <div style={{ flex: '0 0 auto', minWidth: 140, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 12, padding: '16px 18px', textAlign: 'center' as const }}>
+                      <p style={{ fontSize: 10, fontWeight: 800, color: S.brand, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 8 }}>Year 1</p>
+                      <p style={{ fontSize: 22, fontWeight: 900, color: S.brand, fontFamily: S.mono }}>
+                        {displayMoney(fin.projection.year1, _confidenceTier).display}
+                      </p>
+                      <p style={{ fontSize: 10, color: S.n400, marginTop: 4 }}>annual net profit</p>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200, background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={S.amber} strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                      <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
+                        Year 2 and Year 3 projections are suppressed because revenue was estimated from industry benchmarks, not live local data. Re-run with a verified address for multi-year projections.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+                    {[
+                      { label: 'Year 1', value: fin.projection.year1, color: S.brand, bg: S.brandFaded, border: S.brandBorder },
+                      { label: 'Year 2', value: fin.projection.year2, color: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr },
+                      { label: 'Year 3', value: fin.projection.year3, color: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr },
+                    ].map(yr => yr.value != null && (
+                      <div key={yr.label} style={{ background: yr.bg, border: `1px solid ${yr.border}`, borderRadius: 12, padding: '18px 20px', textAlign: 'center' as const }}>
+                        <p style={{ fontSize: 10, fontWeight: 800, color: yr.color, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 10 }}>{yr.label}</p>
+                        <p style={{ fontSize: 22, fontWeight: 900, color: yr.color, fontFamily: S.mono }}>
+                          {displayMoney(yr.value, _confidenceTier).display}
+                        </p>
+                        <p style={{ fontSize: 10, color: S.n400, marginTop: 6 }}>annual net profit</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p style={{ fontSize: 11, color: S.n400, marginTop: 12, lineHeight: 1.5 }}>
+                  Year 1 assumes base-case revenue. Year 2 applies 8% growth; Year 3 applies a further 10%. Projections are directional only — not financial advice.
+                </p>
               </Card>
             )}
 
