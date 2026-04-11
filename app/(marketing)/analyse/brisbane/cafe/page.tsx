@@ -651,7 +651,7 @@ export default function BrisbaneCafePage() {
               </p>
               <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 65% of projected demand (137 customers/day)</p>
-                <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to ~$8,900. Still solvent with healthy margins. A $45,000 cash reserve provides complete 5-month protection through a slow start. The low rent is what makes this scenario survivable — a hospitality business at 18% rent-to-revenue at 65% demand is loss-making with no floor.</p>
+                <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to ~$8,900. Still solvent with healthy margins. A $45,000 working capital buffer covers the ramp-up period before consistent demand is established — not because the business is losing money, but because cash flow in the first 1–3 months can be uneven. The low rent is what makes this scenario survivable — a hospitality business at 18% rent-to-revenue at 65% demand is loss-making with no floor.</p>
               </div>
             </div>
           </div>
@@ -755,7 +755,7 @@ export default function BrisbaneCafePage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#22C55E', color: '#0E7490', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Analyse my Brisbane address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(206,250,254,0.35)', marginTop: 10 }}>No credit card · 3 reports included · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(206,250,254,0.35)', marginTop: 10 }}>No credit card · 1 free preview · 60 seconds</p>
         </div>
 
       </div>

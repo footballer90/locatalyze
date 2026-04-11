@@ -660,12 +660,12 @@ export default function SampleReportClient() {
           <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(167,243,208,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Your address. Your numbers.</p>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F0FDF4', letterSpacing: '-0.03em', marginBottom: 10, lineHeight: 1.2 }}>This is what your report will look like</h2>
           <p style={{ fontSize: 15, color: 'rgba(167,243,208,0.65)', maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.75 }}>
-            Paste any Australian address. Choose your business type. Get a full GO/CAUTION/NO verdict with competitor map, financial model and 3-year projection in 60 seconds.
+            Paste any Australian address. Choose your business type. Get a full GO/CAUTION/NO verdict with competitor map, financial model and 3-year projection in about 90 seconds.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Run my free analysis →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · first report free · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · first report free · ~90 seconds</p>
         </div>
       </div>
     </div>

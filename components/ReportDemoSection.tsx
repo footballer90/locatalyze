@@ -560,7 +560,7 @@ export default function ReportDemoSection() {
   const [fading,  setFading]  = useState(false)
   const [fired,   setFired]   = useState(false)
   const [score,   setScore]   = useState(0)
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(true)  // start visible so score animates immediately
   const sectionRef = useRef<HTMLElement>(null)
 
   const d  = DATA[verdict]
@@ -587,8 +587,6 @@ export default function ReportDemoSection() {
   }, [])
 
   useEffect(() => {
-    // Only animate once the section is scrolled into view — prevents 0/100 flash on mount
-    if (!visible) { setScore(0); return }
     setScore(0)
     const target = d.score
     let n = 0
@@ -749,8 +747,8 @@ export default function ReportDemoSection() {
                   {vc.label}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1, opacity: (visible && score > 0) ? 1 : 0, transition: 'opacity 0.3s' }}>
-                    {score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
+                  <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1, opacity: 1 }}>
+                    {score > 0 ? score : d.score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
                   </div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: D.text3, letterSpacing: '.07em', textTransform: 'uppercase' }}>
                     Feasibility Score

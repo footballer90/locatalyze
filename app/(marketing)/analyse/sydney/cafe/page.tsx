@@ -535,7 +535,7 @@ export default function SydneyCafePage() {
        </p>
               <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 70% demand (154 customers/day)</p>
-        <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to $4,200. Tight. A $60,000 cash reserve provides 14-month protection. This is why Newtown is viable but unforgiving — the high rent leaves little buffer at reduced demand. Compare to Glebe at the same demand level: $14,800 monthly profit. The rent difference is the entire margin of safety.</p>
+        <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to $4,200. Tight but still positive. The risk is the ramp-up period — weeks 1–12 before consistent customer volume is established. A $60,000 working capital buffer covers operating costs during that ramp. This is why Newtown is viable but unforgiving — the high rent leaves almost no margin for slow months. Compare to Glebe at the same demand level: $14,800 monthly profit. The rent difference is the entire margin of safety.</p>
        </div>
             </div>
           </div>
@@ -633,7 +633,7 @@ export default function SydneyCafePage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#818CF8', color: '#1E1B4B', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
       Analyse my Sydney address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(199,210,254,0.35)', marginTop: 10 }}>No credit card · 3 reports included · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(199,210,254,0.35)', marginTop: 10 }}>No credit card · 1 free preview · 60 seconds</p>
     </div>
 
       </div>

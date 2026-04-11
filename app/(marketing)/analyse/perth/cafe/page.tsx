@@ -651,7 +651,7 @@ export default function PerthCafePage() {
               </p>
               <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 70% of projected demand (140 customers/day)</p>
-        <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to ~$7,200. Tight but solvent. A $43,000 cash reserve provides complete 6-month protection through a slow start. The low rent is what makes this scenario survivable — a hospitality business at 18% rent-to-revenue at 70% demand is loss-making with no floor.</p>
+        <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to ~$7,200. Tight but still profitable. A $43,000 working capital buffer covers the ramp-up period (typically weeks 1–12) before consistent customer volume is established. The low rent is what makes this scenario survivable — a hospitality business at 18% rent-to-revenue at 70% demand is loss-making with no floor.</p>
        </div>
             </div>
           </div>
@@ -755,7 +755,7 @@ export default function PerthCafePage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
       Analyse my Perth address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(204,235,229,0.35)', marginTop: 10 }}>No credit card · 3 reports included · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(204,235,229,0.35)', marginTop: 10 }}>No credit card · 1 free preview · 60 seconds</p>
     </div>
 
       </div>

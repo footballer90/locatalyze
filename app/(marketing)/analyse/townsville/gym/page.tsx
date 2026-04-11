@@ -631,7 +631,7 @@ export default function TownsvilleGymPage() {
               </p>
               <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 70% of projected demand (224 members)</p>
-                <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to ~$2,900. Still positive cash flow. A $50,000 cash reserve provides 17-month survival runway. The low rent is the entire margin protection here — at this rent, even demand misses do not trigger insolvency.' </p>
+                <p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>Monthly profit falls to ~$2,900. Still positive cash flow. A $50,000 working capital buffer covers the ramp-up period while membership builds to the 70% level. The low rent is the entire margin protection here — at this rent, even demand misses do not trigger insolvency.</p>
               </div>
             </div>
           </div>
@@ -738,7 +738,7 @@ export default function TownsvilleGymPage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FCD34D', color: '#7C2D12', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Analyse my Townsville address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(254,242,235,0.35)', marginTop: 10 }}>No credit card · 3 reports included · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(254,242,235,0.35)', marginTop: 10 }}>No credit card · 1 free preview · 60 seconds</p>
         </div>
 
       </div>

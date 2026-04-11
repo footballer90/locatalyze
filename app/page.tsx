@@ -306,8 +306,11 @@ const SHOWCASE_TABS = [
 
 function ShowcaseScoreUI({ ak }: { ak: number }) {
   const [sc, setSc] = useState(84); const [bars, setBars] = useState(true)
+  const isFirstMount = useRef(true)
   useEffect(() => {
-    if (ak === 0) return // Don't reset on first mount — show score immediately
+    // Use a ref to detect true first mount vs remount after tab cycle.
+    // ak===0 guard fails when component remounts with ak already >0.
+    if (isFirstMount.current) { isFirstMount.current = false; return }
     setSc(0); setBars(false); let n=0; const t=setInterval(()=>{ n=Math.min(n+2,84); setSc(n); if(n>=84){clearInterval(t); setBars(true)} },18); return()=>clearInterval(t)
   }, [ak])
   const off = 188-(188*sc/100)
@@ -323,9 +326,9 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
             <circle fill="none" stroke="rgba(255,255,255,.07)" strokeWidth="6" cx="30" cy="30" r="24"/>
             <circle fill="none" stroke="url(#sg)" strokeWidth="6" strokeLinecap="round" cx="30" cy="30" r="24" strokeDasharray="188" strokeDashoffset={off} style={{ transition: 'stroke-dashoffset .05s linear' }}/>
           </svg>
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: D.text1 }}>{sc}</div>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: D.text1 }}>{sc > 0 ? sc : 84}</div>
         </div>
-        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center', opacity: sc>=84?1:0, transition: 'opacity .4s' }}>
+        <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center' }}>
           <p style={{ fontSize: 17, fontWeight: 900, color: D.e }}>GO</p>
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
