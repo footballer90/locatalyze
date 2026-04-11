@@ -522,7 +522,7 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
     kpis: [
       { label: 'Est. monthly revenue', value: '$78k–$88k',  sub: 'range estimate',   up: true },
-      { label: 'Monthly Profit',       value: '$27,200',    sub: '~33% margin',       up: true },
+      { label: 'Monthly Profit',       value: '~$27k',      sub: '~33% margin',       up: true },
       { label: 'Est. annual revenue',  value: '$936k–$1.1m', sub: 'range estimate',  up: true },
       { label: 'Break-even (est.)',    value: '35–50/day',  sub: 'assumptions-based', up: true },
     ],
@@ -1027,7 +1027,7 @@ const CW_STEPS = [
 ]
 
 const CW_PHASE_META = [
-  { step:'01', label:'Enter Address',   desc:'Type any Australian address. Add your business type, monthly rent and transaction value. Takes under 2 minutes.' },
+  { step:'01', label:'Enter Address',   desc:'Type any Australian address. Add your business type, monthly rent and transaction value. Takes about 90 seconds.' },
   { step:'02', label:'AI Analyses',     desc:'Locatalyze scans competitors, loads live demographics, calculates rent viability and builds your financial model — all in real time.' },
   { step:'03', label:'Get Your Report', desc:'Receive a clear GO, CAUTION or NO verdict with a full financial model, score breakdown, SWOT analysis and 3-year projection.' },
 ]
@@ -1230,7 +1230,7 @@ function CinematicWalkthrough() {
                   ))}
                 </div>
 
-                {[{l:'Demand',s:85},{l:'Rent Viability',s:78},{l:'Competition',s:72},{l:'Profitability',s:90}].map((b, i) => (
+                {[{l:'Area Demographics',s:85},{l:'Rent Affordability',s:78},{l:'Competition',s:72},{l:'Profitability',s:90}].map((b, i) => (
                   <div key={b.l} style={{ marginBottom: 7 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                       <span style={{ fontSize: 11, color: L.muted }}>{b.l}</span>
@@ -1881,7 +1881,7 @@ export default function LandingPage() {
             ))}
           </div>
           <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16, fontStyle: 'italic' }}>
-            Based on Locatalyze analysis of 2,000+ addresses across Melbourne, Sydney, Brisbane, Perth and Adelaide · 2025–2026
+            Based on Locatalyze analysis of 2,000+ addresses across Melbourne, Sydney, Brisbane, Perth and Adelaide · 2025–2026 · <a href="/methodology" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'underline' }}>Methodology</a>
           </p>
         </div>
       </section>

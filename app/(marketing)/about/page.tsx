@@ -190,8 +190,8 @@ export default function AboutPage() {
       </p>
       <p style={{ fontSize: 16, color: '#475569', lineHeight: 1.85, marginBottom: '3rem' }}>
         Aman knew the technology could do better. Together they built Locatalyze —
-        the tool they both wish had existed: location feasibility analysis in under
-        60 seconds, for any Australian small business.
+        the tool they both wish had existed: location feasibility analysis in about
+        90 seconds, for any Australian small business.
       </p>
 
       {/* ── Mission ────────────────────────────────────────────────── */}

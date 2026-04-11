@@ -18,11 +18,11 @@ const FAQS = [
     items: [
       {
         q: 'How do I run my first analysis?',
-        a: 'Go to the Dashboard and click "New Analysis". Enter any Australian street address, select your business type, and drop a pin on the map to confirm your exact location. Add your monthly rent if you know it, then submit. Your report is usually ready in 60–120 seconds and includes a GO/CAUTION/NO verdict, full financial model, competitor map, SWOT analysis, and 3-year projection.',
+        a: 'Go to the Dashboard and click "New Analysis". Enter any Australian street address, select your business type, and drop a pin on the map to confirm your exact location. Add your monthly rent if you know it, then submit. Your report is usually ready in about 90 seconds and includes a GO/CAUTION/NO verdict, full financial model, competitor map, SWOT analysis, and 3-year projection.',
       },
       {
         q: 'What is "Calibrate your model" and should I fill it in?',
-        a: 'This section lets you give the financial model more accurate inputs specific to your business. You can enter your expected average order value (which overrides the industry benchmark), your operating hours, location access type (street frontage, transport hub, side street, etc.), and seating capacity. Each field you fill in raises the Model Accuracy score, which starts at 61% with just the address and can reach 98% with full calibration. It takes 60 seconds and meaningfully improves the revenue and break-even estimates.',
+        a: 'This section lets you give the financial model more accurate inputs specific to your business. You can enter your expected average order value (which overrides the industry benchmark), your operating hours, location access type (street frontage, transport hub, side street, etc.), and seating capacity. Each field you fill in raises the Model Accuracy score, which starts at 61% with just the address and can reach 98% with full calibration. It takes under a minute and meaningfully improves the revenue and break-even estimates.',
       },
       {
         q: 'Do I need a credit card to sign up?',
@@ -101,7 +101,7 @@ const FAQS = [
     items: [
       {
         q: 'Why is my report taking longer than expected?',
-        a: 'Reports typically complete in 60–120 seconds. The system runs 8 parallel analysis agents — competitor mapping, rent benchmarking, demographic analysis, financial modelling, and more — then compiles them into a single report. You can safely close the tab; the analysis continues in the background and your report will be waiting in the Dashboard when you return. If a report shows "failed" after 3 minutes, resubmit — the second attempt almost always succeeds.',
+        a: 'Reports typically complete in about 90 seconds. The system runs 8 parallel analysis agents — competitor mapping, rent benchmarking, demographic analysis, financial modelling, and more — then compiles them into a single report. You can safely close the tab; the analysis continues in the background and your report will be waiting in the Dashboard when you return. If a report shows "failed" after 3 minutes, resubmit — the second attempt almost always succeeds.',
       },
       {
         q: 'Do I get an email when my report is ready?',

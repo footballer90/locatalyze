@@ -210,7 +210,7 @@ export default function SampleReportClient() {
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: S.mono }}>214 Oxford Street, Leederville WA 6007</span>
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitors fetched 9 Apr 2026 11:23 AWST · Google Maps</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitors fetched {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })} · Google Maps · sample data</span>
               </div>
               <h1 style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
                 Specialty Café
