@@ -70,7 +70,7 @@ interface ReportData {
   mapMarkers:     MarkerData[]
   compStats:      { v: string; l: string; c: string }[]
   swot:           { s: string[]; w: string[]; o: string[]; t: string[] }
-  scoreBreakdown: { n: string; v: number; c: string }[]
+  scoreBreakdown: { n: string; v: number; c: string; w?: string }[]
   locRows:        { k: string; v: string; hi: string }[]
   nearest:        { n: string; d: string; r: string; c: string }[]
 }
@@ -91,11 +91,10 @@ const DATA: Record<Verdict, ReportData> = {
     ],
     ai: 'Strong directional signal. Competitor density is low and demographic income is above average for this category. This location warrants further investigation — visit in person and validate foot traffic before committing.',
     pentagon: [
-      { name: 'Foot Traffic',  val: 85, color: D.e     },
-      { name: 'Demographics',  val: 88, color: D.e     },
-      { name: 'Rent Value',    val: 78, color: D.e     },
-      { name: 'Competition',   val: 72, color: D.amber },
+      { name: 'Rent Afford.',  val: 78, color: D.e     },
       { name: 'Profitability', val: 90, color: D.e     },
+      { name: 'Competition',   val: 72, color: D.amber },
+      { name: 'Demographics',  val: 88, color: D.e     },
     ],
     finCards: [
       { l: 'Est. monthly revenue', v: '$78k–$88k', s: 'range estimate' },
@@ -133,12 +132,10 @@ const DATA: Record<Verdict, ReportData> = {
       t: ['Two premium independents with strong existing loyalty', 'Lease renewal risk in years 2–3'],
     },
     scoreBreakdown: [
-      { n: 'Demand Signal', v: 85, c: D.e     },
-      { n: 'Income Score',  v: 88, c: D.e     },
-      { n: 'Foot Traffic',  v: 80, c: D.e     },
-      { n: 'Competition',   v: 72, c: D.amber },
-      { n: 'Rent Burden',   v: 78, c: D.e     },
-      { n: 'Growth',        v: 83, c: D.e     },
+      { n: 'Rent Affordability', v: 78, c: D.e,     w: '30%' },
+      { n: 'Profitability',      v: 90, c: D.e,     w: '25%' },
+      { n: 'Competition',        v: 72, c: D.amber, w: '25%' },
+      { n: 'Area Demographics',  v: 88, c: D.e,     w: '20%' },
     ],
     locRows: [
       { k: 'Suburb',       v: 'Subiaco',  hi: ''    },
@@ -169,11 +166,10 @@ const DATA: Record<Verdict, ReportData> = {
     ],
     ai: 'Mixed signals. Moderate foot traffic and a competitive market create uncertainty. Revenue projections are below benchmark. This location can work with a strong concept differentiator — a generic offering will struggle here.',
     pentagon: [
-      { name: 'Foot Traffic',  val: 65, color: D.amber },
-      { name: 'Demographics',  val: 70, color: D.amber },
-      { name: 'Rent Value',    val: 82, color: D.e     },
-      { name: 'Competition',   val: 44, color: D.red   },
+      { name: 'Rent Afford.',  val: 74, color: D.e     },
       { name: 'Profitability', val: 58, color: D.amber },
+      { name: 'Competition',   val: 44, color: D.red   },
+      { name: 'Demographics',  val: 68, color: D.amber },
     ],
     finCards: [
       { l: 'Monthly Revenue', v: '$54,400',  s: 'Projected year 1'  },
@@ -211,12 +207,10 @@ const DATA: Record<Verdict, ReportData> = {
       t: ['Market close to saturation for standard cafe format', 'Two new venues opening on Albany Highway in Q3'],
     },
     scoreBreakdown: [
-      { n: 'Demand Signal', v: 65, c: D.amber },
-      { n: 'Income Score',  v: 70, c: D.amber },
-      { n: 'Foot Traffic',  v: 65, c: D.amber },
-      { n: 'Competition',   v: 44, c: D.red   },
-      { n: 'Rent Burden',   v: 82, c: D.e     },
-      { n: 'Growth',        v: 68, c: D.amber },
+      { n: 'Rent Affordability', v: 74, c: D.e,     w: '30%' },
+      { n: 'Profitability',      v: 58, c: D.amber, w: '25%' },
+      { n: 'Competition',        v: 44, c: D.red,   w: '25%' },
+      { n: 'Area Demographics',  v: 68, c: D.amber, w: '20%' },
     ],
     locRows: [
       { k: 'Suburb',       v: 'Victoria Park', hi: ''      },
@@ -247,11 +241,10 @@ const DATA: Record<Verdict, ReportData> = {
     ],
     ai: 'Not recommended. Saturated market with 22 direct competitors within 800m. Daytime foot traffic is weak for a cafe format — this suburb activates post 6pm. Revenue projections do not support a profitable operation within a reasonable timeframe.',
     pentagon: [
-      { name: 'Foot Traffic',  val: 44, color: D.red   },
-      { name: 'Demographics',  val: 50, color: D.amber },
-      { name: 'Rent Value',    val: 38, color: D.red   },
-      { name: 'Competition',   val: 15, color: D.red   },
-      { name: 'Profitability', val: 22, color: D.red   },
+      { name: 'Rent Afford.',  val: 44, color: D.red   },
+      { name: 'Profitability', val: 32, color: D.red   },
+      { name: 'Competition',   val: 24, color: D.red   },
+      { name: 'Demographics',  val: 52, color: D.amber },
     ],
     finCards: [
       { l: 'Monthly Revenue', v: '$42,100',  s: 'Projected year 1'   },
@@ -290,12 +283,10 @@ const DATA: Record<Verdict, ReportData> = {
       t: ['3 new venues pending development approval', 'High staff turnover in entertainment precincts'],
     },
     scoreBreakdown: [
-      { n: 'Demand Signal', v: 44, c: D.red   },
-      { n: 'Income Score',  v: 50, c: D.amber },
-      { n: 'Foot Traffic',  v: 55, c: D.amber },
-      { n: 'Competition',   v: 15, c: D.red   },
-      { n: 'Rent Burden',   v: 38, c: D.red   },
-      { n: 'Growth',        v: 30, c: D.red   },
+      { n: 'Rent Affordability', v: 44, c: D.red,   w: '30%' },
+      { n: 'Profitability',      v: 32, c: D.red,   w: '25%' },
+      { n: 'Competition',        v: 24, c: D.red,   w: '25%' },
+      { n: 'Area Demographics',  v: 52, c: D.amber, w: '20%' },
     ],
     locRows: [
       { k: 'Suburb',       v: 'Northbridge', hi: ''      },
@@ -386,7 +377,7 @@ function Pentagon({ items }: { items: { name: string; val: number; color: string
       <text x={cx} y={cy + 12} textAnchor="middle"
         fill={D.text3} fontSize={8} fontWeight={700}
         fontFamily="DM Sans,sans-serif" letterSpacing={1.2}>
-        AVG
+        SCORE
       </text>
     </svg>
   )
@@ -537,13 +528,16 @@ function MapMock({
 // ─────────────────────────────────────────────────────────────────
 // Animated score bar
 // ─────────────────────────────────────────────────────────────────
-function ScoreBar({ n, v, c, delay, fired }: {
-  n: string; v: number; c: string; delay: number; fired: boolean
+function ScoreBar({ n, v, c, delay, fired, w }: {
+  n: string; v: number; c: string; delay: number; fired: boolean; w?: string
 }) {
   return (
     <div style={{ marginBottom: 9 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-        <span style={{ fontSize: 12, color: D.text2 }}>{n}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 12, color: D.text2 }}>{n}</span>
+          {w && <span style={{ fontSize: 10, color: D.text3, fontWeight: 600 }}>{w}</span>}
+        </div>
         <span style={{ fontSize: 12, fontWeight: 700, color: c }}>{v}</span>
       </div>
       <div style={{ height: 3, background: S.line2, borderRadius: 2, overflow: 'hidden' }}>
@@ -882,7 +876,7 @@ export default function ReportDemoSection() {
             <div style={{ background: S.card, border: `1px solid ${S.line2}`, borderRadius: 14, padding: '16px 18px' }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: D.text3, letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 14 }}>Score Breakdown</div>
               {d.scoreBreakdown.map((s, i) => (
-                <ScoreBar key={i} n={s.n} v={s.v} c={s.c} delay={i * 0.08} fired={fired}/>
+                <ScoreBar key={i} n={s.n} v={s.v} c={s.c} delay={i * 0.08} fired={fired} w={s.w}/>
               ))}
             </div>
 
