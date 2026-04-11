@@ -913,7 +913,7 @@ export default function AnalysePage() {
             Stop guessing. Start analysing.
           </h2>
           <p style={{ fontSize: '17px', color: 'rgba(255,255,255,0.88)', marginBottom: '32px', lineHeight: '1.65' }}>
-            Choosing the wrong location is the single most common reason Australian small businesses fail in year one. One analysis takes 3 minutes and is completely free.
+            Choosing the wrong location is the single most common reason Australian small businesses fail in year one. One analysis takes about 90 seconds and is completely free.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link

@@ -109,7 +109,7 @@ function buildWelcomeEmail(email: string): string {
     </div>
 
     <p style="font-size:14px;color:#6B7280;line-height:1.7;margin:0 0 28px;">
-   Your first insights email arrives this week. In the meantime, you can analyse any Australian address free — get a full GO / CAUTION / NO verdict with competitor mapping and financials in under 60 seconds.
+   Your first insights email arrives this week. In the meantime, you can analyse any Australian address free — get a full GO / CAUTION / NO verdict with competitor mapping and financials in about 90 seconds.
     </p>
 
     <!-- CTA -->
