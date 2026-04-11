@@ -466,7 +466,7 @@ export default function WollongongRestaurantPage() {
         <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 14, padding: '20px 24px', margin: '0 0 44px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' as const }}>
           <div>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#065F46', marginBottom: 4 }}>Have a specific Wollongong address in mind?</p>
-            <p style={{ fontSize: 13, color: '#047857' }}>Get a full verdict with competitor map and financial model in 60 seconds. Free.</p>
+            <p style={{ fontSize: 13, color: '#047857' }}>Get a full verdict with competitor map and financial model in ~90 seconds. Free.</p>
           </div>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.emerald, color: S.white, borderRadius: 10, padding: '11px 20px', fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0 }}>
             Analyse my address →
@@ -691,7 +691,7 @@ export default function WollongongRestaurantPage() {
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0891B2', color: '#F0FDF9', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Analyse my Wollongong address free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(204,235,229,0.35)', marginTop: 10 }}>No credit card · 3 reports included · 60 seconds</p>
+          <p style={{ fontSize: 12, color: 'rgba(204,235,229,0.35)', marginTop: 10 }}>No credit card · 1 free preview · ~90 seconds</p>
         </div>
 
       </div>

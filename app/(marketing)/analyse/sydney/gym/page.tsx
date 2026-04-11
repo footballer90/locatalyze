@@ -186,7 +186,7 @@ export default function SydneyGymPage() {
           <h2 style={{ fontSize:26,fontWeight:900,color:'#F0F9FF',letterSpacing:'-0.03em',marginBottom:10}}>Ready to analyse your Sydney gym location?</h2>
      <p style={{ fontSize:15,color:'rgba(125,211,252,0.65)',maxWidth:480,margin:'0 auto 26px',lineHeight:1.75}}>Finding the undersupply pocket in Sydney's gym market is the key to viability. Locatalyze maps competitor density, demographics and population within your specific catchment radius.</p>
      <Link href="/onboarding" style={{ display:'inline-flex',alignItems:'center',gap:8,background:'#7DD3FC',color:'#0F172A',borderRadius:14,padding:'15px 32px',fontSize:15,fontWeight:800,textDecoration:'none'}}>Analyse my Sydney address free →</Link>
-     <p style={{ fontSize:12,color:'rgba(125,211,252,0.35)',marginTop:10}}>No credit card · 3 reports · 60 seconds</p>
+     <p style={{ fontSize:12,color:'rgba(125,211,252,0.35)',marginTop:10}}>No credit card · 1 free preview · ~90 seconds</p>
     </div>
       </div>
     </div>

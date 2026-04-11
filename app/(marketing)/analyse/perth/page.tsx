@@ -258,7 +258,7 @@ export default function PerthHubPage() {
     </section>
 
         <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 14, padding: '20px 24px', margin: '0 0 52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' as const }}>
-     <div><p style={{ fontSize: 15, fontWeight: 700, color: '#065F46', marginBottom: 4 }}>Have a specific Perth address in mind?</p><p style={{ fontSize: 13, color: '#047857' }}>Get a full GO/CAUTION/NO verdict with competitor map and financial model in 60 seconds. Free.</p></div>
+     <div><p style={{ fontSize: 15, fontWeight: 700, color: '#065F46', marginBottom: 4 }}>Have a specific Perth address in mind?</p><p style={{ fontSize: 13, color: '#047857' }}>Get a full GO/CAUTION/NO verdict with competitor map and financial model in ~90 seconds. Free.</p></div>
      <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.emerald, color: S.white, borderRadius: 10, padding: '11px 20px', fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0 }}>Analyse my address →</Link>
     </div>
 
@@ -278,7 +278,7 @@ export default function PerthHubPage() {
           <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F0FDF9', letterSpacing: '-0.03em', marginBottom: 10 }}>Ready to analyse your specific Perth address?</h2>
      <p style={{ fontSize: 15, color: 'rgba(167,243,208,0.65)', maxWidth: 500, margin: '0 auto 26px', lineHeight: 1.75 }}>Perth's strong market doesn't guarantee every location works. Run your specific address through Locatalyze before committing to anything.</p>
      <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#022C22', borderRadius: 14, padding: '15px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>Analyse my Perth address free →</Link>
-     <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · 3 reports · 60 seconds</p>
+     <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · 1 free preview · ~90 seconds</p>
     </div>
       </div>
     </div>

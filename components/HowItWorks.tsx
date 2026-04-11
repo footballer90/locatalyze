@@ -7,7 +7,7 @@ const STEP_DURATION = 4200
 const font = "'DM Sans', sans-serif"
 
 const STEPS = [
- { num: '01', tag: 'Step 1', title: 'Enter your location',   desc: 'Type any Australian address. Add your business type, monthly rent and average order size. Takes 60 seconds.' },
+ { num: '01', tag: 'Step 1', title: 'Enter your location',   desc: 'Type any Australian address. Add your business type, monthly rent and average order size. Takes about 2 minutes.' },
  { num: '02', tag: 'Step 2', title: 'Analysis runs in real time', desc: 'We pull live competitor data, demographics, rental benchmarks and foot traffic signals -- all automatically.' },
  { num: '03', tag: 'Step 3', title: 'Get your full report',   desc: 'GO / CAUTION / NO verdict with full financial model, SWOT analysis and 3-year projection.' },
 ]

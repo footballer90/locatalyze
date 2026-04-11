@@ -333,7 +333,7 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
       </div>
-      {[{l:'Demand Signal',p:85,c:D.e,v:'High'},{l:'Demographics',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Ratio',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
+      {[{l:'Profitability',p:85,c:D.e,v:'High'},{l:'Area Demographics',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Affordability',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
         <div key={i} style={{ marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}><span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.l}</span><span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.v}</span></div>
           <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', background: b.c, borderRadius: 2, width: bars?`${b.p}%`:'0%', transition: `width 1.1s ease ${i*.12}s` }}/></div>
@@ -413,7 +413,7 @@ function ShowcaseReportUI() {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 88</p>
         </div>
       </div>
-      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Demand Signal',v:'Strong',c:D.e},{dot:D.amber,l:'Competition Risk',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Viability',v:'Viable',c:D.e},{dot:'#34D399',l:'Demographics',v:'Excellent',c:D.e}].map((r,i)=>(
+      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Profitability',v:'Strong',c:D.e},{dot:D.amber,l:'Competition',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Affordability',v:'Viable',c:D.e},{dot:'#34D399',l:'Area Demographics',v:'Excellent',c:D.e}].map((r,i)=>(
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i<4?'1px solid rgba(255,255,255,.05)':'none' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: r.dot, flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: '#9CA3AF', flex: 1 }}>{r.l}</span>
@@ -529,10 +529,10 @@ const PR_DATA = {
     revenue: [58, 67, 74, 80, 86, 91],
     profit:  [10, 14, 17, 21, 23, 25],
     scores: [
-      { label: 'Demand Proximity Score', score: 85, icon: 'activity' },
-      { label: 'Rent Affordability',    score: 78, icon: 'home' },
-      { label: 'Competition Level',     score: 72, icon: 'target' },
-      { label: 'Profitability',         score: 90, icon: 'trendingUp' },
+      { label: 'Area Demographics',   score: 85, icon: 'activity' },
+      { label: 'Rent Affordability',  score: 78, icon: 'home' },
+      { label: 'Competition',         score: 72, icon: 'target' },
+      { label: 'Profitability',       score: 90, icon: 'trendingUp' },
     ],
     heatmap: [8,6,5,7,9,8,7, 4,3,2,4,6,5,4, 6,5,4,6,8,7,6, 5,4,3,5,7,6,5, 7,6,5,7,9,8,7],
     swot: {
@@ -556,10 +556,10 @@ const PR_DATA = {
     revenue: [42, 55, 68, 74, 70, 74],
     profit:  [4,  8,  12, 11, 9,  11],
     scores: [
-      { label: 'Demand Proximity', score: 68, icon: 'activity' },
-      { label: 'Rent Affordability',    score: 55, icon: 'home' },
-      { label: 'Competition Level',     score: 60, icon: 'target' },
-      { label: 'Profitability',         score: 62, icon: 'trendingUp' },
+      { label: 'Area Demographics',  score: 68, icon: 'activity' },
+      { label: 'Rent Affordability', score: 55, icon: 'home' },
+      { label: 'Competition',        score: 60, icon: 'target' },
+      { label: 'Profitability',      score: 62, icon: 'trendingUp' },
     ],
     heatmap: [7,8,9,8,6,4,3, 3,4,5,5,4,3,2, 5,6,7,7,5,4,3, 4,5,6,6,4,3,2, 6,7,8,8,6,4,3],
     swot: {
@@ -583,10 +583,10 @@ const PR_DATA = {
     revenue: [38, 42, 46, 50, 51, 51],
     profit:  [1,  1,  2,  3,  3,  3],
     scores: [
-      { label: 'Demand Proximity', score: 48, icon: 'activity' },
-      { label: 'Rent Affordability',    score: 38, icon: 'home' },
-      { label: 'Competition Level',     score: 42, icon: 'target' },
-      { label: 'Profitability',         score: 46, icon: 'trendingUp' },
+      { label: 'Area Demographics',  score: 48, icon: 'activity' },
+      { label: 'Rent Affordability', score: 38, icon: 'home' },
+      { label: 'Competition',        score: 42, icon: 'target' },
+      { label: 'Profitability',      score: 46, icon: 'trendingUp' },
     ],
     heatmap: [3,2,1,2,3,2,1, 2,1,1,1,2,2,1, 4,3,2,3,4,3,2, 3,2,1,2,3,2,1, 2,1,1,2,2,2,1],
     swot: {
@@ -974,7 +974,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
                   { label: 'Population (5km)', value: verdict === 'go' ? '42,800' : verdict === 'caution' ? '31,200' : '58,400' },
                   { label: 'Median Income', value: verdict === 'go' ? '$94,200' : verdict === 'caution' ? '$71,400' : '$68,800' },
                   { label: 'Primary Age Group', value: verdict === 'go' ? '25–44 yrs' : verdict === 'caution' ? '20–35 yrs' : '35–55 yrs' },
-                  { label: 'Demand Proximity Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
+                  { label: 'Area Demographics Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
                     <span style={{ fontSize: 12, color: L.muted }}>{row.label}</span>

@@ -86,7 +86,7 @@ export default async function Image() {
 
           {/* Sub */}
           <div style={{ fontSize: 19, color: 'rgba(204,235,229,0.6)', lineHeight: 1.6, maxWidth: 500, marginBottom: 32 }}>
-      GO, CAUTION or NO verdict on any Australian address in 60 seconds.
+      GO, CAUTION or NO verdict on any Australian address in ~90 seconds.
           </div>
 
           {/* Pills */}

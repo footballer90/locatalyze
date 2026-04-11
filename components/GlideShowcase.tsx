@@ -7,7 +7,7 @@ const TABS = [
  {
     id: 'location-analysis', label: 'Location Analysis', accent: '#0F766E',
   photo: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80',
-  headline: 'Location intelligence,\nilluminated.',
+  headline: 'Understand a location\nbefore you sign.',
   sub: 'Understand exactly what makes a location work — or fail. Analyse foot traffic, demographics and proximity to demand generators before you commit to a single dollar of rent.',
   cta: 'See how it works', ui: 'score',
  },
@@ -42,10 +42,10 @@ const TABS = [
 ]
 
 const SCORE_BARS = [
-  { label: 'Foot Traffic', pct: 85, color: '#34D399', val: 'High' },
- { label: 'Demographics', pct: 78, color: '#34D399', val: 'Strong' },
- { label: 'Competition', pct: 52, color: '#FBBF24', val: 'Moderate' },
- { label: 'Rent Ratio',  pct: 82, color: '#34D399', val: '9.2%' },
+  { label: 'Profitability',    pct: 85, color: '#34D399', val: 'High' },
+  { label: 'Area Demographics', pct: 78, color: '#34D399', val: 'Strong' },
+  { label: 'Competition',       pct: 52, color: '#FBBF24', val: 'Moderate' },
+  { label: 'Rent Affordability', pct: 82, color: '#34D399', val: '9.2%' },
 ]
 
 function ScoreUI({ animKey }: { animKey: number }) {

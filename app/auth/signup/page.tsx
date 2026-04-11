@@ -151,7 +151,7 @@ function SignUpInner() {
               <div style={{ textAlign: 'center', marginBottom: 28 }}>
         <img src="/logo.svg" alt="Locatalyze" style={{ height: 40, width: 'auto', display: 'block', margin: '0 auto 16px' }} />
         <h1 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 6 }}>Start for free</h1>
-        <p style={{ fontSize: 14, color: S.n500 }}>Analyse your first location in under 60 seconds</p>
+        <p style={{ fontSize: 14, color: S.n500 }}>Analyse your first location in about 90 seconds</p>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 28, flexWrap: 'wrap' }}>
@@ -241,7 +241,7 @@ function SignUpInner() {
               </div>
 
               <p style={{ textAlign: 'center', fontSize: 12, color: S.n400, marginTop: 16 }}>
-        No credit card required · Free plan includes 3 reports
+        No credit card required · First report free, no card needed
               </p>
             </>
           )}

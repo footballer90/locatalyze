@@ -93,7 +93,7 @@ const faqSchema = {
       name: 'How long does a report take?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Most reports are ready in under 60 seconds. Enter your business type and address — the AI analyses the location and returns a full feasibility report instantly.',
+        text: 'Most reports are ready in about 90 seconds. Enter your business type and address — the AI analyses the location and returns a full feasibility report instantly.',
       },
     },
   ],
@@ -118,7 +118,7 @@ const howToSchema = {
     {
       '@type': 'HowToStep',
       name: 'Get your report',
-      text: 'Receive a GO, CAUTION, or NO verdict with a full feasibility score, competitor map, demographic breakdown, and revenue estimate in under 60 seconds.',
+      text: 'Receive a GO, CAUTION, or NO verdict with a full feasibility score, competitor map, demographic breakdown, and revenue estimate in about 90 seconds.',
     },
   ],
 }

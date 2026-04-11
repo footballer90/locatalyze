@@ -489,6 +489,46 @@ export default function SampleReportClient() {
                   ))}
                 </div>
               </Card>
+              <Card>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <SectionLabel>3-Year Projection</SectionLabel>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: S.brand, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 6, padding: '3px 8px', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>Premium</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                  {/* Year 1 — visible */}
+                  <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 15px' }}>
+                    <p style={{ fontSize: 9, fontWeight: 800, color: S.emerald, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 6 }}>Year 1</p>
+                    <p style={{ fontSize: 9, color: S.n500, marginBottom: 2 }}>Net Profit</p>
+                    <p style={{ fontSize: 18, fontWeight: 900, color: S.emerald, fontFamily: S.mono, marginBottom: 6 }}>$144k</p>
+                    <p style={{ fontSize: 9, color: S.n500, marginBottom: 2 }}>Revenue</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: S.n700, fontFamily: S.mono }}>$816k</p>
+                  </div>
+                  {/* Year 2 — blurred */}
+                  <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 15px', position: 'relative' as const, overflow: 'hidden' }}>
+                    <p style={{ fontSize: 9, fontWeight: 800, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 6 }}>Year 2</p>
+                    <div style={{ filter: 'blur(5px)', userSelect: 'none' as const, pointerEvents: 'none' as const }}>
+                      <p style={{ fontSize: 9, color: S.n500, marginBottom: 2 }}>Net Profit</p>
+                      <p style={{ fontSize: 18, fontWeight: 900, color: S.n700, fontFamily: S.mono, marginBottom: 6 }}>$158k</p>
+                      <p style={{ fontSize: 9, color: S.n500, marginBottom: 2 }}>Revenue</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: S.n700, fontFamily: S.mono }}>$897k</p>
+                    </div>
+                  </div>
+                  {/* Year 3 — blurred */}
+                  <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 15px', position: 'relative' as const, overflow: 'hidden' }}>
+                    <p style={{ fontSize: 9, fontWeight: 800, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 6 }}>Year 3</p>
+                    <div style={{ filter: 'blur(5px)', userSelect: 'none' as const, pointerEvents: 'none' as const }}>
+                      <p style={{ fontSize: 9, color: S.n500, marginBottom: 2 }}>Net Profit</p>
+                      <p style={{ fontSize: 18, fontWeight: 900, color: S.n700, fontFamily: S.mono, marginBottom: 6 }}>$175k</p>
+                      <p style={{ fontSize: 9, color: S.n500, marginBottom: 2 }}>Revenue</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: S.n700, fontFamily: S.mono }}>$987k</p>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 12, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' as const }}>
+                  <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.5 }}>Year 2 &amp; 3 growth model — including compounding revenue, reinvestment scenarios and break-even trajectory — unlocks when you run a full report on your actual address.</p>
+                  <a href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: S.brand, color: S.white, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' as const }}>Run my report →</a>
+                </div>
+              </Card>
             </>}
 
             {/* Market tab */}
