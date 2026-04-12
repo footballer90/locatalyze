@@ -195,11 +195,14 @@ export function detectContradictions(result: ComputedResult): ContradictionWarni
  * Apply hard overrides that cannot be bypassed.
  * Returns potentially modified verdict + updated verdictReasons.
  *
- * Rules (in priority order):
- *   1. completeness < 25 + GO → force CAUTION
- *   2. declining demand + GO → force CAUTION
- *   3. no_data competitors + GO + completeness < 40 → force CAUTION
- *   4. benchmark_default confidence + GO → force CAUTION
+ * STRICT DATA RELIABILITY MODE — rules in priority order:
+ *   1. benchmark_default confidence + GO → force CAUTION
+ *      (all financial outputs are industry averages, not this-location data)
+ *   2. completeness ≤ 45 + GO → force CAUTION
+ *      (raised from < 25 — at least 45% live data is required for a GO verdict)
+ *   3. declining demand + GO → force CAUTION
+ *   4. no_data OR zero_warning competitors + GO → force CAUTION
+ *      (unknown competition cannot support a GO verdict at any completeness level)
  */
 export function applyHardFailGates(
   verdict: VerdictValue,
@@ -211,6 +214,10 @@ export function applyHardFailGates(
     competitorDataQuality: string
     marketSignals: { demandTrend: string | null }
     netProfit: number
+    /** Revenue source from computeEngine — used to block GO when revenue is benchmark-derived */
+    revenueSource?: string
+    /** Agent coverage — used to block GO when critical agents (A2, A3) both failed */
+    agentCoverage?: { a1: boolean; a2: boolean; a3: boolean; a4: boolean; a5: boolean }
   }
 ): {
   verdict: VerdictValue
@@ -222,7 +229,67 @@ export function applyHardFailGates(
     return { verdict, verdictReasons, verdictConditions, gateTriggered: null }
   }
 
-  // Gate 1: Benchmark-only data
+  // ── Gate 0: Benchmark revenue source ─────────────────────────────────────
+  //
+  // Revenue is the single most important financial metric in the report.
+  // When A5 returned no data, revenue is an industry-average for this business
+  // TYPE, not a real market observation for this specific LOCATION.
+  //
+  // STRICT: A GO verdict means "this specific location is viable." That claim
+  // requires real local revenue data. A benchmark revenue figure says:
+  //   "A café in Australia typically does $X/month" — not "this café at this
+  //   address in Darwin will do $X/month."
+  //
+  // This gate is separate from Gate 1 (modelConfidence === 'benchmark_default')
+  // because it is possible to have: revenueSource=benchmark_default + competitor
+  // data + A4 cost data → modelConfidence='medium' (50 pts) → Gate 1 doesn't fire.
+  // But without real revenue, the GO verdict cannot be trusted.
+  //
+  // Previous behaviour: Darwin restaurant showed GO with 0% real revenue data.
+  // Fix: this gate unconditionally blocks GO when revenue is benchmark-derived.
+  if (result.revenueSource === 'benchmark_default') {
+    return {
+      verdict: 'CAUTION',
+      verdictReasons: [
+        'Revenue projections are estimated from industry benchmarks — no live market data is available for this specific location. A GO verdict requires a real local revenue signal.',
+        ...verdictReasons.slice(0, 3),
+      ],
+      verdictConditions: [
+        'Validate revenue potential against 3+ comparable businesses in the same suburb before committing to a lease',
+        'Obtain actual trading data (e.g. from a broker, franchise disclosure, or comparable sale) before treating financial projections as reliable',
+        ...verdictConditions.slice(0, 1),
+      ],
+      gateTriggered: 'benchmark_revenue_only',
+    }
+  }
+
+  // ── Gate 0b: Both A2 and A3 missing ──────────────────────────────────────
+  //
+  // A2 provides location signals (footfall, transit, rent) and A3 provides
+  // market demand signals. When BOTH are absent, the report has no real local
+  // intelligence — only competitor headcount and benchmark financials.
+  // This is insufficient for a positive location recommendation.
+  if (
+    result.agentCoverage != null &&
+    !result.agentCoverage.a2 &&
+    !result.agentCoverage.a3
+  ) {
+    return {
+      verdict: 'CAUTION',
+      verdictReasons: [
+        'Location and market demand data could not be retrieved — both the location analysis (A2) and market research (A3) agents failed to return usable data for this address',
+        ...verdictReasons.slice(0, 3),
+      ],
+      verdictConditions: [
+        'Conduct on-ground verification: visit the location at peak and off-peak hours to assess footfall and demand',
+        'Research the local market independently — check ABS data, local council plans, and competitor activity for this suburb',
+        ...verdictConditions.slice(0, 1),
+      ],
+      gateTriggered: 'missing_location_and_demand_data',
+    }
+  }
+
+  // Gate 1: Benchmark-only confidence — all financials are industry averages
   if (result.modelConfidence === 'benchmark_default') {
     return {
       verdict: 'CAUTION',
@@ -239,12 +306,14 @@ export function applyHardFailGates(
     }
   }
 
-  // Gate 2: Too little data
-  if (result.dataCompleteness < 25) {
+  // Gate 2: Insufficient data completeness (STRICT: > 45% required for GO)
+  // Raised from < 25 — reports at 26–45% completeness have too little live signal
+  // to issue a definitive GO recommendation. Boundary is inclusive (≤ 45, not < 46).
+  if (result.dataCompleteness <= 45) {
     return {
       verdict: 'CAUTION',
       verdictReasons: [
-        `Data completeness is only ${result.dataCompleteness}% — insufficient live data to support a GO verdict`,
+        `Data completeness is ${result.dataCompleteness}% — a minimum of 46% live data is required for a GO verdict. Too many inputs were estimated from benchmarks.`,
         ...verdictReasons.slice(0, 3),
       ],
       verdictConditions: [
@@ -272,19 +341,31 @@ export function applyHardFailGates(
     }
   }
 
-  // Gate 4: No competitor data with low completeness
-  if (result.competitorDataQuality === 'no_data' && result.dataCompleteness < 40) {
+  // Gate 4: Unknown competitor landscape — both no_data AND zero_warning blocked
+  // Previous logic: no_data + completeness < 40 (boundary flaw — 40 slipped through)
+  // STRICT: If we do not have confirmed competitor intelligence, GO is not permitted.
+  // zero_warning means search ran and found nothing — that is UNVERIFIED ABSENCE, not
+  // confirmed blue ocean. The risk of a false GO here is worse than a false CAUTION.
+  if (
+    result.competitorDataQuality === 'no_data' ||
+    result.competitorDataQuality === 'zero_warning'
+  ) {
+    const isNoData      = result.competitorDataQuality === 'no_data'
+    const primaryReason = isNoData
+      ? 'Competitor data is unavailable — competition level at this address is unknown and cannot support a GO verdict'
+      : 'No competitors were detected but the result is unverified — the search may have returned empty due to a data source failure, not genuine absence of competition'
     return {
       verdict: 'CAUTION',
       verdictReasons: [
-        'Competitor data is unavailable — competition level is unknown and cannot support a GO verdict',
+        primaryReason,
         ...verdictReasons.slice(0, 3),
       ],
       verdictConditions: [
-        'Visit the location and map competitors within 1km before making a financial commitment',
-        ...verdictConditions.slice(0, 2),
+        'Visit the location and manually count competitors within 500m before making any financial commitment',
+        'Search Google Maps for this business type near this address and compare against the report',
+        ...verdictConditions.slice(0, 1),
       ],
-      gateTriggered: 'no_competitor_data',
+      gateTriggered: isNoData ? 'no_competitor_data' : 'zero_warning_competitor_data',
     }
   }
 

@@ -9,7 +9,7 @@
  *       All values arrive pre-computed and sealed.
  */
 
-export const ENGINE_VERSION    = '3.2.0' as const   // bumped: trust layer — provenance, contradictions, hard fail gates
+export const ENGINE_VERSION    = '3.4.0' as const   // bumped: pipeline-level agent coverage tracking + benchmark revenue gate
 export const BENCHMARK_VERSION = '2026-04' as const
 
 // ── Confidence ────────────────────────────────────────────────────────────────
@@ -114,9 +114,16 @@ export interface ScenarioRow {
 }
 
 export interface Projection {
-  year1: number
-  year2: number
-  year3: number
+  year1:      number
+  /**
+   * null when revenue is benchmark-derived — multi-year projections cannot be
+   * reliably extrapolated from industry averages alone. UI must NOT display year2/year3
+   * when suppressed is true.
+   */
+  year2:      number | null
+  year3:      number | null
+  /** true when year2 and year3 are suppressed due to insufficient data confidence */
+  suppressed: boolean
 }
 
 export interface ValidatedCompetitor {
@@ -218,7 +225,12 @@ export interface ComputedResult {
     overall:       number
     rent:          number
     competition:   number
-    demand:        number
+    /**
+     * null when no A3 market data AND no live competitor density signal is available.
+     * In this case the engine used a neutral 55 internally for overall score weighting,
+     * but cannot claim to have a real demand score. UI must show "No data" not "55".
+     */
+    demand:        number | null
     profitability: number
     location:      number
     saturation:    number   // 0=no saturation, 100=fully saturated (lower is better for entry)
@@ -322,6 +334,22 @@ export interface ComputedResult {
    */
   verdictGateTriggered: string | null
 
+  /**
+   * Which pipeline agents returned usable data for this report.
+   * false = agent failed, timed out, or returned an empty/error-only response.
+   * Used to:
+   *   - Block specific outputs when the relevant agent failed (e.g. no demand score without A3)
+   *   - Surface "data missing" UI states rather than showing benchmark estimates as real data
+   *   - Drive the "Missing A2 → no customer estimates" and "Missing A3 → no demand score" rules
+   */
+  agentCoverage: {
+    a1: boolean   // Competitor intelligence — drives competitor count, threat scores
+    a2: boolean   // Location & Rent — drives footfall, transit, median rent signals
+    a3: boolean   // Market Demand — drives demand score, trend, saturation label
+    a4: boolean   // Cost Projection — drives cost estimates
+    a5: boolean   // Revenue & Scenarios — drives revenue estimate (most critical)
+  }
+
   // ─── Metadata ────────────────────────────────────────────────────────────
   meta: {
     engineVersion:    string
@@ -353,6 +381,13 @@ export interface ComputeInput {
   businessMode?:    string | null   // 'new_startup' | 'relocating' | 'buying_existing'
   avgOrderValue?:   number | null   // user's own avg ticket override — replaces benchmark if provided
   locationAccess?:  string | null   // 'street_frontage' | 'transport_hub' | 'shopping_centre' | 'side_street' | 'arcade'
+
+  /**
+   * True when setupBudget was filled from a benchmark estimate (staffCosts × 8)
+   * rather than user-provided. When true, breakEvenMonths is suppressed (set to null)
+   * because an estimated setup cost produces a meaningless payback period.
+   */
+  setupBudgetIsEstimated?: boolean
 
   // Raw n8n agent outputs (treated as SUGGESTIONS, not truth)
   agentOutputs: {

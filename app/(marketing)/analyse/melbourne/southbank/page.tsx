@@ -77,8 +77,8 @@ function SuburbPoll({ suburb, votes: initVotes }: { suburb: string; votes: numbe
 const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
-    headline: 'Opening a Business in Melbourne CBD VIC 3000: 2026 Location Analysis',
-    description: 'Australia's highest foot traffic address with Australia's highest rents. Hybrid work has permanently reshaped the economics — here is what still works and what doesn't in 2026.',
+    headline: 'Opening a Business in Southbank VIC 3006: 2026 Location Analysis',
+    description: 'Yarra riverfront premium with a structural thin-ness problem. Event and tourist trade is real — but the residential density to sustain everyday hospitality isn't there yet.',
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -86,13 +86,13 @@ const SCHEMAS = [
     '@context': 'https://schema.org', '@type': 'FAQPage',
     mainEntity: [{
       '@type': 'Question',
-      name: 'Is Melbourne CBD viable for independent cafés in 2026?',
-      acceptedAnswer: { '@type': 'Answer', text: 'For most independent cafés, no. CBD retail rents of $20,000–$50,000 per month require 400+ daily customers at $8+ per transaction just to cover occupancy. Hybrid work has reduced peak Monday and Friday office density to 50–55% of 2019 levels. The laneway precincts remain viable but at premium rents, capturing tourist and spontaneous trade. QSR volume plays and premium fine dining have better structural economics in the CBD than the independent café model.' },
+      name: 'Is Southbank Melbourne good for a restaurant in 2026?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Southbank works for specific restaurant formats — premium riverside dining with strong corporate and event channels, or daytime tourist concepts near the NGV. It does not work well for independent operators trying to build regular local trade. The residential density is thin relative to the commercial strip, and rents of $10,000–$22,000 per month require event or tourist revenue strategies that most independent operators don't have.' },
     }],
   },
 ]
 
-export default function MelbourneCBDPage() {
+export default function SouthbankPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}>
       {SCHEMAS.map((s, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />)}
@@ -107,17 +107,17 @@ export default function MelbourneCBDPage() {
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
             <Link href="/analyse/melbourne" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textDecoration: 'none' }}>Melbourne</Link>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Melbourne CBD</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Southbank</span>
           </div>
           <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
-            Opening a Business in Melbourne CBD VIC 3000: 2026 Location Analysis
+            Opening a Business in Southbank VIC 3006: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
-            Australia's highest foot traffic address with Australia's highest rents. Hybrid work has permanently reshaped the economics — here is what still works and what doesn't in 2026.
+            Yarra riverfront premium with a structural thin-ness problem. Event and tourist trade is real — but the residential density to sustain everyday hospitality isn't there yet.
           </p>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <VerdictBadge v="CAUTION" />
-            <span style={{ fontSize: 24, fontWeight: 900, color: S.white }}>72/100</span>
+            <span style={{ fontSize: 24, fontWeight: 900, color: S.white }}>71/100</span>
             <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Location score</span>
           </div>
         </div>
@@ -127,49 +127,49 @@ export default function MelbourneCBDPage() {
 
         <section style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: 28, marginBottom: 36 }}>
           <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 22, color: S.n900 }}>Location Scorecard</h2>
-          <ScoreBar label="Foot Traffic" value={95} />
-          <ScoreBar label="Demographics" value={78} />
-          <ScoreBar label="Rent Viability" value={35} />
-          <ScoreBar label="Competition Gap" value={58} />
+          <ScoreBar label="Foot Traffic" value={76} />
+          <ScoreBar label="Demographics" value={72} />
+          <ScoreBar label="Rent Viability" value={45} />
+          <ScoreBar label="Competition Gap" value={62} />
         </section>
 
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Business Environment</h2>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Melbourne's CBD was the most vibrant independent hospitality precinct in Australia before 2020 — the laneway café culture, the coffee bars on Flinders Lane, the lunch trade from Collins Street law firms. That version of the CBD is structurally challenged in 2026. Office vacancy sits at 14%, which means roughly one in seven CBD office floors is empty. Hybrid work has reduced peak-day foot populations on Tuesdays and Wednesdays to 70–75% of pre-pandemic levels. Mondays and Fridays see 50–55%. The lunch trade that sustained 200 independent cafés across the CBD grid has thinned and consolidated.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>What remains is real but different. The laneway precincts — Degraves Street, Centre Place, Hardware Lane — have recovered because they serve tourist and spontaneous foot traffic rather than office workers. Degraves Street in summer 2025–2026 was running close to 2019 visitor numbers during peak periods. But these tenancies are also the most expensive in the country per square metre, with operators paying $800–$1,200/sqm annually in prime positions.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The demographic of CBD visitors has shifted. The weekday lunch customer — a 35–55 year old professional earning $120K+ with a $20 lunch budget — is spending fewer days in the CBD. The tourist and leisure visitor is spending more days here as international travel recovered post-2023. This shift benefits hospitality concepts that serve a leisure demographic (full-service, experience-oriented) and disadvantages quick-service lunch concepts built around office density.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The CBD still justifies premium rents for the right category. A 120-seat fine dining restaurant on Flinders Lane charging $130 per head can absorb a $30,000/month rent on 60% occupancy. A 40-seat independent café charging $6 for a flat white on the same block cannot. Understanding whether your concept's margin structure survives the rent is the only question that matters here.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Southbank's commercial case rests on its event and tourist infrastructure — Crown Entertainment Complex, the Arts Centre Melbourne, Hamer Hall, the National Gallery of Victoria, and the MCG events that move 80,000+ people past the Yarra Promenade on AFL final days. This is real foot traffic. A 180-seat riverside restaurant on a Hamer Hall sold-out night can take $40,000 in one evening. The problem is the Tuesday after that Hamer Hall night, when the same restaurant might do $4,000.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The residential population of Southbank is larger than it was a decade ago — the apartment towers along City Road and Sturt Street house 25,000+ residents — but the density relative to the commercial strip is still thin. The Yarra Promenade and Southgate complex have significant tenancies built for event-day traffic that struggle to find a sustainable customer base on ordinary weekday evenings. Office workers from the adjacent Freshwater Place and ANZ headquarters provide weekday lunch trade, but that cohort has also been reduced by hybrid work patterns.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Corporate hospitality budgets are the third pillar of the Southbank economy, and they matter more here than in most Melbourne precincts. The convention centre (MCEC) draws international and interstate delegates who stay in Southbank hotels and eat within walking distance. But post-pandemic, corporate hospitality spend per delegate has declined as organisations became more cost-conscious. The premium riverside venues that thrived on $150 per head corporate dinners have had to work harder and discount more than their menus suggest.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>What Southbank does offer that few Melbourne locations can match is a daytime tourist trade that is growing. International visitor numbers to Melbourne recovered through 2024–2025, and Southbank — with the NGV, the casino, and the river promenade — captures a disproportionate share of that visitor time. Café and casual dining concepts positioned for the 11am–3pm leisure tourist do reasonably well here. Fine dining positioned for the corporate dinner does well on specific nights. Everything in between struggles.</p>
         </section>
 
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Competition Analysis</h2>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Competition in the Melbourne CBD is the most intense in Australia by venue count — 2,400+ food and beverage outlets operate within the CBD grid. QSR is most saturated, with customer choice making differentiation extremely difficult without brand recognition or price advantage. The specialty coffee category has consolidated — around 30–40 genuinely high-quality independents now serve a market that had 120+ before 2020. The premium dining category has recovered strongly, driven by returning corporate entertainment budgets and international business travel.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The genuine competition gap in the CBD is in the lunch range of $18–$35 — quality, fresh, fast. The CBD has plenty of $12–$16 QSR and plenty of $80–$130 fine dining. The mid-tier that workers and visitors would pay $22–$28 for a genuinely good bowl or plate is relatively underserved. But the weekend foot traffic drop (40–50% vs peak Tuesday–Wednesday) eliminates 30–35% of potential weekly revenue for anyone modelling from a Thursday count.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The Southgate complex and the Yarra Promenade host around 80 food and beverage venues, creating a concentrated competitive environment for what is a relatively small population base. The Crown complex adds another 30+ venues that compete for the same tourist and event trade. In this environment, differentiation is difficult — especially because tourists typically choose visible, branded, or review-driven venues rather than discovering independents. The venues at Southgate with the best river views consistently outperform those set back even 15 metres, regardless of food quality.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The competition gap for specific niches is genuine. There is no Vietnamese restaurant in Southbank. There is no specialty coffee bar with a serious roasting program. There is no quality Japanese izakaya. These gaps exist because the cost of entry (rents of $10,000–$22,000/month) filters out the independent operators who would typically fill them. The operators who can afford Southbank rents are almost exclusively licensed venues with event revenue strategies — not specialty food concepts.</p>
         </section>
 
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>What Works Here</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-            <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
+            <div style={{ padding: 18, background: S.amberBg, borderRadius: 12, border: `1px solid ${S.amberBdr}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Premium Fine Dining</span>
-                <VerdictBadge v="GO" />
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Premium Riverside Dining</span>
+                <VerdictBadge v="CAUTION" />
               </div>
-              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Flinders Lane and Collins Street tier. $100–$150 per head, 60–80 seats, strong corporate lunch and private dining channels. Melbourne CBD is Australia's largest market for corporate entertainment. Revenue: $250,000–$400,000/month.</p>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Event-night positioning essential. $80–$130 per head with strong private dining and corporate booking channels. Revenue varies dramatically — peak event weeks $200,000+, quiet weeks $40,000–$60,000. Seasonal cash flow management is critical.</p>
             </div>
             <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>High-Volume QSR</span>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Daytime Tourist Café</span>
                 <VerdictBadge v="GO" />
               </div>
-              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Swanston Street or Bourke Street Mall position. 400+ transactions/day required to justify $20,000+/month rent. Franchise or proven format only — not a proving ground for new concepts. Revenue: $180,000–$280,000/month.</p>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>NGV-adjacent or Yarra Promenade position. 11am–3pm peak. International and interstate tourist demographic. Average $18–$28 per visitor. Needs strong coffee program and all-day menu. Revenue: $60,000–$90,000/month.</p>
             </div>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 12, border: `1px solid ${S.amberBdr}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Laneway Specialty Coffee</span>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Corporate Lunch Venue</span>
                 <VerdictBadge v="CAUTION" />
               </div>
-              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Degraves Street or Centre Place. Tourist + worker hybrid catchment. Revenue drops 35–40% on weekends and public holidays. Must price for tourists ($7–$8 per coffee) to offset weekday volume losses. Revenue: $80,000–$130,000/month.</p>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Freshwater Place and ANZ tower office catchment. $25–$45 lunch range. Weekday-only revenue model. Friday is already half of Monday; summer corporate break reduces December–January significantly. Revenue: $50,000–$80,000/month weekday-only.</p>
             </div>
           </div>
         </section>
@@ -178,42 +178,32 @@ export default function MelbourneCBDPage() {
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
-              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Structural Office Vacancy</h4>
-              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>14% office vacancy in CBD towers is not improving meaningfully. The hybrid workers who haven't returned are largely working from home permanently. Any business model that relies on pre-2020 weekday lunch density is underwriting itself against a market that no longer exists at those levels.</p>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Event Dependency Creates Cash Flow Volatility</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>A venue that does $40,000 on a Hamer Hall sold-out night and $4,000 on a quiet Tuesday creates cash flow that is very hard to manage. Southbank operators need significant cash reserves to bridge between event peaks.</p>
             </div>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
-              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Lease Terms Are Punishing</h4>
-              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>CBD landlords typically require 5+5 year leases with personal guarantees and bank guarantees of 6 months rent. A 10-year commitment at $25,000/month is $3,000,000 in rent obligation before any other costs. The downside risk on a failed CBD tenancy is existential for an independent operator.</p>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Residential Thin-ness Limits Evening Trade</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>25,000 Southbank residents sounds like a catchment. In practice, many are young professionals who go out in Fitzroy or South Melbourne rather than eating locally in a precinct they associate with tourists and Crown. The independent dinner trade from residents is thinner than apartment counts suggest.</p>
             </div>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
-              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Weekend Revenue Gap</h4>
-              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>CBD foot traffic drops 40–50% on weekends versus peak Tuesday–Wednesday. Concepts that model revenue from a Thursday foot count consistently overstate annual revenue. Build your financial model on Monday and Saturday counts — that average is closer to the actual baseline.</p>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Rents Don't Fully Reflect Current Trade</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Southbank landlords built rent expectations on pre-pandemic corporate hospitality volumes that have not fully returned. Some tenancies are still priced at 2018 face rents despite occupancy conditions that have materially changed. Negotiate hard on effective rent, not face rent.</p>
             </div>
           </div>
         </section>
 
-        <SuburbPoll suburb="Melbourne CBD" votes={[32, 41, 27]} />
+        <SuburbPoll suburb="Southbank" votes={[28, 44, 28]} />
 
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Nearby Suburbs to Compare</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-            <Link key="southbank" href="/analyse/melbourne/southbank" style={{ textDecoration: 'none' }}>
+            <Link key="melbourne-cbd" href="/analyse/melbourne/melbourne-cbd" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Southbank</h4>
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Melbourne CBD</h4>
                   <VerdictBadge v="CAUTION" />
                 </div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>71</div>
-                <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
-              </div>
-            </Link>
-            <Link key="fitzroy" href="/analyse/melbourne/fitzroy" style={{ textDecoration: 'none' }}>
-              <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Fitzroy</h4>
-                  <VerdictBadge v="GO" />
-                </div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>86</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>72</div>
                 <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
               </div>
             </Link>
@@ -227,17 +217,27 @@ export default function MelbourneCBDPage() {
                 <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
               </div>
             </Link>
+            <Link key="south-yarra" href="/analyse/melbourne/south-yarra" style={{ textDecoration: 'none' }}>
+              <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>South Yarra</h4>
+                  <VerdictBadge v="GO" />
+                </div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>82</div>
+                <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
+              </div>
+            </Link>
           </div>
         </section>
 
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Final Verdict</h2>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The Melbourne CBD is a CAUTION — not because of its foot traffic, which remains extraordinary, but because of what it costs to access that foot traffic. At $20,000–$50,000/month, you need a concept with the margin structure to absorb occupancy at 15–20% of revenue. That means a concept generating $150,000–$300,000 per month minimum. Independent cafés and small retailers rarely reach those numbers in the current office-density environment.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The operators succeeding in the CBD in 2026 are those who either have the volume (QSR chains doing 500+ transactions daily), the margin (fine dining at $120+ per head), or the location intelligence (laneway operators who understood tourist recovery and positioned for it before rents normalised). Run a conservative, specific financial model before committing to any CBD lease — and model your worst week, not your best.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>Southbank is CAUTION for most independent operators. The venue types that succeed here — premium riverside dining, large corporate entertainment venues, daytime tourist cafés — require either serious capital (to ride the event-revenue volatility) or specific catchment positioning (NGV-adjacent for tourist trade, office-tower-adjacent for corporate lunch). The general hospitality concept hoping to build a regular local clientele in Southbank will find the customer base thinner than the foot traffic count suggests.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The strongest opportunity in Southbank right now is the daytime tourist café positioned near the NGV or Hamer Hall, capturing the growing international visitor trade with a quality offer at $18–$28 per head. Rents in secondary Southbank positions ($10,000–$14,000/month) are more negotiable than face rents indicate. If you can get a strong fit-out contribution and 12+ months rent-free, the economics improve materially.</p>
         </section>
 
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Melbourne CBD address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Southbank address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>
             Start free analysis →
@@ -247,9 +247,9 @@ export default function MelbourneCBDPage() {
         <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 28, display: 'flex', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Link href="/analyse/melbourne" style={{ fontSize: 13, fontWeight: 700, color: S.brand, textDecoration: 'none' }}>← Back to Melbourne</Link>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/analyse/melbourne/southbank" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Southbank</Link>
-            <Link href="/analyse/melbourne/fitzroy" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Fitzroy</Link>
+            <Link href="/analyse/melbourne/melbourne-cbd" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Melbourne CBD</Link>
             <Link href="/analyse/melbourne/docklands" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Docklands</Link>
+            <Link href="/analyse/melbourne/south-yarra" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>South Yarra</Link>
           </div>
         </div>
 

@@ -122,23 +122,46 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Agent failure detection ───────────────────────────────────────────────
-  // Warn when all primary agents returned empty/missing — the compute engine
-  // will still run (benchmark fallbacks), but the report quality will be low.
+  //
+  // STRICT DATA RELIABILITY: detect agents that returned error objects, failed
+  // status fields, or objects that only contain metadata with no useful data.
+  // Previously: only caught null and {} — missed { error: "timeout" }, { status: "failed" }
+  // and partial stubs like { agent: "A1", timestamp: "..." } with no actual fields.
+  //
+  // NON_DATA_KEYS: housekeeping fields that do not constitute agent output.
+  const NON_DATA_KEYS = new Set([
+    'error', 'status', 'failed', 'success', 'message', 'code',
+    'timestamp', 'agent', 'agent_id', 'run_id', 'version', 'type',
+  ])
+
+  function isAgentFailed(v: unknown): boolean {
+    if (v == null) return true
+    if (typeof v !== 'object' || Array.isArray(v)) return true
+    const obj = v as Record<string, unknown>
+    if (Object.keys(obj).length === 0) return true
+    // Explicit failure signals
+    if (obj.error != null) return true
+    if (obj.failed === true) return true
+    if (typeof obj.status === 'string' &&
+        ['failed', 'error', 'timeout', 'skipped', 'missing'].includes(obj.status.toLowerCase())) return true
+    // Object exists but contains only metadata — no actual business data
+    const dataKeys = Object.keys(obj).filter(k => !NON_DATA_KEYS.has(k))
+    return dataKeys.length === 0
+  }
+
   const agentKeys = ['a1', 'a3', 'a4', 'a5'] as const
-  const emptyAgents = agentKeys.filter(k => {
-    const v = agentOutputs[k]
-    return v == null || (typeof v === 'object' && Object.keys(v).length === 0)
-  })
+  const emptyAgents = agentKeys.filter(k => isAgentFailed(agentOutputs[k]))
   const allAgentsFailed = emptyAgents.length === agentKeys.length
+
   if (allAgentsFailed) {
     console.error(
-      `[compute] ${reportId} CRITICAL — ALL primary agents returned empty (${emptyAgents.join(', ')}). ` +
-      `GO verdict will be blocked — will not mislead users with benchmark-only GO recommendation.`
+      `[compute] ${reportId} CRITICAL — ALL primary agents failed or returned empty (${emptyAgents.join(', ')}). ` +
+      `GO verdict will be blocked — benchmark-only data cannot support a GO recommendation.`
     )
   } else if (emptyAgents.length >= 2) {
     console.warn(
-      `[compute] ${reportId} WARNING — ${emptyAgents.length} agents returned empty: ${emptyAgents.join(', ')}. ` +
-      `Report quality degraded — using benchmark fallbacks.`
+      `[compute] ${reportId} WARNING — ${emptyAgents.length} agents failed: ${emptyAgents.join(', ')}. ` +
+      `Report quality degraded — using benchmark fallbacks for missing agents.`
     )
   }
 
@@ -190,6 +213,8 @@ export async function POST(request: NextRequest) {
     businessMode:    rawBusinessMode    || null,
     avgOrderValue:   rawAvgOrderValue   && rawAvgOrderValue > 0 ? rawAvgOrderValue : null,
     locationAccess:  rawLocationAccess  || null,
+    // Signal to the engine that setup budget was estimated — breakEvenMonths will be suppressed
+    setupBudgetIsEstimated: usedBenchmarkForSetup,
     agentOutputs: {
       a1: agentOutputs.a1 ?? {},
       a2: agentOutputs.a2 ?? {},

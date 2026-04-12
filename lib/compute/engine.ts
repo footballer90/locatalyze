@@ -23,7 +23,7 @@ import { ENGINE_VERSION, BENCHMARK_VERSION }  from '@/types/computed'
 import type {
   ComputedResult, ComputeInput, VerdictValue,
   ScenarioRow, RevenueChannel, ValidatedCompetitor,
-  ConfidenceLabel, CompetitorDataQuality,
+  ConfidenceLabel, CompetitorDataQuality, Projection,
 } from '@/types/computed'
 import {
   BIZ_BENCHMARKS, resolveBizKey, isValidCompetitor,
@@ -346,13 +346,16 @@ function deriveVerdict(
   }
 
   // ── CAUTION triggers ──────────────────────────────────────────────────────
-  // Triggered by financial weakness OR low viability OR unknown data
+  // STRICT DATA RELIABILITY: no_data and zero_warning are UNCONDITIONAL CAUTION triggers.
+  // A report with unknown competition cannot reach GO regardless of financial score.
+  // zero_warning means A1 ran and found nothing — that is unverified, not confirmed.
   const isCaution =
     netProfit <= 0 ||
     scores.rent < 40 ||
     viabilityScore < 45 ||
     opportunityLevel === 'low' ||
-    (compDataQuality === 'no_data' && scores.overall < 60)
+    compDataQuality === 'no_data' ||        // no competitor search ran or returned nothing usable
+    compDataQuality === 'zero_warning'      // search ran but found zero — cannot confirm as blue ocean
 
   if (isCaution) {
     const reasons: string[] = []
@@ -362,12 +365,14 @@ function deriveVerdict(
       reasons.push(`${validCompCount} competitors detected (${strongCount} strong) — market is crowded within the search radius`)
     if (scores.rent < 40)
       reasons.push(`Rent at ${(rentPct * 100).toFixed(0)}% of revenue exceeds the 20% sustainable threshold`)
-    if (scores.demand < 50)
+    if (scores.demand != null && scores.demand < 50)
       reasons.push(`Market demand indicators are below average for this suburb and business type`)
     if (viabilityScore < 45)
       reasons.push(`Location viability score of ${viabilityScore}/100 — market conditions are challenging`)
-    if (compDataQuality === 'no_data' || compDataQuality === 'zero_warning')
-      reasons.push(`Competitor data is incomplete — validate competition level on the ground before committing`)
+    if (compDataQuality === 'no_data')
+      reasons.push(`Competitor intelligence is unavailable — competition level at this address is unknown. Verify on the ground before committing.`)
+    if (compDataQuality === 'zero_warning')
+      reasons.push(`No competitors were found but the result is unconfirmed — the search may have failed or the area has low coverage. Manual verification required.`)
 
     return {
       verdict: 'CAUTION',
@@ -383,26 +388,20 @@ function deriveVerdict(
     }
   }
 
-  // ── Data quality caveat ───────────────────────────────────────────────────
-  const compCaveat =
-    compDataQuality === 'no_data'
-      ? `Competitor data was unavailable — competition score is a neutral estimate; verify locally`
-      : compDataQuality === 'zero_warning'
-        ? `No competitors detected but coverage may be incomplete — confirm on the ground`
-        : null
-
   // ── GO ────────────────────────────────────────────────────────────────────
+  // Note: compCaveat is not needed here — no_data and zero_warning now
+  // unconditionally force CAUTION above, so they can never reach this path.
+  // Any GO verdict reaching here has confirmed competitor data (live_verified or partial).
   const goReasons: string[] = [
     `Projected net profit of ${fmt(netProfit)}/month supports a strong return on setup investment`,
     opportunityLevel === 'high'
       ? `High opportunity score — market is underserved with ${validCompCount} low-threat competitor(s) within radius`
       : `Location viability score of ${viabilityScore}/100 — competitive landscape has room for a quality operator`,
     `Rent at ${(rentPct * 100).toFixed(0)}% of revenue is within the sustainable 8–20% range`,
-    scores.demand >= 65
+    scores.demand != null && scores.demand >= 65
       ? `Demand score of ${scores.demand}/100 indicates active customer intent in this area`
       : `Location score of ${scores.location}/100 — good footfall and access signals`,
   ]
-  if (compCaveat) goReasons.push(compCaveat)
 
   return {
     verdict: 'GO',
@@ -514,9 +513,11 @@ function computeConfidence(
   let score = 0
 
   // Revenue source (max 35)
-  if (revenueSource === 'a5_live')        score += 35
+  // STRICT: A4 revenue is a cost-projection model output — not live market data.
+  // It earns 0 confidence points. Only A5 (market analysis agent) earns credit here.
+  if (revenueSource === 'a5_live')         score += 35
   else if (revenueSource === 'a5_blended') score += 20
-  else if (revenueSource === 'a4_fallback') score += 15
+  // a4_fallback = 0   (model estimate, not a real market observation)
   // benchmark_default = 0
 
   // Cost source (max 25)
@@ -525,9 +526,11 @@ function computeConfidence(
   // benchmark_default = 0
 
   // Competitor data quality (max 25)
+  // STRICT: zero_warning earns 0 — we cannot tell if "0 competitors" means blue ocean
+  // or search failure. Uncertainty must not add confidence points.
   if (compDataQuality === 'live_verified') score += 25
   else if (compDataQuality === 'partial')  score += 12
-  else if (compDataQuality === 'zero_warning') score += 8
+  // zero_warning = 0  (unverified absence of data ≠ confirmed absence of competitors)
   // no_data = 0
 
   // Market demand data (max 15)
@@ -558,6 +561,46 @@ export function computeEngine(input: ComputeInput): ComputedResult {
 
   const { a1 = {}, a2 = {}, a3 = {}, a4 = {}, a5 = {}, a6 = {} } =
     input.agentOutputs as Record<string, Record<string, any>>
+
+  // ── Agent availability detection ─────────────────────────────────────────
+  //
+  // An agent is considered "available" when it returned at least one substantive
+  // data key (i.e. not just boilerplate status/error/message fields).
+  // This is the authoritative source for "which agents ran successfully."
+  //
+  // These flags drive:
+  //   - agentCoverage in the result (consumed by UI for targeted "no data" states)
+  //   - Hard gates in applyHardFailGates() (e.g. both A2+A3 missing → block GO)
+  //   - Future: per-section data quality badges
+  //
+  // CRITICAL: empty object defaults ({}) are assigned when an agent key is
+  // entirely absent from agentOutputs — treating that as "available" is the
+  // bug that allowed 0-data reports to produce confident outputs.
+  const META_KEYS = new Set(['status', 'error', 'message', 'timestamp', 'agent', 'agent_id', 'run_id'])
+  const hasAgentData = (obj: Record<string, any>): boolean =>
+    Object.keys(obj).some(k => !META_KEYS.has(k) && obj[k] != null && obj[k] !== '')
+
+  const a1Available = hasAgentData(a1)
+  const a2Available = hasAgentData(a2)
+  // A3 requires at least one market signal key — not just any non-meta field
+  const a3Available = hasAgentData(a3) && (
+    a3.market_score     != null ||
+    a3.demand_score     != null ||
+    a3.demand_trend     != null ||
+    a3.saturation_label != null ||
+    a3.saturation       != null
+  )
+  const a4Available = hasAgentData(a4)
+  // A5 requires at least one revenue signal key
+  const a5Available = hasAgentData(a5) && (
+    a5.monthly_revenue             != null ||
+    a5.projected_monthly_revenue   != null ||
+    a5.revenue_range               != null
+  )
+
+  const agentCoverage = { a1: a1Available, a2: a2Available, a3: a3Available, a4: a4Available, a5: a5Available }
+
+  console.log('[computeEngine] agentCoverage', agentCoverage)
 
   // ── STEP 1: Resolve revenue ──────────────────────────────────────────────
 
@@ -726,7 +769,10 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     ? Math.ceil(fixedCostsOnly / (contributionMarginUnit * 30))
     : 0
 
-  const breakEvenMonths = netProfit > 0
+  // Suppress payback period when setup budget is a benchmark estimate.
+  // Displaying "12 months payback" when setup cost was guessed from staffCosts×8
+  // is false precision — user has no way to know the denominator is fabricated.
+  const breakEvenMonths = (netProfit > 0 && !input.setupBudgetIsEstimated)
     ? Math.ceil(input.setupBudget / netProfit)
     : null
 
@@ -882,6 +928,49 @@ export function computeEngine(input: ComputeInput): ComputedResult {
                       : [],
   }
 
+  // ── STEP 8b: A2 contamination guard ──────────────────────────────────────
+  //
+  // Known n8n bug: both SerpApi nodes in A2 have hardcoded Fitzroy/Carlton/Collingwood
+  // suburb names. Every address — regardless of city — receives location signals that
+  // describe a specific Melbourne inner suburb. This contaminates footfall, transit,
+  // and anchor data for all non-Melbourne addresses.
+  //
+  // Detection: if the combined signals text contains contaminated suburb names AND
+  // the user's input area is not one of those suburbs → zero out the qualitative signals.
+  // medianRent is preserved (still useful as a rough AU benchmark even if area is wrong).
+  //
+  // Effect: scoreLocation() drops to its neutral base of 50, which is honest.
+  //         Without this fix, Perth or Brisbane reports showed "high footfall" based on
+  //         Brunswick Street Fitzroy data.
+  const A2_CONTAMINATED_SUBURBS = ['fitzroy', 'collingwood', 'carlton', 'richmond', 'brunswick']
+  const inputAreaNorm = input.area.toLowerCase().trim()
+  const a2SignalsText = [
+    locationSignals.footfallSignal,
+    locationSignals.transitSignal,
+    locationSignals.roadType,
+    ...locationSignals.nearbyAnchors,
+  ].join(' ').toLowerCase()
+
+  const a2IsContaminated =
+    // Signals contain a known contaminated suburb name
+    A2_CONTAMINATED_SUBURBS.some(s => a2SignalsText.includes(s)) &&
+    // But the user's actual area is NOT one of those suburbs
+    !A2_CONTAMINATED_SUBURBS.some(s => inputAreaNorm.includes(s)) &&
+    // Only flag when there is actually signal text to examine
+    a2SignalsText.trim().length > 0
+
+  if (a2IsContaminated) {
+    console.warn(
+      `[computeEngine] A2 contamination detected for area="${input.area}": ` +
+      `signals contain Fitzroy/Carlton/Brunswick keywords. Zeroing qualitative location signals. ` +
+      `medianRent preserved as-is.`
+    )
+    locationSignals.footfallSignal = null
+    locationSignals.transitSignal  = null
+    locationSignals.roadType       = null
+    locationSignals.nearbyAnchors  = []
+  }
+
   // ── STEP 9: Market signals (A3) ──────────────────────────────────────────
   const rawDemandScore = parseMoney(a3?.market_score ?? a3?.demand_score)
   const rawSaturation  = String(a3?.saturation_label ?? a3?.saturation ?? '').toLowerCase()
@@ -1032,11 +1121,19 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     })
     .slice(0, 3)
 
+  // STRICT: demand sub-score is null when it is a placeholder.
+  // effectiveDemandScore is null when both A3 and live competitor density are absent.
+  // The internal scoreOverall calculation already used scoreDemandV (55 neutral) so the
+  // overall score reflects a neutral assumption — but we must NOT surface that 55 as a
+  // real demand measurement. Downstream UI: show "No data" when scores.demand is null.
+  const demandScoreOutput: number | null =
+    effectiveDemandScore !== null ? clamp(scoreDemandV, 0, 100) : null
+
   const scores: ComputedResult['scores'] = {
     overall:       clamp(scoreOverall, 0, 100),
     rent:          clamp(scoreRentV, 0, 100),
     competition:   clamp(scoreCompV, 0, 100),
-    demand:        clamp(scoreDemandV, 0, 100),
+    demand:        demandScoreOutput,
     profitability: clamp(scoreProfV, 0, 100),
     location:      clamp(scoreLocV, 0, 100),
     saturation:    satScore,
@@ -1057,10 +1154,16 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   // ── STEP 13: Scenarios & projection ──────────────────────────────────────
   const scenarios = buildScenarios(revenue, totalCosts, dailyCustomers, avgTicketSize, fixedCostsOnly, contributionMarginUnit)
 
-  const projection = {
-    year1: round(netProfit * 12),
-    year2: round(netProfit * 12 * 1.08),   // 8% growth assumption
-    year3: round(netProfit * 12 * 1.08 * 1.10),  // 10% growth in yr3
+  // STRICT: multi-year projections require a live revenue signal.
+  // Applying 8%/10% growth to a benchmark-derived revenue figure produces false precision —
+  // a specific "Year 3: $171,072" based on industry averages is not a projection, it is a guess.
+  // When suppressed, year2 and year3 are null. UI must not render suppressed projections.
+  const projectionsReliable = revenueSource !== 'benchmark_default'
+  const projection: Projection = {
+    year1:      round(netProfit * 12),
+    year2:      projectionsReliable ? round(netProfit * 12 * 1.08)              : null,
+    year3:      projectionsReliable ? round(netProfit * 12 * 1.08 * 1.10)       : null,
+    suppressed: !projectionsReliable,
   }
 
   // ── STEP 14: Confidence ──────────────────────────────────────────────────
@@ -1092,6 +1195,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   const prelimResult: Omit<ComputedResult,
     'sectionConfidence' | 'provenance' | 'revenueRange' | 'contradictions' | 'verdictGateTriggered'
   > = {
+    agentCoverage,
     revenue,
     totalCosts,
     netProfit,
@@ -1161,6 +1265,10 @@ export function computeEngine(input: ComputeInput): ComputedResult {
       competitorDataQuality:  prelimResult.competitorDataQuality,
       marketSignals:          prelimResult.marketSignals,
       netProfit:              prelimResult.netProfit,
+      // PIPELINE-LEVEL GATES: pass revenueSource and agentCoverage so the gate
+      // function can enforce: benchmark revenue → no GO, missing A2+A3 → no GO
+      revenueSource,
+      agentCoverage,
     }
   )
   const finalVerdict             = gateResult.verdict
@@ -1258,6 +1366,12 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     revenueRange,
     contradictions,
     verdictGateTriggered,
+
+    // ── Agent coverage (v3.4) — pipeline-level data availability ─────────
+    // Tells the UI and any downstream consumer which agents ran successfully.
+    // Drives targeted "no data" states (e.g. "A3 failed → no demand score")
+    // and is consumed by applyHardFailGates to block GO when critical agents fail.
+    agentCoverage,
 
     meta: {
       engineVersion:    ENGINE_VERSION,
