@@ -1,11 +1,243 @@
 'use client'
+
 import Link from 'next/link'
 import { useState } from 'react'
-const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
+
+const S = {
+  brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669',
+  emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706',
+  amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626',
+  redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B',
+  mutedLight: '#94A3B8', border: '#E2E8F0', n50: '#FAFAF9',
+  n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
+}
+
 type Verdict = 'GO' | 'CAUTION' | 'NO'
-const SCORE_BARS = [{ label: 'Foot Traffic', value: 78 }, { label: 'Demographics', value: 80 }, { label: 'Rent Viability', value: 77 }, { label: 'Competition Gap', value: 75 }]
-const NEARBY = [{ name: 'Fitzroy', slug: 'fitzroy', score: 86, verdict: 'GO' as Verdict }, { name: 'Brunswick', slug: 'brunswick', score: 80, verdict: 'GO' as Verdict }, { name: 'Epping', slug: 'epping', score: 71, verdict: 'GO' as Verdict }]
-function VerdictBadge({ v }: { v: Verdict }) { const cfg = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald } : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber } : { bg: S.redBg, bdr: S.redBdr, txt: S.red }; return <span style={{ fontSize: 11, fontWeight: 700, color: cfg.txt, background: cfg.bg, border: `1px solid ${cfg.bdr}`, borderRadius: 6, padding: '2px 9px' }}>{v}</span> }
-function ScoreBar({ label, value }: { label: string; value: number }) { return <div style={{ marginBottom: 12 }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}><span style={{ fontSize: 12, color: S.muted }}>{label}</span><span style={{ fontSize: 12, fontWeight: 700 }}>{value}</span></div><div style={{ height: 6, background: S.n100, borderRadius: 100 }}><div style={{ height: '100%', width: `${value}%`, background: S.brand, borderRadius: 100 }} /></div></div> }
-function SuburbPoll({ suburb }: { suburb: string }) { const [voted, setVoted] = useState<number | null>(null); const [votes, setVotes] = useState<number[]>([52, 28, 20]); const total = votes.reduce((a, b) => a + b, 0); function handleVote(i: number) { if (voted !== null) return; setVoted(i); setVotes(prev => prev.map((v, idx) => idx === i ? v + 1 : v)) }; return <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 24, marginBottom: 44 }}><h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3><div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>{['Yes', 'Maybe', 'No'].map((opt, i) => { const pct = Math.round((votes[i] / total) * 100); return <button key={opt} onClick={() => handleVote(i)} disabled={voted !== null} style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left', fontFamily: 'inherit', overflow: 'hidden' }}>{voted !== null && <div style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: 'rgba(8,145,178,0.07)' }} />}<div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 14, fontWeight: 600 }}>{opt}</span><span style={{ fontSize: 13, color: S.muted }}>{voted !== null ? `${pct}%` : ''}</span></div></button> })}</div>{voted !== null && <div style={{ marginTop: 14, padding: '12px 14px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10 }}><p style={{ fontSize: 13, color: '#047857' }}>Run a full analysis: <Link href="/onboarding" style={{ fontWeight: 700, textDecoration: 'underline' }}>Start free →</Link></p></div>}</div> }
-export default function NorthcotePage() { return <div style={{ minHeight: '100vh', background: S.n50, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}><nav style={{ background: S.white, borderBottom: `1px solid ${S.border}`, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}><Link href="/" style={{ fontWeight: 800, fontSize: 15, color: S.n900, textDecoration: 'none' }}>Locatalyze</Link><Link href="/onboarding" style={{ background: S.brand, color: S.white, borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link></nav><div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)', padding: '52px 24px 44px' }}><div style={{ maxWidth: 860, margin: '0 auto' }}><div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}><Link href="/analyse/melbourne" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textDecoration: 'none' }}>Melbourne</Link><span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span><span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{'Northcote'}</span></div><h1 style={{ fontSize: 'clamp(26px,5vw,46px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>Opening a Business in {'Northcote'} VIC 3070: 2026 Location Analysis</h1><p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', maxWidth: 580, lineHeight: 1.7, marginBottom: 22 }}>Comprehensive location analysis for {'Northcote'}. Location score: 77/100. Foot traffic score: 78/100. Demographics: 80/100. Rent viability: 77/100.</p><div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}><VerdictBadge v="GO" /><span style={{ fontSize: 22, fontWeight: 900, color: S.white }}>77/100</span><span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Location score</span></div></div></div><div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}><section style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: 24, marginBottom: 32 }}><h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Location Scorecard</h2>{SCORE_BARS.map(b => <ScoreBar key={b.label} label={b.label} value={b.value} />)}</section><section style={{ marginBottom: 32 }}><h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: S.n900 }}>Business Environment</h2><p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 12, color: S.muted }}>Detailed analysis of {'Northcote'} location for business planning. Foot traffic analysis: 78/100. Demographic alignment: 80/100. Rent viability: 77/100. Competition assessment: 75/100. Use this data to inform your location selection strategy.</p></section><SuburbPoll suburb="{'Northcote'}" /><section style={{ marginBottom: 32 }}><h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: S.n900 }}>Nearby Suburbs</h2><div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>{NEARBY.map(s => <Link key={s.slug} href={`/analyse/melbourne/${s.slug}`} style={{ textDecoration: 'none' }}><div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}><h4 style={{ fontSize: 14, fontWeight: 800, margin: 0 }}>{s.name}</h4><VerdictBadge v={s.verdict} /></div><div style={{ fontSize: 24, fontWeight: 900, color: S.brand }}>{s.score}</div></div></Link>)}</div></section><div style={{ background: `linear-gradient(135deg, ${S.brand} 0%, ${S.brandLight} 100%)`, borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}><h2 style={{ fontSize: 24, fontWeight: 900, color: S.white, marginBottom: 12 }}>Ready to Analyse Your Location?</h2><Link href="/onboarding" style={{ background: S.white, color: S.brand, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start Free Analysis →</Link></div><div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 32, display: 'flex', gap: 12, justifyContent: 'space-between', flexWrap: 'wrap' }}><Link href="/analyse/melbourne" style={{ fontSize: 13, fontWeight: 700, color: S.brand, textDecoration: 'none' }}>← Back to Melbourne</Link><div style={{ display: 'flex', gap: 12 }}>{NEARBY.map(s => <Link key={s.slug} href={`/analyse/melbourne/${s.slug}`} style={{ fontSize: 13, fontWeight: 700, color: S.brand, textDecoration: 'none' }}>{s.name}</Link>)}</div></div></div></div> }
+
+function VerdictBadge({ v }: { v: Verdict }) {
+  const cfg = v === 'GO'
+    ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
+    : v === 'CAUTION'
+    ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
+    : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
+  return <span style={{ fontSize: 11, fontWeight: 700, color: cfg.txt, background: cfg.bg, border: `1px solid ${cfg.bdr}`, borderRadius: 6, padding: '2px 9px' }}>{v}</span>
+}
+
+function ScoreBar({ label, value }: { label: string; value: number }) {
+  const color = value >= 75 ? S.emerald : value >= 55 ? S.amber : S.red
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+        <span style={{ fontSize: 13, color: S.muted, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color }}>{value}/100</span>
+      </div>
+      <div style={{ height: 7, background: S.n100, borderRadius: 100 }}>
+        <div style={{ height: '100%', width: `${value}%`, background: color, borderRadius: 100 }} />
+      </div>
+    </div>
+  )
+}
+
+function SuburbPoll({ suburb, votes: initVotes }: { suburb: string; votes: number[] }) {
+  const [voted, setVoted] = useState<number | null>(null)
+  const [votes, setVotes] = useState(initVotes)
+  const total = votes.reduce((a, b) => a + b, 0)
+  const opts = ['Yes, the numbers work', 'Maybe — needs more research', "No, I'd look elsewhere"]
+  return (
+    <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 44 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 6, color: S.n900 }}>Would you open a business in {suburb}?</h3>
+      <p style={{ fontSize: 13, color: S.muted, marginBottom: 18 }}>Based on what you've read — what's your read on this location?</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {opts.map((opt, i) => {
+          const pct = Math.round((votes[i] / total) * 100)
+          return (
+            <button key={opt} onClick={() => { if (voted !== null) return; setVoted(i); setVotes(prev => prev.map((v, idx) => idx === i ? v + 1 : v)) }}
+              disabled={voted !== null}
+              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left', fontFamily: 'inherit', overflow: 'hidden' }}>
+              {voted !== null && <div style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: 'rgba(8,145,178,0.07)', borderRadius: 10 }} />}
+              <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: S.n900 }}>{opt}</span>
+                {voted !== null && <span style={{ fontSize: 13, fontWeight: 700, color: S.brand }}>{pct}%</span>}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+      {voted !== null && (
+        <div style={{ marginTop: 16, padding: '12px 16px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10 }}>
+          <p style={{ fontSize: 13, color: '#047857', margin: 0 }}>
+            Run a full analysis for {suburb}: <Link href="/onboarding" style={{ fontWeight: 700, textDecoration: 'underline' }}>Start free →</Link>
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+const SCHEMAS = [
+  {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: 'Opening a Business in Northcote VIC 3070: 2026 Location Analysis',
+    description: 'Where Fitzroy's overflow goes — and has been going long enough that Northcote has its own identity. Young professional families, strong Saturday brunch culture, rents 25-30% below Fitzroy.',
+    datePublished: '2026-04-01',
+    author: { '@type': 'Organization', name: 'Locatalyze' },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: [{
+      '@type': 'Question',
+      name: 'Is Northcote Melbourne good for opening a café or restaurant?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Northcote is a GO for hospitality, particularly brunch cafés and specialty coffee. The High Street strip from Separation Street to Arthurton Road generates consistent Saturday morning foot traffic from young professional families with average $88,000 household incomes. Rents of $5,500–$8,500 per mon' },
+    }],
+  },
+]
+
+export default function NorthcotePage() {
+  return (
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}>
+      {SCHEMAS.map((s, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />)}
+      <nav style={{ background: S.white, borderBottom: `1px solid ${S.border}`, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
+        <Link href="/analyse/melbourne" style={{ fontWeight: 700, fontSize: 14, color: S.brand, textDecoration: 'none' }}>← Melbourne</Link>
+        <Link href="/onboarding" style={{ background: S.brand, color: S.white, borderRadius: 8, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
+      </nav>
+      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)', padding: '52px 24px 44px' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+            <Link href="/analyse/melbourne" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textDecoration: 'none' }}>Melbourne</Link>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Northcote</span>
+          </div>
+          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+            Opening a Business in Northcote VIC 3070: 2026 Location Analysis
+          </h1>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
+            Where Fitzroy's overflow goes — and has been going long enough that Northcote has its own identity. Young professional families, strong Saturday brunch culture, rents 25-30% below Fitzroy.
+          </p>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <VerdictBadge v="GO" />
+            <span style={{ fontSize: 24, fontWeight: 900, color: S.white }}>75/100</span>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Location score</span>
+          </div>
+        </div>
+      </div>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '44px 24px 80px' }}>
+        <section style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: 28, marginBottom: 36 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 22, color: S.n900 }}>Location Scorecard</h2>
+          <ScoreBar label="Foot Traffic" value={77} />
+          <ScoreBar label="Demographics" value={80} />
+          <ScoreBar label="Rent Viability" value={70} />
+          <ScoreBar label="Competition Gap" value={72} />
+        </section>
+        <section style={{ marginBottom: 36 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Business Environment</h2>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Northcote's commercial story begins with Fitzroy's rent trajectory. As Smith Street and Gertrude Street rents climbed through the 2010s, operators and residents who wanted the inner-north culture without the inner-north rent moved north to Northcote. High Street Northcote became the destination for this migration — the strip where the values and aesthetics of Fitzroy's hospitality culture were replicated at 25–30% lower rent. This migration has been occurring for long enough that Northcote now has its own established identity rather than simply being Fitzroy's affordable alternative.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The demographic has evolved with the migration. Northcote in 2026 is predominantly young professional families — couples who moved here from Fitzroy and Carlton when they had children and needed more space than an inner-north apartment could provide. The household income in Northcote averages $88,000, almost exactly matching Richmond's demographic profile. The spending pattern skews toward brunch culture (these are the parents who go for Saturday morning coffee before the playground), quality weeknight dining (takeaway or eat-in, but quality), and specialty retail (independent children's clothing, home goods, food specialty).</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>High Street is the commercial core of Northcote. The strip from Separation Street to Arthurton Road is the highest-density hospitality section — approximately 55 food and beverage venues across 800m of strip. This section generates consistent foot traffic that peaks on Saturday mornings (8am–1pm brunch rush), Friday evenings, and Sunday afternoons. The foot traffic on a Saturday morning between Clarke Street and Arthurton Road is among the most consistent in Melbourne's inner north — not the volume of Fitzroy on a Saturday night, but reliable, high-spend, and low-pretension.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The Northcote Social Club and the Night Cat, two of Melbourne's most significant independent music venues, anchor a genuine night economy on High Street. This music venue presence brings foot traffic to the strip on Thursday–Saturday evenings that is qualitatively different from suburban foot traffic — it includes a younger demographic (20–35) who drinks and eats before and after shows. Hospitality operators within 100m of NSC and Night Cat benefit from this venue-driven evening traffic in addition to the residential foot traffic.</p>
+        </section>
+        <section style={{ marginBottom: 36 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Competition Analysis</h2>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Northcote's competitive landscape is well-developed but not oversaturated. The High Street strip has a quality hospitality cluster that performs consistently — several venues have been operating successfully for 8–12 years, which indicates genuine commercial viability rather than trend-driven volatility. The customer base is loyal in a way that inner-city strips are not — Northcote residents habitually return to the same local venues, which means the revenue per customer is higher and the marketing cost is lower than in tourist-exposed or trend-driven markets.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The competition gap in Northcote in 2026 is primarily in specialty beverage — there are two quality specialty coffee venues for a demographic that supports three or four. There is also a gap in quality lunch concepts for the High Street mid-week trade — the cluster serves brunch and dinner well but the $20–$35 quality lunch category is underserved between 11am and 3pm Tuesday–Thursday.</p>
+        </section>
+        <section style={{ marginBottom: 36 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>What Works Here</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+            <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Saturday Brunch Café</span>
+                <VerdictBadge v="GO" />
+              </div>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>High Street between Separation and Arthurton. 8am–1pm Saturday peak generates 35–40% of weekly revenue. Young professional family demographic. $7–$9 coffee, $32–$50 brunch. Revenue: $100,000–$150,000/month.</p>
+            </div>
+            <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Specialty Coffee (second or third wave)</span>
+                <VerdictBadge v="GO" />
+              </div>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>There are two quality specialty coffee venues for a catchment that wants four. Northcote demographic is coffee-literate and pays $7–$9 for quality extraction. Rent $5,500–$8,000/month. Revenue: $80,000–$120,000/month.</p>
+            </div>
+            <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Quality Restaurant (music venue proximity)</span>
+                <VerdictBadge v="GO" />
+              </div>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Within 100m of Northcote Social Club. Pre-show dining, $45–$75 per head. Thursday–Saturday evening peak. Customer base is 25–45, music-literate, food-curious. Revenue: $80,000–$130,000/month.</p>
+            </div>
+          </div>
+        </section>
+        <section style={{ marginBottom: 36 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Key Risks</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>South End of High Street Drop-Off</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>High Street south of Separation Street (towards Clifton Hill) sees materially lower foot counts than the Arthurton Road zone. Operators signing in the southern section need a destination concept or marketing-driven customer acquisition strategy — foot-capture alone won't work.</p>
+            </div>
+            <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Strong Established Competition</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>The 8–12 year veterans on High Street have loyal customer bases that are difficult to displace. New operators need to offer something meaningfully different — not just good coffee and eggs, but a specific format or demographic focus that creates a reason for customers to choose them.</p>
+            </div>
+            <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Saturday Revenue Concentration</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Northcote hospitality skews heavily to Saturday morning. Operators who maximise their Saturday brunch operation but don't build adequate midweek trade can find that a single bad Saturday (rain, market event disruption) causes a significant weekly revenue gap. Diversify revenue across at least three strong trading days.</p>
+            </div>
+          </div>
+        </section>
+        <SuburbPoll suburb="Northcote" votes={[60, 29, 11]} />
+        <section style={{ marginBottom: 36 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Nearby Suburbs to Compare</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+            <Link href="/analyse/melbourne/fitzroy" style={{ textDecoration: 'none' }}>
+              <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Fitzroy</h4>
+                  <VerdictBadge v="GO" />
+                </div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>86</div>
+                <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
+              </div>
+            </Link>
+            <Link href="/analyse/melbourne/brunswick" style={{ textDecoration: 'none' }}>
+              <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Brunswick</h4>
+                  <VerdictBadge v="GO" />
+                </div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>80</div>
+                <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
+              </div>
+            </Link>
+            <Link href="/analyse/melbourne/preston" style={{ textDecoration: 'none' }}>
+              <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Preston</h4>
+                  <VerdictBadge v="GO" />
+                </div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>74</div>
+                <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
+              </div>
+            </Link>
+          </div>
+        </section>
+        <section style={{ marginBottom: 44 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Final Verdict</h2>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>Northcote is a GO with strong fundamentals. The demographic is excellent, the rent economics are materially better than Fitzroy, the customer base is loyal and has a consistent spending pattern. The Saturday brunch culture is one of the most commercially reliable foot traffic patterns in Melbourne — the young professional family demographic is habitual in a way that trend-driven inner-city markets are not.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The clearest opportunity in 2026 is a third quality specialty coffee venue on the Arthurton Road section of High Street, or a quality Tuesday–Thursday lunch concept serving the mid-week trade that the current cluster underserves. Both categories have demonstrable demand and limited existing competition. At $6,000–$8,500/month rent, the economics are significantly more defensible than Fitzroy equivalents.</p>
+        </section>
+        <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Northcote address</h2>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
+          <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
+        </div>
+        <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 28, display: 'flex', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <Link href="/analyse/melbourne" style={{ fontSize: 13, fontWeight: 700, color: S.brand, textDecoration: 'none' }}>← Back to Melbourne</Link>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <Link href="/analyse/melbourne/fitzroy" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Fitzroy</Link>
+            <Link href="/analyse/melbourne/brunswick" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Brunswick</Link>
+            <Link href="/analyse/melbourne/preston" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Preston</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

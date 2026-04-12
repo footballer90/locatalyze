@@ -77,8 +77,8 @@ function SuburbPoll({ suburb, votes: initVotes }: { suburb: string; votes: numbe
 const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
-    headline: 'Opening a Business in Carlton VIC 3053: 2026 Location Analysis',
-    description: 'Lygon Street's Italian heritage creates a permanent demand baseline. University of Melbourne drives 12,000+ daily student foot passes. The daytime opportunity gap is real and underexploited.',
+    headline: 'Opening a Business in Docklands VIC 3008: 2026 Location Analysis',
+    description: 'Melbourne's most visible commercial planning challenge. Office weekday trade is real. Evenings and weekends remain structurally thin despite 20 years of residential development.',
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -86,13 +86,13 @@ const SCHEMAS = [
     '@context': 'https://schema.org', '@type': 'FAQPage',
     mainEntity: [{
       '@type': 'Question',
-      name: 'Is Carlton good for opening a café near Melbourne University in 2026?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Carlton is strong for specialty coffee near the University of Melbourne. The university's 40,000 enrolled students with 12,000+ on campus daily generate consistent weekday demand. The competitive set for quality coffee near the university is weak — campus cafés are operated by large catering contrac' },
+      name: 'Is Docklands Melbourne a good location for a restaurant or café?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Docklands is a CAUTION for most restaurant and café concepts. Weekday office worker lunch trade is genuine but limited to 8am–3pm Monday–Friday. Evening and weekend trade is structurally thin despite 13,000 residents. The venues that succeed in Docklands are those with corporate event channels, Marv' },
     }],
   },
 ]
 
-export default function CarltonPage() {
+export default function DocklandsPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}>
       {SCHEMAS.map((s, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />)}
@@ -105,17 +105,17 @@ export default function CarltonPage() {
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
             <Link href="/analyse/melbourne" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textDecoration: 'none' }}>Melbourne</Link>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Carlton</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Docklands</span>
           </div>
           <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
-            Opening a Business in Carlton VIC 3053: 2026 Location Analysis
+            Opening a Business in Docklands VIC 3008: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
-            Lygon Street's Italian heritage creates a permanent demand baseline. University of Melbourne drives 12,000+ daily student foot passes. The daytime opportunity gap is real and underexploited.
+            Melbourne's most visible commercial planning challenge. Office weekday trade is real. Evenings and weekends remain structurally thin despite 20 years of residential development.
           </p>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            <VerdictBadge v="GO" />
-            <span style={{ fontSize: 24, fontWeight: 900, color: S.white }}>76/100</span>
+            <VerdictBadge v="CAUTION" />
+            <span style={{ fontSize: 24, fontWeight: 900, color: S.white }}>65/100</span>
             <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Location score</span>
           </div>
         </div>
@@ -123,46 +123,46 @@ export default function CarltonPage() {
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '44px 24px 80px' }}>
         <section style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: 28, marginBottom: 36 }}>
           <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 22, color: S.n900 }}>Location Scorecard</h2>
-          <ScoreBar label="Foot Traffic" value={80} />
-          <ScoreBar label="Demographics" value={76} />
-          <ScoreBar label="Rent Viability" value={66} />
-          <ScoreBar label="Competition Gap" value={70} />
+          <ScoreBar label="Foot Traffic" value={62} />
+          <ScoreBar label="Demographics" value={74} />
+          <ScoreBar label="Rent Viability" value={48} />
+          <ScoreBar label="Competition Gap" value={58} />
         </section>
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Business Environment</h2>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Carlton's commercial identity rests on two foundations: Lygon Street's Italian cultural heritage and the University of Melbourne's 12,000+ daily student population. Both are permanent structural advantages that no trend can fully erode. Lygon Street has been Melbourne's destination for Italian food for 60 years — the suburb's identity as a place where people come specifically to eat is so deeply embedded in Melbourne's cultural memory that it generates destination visits that no marketing campaign could replicate. Operators on Lygon Street inherit this cultural capital from the moment they open their doors.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The University of Melbourne is less than 800m from the southern end of Lygon Street, and its 40,000+ enrolled students (with 12,000+ on-campus on a typical day) create daytime food demand that is genuine but price-sensitive. Students in 2026 spend an average of $12–$18 per transaction when eating near campus — less than the $25–$45 that professional demographics generate, but consistent Monday–Friday and large enough in aggregate to sustain multiple hospitality concepts serving this market well.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Carlton's residential demographic is more diverse than its Italian heritage suggests. The suburb has a significant Chinese-Australian community, a growing professional residential population attracted by proximity to the CBD (3km), and the student residential cohort that has always characterised the suburb. Household incomes average $74,000 — lower than Fitzroy or South Yarra, but higher than outer suburban alternatives. The diversity of the catchment creates multiple commercial opportunities that a single demographic suburb would not.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Runcorn Place and the Lygon Street secondary streets — Faraday Street, Grattan Street — have commercial potential that the main Lygon Street strip premium often obscures. A quality café on Faraday Street, serving both the university catchment and the professional residential base, at a rent 30–40% below Lygon Street proper, can outperform a Lygon Street tenancy because the economics are more sustainable. The foot count is lower, but the rent-to-revenue ratio is better.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Docklands was Melbourne's most ambitious urban renewal project and its most instructive commercial planning failure. Twenty years of development and $10 billion in public and private investment have produced a suburb with 13,000 residents, 40,000 weekday office workers, significant public art, and a waterfront amenity — and a commercial strip that struggles to generate the spontaneous street life that makes urban precincts commercially viable. The fundamental problem is design: a precinct optimised for cars and towers rather than for pedestrian-scale street activity.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The office worker population is the most commercially viable element of Docklands. The major employers — ANZ, NAB, Transurban, Transport for Victoria, and various government departments — provide a consistent weekday lunch and coffee demand from 8am to 3pm. A café positioned within 100m of a major Docklands tower entrance will see genuine morning and lunch trade Monday–Friday. The issue is that this demand disappears on weekends, reduces by 30–40% on Fridays, and is compressed into a 5-hour window that limits the daily revenue ceiling.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>New Quay and Harbour Town are the two commercial precincts in Docklands with the most functional street life. New Quay (the waterfront promenade around Victoria Harbour) has benefited from the residential towers that directly overlook it — residents with disposable income, high-rise apartments, and no suburban backyard tend to spend more locally on hospitality than suburban residents. Weekend trade at New Quay has improved meaningfully from 2022 to 2026 as the resident base matured and the area developed habitual patterns.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The Marvel Stadium (formerly Etihad) is Docklands' most significant foot traffic generator outside the weekday office peak. Stadium events — AFL games, concerts, soccer — draw 25,000–56,000 attendees who pass through Docklands. Pre-game and post-game hospitality near Marvel Stadium can be genuinely lucrative for operators positioned correctly. But this event trade is episodic — typically 30–40 events annually — and cannot support the rent economics of a Docklands tenancy independently.</p>
         </section>
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Competition Analysis</h2>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Lygon Street's competition is dominated by Italian restaurants that have operated for 10–40 years and have an established customer base. The competitive problem for new operators is that Lygon Street's existing Italian restaurant cluster is both its marketing advantage and its competitive ceiling — customers who come to Lygon Street for Italian food are largely already committed to one of the established venues. Breaking into this customer loyalty requires exceptional quality, a meaningfully differentiated format (not another Italian trattoria), or a price position that undercuts the establishment.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The genuine competition gap in Carlton is in specialty coffee and quality daytime food serving the university catchment. The University of Melbourne precinct has multiple campus cafés operated by large catering contracts with mediocre quality and no coffee differentiation. A quality independent specialty coffee bar positioned within 200m of the University entrance on Grattan Street or Royal Parade would face weak established competition in the category that the 12,000 daily students are most likely to spend on.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>Docklands' competitive environment has fewer venues than might be expected for its office worker population — largely because the commercial conditions (weak evening and weekend trade, high rents) have deterred the independent operators who would typically fill a precinct of this size. What exists is a mix of large, licensed venue operators who have the corporate and event channels to sustain Docklands economics, and smaller operators serving the office tower lunch trade. The quality of independent hospitality in Docklands remains below what the demographic income would predict.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, color: S.muted }}>The specific competition gap is in quality casual dining for the evening residential market. The 13,000 Docklands residents have limited quality options for weeknight dining without leaving the precinct. New Quay and the immediate surrounds have three or four quality restaurants; the rest of the precinct is largely fast casual. An operator who can build genuine resident loyalty — serving the Docklands residential base as their primary customer rather than the office worker lunch as their primary customer — has a more sustainable business model in this precinct.</p>
         </section>
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>What Works Here</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-            <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
+            <div style={{ padding: 18, background: S.amberBg, borderRadius: 12, border: `1px solid ${S.amberBdr}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Specialty Coffee Near University</span>
-                <VerdictBadge v="GO" />
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Office Tower Lunch Café</span>
+                <VerdictBadge v="CAUTION" />
               </div>
-              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Grattan Street or Royal Parade, 200m from university. $5.50–$7 coffee, $14–$22 food. Student-heavy with academic and professional overlay. Weekday 7am–4pm primary revenue window. Revenue: $70,000–$110,000/month.</p>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Within 100m of ANZ or NAB tower entrance. Weekday 7:30am–2:30pm trade window. $7–$9 coffee, $16–$28 lunch. Weekend revenue negligible. Revenue: $50,000–$80,000/month (weekday only model). Requires very low rent or long rent-free negotiation.</p>
+            </div>
+            <div style={{ padding: 18, background: S.amberBg, borderRadius: 12, border: `1px solid ${S.amberBdr}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>New Quay Waterfront Restaurant</span>
+                <VerdictBadge v="CAUTION" />
+              </div>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Resident-focused evening and weekend dining. $65–$95 per head, strong wine list. Building loyalty with 13,000 residents who rarely leave the precinct for dinner. Revenue: $80,000–$130,000/month with corporate event supplement.</p>
             </div>
             <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Non-Italian Restaurant (Lygon Street)</span>
+                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Marvel Stadium Event Hospitality</span>
                 <VerdictBadge v="GO" />
               </div>
-              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>The competition gap on Lygon Street is everything that isn't Italian. Japanese, Korean, Vietnamese, or Middle Eastern concepts don't compete against the Italian heritage — they complement it. 50–80 seats, $35–$65/head. Revenue: $90,000–$150,000/month.</p>
-            </div>
-            <div style={{ padding: 18, background: S.emeraldBg, borderRadius: 12, border: `1px solid ${S.emeraldBdr}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: S.n900 }}>Quality Lunch Café (secondary streets)</span>
-                <VerdictBadge v="GO" />
-              </div>
-              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Faraday or Elgin Street. 30–50% lower rent than Lygon. Professional and university catchment. $20–$38 lunch. Better economics than front-strip positions for smaller operators. Revenue: $65,000–$95,000/month.</p>
+              <p style={{ fontSize: 13, color: S.muted, margin: 0, lineHeight: 1.6 }}>Event-adjacent positioning. Pre-game crowds of 25,000–56,000 need hospitality within walking distance. High volume, limited menu, high margin. 30–40 event days annually plus weekday corporate. Revenue heavily event-dependent.</p>
             </div>
           </div>
         </section>
@@ -170,50 +170,50 @@ export default function CarltonPage() {
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
-              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>University Semester Breaks Create Revenue Gaps</h4>
-              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>The student catchment disappears during semester breaks — approximately 14 weeks per year. Operators who build their revenue model on student foot traffic need to model the 14 weeks of 40–50% revenue reduction and ensure their lease economics survive it.</p>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Structural Weakness Is Not a Cycle Issue</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Docklands' thin evening and weekend trade is a design failure, not a temporary problem awaiting a catalyst. Twenty years of initiatives have not fundamentally altered pedestrian behaviour in the precinct. Operators who model a Docklands tenancy on 'improving' street life are taking on structural risk, not cyclical risk.</p>
             </div>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
-              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Lygon Street Italian Competition Is Entrenched</h4>
-              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Trying to open another Italian restaurant on Lygon Street and compete for the heritage customer is extremely difficult. 40+ year establishments with loyal generational customer bases have an advantage no new operator can match on the same terms. Differentiate or don't compete directly.</p>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Rents Don't Always Reflect Reality</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Some Docklands landlords maintain face rents based on office-tower proximity that don't reflect the actual trading conditions. Push hard on effective rent — rent-free periods of 12–18 months, substantial fit-out contributions, and 3+3 rather than 5+5 lease structures are all achievable from motivated landlords in areas with persistent vacancy.</p>
             </div>
             <div style={{ padding: 18, background: S.amberBg, borderRadius: 10, border: `1px solid ${S.amberBdr}` }}>
-              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Main Street Rent Premium vs. Secondary Street Opportunity</h4>
-              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Lygon Street rents ($8,000–$12,000/month) are 30–40% above secondary street alternatives for comparable concepts. Unless you need the Lygon Street address specifically (an Italian concept that needs the cultural association), secondary streets offer better economics.</p>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 8 }}>Event Revenue Is Not Baseline Revenue</h4>
+              <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.6 }}>Marvel Stadium events are genuine revenue spikes but cannot be used to justify lease economics. Calculate what your venue earns on a non-event Tuesday and non-event Saturday. If those numbers don't support the rent, the event premium doesn't change the fundamental math.</p>
             </div>
           </div>
         </section>
-        <SuburbPoll suburb="Carlton" votes={[55, 32, 13]} />
+        <SuburbPoll suburb="Docklands" votes={[22, 38, 40]} />
         <section style={{ marginBottom: 36 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Nearby Suburbs to Compare</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-            <Link href="/analyse/melbourne/fitzroy" style={{ textDecoration: 'none' }}>
+            <Link href="/analyse/melbourne/melbourne-cbd" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Fitzroy</h4>
-                  <VerdictBadge v="GO" />
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Melbourne CBD</h4>
+                  <VerdictBadge v="CAUTION" />
                 </div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>86</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>72</div>
                 <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
               </div>
             </Link>
-            <Link href="/analyse/melbourne/collingwood" style={{ textDecoration: 'none' }}>
+            <Link href="/analyse/melbourne/southbank" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Collingwood</h4>
-                  <VerdictBadge v="GO" />
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Southbank</h4>
+                  <VerdictBadge v="CAUTION" />
                 </div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>78</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>71</div>
                 <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
               </div>
             </Link>
-            <Link href="/analyse/melbourne/northcote" style={{ textDecoration: 'none' }}>
+            <Link href="/analyse/melbourne/footscray" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 18 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Northcote</h4>
+                  <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, color: S.n900 }}>Footscray</h4>
                   <VerdictBadge v="GO" />
                 </div>
-                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>75</div>
+                <div style={{ fontSize: 26, fontWeight: 900, color: S.brand }}>77</div>
                 <div style={{ fontSize: 11, color: S.mutedLight, fontWeight: 600 }}>/ 100</div>
               </div>
             </Link>
@@ -221,20 +221,20 @@ export default function CarltonPage() {
         </section>
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 18, color: S.n900 }}>Final Verdict</h2>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>Carlton is a GO, particularly for operators who position for the university daytime catchment or who bring a non-Italian hospitality format to Lygon Street. The commercial case rests on permanent structural advantages — the Italian heritage destination traffic and the university foot traffic — that are not trend-dependent. Both will be there in 10 years regardless of what happens to Melbourne's broader hospitality market.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The best opportunity in Carlton in 2026 is specialty coffee near the University of Melbourne entrance, where the competitive set is weak and the customer density is excellent. The second-best opportunity is a quality non-Italian restaurant on Lygon Street proper — Japanese, Korean, or Middle Eastern — that complements rather than competes with the street's Italian cluster. Both categories have available tenancies at rents that can be made to work.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>Docklands is a CAUTION — not because the suburb is entirely non-viable, but because the specific conditions under which it works are narrow. Office tower lunch trade Monday–Friday, event-adjacent positioning on Marvel Stadium event days, and New Quay residential dining are the three viable commercial niches. Everything outside these niches struggles.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The only defensible reason to sign a Docklands lease in 2026 is if you can negotiate an exceptional effective rent (12+ months rent-free, substantial fit-out contribution) that reduces your occupancy cost to a level that the weekday-only revenue model can sustain. Without that negotiation, the risk-adjusted economics of Docklands compare unfavourably to Footscray, Northcote, or Preston — all of which offer better foot traffic quality, lower rents, and more sustainable customer bases.</p>
         </section>
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Carlton address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Docklands address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
         </div>
         <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 28, display: 'flex', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Link href="/analyse/melbourne" style={{ fontSize: 13, fontWeight: 700, color: S.brand, textDecoration: 'none' }}>← Back to Melbourne</Link>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/analyse/melbourne/fitzroy" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Fitzroy</Link>
-            <Link href="/analyse/melbourne/collingwood" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Collingwood</Link>
-            <Link href="/analyse/melbourne/northcote" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Northcote</Link>
+            <Link href="/analyse/melbourne/melbourne-cbd" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Melbourne CBD</Link>
+            <Link href="/analyse/melbourne/southbank" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Southbank</Link>
+            <Link href="/analyse/melbourne/footscray" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>Footscray</Link>
           </div>
         </div>
       </div>
