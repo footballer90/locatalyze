@@ -646,13 +646,21 @@ export function computeEngine(input: ComputeInput): ComputedResult {
 
   const revBlend = blend(agentRevRaw, bmRevenue, 'monthly_revenue', logger)
 
+  // True when A5 had at least one revenue field — distinguishes "A5 returned a value" from
+  // "A4 was used as fallback because A5 returned nothing".
+  const a5HasAnyRevenue =
+    a5?.monthly_revenue != null ||
+    a5?.projected_monthly_revenue != null ||
+    a5?.revenue_range?.monthly_base != null
+
   const revenueSource: 'a5_live' | 'a5_blended' | 'a4_fallback' | 'benchmark_default' =
     agentRevRaw == null
       ? 'benchmark_default'
       : revBlend.source === 'agent'
-        ? (a5?.monthly_revenue != null ? 'a5_live' : 'a4_fallback')
+        ? (a5HasAnyRevenue ? 'a5_live' : 'a4_fallback')
         : revBlend.source === 'blended'
-          ? 'a5_blended'
+          // When A5 had no revenue, agentRevRaw came from A4 — label as a4_fallback not a5_blended
+          ? (a5HasAnyRevenue ? 'a5_blended' : 'a4_fallback')
           : 'benchmark_default'
 
   logger.setRevenueSource(
@@ -757,13 +765,16 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   // Variable costs (COGS, other costs as % of revenue) auto-adjust with volume — only
   // staff and rent are truly fixed. Using total costs in the numerator double-counts COGS.
   //
-  //   fixedCosts          = staffCosts + rent
+  //   fixedCosts          = actualStaffCosts + rent
   //   contributionMargin  = avgTicket × (grossMarginPct% - otherCostsPct%)
   //   breakEvenDaily      = fixedCosts / (contributionMargin × 30)
   //
-  // Example (cafe): 23,000 / ($18 × 0.53 × 30) = 81 customers/day ✓
-  //   vs old formula: 53,456 / ($18 × 0.65 × 30) = 153 customers/day ✗ (wrong)
-  const fixedCostsOnly         = bm.staffCosts + input.monthlyRent
+  // Use the ACTUAL computed `staff` (from blended totalCosts breakdown), not the raw
+  // benchmark `bm.staffCosts`. When A4 provides real staff data, bm.staffCosts diverges
+  // from the actual figure, producing a break-even that is inconsistent with netProfit.
+  // Example (cafe, A4 reports higher staff): using bm.staffCosts=18000 when actual
+  // blended staff=24000 would understate break-even by ~15 customers/day.
+  const fixedCostsOnly         = staff + input.monthlyRent
   const contributionMarginUnit = avgTicketSize * Math.max(0.01, (bm.grossMarginPct / 100) - bm.otherCostsPct)
   const breakEvenDaily = contributionMarginUnit > 0
     ? Math.ceil(fixedCostsOnly / (contributionMarginUnit * 30))
@@ -772,7 +783,11 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   // Suppress payback period when setup budget is a benchmark estimate.
   // Displaying "12 months payback" when setup cost was guessed from staffCosts×8
   // is false precision — user has no way to know the denominator is fabricated.
-  const breakEvenMonths = (netProfit > 0 && !input.setupBudgetIsEstimated)
+  // Guard: setupBudget must be a real user-provided positive value.
+  // If it is 0 (user entered nothing), the compute route already flags it as estimated
+  // and usedBenchmarkForSetup = true → setupBudgetIsEstimated = true → suppressed below.
+  // The explicit > 0 check is a defensive backstop against any path that bypasses that flag.
+  const breakEvenMonths = (netProfit > 0 && !input.setupBudgetIsEstimated && input.setupBudget > 0)
     ? Math.ceil(input.setupBudget / netProfit)
     : null
 
@@ -834,6 +849,8 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   //            If A1 found raw entries but all were filtered out → partial or zero_warning
   const a1HasArray =
     Array.isArray(a1?.competitors) ||
+    Array.isArray(a1?.direct_competitors) ||     // must match rawCompetitors collection above
+    Array.isArray(a1?.indirect_competitors) ||   // must match rawCompetitors collection above
     Array.isArray(a1?.nearby_businesses) ||
     Array.isArray(a1?.competitor_businesses) ||
     Array.isArray(a1?.all_competitors) ||
@@ -1344,13 +1361,16 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     },
 
     // ── Competitor pressure (live multi-source density) ───────────────────
+    // IMPORTANT: null means "no live data was attempted" — distinct from 0 competitors.
+    // Do NOT use ?? 0 here: a 0 would tell the UI that live data ran and found nothing,
+    // which is incorrect when liveCD is null because lat/lng were unavailable.
     competitorPressure: {
       density:             liveCD?.density             ?? 'unknown',
-      rawCount500m:        liveCD?.rawCount500m        ?? 0,
-      rawCount1km:         liveCD?.rawCount1km         ?? 0,
-      weightedCount500m:   liveCD?.weightedCount500m   ?? 0,
-      weightedCount1km:    liveCD?.weightedCount1km    ?? 0,
-      avgConfidence:       liveCD?.avgConfidence       ?? 0,
+      rawCount500m:        liveCD?.rawCount500m        ?? null,
+      rawCount1km:         liveCD?.rawCount1km         ?? null,
+      weightedCount500m:   liveCD?.weightedCount500m   ?? null,
+      weightedCount1km:    liveCD?.weightedCount1km    ?? null,
+      avgConfidence:       liveCD?.avgConfidence       ?? null,
       pressureFactor:      pressureFactor,
       revenueAdjusted:     pressureFactor < 1.0,
       adjustedDemandScore: adjustedDemandScore,

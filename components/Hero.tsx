@@ -128,14 +128,14 @@ export default function Hero() {
               <div className="p-5 space-y-3.5">
                 <div className="flex items-center justify-between mb-1">
                   <div>
-                    <p className="font-semibold text-[14px] text-gray-900">2450 S Congress Ave</p>
-                    <p className="text-[12px] text-gray-400">Austin, TX · Retail Corridor</p>
+                    <p className="font-semibold text-[14px] text-gray-900">420 Crown St, Surry Hills</p>
+                    <p className="text-[12px] text-gray-400">Sydney, NSW · Hospitality Strip</p>
                   </div>
                   <div className="w-12 h-12 rounded-2xl bg-gray-900 flex items-center justify-center text-white text-lg font-bold">94</div>
                 </div>
                 <MiniBar label="Foot Traffic" value={91} />
-                <MiniBar label="Demographic Fit" value={87} />
-                <MiniBar label="Competitive Edge" value={78} />
+                <MiniBar label="Competitor Density" value={72} />
+                <MiniBar label="Demand Score" value={87} />
               </div>
             </div>
           </div>

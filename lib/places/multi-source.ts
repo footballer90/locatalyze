@@ -355,8 +355,10 @@ export async function fetchGooglePlaces(
         if (placeLat == null || placeLng == null) continue
 
         const placeId = place.place_id ?? ''
-        if (seen.has(placeId)) continue
-        seen.add(placeId)
+        // Skip dedup for empty placeId — multiple places with no place_id must not be
+        // collapsed into one. Only deduplicate when we have a real stable identifier.
+        if (placeId && seen.has(placeId)) continue
+        if (placeId) seen.add(placeId)
 
         const dist = Math.round(haversineMeters(latN, lngN, placeLat, placeLng))
 
@@ -440,8 +442,8 @@ export async function fetchGoogleTextSearch(
         if (dist > radius) continue
 
         const placeId = place.place_id ?? ''
-        if (seen.has(placeId)) continue
-        seen.add(placeId)
+        if (placeId && seen.has(placeId)) continue
+        if (placeId) seen.add(placeId)
 
         results.push({
           name,

@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
  title: 'How It Works — Data Methodology',
- description: 'See exactly how Locatalyze scores locations. Four scoring dimensions: competition, location & rent, market demand, and financial viability. All based on real data, not guesses.',
+ description: 'See exactly how Locatalyze scores locations. Five scoring dimensions: rent affordability, competition, market demand, profitability, and location quality. All based on real data, not guesses.',
 }
 
 const S = {
@@ -152,14 +152,14 @@ export default function MethodologyPage() {
           <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
       <ScoreRow label="Rent Affordability" weight="20%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 20% = danger zone. This is the single biggest predictor of long-term viability." />
       <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 1km, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
-      <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Population density, median income, household growth and demographic fit for your business category. High-income, growing areas score higher." />
+      <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Search demand signals (Google Trends, SerpApi category queries), population density, median income, household growth and demographic fit for your business category. Demand signal data from the A3 pipeline agent feeds directly into this dimension alongside ABS demographic data." />
       <ScoreRow label="Profitability" weight="25%" color={S.emerald} desc="Net profit margin after all costs. Calculated from your revenue estimate minus rent, COGS, labour and fixed costs." />
       <ScoreRow label="Location Quality" weight="10%" color={S.n400} desc="Physical location signals: foot traffic levels, public transport access, nearby anchor tenants, and street visibility. Premium locations score higher." />
      </div>
 
           {/* Verdict thresholds */}
       {[
-              { verdict: 'GO',   range: '70–100', desc: 'Strong fundamentals — conduct site visits and verify assumptions before committing.', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
+              { verdict: 'GO',   range: '70–100', desc: 'All key dimensions support this location. The data gives you a basis to act — proceed to lease negotiation and site visits with confidence.', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
        { verdict: 'CAUTION', range: '45–69', desc: 'Mixed signals. Viable with the right execution, but specific risks need mitigation.', bg: S.amberBg, border: S.amberBdr, color: S.amber },
        { verdict: 'NO',   range: '0–44',  desc: 'Significant concerns identified. The risk profile does not support proceeding at this time.', bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
       ].map(v => (

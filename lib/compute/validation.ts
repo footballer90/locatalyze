@@ -408,9 +408,15 @@ export function buildSectionConfidence(
     financialGaps.push('Costs blended with benchmarks — agent cost estimate diverged significantly')
   }
 
-  if (input.avgTicketSize <= 0 || input.setupBudget <= 0) {
+  // Use the explicit isEstimated flags set by /api/compute rather than checking for
+  // zero values. The compute route always fills avgTicketSize and setupBudget from
+  // benchmarks, so checking `<= 0` here is always false (dead code).
+  if (input.avgTicketSizeIsEstimated || input.setupBudgetIsEstimated) {
     financialScore -= 15
-    financialGaps.push('Average ticket size or setup budget was not provided — using benchmark estimates')
+    const missing: string[] = []
+    if (input.avgTicketSizeIsEstimated) missing.push('Average ticket size')
+    if (input.setupBudgetIsEstimated)   missing.push('Setup budget')
+    financialGaps.push(`${missing.join(' and ')} estimated from industry benchmarks — not provided by user`)
   }
 
   financialScore = clamp(financialScore, 0, 100)

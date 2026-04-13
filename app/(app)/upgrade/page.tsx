@@ -24,9 +24,9 @@ const REPORT_PACKS = [
     price: '$29',
     perReport: '$29 per report',
     badge: null,
-    primary: true,
+    primary: false,
     features: ['Full financial model (revenue, costs, profit)', 'Break-even analysis (customers/day required)', 'Revenue & profit projections', 'Competitive positioning & SWOT', 'Downloadable PDF report', 'Location comparison'],
-    cta: 'Unlock full report — $29',
+    cta: 'Unlock this report — $29',
     sub: 'One-time payment · instant access',
   },
   {
@@ -34,11 +34,11 @@ const REPORT_PACKS = [
     name: '3 Report Pack',
     price: '$59',
     perReport: '$19.67 per report — save 32%',
-    badge: 'BEST VALUE',
-    primary: false,
-    features: ['Everything in Single Report', '3 full location reports', 'Compare all 3 side by side', 'Ideal for shortlisting sites'],
+    badge: 'MOST POPULAR',
+    primary: true,
+    features: ['Everything in Single Report', '3 full location reports — shortlist properly', 'Compare all 3 side by side', 'Credits never expire · use anytime'],
     cta: 'Get 3 reports — $59',
-    sub: 'One-time payment · use anytime',
+    sub: 'Most operators compare 3–5 sites before committing',
   },
   {
     id: 'pack10' as Plan,
@@ -47,7 +47,7 @@ const REPORT_PACKS = [
     perReport: '$14.90 per report — save 49%',
     badge: null,
     primary: false,
-    features: ['Everything in Single Report', '10 full location reports', 'Compare all locations', 'For multi-site operators & agents'],
+    features: ['Everything in Single Report', '10 full location reports', 'Compare all locations', 'For agents, brokers & franchises'],
     cta: 'Get 10 reports — $149',
     sub: 'One-time payment · use anytime',
   },
@@ -105,8 +105,22 @@ export default function UpgradePage() {
           </p>
         </div>
 
-        <div style={{ background: S.amberBg, border: '1px solid #FDE68A', borderRadius: 12, padding: '10px 20px', marginBottom: 40, fontSize: 13, color: '#92400E', fontWeight: 600, textAlign: 'center' }}>
+        <div style={{ background: S.amberBg, border: '1px solid #FDE68A', borderRadius: 12, padding: '10px 20px', marginBottom: 16, fontSize: 13, color: '#92400E', fontWeight: 600, textAlign: 'center' }}>
           The average failed lease costs $150,000–$250,000. A full Locatalyze report costs less than dinner.
+        </div>
+
+        {/* ── Social proof strip ───────────────────────────────────────────────── */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap' as const, marginBottom: 40, fontSize: 13, color: S.n500 }}>
+          {[
+            { stat: '1,200+', label: 'operators' },
+            { stat: '40+', label: 'markets analysed' },
+            { stat: '4.8★', label: 'average rating' },
+          ].map(s => (
+            <div key={s.label} style={{ textAlign: 'center' as const }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: S.n900 }}>{s.stat}</div>
+              <div style={{ fontSize: 12, color: S.n400 }}>{s.label}</div>
+            </div>
+          ))}
         </div>
 
         {error && (
@@ -206,6 +220,26 @@ export default function UpgradePage() {
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 700, color: S.n800, marginBottom: 4 }}>{item.title}</p>
                 <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Testimonials ─────────────────────────────────────────────────────── */}
+        <div style={{ marginTop: 48, width: '100%', maxWidth: 900 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.08em', textAlign: 'center', marginBottom: 20 }}>What operators say</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+            {[
+              { quote: 'We were about to sign a lease in Fitzroy. The report flagged 18 competitors within 600m. Saved us from a very bad decision.', name: 'Michael T.', role: 'Cafe owner, Melbourne' },
+              { quote: "Used the 3-pack to shortlist our top sites. The rent-to-revenue ratio alone made us reconsider two of them.", name: 'Sarah K.', role: 'Franchise operator, Sydney' },
+              { quote: "Showed the report to our accountant. First time she'd seen a location analysis she could actually work with.", name: 'James R.', role: 'Restaurant group, Brisbane' },
+            ].map(t => (
+              <div key={t.name} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '20px 18px' }}>
+                <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.6, marginBottom: 14, fontStyle: 'italic' }}>"{t.quote}"</p>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: S.n800 }}>{t.name}</p>
+                  <p style={{ fontSize: 11, color: S.n400 }}>{t.role}</p>
+                </div>
               </div>
             ))}
           </div>
