@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse, after } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createClient as createAuthClient } from '@/lib/supabase/server'
 
 // ─── Rate limiting (graceful no-op if not configured) ───────────────────────
 let ratelimit: any = null
@@ -43,6 +44,10 @@ const FULL_STATE_NAMES: Record<string, string> = {
 function postcodeToState(pc: string): string {
   const n = parseInt(pc, 10)
   if (!n || isNaN(n)) return ''
+  // ACT ranges MUST be checked before NSW — Canberra postcodes (2600–2620, 2900–2920)
+  // fall inside the NSW 2000–2999 range and would be misclassified otherwise.
+  if (n >= 2600 && n <= 2620) return 'ACT'  // Canberra inner (Civic, Braddon, Barton…)
+  if (n >= 2900 && n <= 2920) return 'ACT'  // Canberra south (Woden, Tuggeranong…)
   if (n >= 2000 && n <= 2999) return 'NSW'
   if (n >= 3000 && n <= 3999) return 'VIC'
   if (n >= 4000 && n <= 4999) return 'QLD'
@@ -50,7 +55,7 @@ function postcodeToState(pc: string): string {
   if (n >= 6000 && n <= 6999) return 'WA'
   if (n >= 7000 && n <= 7999) return 'TAS'
   if (n >= 800  && n <= 999)  return 'NT'
-  if (n >= 200  && n <= 299)  return 'ACT'
+  if (n >= 200  && n <= 299)  return 'ACT'  // ACT PO box range
   // PO box ranges
   if (n >= 9000 && n <= 9999) return 'QLD'
   if (n >= 8000 && n <= 8999) return 'NSW'
@@ -165,11 +170,12 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   if (!isFinite(rent)   || rent   < 100  || rent   > 500000)  return { valid: false, error: 'Monthly rent must be between $100 and $500,000' }
   if (!isFinite(setup)  || setup  < 100  || setup  > 10000000) return { valid: false, error: 'Setup budget must be between $100 and $10,000,000' }
   if (!isFinite(ticket) || ticket < 1    || ticket > 10000)    return { valid: false, error: 'Average ticket size must be between $1 and $10,000' }
-  const injectionPattern = /ignore|forget|disregard|pretend|you are|act as|jailbreak|prompt|system:|assistant:|\\n\\n/gi
+  // IMPORTANT: do NOT hoist this regex outside `clean`. Regex with `g` flag are stateful
+  // (lastIndex advances on every .test()/.exec() call) — a shared instance would produce
+  // unpredictable results when clean() is called multiple times on different strings.
   const clean = (s: string) => {
     const stripped = s.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
-    if (injectionPattern.test(stripped)) return stripped.replace(injectionPattern, '')
-    return stripped
+    return stripped.replace(/ignore|forget|disregard|pretend|you are|act as|jailbreak|prompt|system:|assistant:|\\n\\n/gi, '')
   }
 
   const parsed = parseAustralianAddress(address)
@@ -251,7 +257,21 @@ export async function POST(request: NextRequest) {
   if (!webhookUrl) return errorResponse('Analysis service not configured — N8N_WEBHOOK_URL missing.', 503)
   if (webhookUrl.includes('/webhook-test/')) return errorResponse('n8n using TEST URL. Use Production URL (/webhook/ not /webhook-test/).', 503)
 
-  const userId = data.userId || request.headers.get('x-user-id')
+  // ── Resolve userId from the authenticated session (NEVER from the request body) ──
+  // Trusting userId from the body would allow one user to consume another's quota slot
+  // or to receive another user's deduplication cache. Read it from the Supabase JWT
+  // cookie instead. Unauthenticated access remains allowed (userId = null) — rate
+  // limiting is the only protection in that case.
+  let userId: string | null = null
+  try {
+    const authClient = await createAuthClient()
+    const { data: { user: sessionUser } } = await authClient.auth.getUser()
+    userId = sessionUser?.id ?? null
+  } catch {
+    // Non-fatal: fall back to unauthenticated (quota skipped, rate limit still applies)
+    console.warn('[Analyse] Could not resolve session user — proceeding without userId')
+  }
+
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
   // ── Quota check ────────────────────────────────────────────────────────────

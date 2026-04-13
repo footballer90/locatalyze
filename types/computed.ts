@@ -389,6 +389,12 @@ export interface ComputeInput {
    */
   setupBudgetIsEstimated?: boolean
 
+  /**
+   * True when avgTicketSize was filled from a benchmark estimate rather than user-provided.
+   * Used by buildSectionConfidence to apply a financial confidence penalty.
+   */
+  avgTicketSizeIsEstimated?: boolean
+
   // Raw n8n agent outputs (treated as SUGGESTIONS, not truth)
   agentOutputs: {
     a1?: Record<string, any>
