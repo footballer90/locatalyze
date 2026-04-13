@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in South Yarra VIC 3141: 2026 Location Analysis',
-    description: : "Chapel Street has Melbourne's highest average transaction value. Household income exceeds $115K. The key is knowing which block — north Chapel is premium, south Chapel has significant vacancy.",
+    description: "Chapel Street has Melbourne's highest average transaction value. Household income exceeds $115K. The key is knowing which block — north Chapel is premium, south Chapel has significant vacancy.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

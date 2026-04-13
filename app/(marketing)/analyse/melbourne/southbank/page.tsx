@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Southbank VIC 3006: 2026 Location Analysis',
-    description: : "Yarra riverfront premium with a structural thin-ness problem. Event and tourist trade is real — but the residential density to sustain everyday hospitality isn't there yet.",
+    description: "Yarra riverfront premium with a structural thin-ness problem. Event and tourist trade is real — but the residential density to sustain everyday hospitality isn't there yet.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
