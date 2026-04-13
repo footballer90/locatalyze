@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Northcote VIC 3070: 2026 Location Analysis',
-    description: : "Where Fitzroy's overflow goes — and has been going long enough that Northcote has its own identity. Young professional families, strong Saturday brunch culture, rents 25-30% below Fitzroy.",
+    description: "Where Fitzroy's overflow goes — and has been going long enough that Northcote has its own identity. Young professional families, strong Saturday brunch culture, rents 25-30% below Fitzroy.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

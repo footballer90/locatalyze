@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Camberwell VIC 3124: 2026 Location Analysis',
-    description: : "Burke Road is Melbourne's gold-standard suburban professional strip. Doctors, lawyers, and executives shop local here. Average household income $118K with consistently strong weekend trade.",
+    description: "Burke Road is Melbourne's gold-standard suburban professional strip. Doctors, lawyers, and executives shop local here. Average household income $118K with consistently strong weekend trade.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

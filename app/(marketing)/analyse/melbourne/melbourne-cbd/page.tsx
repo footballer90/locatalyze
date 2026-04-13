@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Melbourne CBD VIC 3000: 2026 Location Analysis',
-    description: : "Australia's highest foot traffic address with Australia's highest rents. Hybrid work has permanently reshaped the economics — here is what still works and what doesn't in 2026.",
+    description: "Australia's highest foot traffic address with Australia's highest rents. Hybrid work has permanently reshaped the economics — here is what still works and what doesn't in 2026.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
