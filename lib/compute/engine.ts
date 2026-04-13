@@ -783,7 +783,11 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   // Suppress payback period when setup budget is a benchmark estimate.
   // Displaying "12 months payback" when setup cost was guessed from staffCosts×8
   // is false precision — user has no way to know the denominator is fabricated.
-  const breakEvenMonths = (netProfit > 0 && !input.setupBudgetIsEstimated)
+  // Guard: setupBudget must be a real user-provided positive value.
+  // If it is 0 (user entered nothing), the compute route already flags it as estimated
+  // and usedBenchmarkForSetup = true → setupBudgetIsEstimated = true → suppressed below.
+  // The explicit > 0 check is a defensive backstop against any path that bypasses that flag.
+  const breakEvenMonths = (netProfit > 0 && !input.setupBudgetIsEstimated && input.setupBudget > 0)
     ? Math.ceil(input.setupBudget / netProfit)
     : null
 

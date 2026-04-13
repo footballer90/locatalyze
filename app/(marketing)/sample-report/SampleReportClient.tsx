@@ -407,7 +407,11 @@ export default function SampleReportClient() {
 
                 {/* SWOT */}
                 <Card>
-                  <SectionLabel>SWOT Analysis</SectionLabel>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                    <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>SWOT Analysis</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: S.n400, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 4, padding: '1px 6px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>AI-generated</span>
+                  </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     {[
                       { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold', 'Demographics align strongly: 25–44, $96K median income'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
@@ -525,6 +529,9 @@ export default function SampleReportClient() {
                     </div>
                   </div>
                 </div>
+                <p style={{ fontSize: 10, color: S.n400, marginTop: 8, fontStyle: 'italic', lineHeight: 1.5 }}>
+                  Year 1 annualises the base case (~$68k/mo × 12). Years 2–3 assume ~10% annual revenue growth — the median compound growth rate for established inner-suburban Australian café operators (IBISWorld Cafés in Australia, 2025). Actual growth will vary.
+                </p>
                 <div style={{ marginTop: 12, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' as const }}>
                   <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.5 }}>Year 2 &amp; 3 growth model — including compounding revenue, reinvestment scenarios and break-even trajectory — unlocks when you run a full report on your actual address.</p>
                   <a href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: S.brand, color: S.white, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' as const }}>Run my report →</a>
@@ -578,7 +585,13 @@ export default function SampleReportClient() {
             {/* Competition tab */}
             {activeTab === 'competition' && <>
               <Card>
-                <SectionLabel>Competitor Overview</SectionLabel>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Competitor Overview</span>
+                  </div>
+                  <span style={{ fontSize: 9, color: S.n400, fontStyle: 'italic' }}>Google Places · up to 48 hr cache</span>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 }}>
                   <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
                     <p style={{ fontSize: 26, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>4</p>
