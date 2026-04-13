@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Fitzroy VIC 3065: 2026 Location Analysis',
-    description: 'Melbourne's undisputed hospitality benchmark. 400+ venues in the Smith-Gertrude-Johnston triangle. Generic concepts fail within 18 months. Specific, differentiated operators with margin discipline con',
+    description: "Melbourne's undisputed hospitality benchmark. 400+ venues in the Smith-Gertrude-Johnston triangle. Generic concepts fail within 18 months. Specific, differentiated operators with margin discipline con",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

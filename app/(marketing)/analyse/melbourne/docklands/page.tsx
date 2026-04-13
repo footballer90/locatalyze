@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Docklands VIC 3008: 2026 Location Analysis',
-    description: 'Melbourne's most visible commercial planning challenge. Office weekday trade is real. Evenings and weekends remain structurally thin despite 20 years of residential development.',
+    description: "Melbourne's most visible commercial planning challenge. Office weekday trade is real. Evenings and weekends remain structurally thin despite 20 years of residential development.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

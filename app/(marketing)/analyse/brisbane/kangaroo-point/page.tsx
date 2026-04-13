@@ -246,7 +246,7 @@ export default function KangarooPointPage() {
             </Link>
           </div>
         </div>
-        <SuburbPoll suburb=Kangaroo Point votes={[52, 33, 15]} />
+        <SuburbPoll suburb="Kangaroo Point" votes={[52, 33, 15]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>

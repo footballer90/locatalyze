@@ -246,7 +246,7 @@ export default function PaddingtonPage() {
             </Link>
           </div>
         </div>
-        <SuburbPoll suburb=Paddington votes={[68, 22, 10]} />
+        <SuburbPoll suburb="Paddington" votes={[68, 22, 10]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>

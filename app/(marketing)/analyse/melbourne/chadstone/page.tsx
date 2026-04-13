@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Chadstone VIC 3148: 2026 Location Analysis',
-    description: 'Australia's largest shopping centre creates a gravitational commercial field that strip retail struggles to escape. Specific niches outside the mall work — general retail doesn't.',
+    description: "Australia's largest shopping centre creates a gravitational commercial field that strip retail struggles to escape. Specific niches outside the mall work — general retail doesn't.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Chadstone Melbourne a good location for opening a business outside the shopping centre?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Chadstone strip retail is a CAUTION. The shopping centre's 8 million annual visitors tend to spend inside the mall rather than at external strip businesses. Categories that work well outside the mall are allied health (where independents can price below Westfield's premium tenants), specialty coffee' },
+      acceptedAnswer: { '@type': 'Answer', text: "Chadstone strip retail is a CAUTION. The shopping centre's 8 million annual visitors tend to spend inside the mall rather than at external strip businesses. Categories that work well outside the mall are allied health (where independents can price below Westfield's premium tenants), specialty coffee" },
     }],
   },
 ]

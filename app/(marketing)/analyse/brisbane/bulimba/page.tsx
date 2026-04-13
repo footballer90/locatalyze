@@ -52,7 +52,7 @@ function SuburbPoll({ suburb, votes: initVotes }: { suburb: string; votes: numbe
               {voted !== null && <span style={{ fontSize: 12, color: S.brand, fontWeight: 700 }}>{pct}%</span>}
             </div>
           </button>
-        )}  })}
+          ) })}
       </div>
       {voted !== null && <div style={{ marginTop: 16, padding: '12px 16px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10 }}><p style={{ fontSize: 13, color: '#047857', margin: 0 }}>Ready to run a full analysis for {suburb}?{' '}<Link href="/onboarding" style={{ fontWeight: 700, textDecoration: 'underline', color: '#047857' }}>Analyse free →</Link></p></div>}
     </div>
@@ -206,7 +206,7 @@ export default function BulimbaPage() {
             </Link>
           </div>
         </div>
-        <SuburbPoll suburb=Bulimba votes={[55, 33, 12]} />
+        <SuburbPoll suburb="Bulimba" votes={[55, 33, 12]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>

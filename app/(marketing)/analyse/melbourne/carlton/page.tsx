@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Carlton VIC 3053: 2026 Location Analysis',
-    description: 'Lygon Street's Italian heritage creates a permanent demand baseline. University of Melbourne drives 12,000+ daily student foot passes. The daytime opportunity gap is real and underexploited.',
+    description: "Lygon Street's Italian heritage creates a permanent demand baseline. University of Melbourne drives 12,000+ daily student foot passes. The daytime opportunity gap is real and underexploited.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Carlton good for opening a café near Melbourne University in 2026?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Carlton is strong for specialty coffee near the University of Melbourne. The university's 40,000 enrolled students with 12,000+ on campus daily generate consistent weekday demand. The competitive set for quality coffee near the university is weak — campus cafés are operated by large catering contrac' },
+      acceptedAnswer: { '@type': 'Answer', text: "Carlton is strong for specialty coffee near the University of Melbourne. The university's 40,000 enrolled students with 12,000+ on campus daily generate consistent weekday demand. The competitive set for quality coffee near the university is weak — campus cafés are operated by large catering contrac" },
     }],
   },
 ]

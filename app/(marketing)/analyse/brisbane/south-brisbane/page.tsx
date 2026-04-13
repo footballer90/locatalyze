@@ -278,7 +278,7 @@ export default function SouthBrisbanePage() {
         </div>
 
         {/* Poll */}
-        <SuburbPoll suburb=South Brisbane votes={[45, 35, 20]} />
+        <SuburbPoll suburb="South Brisbane" votes={[45, 35, 20]} />
 
         {/* Final verdict */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
@@ -317,7 +317,7 @@ export default function SouthBrisbanePage() {
         <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 32, paddingBottom: 48, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' as const, gap: 12 }}>
           <Link href="/analyse/brisbane" style={{ fontSize: 13, fontWeight: 600, color: S.brand, textDecoration: 'none' }}>← Back to Brisbane</Link>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' as const }}>
-            {% nearby_links %}
+            {/* nearby links */}
           </div>
         </div>
 

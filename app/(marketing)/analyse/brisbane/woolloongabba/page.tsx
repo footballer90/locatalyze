@@ -246,7 +246,7 @@ export default function WoolloongabbaPage() {
             </Link>
           </div>
         </div>
-        <SuburbPoll suburb=Woolloongabba votes={[56, 32, 12]} />
+        <SuburbPoll suburb="Woolloongabba" votes={[56, 32, 12]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>

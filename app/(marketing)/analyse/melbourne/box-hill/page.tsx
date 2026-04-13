@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Box Hill Melbourne good for opening a restaurant or café in 2026?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Box Hill is a strong GO, particularly for Asian cuisine and specialty coffee. The suburb has Melbourne's most concentrated Asian-Australian market outside the CBD, with 60,000+ weekly Box Hill Central visitors. Commercial rents of $4,000–$8,000 per month are 40–50% below Fitzroy while delivering com' },
+      acceptedAnswer: { '@type': 'Answer', text: "Box Hill is a strong GO, particularly for Asian cuisine and specialty coffee. The suburb has Melbourne's most concentrated Asian-Australian market outside the CBD, with 60,000+ weekly Box Hill Central visitors. Commercial rents of $4,000–$8,000 per month are 40–50% below Fitzroy while delivering com" },
     }],
   },
 ]

@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Hawthorn VIC 3122: 2026 Location Analysis',
-    description: 'Average household income exceeds $120K — among Melbourne's highest. Church Street's professional foot traffic is consistent and underserved for quality hospitality.',
+    description: "Average household income exceeds $120K — among Melbourne's highest. Church Street's professional foot traffic is consistent and underserved for quality hospitality.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Hawthorn Melbourne a good location for a café or restaurant?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Hawthorn is a GO, particularly for specialty coffee and quality brunch. The suburb's average household income of $120,000+ is among Melbourne's highest, yet Church Street has only two specialty coffee venues for 8,000+ daily professional residents. Commercial rents of $5,500–$8,500 per month are 25–' },
+      acceptedAnswer: { '@type': 'Answer', text: "Hawthorn is a GO, particularly for specialty coffee and quality brunch. The suburb's average household income of $120,000+ is among Melbourne's highest, yet Church Street has only two specialty coffee venues for 8,000+ daily professional residents. Commercial rents of $5,500–$8,500 per month are 25–" },
     }],
   },
 ]

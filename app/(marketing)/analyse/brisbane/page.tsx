@@ -333,7 +333,7 @@ export default function BrisbanePage() {
           <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '8px' }} id="top-20">
             Top 20 Brisbane Suburbs — Ranked & Scored
           </h2>
-          <p style={{ fontSize: '15px', color: C.n600, marginBottom: '36px', lineHeight: '1.6' }}>
+          <p style={{ fontSize: '15px', color: C.n700, marginBottom: '36px', lineHeight: '1.6' }}>
             Each suburb scored across four dimensions: foot traffic density, demographic income distribution, commercial rent viability, and competitive gap. GO means viable for most well-positioned concepts. CAUTION means specific niches work but general entry is risky.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
@@ -446,7 +446,7 @@ export default function BrisbanePage() {
           <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '8px' }}>
             Brisbane Suburb Comparison
           </h2>
-          <p style={{ fontSize: '14px', color: C.n600, marginBottom: '28px' }}>
+          <p style={{ fontSize: '14px', color: C.n700, marginBottom: '28px' }}>
             Key metrics across the top 8 locations — GO/CAUTION verdict, rent range, foot traffic, and best-fit business categories.
           </p>
           <ComparisonTable rows={COMPARISON_ROWS} />
@@ -459,7 +459,7 @@ export default function BrisbanePage() {
           <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '8px' }}>
             High-Risk Zones — Where Operators Fail
           </h2>
-          <p style={{ fontSize: '14px', color: C.n600, marginBottom: '28px' }}>
+          <p style={{ fontSize: '14px', color: C.n700, marginBottom: '28px' }}>
             These locations have specific structural challenges. Going in without understanding them is how operators lose deposits.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
