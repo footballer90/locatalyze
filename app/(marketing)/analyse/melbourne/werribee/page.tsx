@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Werribee Melbourne a good location for opening a business in 2026?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Werribee is a CAUTION for most operators in 2026. The suburb's population grew 18% from 2020–2025 but commercial maturity lags residential growth by 5–7 years. Average household income of $72,000 limits premium positioning. Value-positioned cafés, allied health practices, and children's education se' },
+      acceptedAnswer: { '@type': 'Answer', text: "Werribee is a CAUTION for most operators in 2026. The suburb's population grew 18% from 2020–2025 but commercial maturity lags residential growth by 5–7 years. Average household income of $72,000 limits premium positioning. Value-positioned cafés, allied health practices, and children's education se" },
     }],
   },
 ]

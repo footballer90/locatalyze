@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Prahran VIC 3181: 2026 Location Analysis',
-    description: 'Between South Yarra and St Kilda — premium catchment without peak rents. Prahran Market anchors one of Melbourne's most consistent Saturday foot traffic patterns.',
+    description: "Between South Yarra and St Kilda — premium catchment without peak rents. Prahran Market anchors one of Melbourne's most consistent Saturday foot traffic patterns.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Prahran a good location to open a café or restaurant in Melbourne?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Prahran is strong for hospitality, particularly market-adjacent brunch cafés and quality mid-range restaurants serving the residential demographic. The Prahran Market generates 12,000–15,000 Saturday morning visitors who create Melbourne's most consistent Saturday morning foot traffic for surroundin' },
+      acceptedAnswer: { '@type': 'Answer', text: "Prahran is strong for hospitality, particularly market-adjacent brunch cafés and quality mid-range restaurants serving the residential demographic. The Prahran Market generates 12,000–15,000 Saturday morning visitors who create Melbourne's most consistent Saturday morning foot traffic for surroundin" },
     }],
   },
 ]

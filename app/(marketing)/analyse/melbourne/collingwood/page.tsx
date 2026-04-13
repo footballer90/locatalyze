@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Collingwood VIC 3066: 2026 Location Analysis',
-    description: 'Smith Street's seamless continuation south. Same demographic as Fitzroy, rents 15-20% lower. The creative industry concentration generates weekday lunch trade that residential counts alone don't predi',
+    description: "Smith Street's seamless continuation south. Same demographic as Fitzroy, rents 15–20% lower. The creative industry concentration generates weekday lunch trade that residential counts alone don't predict.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'How does Collingwood compare to Fitzroy for opening a business?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Collingwood's Smith Street offers virtually identical demographics and foot traffic to Fitzroy's Smith Street at 15–20% lower commercial rents. The council boundary between the two suburbs has no practical relevance to a food or hospitality business — the customer base, foot traffic pattern, and com' },
+      acceptedAnswer: { '@type': 'Answer', text: "Collingwood's Smith Street offers virtually identical demographics and foot traffic to Fitzroy's Smith Street at 15–20% lower commercial rents. The council boundary between the two suburbs has no practical relevance to a food or hospitality business — the customer base, foot traffic pattern, and com" },
     }],
   },
 ]
