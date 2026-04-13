@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Brunswick VIC 3056: 2026 Location Analysis',
-    description: 'Sydney Road: Melbourne's most genuinely diverse commercial strip. The demographic has been upgrading for a decade — the best remaining value play in Melbourne's inner north.',
+    description: : "Sydney Road: Melbourne's most genuinely diverse commercial strip. The demographic has been upgrading for a decade — the best remaining value play in Melbourne's inner north.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

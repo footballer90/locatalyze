@@ -48,7 +48,7 @@ function VerdictBadge({ v }: { v: Verdict }) {
   )
 }
 
-function RiskBadge({ risk }: { risk: 'GO' | 'CAUTION' | 'NO' }) {
+function RiskBadge({ risk }: { risk: : "GO' | 'CAUTION' | 'NO" }) {
   const styles: Record<string, { bg: string; color: string; text: string }> = {
     GO: { bg: C.emeraldBg, color: C.emerald, text: 'GO' },
     CAUTION: { bg: C.amberBg, color: C.amber, text: 'CAUTION' },

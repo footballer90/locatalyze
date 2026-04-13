@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in St Kilda VIC 3182: 2026 Location Analysis',
-    description: 'Melbourne's beach-lifestyle premium strip. Summer trade runs 130-150% of winter. The operators who survive long-term are those who run profitably in July — and treat the summer premium as upside.',
+    description: : "Melbourne's beach-lifestyle premium strip. Summer trade runs 130-150% of winter. The operators who survive long-term are those who run profitably in July — and treat the summer premium as upside.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

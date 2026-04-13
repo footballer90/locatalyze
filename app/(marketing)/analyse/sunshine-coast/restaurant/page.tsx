@@ -183,7 +183,7 @@ const S = {
 }
 
 // Components
-const VerdictBadge = ({ verdict }: { verdict: 'GO' | 'CAUTION' | 'NO' }) => {
+const VerdictBadge = ({ verdict }: { verdict: : "GO' | 'CAUTION' | 'NO" }) => {
   const colors = {
     GO: { bg: S.emeraldBg, border: S.emeraldBdr, text: S.emerald },
     CAUTION: { bg: S.amberBg, border: S.amberBdr, text: S.amber },

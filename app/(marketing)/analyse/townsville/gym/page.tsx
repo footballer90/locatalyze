@@ -139,9 +139,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Townsville CBD', postcode: '4810', state: 'QLD', score: 42, verdict: 'NO' as const, reason: 'Post-flood commercial vacancy remains elevated (14%+). Limited parking and dead-after-6pm retail profile suppress membership drive. Rent expectations from landlords exceed realistic revenue projections. Avoided by experienced operators.' },
-  { name: 'Thuringowa/Upper Ross', postcode: '4817', state: 'QLD', score: 36, verdict: 'NO' as const, reason: 'Suburbs sprawl across 12km+ with no unified commercial anchor. Residential pockets are too isolated for a single gym facility to achieve viable catchment density. Commute times exceed 15min from parts of the catchment. Fragmentation makes marketing and member acquisition economically inefficient.' },
-  { name: 'Garbutt', postcode: '4814', state: 'QLD', score: 32, verdict: 'NO' as const, reason: 'Industrial and airport zone. Transient population with no residential density. Median household income $42,000 — below gym viability thresholds. No established retail/hospitality infrastructure suggests structural market weakness.' },
+  { name: 'Townsville CBD', postcode: '4810', state: 'QLD', score: 42, verdict: : "NO' as const, reason: 'Post-flood commercial vacancy remains elevated (14%+). Limited parking and dead-after-6pm retail profile suppress membership drive. Rent expectations from landlords exceed realistic revenue projections. Avoided by experienced operators." },
+  { name: 'Thuringowa/Upper Ross', postcode: '4817', state: 'QLD', score: 36, verdict: : "NO' as const, reason: 'Suburbs sprawl across 12km+ with no unified commercial anchor. Residential pockets are too isolated for a single gym facility to achieve viable catchment density. Commute times exceed 15min from parts of the catchment. Fragmentation makes marketing and member acquisition economically inefficient." },
+  { name: 'Garbutt', postcode: '4814', state: 'QLD', score: 32, verdict: : "NO' as const, reason: 'Industrial and airport zone. Transient population with no residential density. Median household income $42,000 — below gym viability thresholds. No established retail/hospitality infrastructure suggests structural market weakness." },
 ]
 
 const S = {
@@ -153,7 +153,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
+function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
     : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -162,7 +162,7 @@ function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
     : v === 'CAUTION'
       ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
       : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {

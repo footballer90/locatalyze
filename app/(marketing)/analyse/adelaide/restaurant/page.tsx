@@ -139,9 +139,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Elizabeth', postcode: '5112', score: 38, verdict: 'NO' as const, reason: 'Median household income of $52,000 — 43% below Adelaide median. Restaurant price points ($50–$80 mains) become stretch purchases rather than habitual spending. Customer base defaults to casual dining chains or home cooking under financial pressure. Not viable for independent fine or casual-dining operators.' },
-  { name: 'Modbury', postcode: '5092', score: 35, verdict: 'NO' as const, reason: 'Car-dependent commercial strip with minimal pedestrian culture. No destination walking environment. A restaurant here lives entirely on drive-by traffic, which is highly unpredictable and requires heavy advertising. Commercial viability threshold requires 40+ covers on weekday lunch — structurally difficult.' },
-  { name: 'Salisbury', postcode: '5108', score: 32, verdict: 'NO' as const, reason: 'Commercial vacancy on commercial strips exceeds 20% — the clearest signal of insufficient customer traffic. Property values and rents are rising (gentrification pressure) while occupancy rates fall, producing negative unit economics. Not a location for new independent restaurant entry.' },
+  { name: 'Elizabeth', postcode: '5112', score: 38, verdict: : "NO' as const, reason: 'Median household income of $52,000 — 43% below Adelaide median. Restaurant price points ($50–$80 mains) become stretch purchases rather than habitual spending. Customer base defaults to casual dining chains or home cooking under financial pressure. Not viable for independent fine or casual-dining operators." },
+  { name: 'Modbury', postcode: '5092', score: 35, verdict: : "NO' as const, reason: 'Car-dependent commercial strip with minimal pedestrian culture. No destination walking environment. A restaurant here lives entirely on drive-by traffic, which is highly unpredictable and requires heavy advertising. Commercial viability threshold requires 40+ covers on weekday lunch — structurally difficult." },
+  { name: 'Salisbury', postcode: '5108', score: 32, verdict: : "NO' as const, reason: 'Commercial vacancy on commercial strips exceeds 20% — the clearest signal of insufficient customer traffic. Property values and rents are rising (gentrification pressure) while occupancy rates fall, producing negative unit economics. Not a location for new independent restaurant entry." },
 ]
 
 const S = {
@@ -153,7 +153,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
+function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
       : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -162,7 +162,7 @@ function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
     : v === 'CAUTION'
       ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {
@@ -591,7 +591,7 @@ export default function AdelaideRestaurantPage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 14 }}>
             Watch: How to Choose a Restaurant Location in Adelaide
           </h2>
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C1F1C', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' as const, gap: 12, cursor: 'pointer' }}
+          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C1F1C', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: : "column' as const, gap: 12, cursor: 'pointer" }}
             onClick={() => window.open('https://www.youtube.com/@locatalyze', '_blank')}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(52,211,153,0.15)', border: '2px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #34D399', marginLeft: 4 }}/>
