@@ -235,9 +235,11 @@ export async function POST(request: NextRequest) {
   // ── Rate limit ─────────────────────────────────────────────────────────────
   if (ratelimit) {
     try {
+      // Rate limit by IP only — never by a client-supplied header.
+      // Using x-user-id from the request would allow an attacker to spoof a victim's
+      // ID to burn their limit, or rotate IDs to bypass their own limit.
       const ip = (request.headers.get('x-forwarded-for') || 'anonymous').split(',')[0].trim()
-      const uid = request.headers.get('x-user-id') || ip
-      const { success, limit, reset } = await ratelimit.limit(`${uid}:${ip}`)
+      const { success, limit, reset } = await ratelimit.limit(ip)
       if (!success) {
         const resetIn = Math.ceil((reset - Date.now()) / 60000)
         return errorResponse(`Rate limit reached. ${limit} analyses per hour. Try again in ${resetIn}m.`, 429)
@@ -267,6 +269,15 @@ export async function POST(request: NextRequest) {
     const authClient = await createAuthClient()
     const { data: { user: sessionUser } } = await authClient.auth.getUser()
     userId = sessionUser?.id ?? null
+    // Block unverified accounts — users created before the email verification gate
+    // was added will have email_confirmed_at = null. Require verification before
+    // running analyses to prevent abuse via throwaway unverified accounts.
+    if (sessionUser && !sessionUser.email_confirmed_at) {
+      return errorResponse(
+        'Email not verified. Check your inbox for a verification link before running an analysis.',
+        403
+      )
+    }
   } catch {
     // Non-fatal: fall back to unauthenticated (quota skipped, rate limit still applies)
     console.warn('[Analyse] Could not resolve session user — proceeding without userId')

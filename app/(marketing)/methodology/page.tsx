@@ -159,7 +159,7 @@ export default function MethodologyPage() {
 
           {/* Verdict thresholds */}
       {[
-              { verdict: 'GO',   range: '70–100', desc: 'Strong fundamentals — conduct site visits and verify assumptions before committing.', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
+              { verdict: 'GO',   range: '70–100', desc: 'All key dimensions support this location. The data gives you a basis to act — proceed to lease negotiation and site visits with confidence.', bg: S.emeraldBg, border: S.emeraldBdr, color: S.emerald },
        { verdict: 'CAUTION', range: '45–69', desc: 'Mixed signals. Viable with the right execution, but specific risks need mitigation.', bg: S.amberBg, border: S.amberBdr, color: S.amber },
        { verdict: 'NO',   range: '0–44',  desc: 'Significant concerns identified. The risk profile does not support proceeding at this time.', bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
       ].map(v => (

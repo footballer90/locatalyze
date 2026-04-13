@@ -40,7 +40,7 @@ const M = {
   // Scenarios (operating leverage: fixed $30,160 + variable 38%)
   best:   { label: 'Best Case',   pct: '130% demand', rev: '$88,400', costs: '$63,800', profit: '$24,600' },
   base:   { label: 'Base Case',   pct: '100% demand', rev: '$68,000', costs: '$56,000', profit: '$12,000' },
-  stress: { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '~$3,600' },
+  stress: { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '$3,600' },
 } as const
 
 const S = {
@@ -249,7 +249,7 @@ export default function SampleReportClient() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
               { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'benchmark est. ±20%' },
-              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'est. ±25% · excl. owner' },
+              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'benchmark est. ±25% · excl. owner' },
               { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'to cover costs' },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
@@ -444,10 +444,10 @@ export default function SampleReportClient() {
                   </p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Revenue"         value="~$68,000" sub="~±20% · model est." mono />
+                  <Tile label="Revenue"         value="~$68,000" sub="±20% benchmark est." mono />
                   <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="~±25% · excl. owner salary" mono />
+                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="±25% benchmark est. · excl. owner salary" mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />

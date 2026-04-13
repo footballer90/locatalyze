@@ -362,7 +362,7 @@ function ShowcaseSuburbsUI() {
 function ShowcaseCompetitorsUI() {
   return (
     <div style={{ padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}><p style={{ fontSize: 12, fontWeight: 700, color: D.text1 }}>Competitors within 500m</p><span style={{ fontSize: 11, color: '#6B7280' }}>4 found</span></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}><p style={{ fontSize: 12, fontWeight: 700, color: D.text1 }}>Competitors within 500m</p><span style={{ fontSize: 11, color: '#6B7280' }}>4 found · sample data</span></div>
       {[{n:'The Daily Grind',d:'120m',st:4.2,t:'High',c:'#F87171'},{n:'Brew & Co.',d:'280m',st:3.8,t:'Med',c:'#FBBF24'},{n:'Sunrise Café',d:'390m',st:4.5,t:'High',c:'#F87171'},{n:'Quick Bites',d:'470m',st:3.1,t:'Low',c:'#34D399'}].map((r,i)=>(
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 0', borderBottom: i<3?'1px solid rgba(255,255,255,.05)':'none' }}>
           <div style={{ width: 7, height: 7, borderRadius: '50%', background: r.c, flexShrink: 0 }}/>
@@ -1291,7 +1291,7 @@ function CinematicWalkthrough() {
 
             {phase === 3 && (
               <div style={{ position: 'absolute', top: 10, right: 10, background: '#fff', color: L.slate, borderRadius: 8, padding: '3px 10px', fontSize: 10, fontWeight: 700, border: `1px solid ${L.border}`, boxShadow: '0 2px 8px rgba(0,0,0,.08)', zIndex: 5 }}>
-                {CW_PINS.length} competitors mapped
+                {CW_PINS.length} competitors mapped · sample data
               </div>
             )}
 
