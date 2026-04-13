@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Dandenong VIC 3175: 2026 Location Analysis',
-    description: 'Greater Dandenong's multicultural depth creates genuine specialty food markets. Average household income of $58K limits premium positioning but supports value-positioned community food concepts strong',
+    description: "Greater Dandenong's multicultural depth creates genuine specialty food markets. Average household income of $58K limits premium positioning but supports value-positioned community food concepts strong",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Dandenong Melbourne good for opening a restaurant or business?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Dandenong is a CAUTION for general operators but a GO for community-specific concepts. The suburb has 156 nationalities and genuine specialty food markets in Sri Lankan, Afghan, Vietnamese, and Middle Eastern cuisines that draw destination customers from across Melbourne's south-east. Average househ' },
+      acceptedAnswer: { '@type': 'Answer', text: "Dandenong is a CAUTION for general operators but a GO for community-specific concepts. The suburb has 156 nationalities and genuine specialty food markets in Sri Lankan, Afghan, Vietnamese, and Middle Eastern cuisines that draw destination customers from across Melbourne's south-east. Average househ" },
     }],
   },
 ]

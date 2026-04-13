@@ -78,7 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Richmond VIC 3121: 2026 Location Analysis',
-    description: 'Swan Street is Melbourne's best hospitality strip by risk-adjusted economics — same demographics as Fitzroy at 20% lower rents. Bridge Road requires more careful assessment.',
+    description: "Swan Street is Melbourne's best hospitality strip by risk-adjusted economics — same demographics as Fitzroy at 20% lower rents. Bridge Road requires more careful assessment.",
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },
@@ -87,7 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Swan Street Richmond good for a café or restaurant in 2026?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Yes — Swan Street Richmond is Melbourne's best risk-adjusted hospitality position. The demographic is virtually identical to Fitzroy (average $88K household income, professional, 25–45 age bracket) at rents that are 15–20% lower. The customer-to-venue ratio is more favourable than Smith Street Fitzr' },
+      acceptedAnswer: { '@type': 'Answer', text: "Yes — Swan Street Richmond is Melbourne's best risk-adjusted hospitality position. The demographic is virtually identical to Fitzroy (average $88K household income, professional, 25–45 age bracket) at rents that are 15–20% lower. The customer-to-venue ratio is more favourable than Smith Street Fitzroy." },
     }],
   },
 ]
