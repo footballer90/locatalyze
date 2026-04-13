@@ -40,7 +40,7 @@ const M = {
   // Scenarios (operating leverage: fixed $30,160 + variable 38%)
   best:   { label: 'Best Case',   pct: '130% demand', rev: '$88,400', costs: '$63,800', profit: '$24,600' },
   base:   { label: 'Base Case',   pct: '100% demand', rev: '$68,000', costs: '$56,000', profit: '$12,000' },
-  stress: { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '~$3,600' },
+  stress: { label: 'Stress Case', pct: '80% demand',  rev: '$54,400', costs: '$50,800', profit: '$3,600' },
 } as const
 
 const S = {
@@ -248,8 +248,8 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'est. ±20%' },
-              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'est. ±25%' },
+              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'benchmark est. ±20%' },
+              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'benchmark est. ±25% · excl. owner' },
               { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'to cover costs' },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
@@ -394,19 +394,24 @@ export default function SampleReportClient() {
                       <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
                         <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Median Income</p>
                         <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, fontFamily: S.mono }}>$96,000<span style={{ fontSize: 10, fontWeight: 500, color: S.n400, fontFamily: S.font }}>/yr</span></p>
+                        <p style={{ fontSize: 9, color: S.n400, marginTop: 2 }}>ABS 2021 Census</p>
                       </div>
                       <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
                         <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Affordability</p>
                         <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald }}>HIGH</p>
                       </div>
                     </div>
-                    <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>Leederville's median household income of $96,000 is 21% above the Perth metro average. The 25–44 age cohort represents 48% of the residential population.</p>
+                    <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.75 }}>Leederville's median household income of $96,000 (ABS 2021 Census, SA2) is 21% above the Perth metro average. The 25–44 age cohort represents 48% of the residential population.</p>
                   </Card>
                 </div>
 
                 {/* SWOT */}
                 <Card>
-                  <SectionLabel>SWOT Analysis</SectionLabel>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                    <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>SWOT Analysis</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: S.n400, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 4, padding: '1px 6px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>AI-generated</span>
+                  </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     {[
                       { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold', 'Demographics align strongly: 25–44, $96K median income'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
@@ -439,10 +444,10 @@ export default function SampleReportClient() {
                   </p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Revenue"         value="~$68,000" sub="~±20% · model est." mono />
+                  <Tile label="Revenue"         value="~$68,000" sub="±20% benchmark est." mono />
                   <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="~±25% · model est." mono />
+                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="±25% benchmark est. · excl. owner salary" mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />
@@ -451,7 +456,7 @@ export default function SampleReportClient() {
                   <Tile label="Payback Period"  value={`${M.paybackMonths} months`} color={S.brand} sub={`$${M.setupBudget.toLocaleString()} ÷ $${M.netProfit.toLocaleString()}/mo · no ramp-up`} />
                 </div>
                 <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
-                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 150 daily customers at $17.50 average spend over 26 trading days, monthly revenue of ~$68,000 gives a rent-to-revenue ratio of 11.2% — within the healthy threshold for specialty coffee. Payback of 12 months assumes a $147,200 fit-out cost ($147,200 ÷ $12,000/mo net profit). The model assumes COGS of 38% and fixed labour of $20,000/month (2 FT + 2 casual).</p>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 150 daily customers at $17.50 average spend over 26 trading days, monthly revenue of ~$68,000 gives a rent-to-revenue ratio of 11.2% — within the healthy threshold for specialty coffee. Payback of 12 months assumes a $147,200 fit-out cost ($147,200 ÷ $12,000/mo net profit). The model assumes COGS of 38% and fixed labour of $20,000/month (2 FT + 2 casual). Net profit does not include owner salary — add $60,000–$90,000/yr depending on operator involvement.</p>
                 </div>
                 <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
                   <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>⏱ Payback assumes full trading from day 1. Allow 3–4 additional months for ramp-up to full customer volume — bringing realistic payback to 15–16 months.</p>
@@ -524,6 +529,9 @@ export default function SampleReportClient() {
                     </div>
                   </div>
                 </div>
+                <p style={{ fontSize: 10, color: S.n400, marginTop: 8, fontStyle: 'italic', lineHeight: 1.5 }}>
+                  Year 1 annualises the base case (~$68k/mo × 12). Years 2–3 assume ~10% annual revenue growth — the median compound growth rate for established inner-suburban Australian café operators (IBISWorld Cafés in Australia, 2025). Actual growth will vary.
+                </p>
                 <div style={{ marginTop: 12, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' as const }}>
                   <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.5 }}>Year 2 &amp; 3 growth model — including compounding revenue, reinvestment scenarios and break-even trajectory — unlocks when you run a full report on your actual address.</p>
                   <a href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: S.brand, color: S.white, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' as const }}>Run my report →</a>
@@ -577,7 +585,13 @@ export default function SampleReportClient() {
             {/* Competition tab */}
             {activeTab === 'competition' && <>
               <Card>
-                <SectionLabel>Competitor Overview</SectionLabel>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Competitor Overview</span>
+                  </div>
+                  <span style={{ fontSize: 9, color: S.n400, fontStyle: 'italic' }}>Google Places · up to 48 hr cache</span>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 }}>
                   <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
                     <p style={{ fontSize: 26, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>4</p>
@@ -658,8 +672,8 @@ export default function SampleReportClient() {
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
               {[
-                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: '±20% model est.' },
-                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: '±25% model est.' },
+                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: 'benchmark est. ±20%' },
+                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: 'benchmark est. ±25% · excl. owner salary' },
                 { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber,  sub: 'of revenue' },
                 { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900,   sub: 'fixed cost threshold' },
                 { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900,   sub: 'excl. ramp-up' },
@@ -672,7 +686,7 @@ export default function SampleReportClient() {
                   <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
                 </div>
               ))}
-              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Excl. ramp-up. Allow 3–4 additional months to reach full volume. All figures are model estimates — not financial forecasts.</p>
+              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Excl. ramp-up. Allow 3–4 additional months to reach full volume. All figures are model estimates — not financial forecasts. Net profit excludes owner salary.</p>
             </div>
 
             {/* CTA */}
@@ -687,7 +701,7 @@ export default function SampleReportClient() {
             {/* Data sources */}
             <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Data sources</p>
-              {['Google Places (competitors)', 'Geoapify / OSM (density)', 'ABS 2021 Census · SA2', 'IBISWorld benchmarks'].map(src => (
+              {['Google Places (competitors)', 'Geoapify / OSM (density)', 'ABS 2021 Census · SA2', 'Industry benchmarks'].map(src => (
                 <p key={src} style={{ fontSize: 11, color: S.n500, padding: '4px 0', borderBottom: `1px solid ${S.n100}` }}>{src}</p>
               ))}
             </div>

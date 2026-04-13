@@ -20,6 +20,7 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
   const [copied, setCopied] = useState(false)
   const [showPanel, setShowPanel] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [rotating, setRotating] = useState(false)
 
   const shareUrl = token
     ? `${window.location.origin}/r/${token}`
@@ -42,6 +43,26 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function rotateLink() {
+    if (!window.confirm('This will invalidate the current share link immediately. Anyone with the old link will lose access. Generate a new link?')) return
+    setRotating(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/reports/${reportId}/share`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'rotate' }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to rotate link')
+      setToken(data.public_token)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setRotating(false)
     }
   }
 
@@ -154,9 +175,23 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
                     {copied ? 'Copied' : 'Copy'}
          </button>
                 </div>
-                <p style={{ fontSize: 11, color: S.n400, marginTop: 8 }}>
-                  Disable sharing to revoke access at any time.
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                  <p style={{ fontSize: 11, color: S.n400 }}>
+                    Disable sharing to revoke all access.
+                  </p>
+                  <button
+                    onClick={rotateLink}
+                    disabled={rotating}
+                    title="Generate a new link — invalidates the current URL immediately"
+                    style={{
+                      fontSize: 11, color: S.n500, background: 'none', border: `1px solid ${S.n200}`,
+                      borderRadius: 6, padding: '3px 8px', cursor: rotating ? 'wait' : 'pointer',
+                      fontFamily: 'inherit', flexShrink: 0,
+                    }}
+                  >
+                    {rotating ? 'Rotating…' : 'Rotate link'}
+                  </button>
+                </div>
               </div>
             )}
           </div>

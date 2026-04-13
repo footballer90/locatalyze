@@ -214,7 +214,9 @@ export async function POST(request: NextRequest) {
     avgOrderValue:   rawAvgOrderValue   && rawAvgOrderValue > 0 ? rawAvgOrderValue : null,
     locationAccess:  rawLocationAccess  || null,
     // Signal to the engine that setup budget was estimated — breakEvenMonths will be suppressed
-    setupBudgetIsEstimated: usedBenchmarkForSetup,
+    setupBudgetIsEstimated:   usedBenchmarkForSetup,
+    // Signal that avgTicketSize came from benchmarks — used by buildSectionConfidence
+    avgTicketSizeIsEstimated: usedBenchmarkForTicket,
     agentOutputs: {
       a1: agentOutputs.a1 ?? {},
       a2: agentOutputs.a2 ?? {},

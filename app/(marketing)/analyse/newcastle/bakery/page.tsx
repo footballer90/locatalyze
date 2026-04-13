@@ -142,9 +142,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Charlestown', postcode: '2290', score: 40, verdict: 'NO' as const, reason: 'Charlestown Square shopping centre dominates customer foot traffic — independent bakery cannot compete with Bakers Delight\'s volume, pricing strategy, and car-park convenience. Retail foot traffic in Charlestown is transactional, not habitual. Morning commute traffic is minimal. Rent-to-revenue for new independents typically exceeds 18% due to structural disadvantage.' },
-  { name: 'Jesmond', postcode: '2299', score: 36, verdict: 'NO' as const, reason: 'University-adjacent location creates misleading foot traffic in semester periods (Feb–May, July–Oct) followed by 6–8 week revenue collapse during semester breaks. Student bakery spend is minimal ($2–3 items, high volume, low margin). Professional student housing is transient — no repeat customer loyalty. Annual revenue is volatile by 40%+ between peak and trough — impossible to model profitably.' },
-  { name: 'Belmont', postcode: '2280', score: 32, verdict: 'NO' as const, reason: 'Lake Macquarie suburban sprawl with car-dependent shopping patterns and no bakery destination culture. Foot traffic is distributed across shopping centres rather than concentrated on street-level retail. Median household income ($64,000) is below bakery viability threshold. No commute traffic patterns, no tourist base, no weekend destination gravity. Bakery economics cannot work without one of these traffic engines.' },
+  { name: 'Charlestown', postcode: '2290', score: 40, verdict: : "NO' as const, reason: 'Charlestown Square shopping centre dominates customer foot traffic — independent bakery cannot compete with Bakers Delight\'s volume, pricing strategy, and car-park convenience. Retail foot traffic in Charlestown is transactional, not habitual. Morning commute traffic is minimal. Rent-to-revenue for new independents typically exceeds 18% due to structural disadvantage." },
+  { name: 'Jesmond', postcode: '2299', score: 36, verdict: : "NO' as const, reason: 'University-adjacent location creates misleading foot traffic in semester periods (Feb–May, July–Oct) followed by 6–8 week revenue collapse during semester breaks. Student bakery spend is minimal ($2–3 items, high volume, low margin). Professional student housing is transient — no repeat customer loyalty. Annual revenue is volatile by 40%+ between peak and trough — impossible to model profitably." },
+  { name: 'Belmont', postcode: '2280', score: 32, verdict: : "NO' as const, reason: 'Lake Macquarie suburban sprawl with car-dependent shopping patterns and no bakery destination culture. Foot traffic is distributed across shopping centres rather than concentrated on street-level retail. Median household income ($64,000) is below bakery viability threshold. No commute traffic patterns, no tourist base, no weekend destination gravity. Bakery economics cannot work without one of these traffic engines." },
 ]
 
 const S = {
@@ -156,7 +156,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
+function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
     : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -165,7 +165,7 @@ function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
     : v === 'CAUTION'
       ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {

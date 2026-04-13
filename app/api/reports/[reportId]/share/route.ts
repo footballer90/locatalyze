@@ -21,7 +21,7 @@ export async function POST(
     }
 
     const { action } = await request.json()
-    if (!['enable', 'disable'].includes(action)) {
+    if (!['enable', 'disable', 'rotate'].includes(action)) {
       return secureHeaders(NextResponse.json({ error: 'Invalid action' }, { status: 400 }))
     }
 
@@ -51,6 +51,21 @@ export async function POST(
         is_public: true,
         public_token: token,
         share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'}/r/${token}`,
+      }))
+    } else if (action === 'rotate') {
+      // Rotate = generate a new token while keeping sharing enabled.
+      // The old URL becomes a 404 immediately — anyone who had it loses access.
+      const newToken = crypto.randomBytes(16).toString('hex')
+      const { error: updateError } = await supabase
+        .from('reports')
+        .update({ is_public: true, public_token: newToken })
+        .eq('report_id', reportId)
+      if (updateError) throw updateError
+      return secureHeaders(NextResponse.json({
+        success: true,
+        is_public: true,
+        public_token: newToken,
+        share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'}/r/${newToken}`,
       }))
     } else {
       const { error: updateError } = await supabase
