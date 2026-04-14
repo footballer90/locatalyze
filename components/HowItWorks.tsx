@@ -65,7 +65,7 @@ function Panel2({ activePs }: { activePs: number }) {
   return (
     <div style={{ padding: 22 }}>
       <div style={{ textAlign: 'center', paddingBottom: 16 }}>
-    <div style={{ fontSize: 30, display: 'inline-block', animation: 'hiw-spin 2s linear infinite' }}>⚙</div>
+    <div style={{ fontSize: 30, display: 'inline-block', animation: 'hiw-spin 2s linear infinite' }}>Settings</div>
     <p style={{ fontSize: 14, fontWeight: 700, color: '#F0FDF9', marginTop: 10, marginBottom: 4 }}>Analysing your location…</p>
     <p style={{ fontSize: 12, color: '#6B7280' }}>This usually takes 8–12 seconds</p>
    </div>

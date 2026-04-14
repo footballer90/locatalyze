@@ -356,7 +356,7 @@ function ChecklistUnlock() {
       marginBottom: '48px',
     }}>
       <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Café Checklist
+        Checklist Unlock the Full Café Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Cairns café startup checklist + wet season revenue model (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -677,7 +677,7 @@ export default function CairnsCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function CairnsCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -934,7 +934,7 @@ export default function CairnsCafePage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Cairns is a strong market for café expansion if you accept tourism volatility.</strong> Cairns City and Edge Hill both score 80+ and deliver profitability within 3 years. Tourism dependency (74% revenue) requires hedging through corporate contracts and wet season planning, but international visitor recovery and farm-to-table positioning create premium pricing power unavailable in mainland regional cities. Wet season (Nov–Apr) demands 40% revenue haircut and outdoor shade structure investment. For bootstrapped founders, Edge Hill offers better risk-adjusted returns; for capital-backed operators, Cairns City esplanade positions command sustainable competitive advantage.

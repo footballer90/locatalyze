@@ -64,7 +64,7 @@ const BUSINESS_TYPES = [
  },
   {
     type: 'bakery',
-  icon: '🥐',
+  icon: 'Bakery',
   label: 'Artisan Bakeries',
   score: 80,
     topSuburb: 'Leederville',
@@ -232,7 +232,7 @@ export default function PerthHubPage() {
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: S.white, minWidth: 640 }}>
        <thead>
                 <tr style={{ borderBottom: `1px solid ${S.border}`, background: S.n50 }}>
-                  {['Suburb','Postcode',' Café',' Restaurant',' Retail',' Gym','🥐 Bakery',' Salon','Highlight'].map(h => (
+                  {['Suburb','Postcode',' Café',' Restaurant',' Retail',' Gym','Bakery',' Salon','Highlight'].map(h => (
           <th key={h} style={{ textAlign: 'left', padding: '11px 14px', fontSize: 11, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' as const }}>{h}</th>
          ))}
                 </tr>

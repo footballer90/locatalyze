@@ -94,7 +94,7 @@ const CONFIGS: Record<string, Config> = {
   description: 'Locatalyze works for any business that depends on a physical location. Whether you are opening a bookshop, a dog groomer, a nail salon or a co-working space — the same location fundamentals apply.',
   keyFactors: [
       { icon: '', title: 'Target customer proximity', desc: 'The most important question: where are your customers? Map their likely home or work location against your prospective site.' },
-   { icon: '👀', title: 'Competitor awareness', desc: 'For any business type, knowing who is nearby — and how they are performing — tells you whether the market is saturated or has room for you.' },
+   { icon: 'View', title: 'Competitor awareness', desc: 'For any business type, knowing who is nearby — and how they are performing — tells you whether the market is saturated or has room for you.' },
    { icon: '', title: 'Rent affordability', desc: 'The fundamental test: can you generate enough revenue at this location to make the rent viable? Our model calculates this for your specific inputs.' },
    { icon: '', title: 'Feasibility scoring', desc: 'Locatalyze scores demand, competition, rent and profitability on a 0–100 scale and delivers a single GO / CAUTION / NO verdict.' },
   ],
@@ -110,7 +110,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
  '': <UtensilsCrossed size={20} strokeWidth={1.6} />,
  '': <ShoppingBag size={20} strokeWidth={1.6} />,
  '': <Dumbbell size={20} strokeWidth={1.6} />,
- '🥐': <Croissant size={20} strokeWidth={1.6} />,
+ 'Bakery': <Croissant size={20} strokeWidth={1.6} />,
  '': <Scissors size={20} strokeWidth={1.6} />,
  '': <Store size={20} strokeWidth={1.6} />,
 }

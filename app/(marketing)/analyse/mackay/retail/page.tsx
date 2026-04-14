@@ -356,7 +356,7 @@ function ChecklistUnlock() {
       marginBottom: '48px',
     }}>
       <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Retail Checklist
+        Checklist Unlock the Full Retail Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Mackay retail startup checklist + FIFO roster cycle calendar + commodity price model (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -677,7 +677,7 @@ export default function MackayRetailPage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function MackayRetailPage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -934,7 +934,7 @@ export default function MackayRetailPage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Mackay is Australia\'s highest-income secondary retail market with exceptional profit potential offset by commodity/roster cycle volatility.</strong> Mount Pleasant (82/100) delivers $224k annual profit within 32 months, supported by mining professional income ($112k median—highest non-capital regional city) and FIFO roster spending spikes. However, coal commodity sensitivity and roster downtime (30–40% traffic reduction) require sophisticated inventory/staffing planning. Mackay City (79/100) provides diversified revenue (tourism 30%, families, retail workers) with higher foot traffic (7,100/day) and lower mining dependency; suitable for risk-averse operators. Andergrove (74/100) offers family-focused stability + emerging shopping corridor growth. FIFO roster cycle modeling and commodity price hedging essential. Premium positioning viable; margin profile 22–26% gross (vs 15–18% volume retail). Northern Beaches expansion (2026–2028) creates secondary retail corridor opportunity.

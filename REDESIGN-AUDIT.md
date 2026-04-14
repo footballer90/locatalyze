@@ -198,7 +198,7 @@ Current: error-level shown as red banner, warnings barely visible.
 Required: ALL contradictions visible, with clear explanation:
 
 ```
-⚠ DATA CONFLICT: 12 competitors found but saturation labelled "low"
+Warning DATA CONFLICT: 12 competitors found but saturation labelled "low"
   → Competition score may be understated. Verify by visiting the area.
   Affects: Competition tab, Overall score
 ```
@@ -279,7 +279,7 @@ Each cost line should show its source:
 ```
 Monthly Operating Costs                     Source
 ─────────────────────────────────────────────
-Rent                 $4,200    User input ✓
+Rent                 $4,200    User input Check
 Staff (2 FT + 2 PT)  $28,000   A4 model
 COGS (35% of revenue) $15,750   Benchmark
 Other operating       $3,500    A4 model
@@ -303,7 +303,7 @@ Customers/day       84         125         163
 Show the break-even gauge ONLY when data is reliable.
 When `C.provenance.revenue.isBenchmark === true`, add:
 ```
-⚠ Break-even estimate is based on benchmark revenue.
+Warning Break-even estimate is based on benchmark revenue.
 Actual break-even may vary significantly based on local demand.
 ```
 

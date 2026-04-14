@@ -356,7 +356,7 @@ function ChecklistUnlock() {
       marginBottom: '48px',
     }}>
       <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Café Checklist
+        Checklist Unlock the Full Café Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Launceston café startup checklist + farm-to-table sourcing guide (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -677,7 +677,7 @@ export default function LauncestonCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function LauncestonCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -934,7 +934,7 @@ export default function LauncestonCafePage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Launceston is Australia\'s best secondary café market: exceptional rent-to-revenue fit, farm-to-table pricing power, and lower risk than capital cities.</strong> Launceston CBD (83/100) delivers $116k annual profit within 36 months with tourism leverage (480k visitors) + MONA spillover + UTAS foundation. For fastest payback, Inveresk (79/100, 32 months) captures UTAS redevelopment growth wave. For maximum stability, Newstead (75/100, 30-month payback) offers professional demographics + zero tourism volatility. Farm-to-table supply advantage (Tasmanian berries, organic dairy, grass-fed meat) enables 22% pricing premium unavailable in mainland regional cities. 40% rent savings vs Hobart enable superior margins despite lower absolute revenue. UTAS holiday volatility (Apr, Jul, Sep–Oct) manageable via professional + tourism diversification.

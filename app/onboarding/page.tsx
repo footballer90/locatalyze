@@ -9,7 +9,6 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import posthog from 'posthog-js'
 
 const S = {
   font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -251,14 +250,6 @@ export default function OnboardingPage() {
 
       const setupBudget = biz.setupMid
       const avgTicketSize = avgOrderValue ? parseFloat(avgOrderValue) || biz.avgTicket : biz.avgTicket
-
-      posthog.capture('analysis_started', {
-        business_type: biz.label,
-        address: addr.trim(),
-        monthly_rent: monthlyRentNum,
-        rent_source: rentSource,
-        model_accuracy: modelAccuracy,
-      })
 
       const res = await fetch('/api/analyse', {
         method: 'POST',
@@ -740,7 +731,7 @@ export default function OnboardingPage() {
                   </select>
                   {locationAccess === 'side_street' || locationAccess === 'arcade' ? (
                     <p style={{ fontSize: 10, color: S.amber, marginTop: 3, fontWeight: 600 }}>
-                      ⚠ Lower foot traffic — customer projections adjusted down
+                      Warning Lower foot traffic — customer projections adjusted down
                     </p>
                   ) : locationAccess === 'street_frontage' || locationAccess === 'transport_hub' ? (
                     <p style={{ fontSize: 10, color: S.emerald, marginTop: 3, fontWeight: 600 }}>
@@ -972,7 +963,7 @@ export default function OnboardingPage() {
 
             {authDone ? (
               <div style={{ textAlign: 'center', padding: '16px 0' }}>
-                <div style={{ fontSize: 40, marginBottom: 16 }}>📧</div>
+                <div style={{ fontSize: 40, marginBottom: 16 }}>Email</div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 8 }}>Check your email</h3>
                 <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6 }}>
                   We sent a confirmation link to <strong style={{ color: S.n800 }}>{authEmail}</strong>.<br />

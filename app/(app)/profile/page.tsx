@@ -123,7 +123,7 @@ export default function ProfilePage() {
         <nav style={{ padding: '0 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
      {[
             { label: 'Dashboard',  icon: '', href: '/dashboard' },
-      { label: 'New Analysis', icon: '➕', href: '/onboarding' },
+      { label: 'New Analysis', icon: 'Add', href: '/onboarding' },
       { label: 'Profile',   icon: '', href: '/profile', active: true },
      ].map(item => (
             <a key={item.label} href={item.href} style={{
@@ -183,7 +183,7 @@ export default function ProfilePage() {
                     <button onClick={saveName} disabled={saving} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 9, padding: '8px 14px', fontSize: 13, fontWeight: 700, opacity: saving ? 0.7 : 1 }}>
            {saving ? '…' : 'Save'}
           </button>
-                    <button onClick={() => setEditingName(false)} style={{ background: S.n100, color: S.n700, border: 'none', borderRadius: 9, padding: '8px 12px', fontSize: 13, fontWeight: 600 }}>✕</button>
+                    <button onClick={() => setEditingName(false)} style={{ background: S.n100, color: S.n700, border: 'none', borderRadius: 9, padding: '8px 12px', fontSize: 13, fontWeight: 600 }}>X</button>
          </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -335,7 +335,7 @@ export default function ProfilePage() {
                   onClick={() => setShowDeleteConfirm(true)}
                   style={{ background: S.redBg, color: S.red, border: `1px solid ${S.redBdr}`, borderRadius: 10, padding: '10px 18px', fontSize: 13, fontWeight: 600 }}
         >
-                  🗑 Delete account
+                  Delete Delete account
                 </button>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 10, padding: '10px 16px' }}>

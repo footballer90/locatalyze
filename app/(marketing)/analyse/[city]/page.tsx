@@ -442,7 +442,7 @@ export default async function CityPage({ params }: Props) {
                   }}
                 >
                   <h3 style={{ fontSize: '16px', fontWeight: 700, color: C.red, marginBottom: '10px' }}>
-                    ⚠ {zone.name}
+                    Warning {zone.name}
                   </h3>
                   <p style={{ fontSize: '13px', color: C.n800, lineHeight: '1.65', margin: 0 }}>
                     {zone.why}

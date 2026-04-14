@@ -107,7 +107,7 @@ export default function ReportPreview() {
   const c   = RP_CASES[caseIdx]
   const r   = 34
   const cir = 2 * Math.PI * r
-  const vIcon = c.verdict === 'GO' ? '' : c.verdict === 'CAUTION' ? '' : '✕'
+  const vIcon = c.verdict === 'GO' ? '' : c.verdict === 'CAUTION' ? '' : 'X'
 
  return (
     <div ref={containerRef} style={{ width: '100%', maxWidth: 460, fontFamily: font }}>

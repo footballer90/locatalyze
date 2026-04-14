@@ -356,7 +356,7 @@ function ChecklistUnlock() {
       marginBottom: '48px',
     }}>
       <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Café Checklist
+        Checklist Unlock the Full Café Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Ballarat café startup checklist + Sovereign Hill seasonal model (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -677,7 +677,7 @@ export default function BallaratCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function BallaratCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -934,7 +934,7 @@ export default function BallaratCafePage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Ballarat is an excellent café market for balanced growth and profitability.</strong> Ballarat Central delivers tourism leverage (35% revenue, 850k Sovereign Hill visitors annually) while remaining 65% insulated by residential growth and university demand. Payback 38 months—faster than Melbourne, more stable than Cairns. Tree-changer demographic (higher education, prior urban experience) supports premium positioning ($18 bowls, $5.20 specialty coffee). For capital-backed operators, Ballarat Central; for bootstrapped founders seeking risk-adjusted returns, Alfredton offers 32-month payback with professional demographics. Population growth trajectory (+28% 2016–2026) underpins 5-year expansion opportunity.

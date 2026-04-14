@@ -127,12 +127,19 @@ function ReportPreview() {
   const [visible, setVisible]   = useState(false)
   const rpRef                   = useRef<HTMLDivElement>(null)
 
-  // Animate score ring from 0 → target on mount and case switch
+  // Animate score ring from 0 → target when visible and on case switch
   useEffect(() => {
+    if (!visible) return
     setScore(0)
-    const t = setTimeout(() => setScore(RP_CASES[caseIdx].score), 80)
-    return () => clearTimeout(t)
-  }, [caseIdx])
+    const target = RP_CASES[caseIdx].score
+    let current = 0
+    const id = setInterval(() => {
+      current = Math.min(current + 2, target)
+      setScore(current)
+      if (current >= target) clearInterval(id)
+    }, 16)
+    return () => clearInterval(id)
+  }, [caseIdx, visible])
 
   useEffect(() => {
     const el = rpRef.current
@@ -234,7 +241,7 @@ function ReportPreview() {
                       style={{ transition:'stroke-dashoffset 0.85s cubic-bezier(.4,0,.2,1)', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{c.score}</span>
+                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{score}</span>
                     <span style={{ fontSize:10, color:'rgba(255,255,255,.4)' }}>/100</span>
                   </div>
                 </div>
@@ -1914,7 +1921,7 @@ export default function LandingPage() {
                 { label:'PDF export', included:false },
               ].map(f => (
                 <p key={f.label} style={{ fontSize:12, color: f.included ? '#334155' : '#CBD5E1', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>
-                  <span style={{ color: f.included ? L.emerald : '#CBD5E1', fontWeight:700, flexShrink:0 }}>{f.included ? '✓' : '—'}</span> {f.label}
+                  <span style={{ color: f.included ? L.emerald : '#CBD5E1', fontWeight:700, flexShrink:0 }}>{f.included ? 'Check' : '—'}</span> {f.label}
                 </p>
               ))}
               <div style={{ flexGrow: 1 }}/>
@@ -1929,7 +1936,7 @@ export default function LandingPage() {
               </div>
               <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>One-time · per location</p>
               {['Full financial model','Break-even analysis','Revenue projections','SWOT & AI insights','PDF export'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/onboarding" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:L.emerald, borderRadius:11, fontSize:12, fontWeight:700, color:'#fff', textDecoration:'none' }}>Get your report — $29</a>
             </div>
@@ -1943,7 +1950,7 @@ export default function LandingPage() {
               <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>$19.67 per report · save 32%</p>
               <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>Compare 3 locations</p>
               {['Everything in Single Report','Compare up to 3 locations side-by-side','Use credits on any address','Credits never expire'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
+                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E', textDecoration:'none' }}>Get 3-Pack — $59</a>
             </div>
@@ -1956,7 +1963,7 @@ export default function LandingPage() {
               <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>$14.90 per report · save 49%</p>
               <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>For agencies & multi-site</p>
               {['Everything in Single Report','10 report credits','Bulk location research','Priority support'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Get 10-Pack — $149</a>
             </div>

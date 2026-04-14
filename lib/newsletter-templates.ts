@@ -439,7 +439,7 @@ export const WEEK_4: NewsletterTemplate = {
     <hr class="divider">
 
   <!-- Emerging Hotspot -->
-    <p class="label">🔥 Emerging Hotspot</p>
+    <p class="label">Top Emerging Hotspot</p>
   <h3 style="font-size:16px;font-weight:700;color:#111827;margin:0 0 12px;">Mount Lawley (Perth) — watch this one</h3>
   <p style="font-size:14px;color:#374151;line-height:1.7;margin:0 0 8px;">Mount Lawley is showing the early signals we look for in an emerging precinct:</p>
   <ul style="font-size:14px;color:#374151;line-height:1.9;margin:0 0 24px;padding-left:20px;">

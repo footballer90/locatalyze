@@ -136,9 +136,9 @@ function subTypeBadgeHTML(sub_type: string) {
 
 function strengthBadgeHTML(strength: string) {
   const cfg: Record<string, { bg: string; color: string; label: string }> = {
-    strong: { bg: '#FEF2F2', color: '#DC2626', label: '⚠ Strong' },
+    strong: { bg: '#FEF2F2', color: '#DC2626', label: 'Warning Strong' },
     medium: { bg: '#FFFBEB', color: '#B45309', label: '◆ Medium' },
-    weak:   { bg: '#F0FDFA', color: '#0F766E', label: '✓ Weak' },
+    weak:   { bg: '#F0FDFA', color: '#0F766E', label: 'Check Weak' },
   }
   const c = cfg[strength] || cfg.weak
   return `<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;background:${c.bg};color:${c.color}">${c.label}</span>`
@@ -202,7 +202,7 @@ function anchorPopupHTML(name: string, footTraffic: string, distance: number) {
   return `
     <div style="font-family:'DM Sans','Helvetica Neue',sans-serif;min-width:150px;max-width:210px">
       <div style="font-size:12px;font-weight:700;color:#0F172A;margin-bottom:4px">${name}</div>
-      <div style="font-size:10px;color:#F59E0B;font-weight:700;margin-bottom:5px">⚓ Anchor Tenant</div>
+      <div style="font-size:10px;color:#F59E0B;font-weight:700;margin-bottom:5px">Anchor Anchor Tenant</div>
       <div style="font-size:10px;color:#475569;line-height:1.5">${footTraffic}</div>
       <div style="font-size:10px;color:#94A3B8;margin-top:4px">${Math.round(distance)}m away</div>
     </div>`

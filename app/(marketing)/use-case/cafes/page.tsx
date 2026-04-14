@@ -164,7 +164,7 @@ export default function Page() {
                 { label: 'Strengths', icon: '', color: S.emerald, bg: S.emeraldBg, bdr: S.emeraldBdr, items: ['Corner position with dual street visibility', 'Existing café infrastructure saves fit-out costs', 'High morning commuter density', 'Near established anchor businesses (gyms, offices)'] },
         { label: 'Weaknesses', icon: '', color: S.amber, bg: S.amberBg, bdr: S.amberBdr, items: ['High rent in premium locations squeezes margin', 'Dependency on single peak window (7–9am)', 'Seasonal variation in outdoor areas', 'Limited parking in dense urban locations'] },
         { label: 'Opportunities', icon: '', color: '#1D4ED8', bg: '#EFF6FF', bdr: '#BFDBFE', items: ['Underserved apartment precincts with new residents', 'Suburbs where competitors score below 3.8 stars', 'Office precincts lacking quality independent options', 'Growth corridors with new residential development'] },
-        { label: 'Threats', icon: '🚨', color: S.red, bg: S.redBg, bdr: S.redBdr, items: ['National chain opening nearby with larger marketing budget', 'Office vacancies reduce worker foot traffic', 'Rent escalation above CPI at lease review', 'New apartment development blocking street visibility'] },
+        { label: 'Threats', icon: 'Alert', color: S.red, bg: S.redBg, bdr: S.redBdr, items: ['National chain opening nearby with larger marketing budget', 'Office vacancies reduce worker foot traffic', 'Rent escalation above CPI at lease review', 'New apartment development blocking street visibility'] },
        ].map(q => (
                 <div key={q.label} style={{ background: q.bg, border: `1px solid ${q.bdr}`, borderRadius: 14, padding: '20px' }}>
          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -194,7 +194,7 @@ export default function Page() {
        <h3 style={{ fontSize: 16, fontWeight: 700, color: S.red, marginBottom: 16 }}> Red flags — walk away</h3>
               {['Rent above 15% of conservatively projected revenue', 'Under 30 pedestrians per hour at 7am on a weekday', 'More than 5 established cafes within 200m', 'No morning commuter flow past the site', 'Purely residential suburb with low daytime population', 'Basement or first-floor location with no street presence', 'Multiple vacant shops on the same street', 'Landlord refusing a rent-free fit-out period'].map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>✕</span>
+         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>X</span>
                   <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6 }}>{item}</p>
         </div>
               ))}

@@ -394,7 +394,7 @@ export default function SampleReportClient() {
                       <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
                         <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Median Income</p>
                         <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, fontFamily: S.mono }}>$96,000<span style={{ fontSize: 10, fontWeight: 500, color: S.n400, fontFamily: S.font }}>/yr</span></p>
-                        <p style={{ fontSize: 9, color: S.n400, marginTop: 2 }}>ABS 2021 Census data (latest full census release)</p>
+                        <p style={{ fontSize: 9, color: S.n400, marginTop: 2 }}>ABS 2021 Census</p>
                       </div>
                       <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
                         <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Affordability</p>
@@ -440,7 +440,7 @@ export default function SampleReportClient() {
                 <SectionLabel>Monthly P&L</SectionLabel>
                 <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
                   <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>
-                    ⚠ These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. Revenue carries ±20% uncertainty (the input); net profit carries ±25% (the output after fixed costs). Higher revenue uncertainty does not imply lower profit uncertainty — operating leverage compounds both.
+                    Warning These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. Revenue carries ±20% uncertainty (the input); net profit carries ±25% (the output after fixed costs). Higher revenue uncertainty does not imply lower profit uncertainty — operating leverage compounds both.
                   </p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
@@ -530,7 +530,7 @@ export default function SampleReportClient() {
                   </div>
                 </div>
                 <p style={{ fontSize: 10, color: S.n400, marginTop: 8, fontStyle: 'italic', lineHeight: 1.5 }}>
-                  Year 1 annualises the base case (~$68k/mo × 12). Years 2–3 assume ~10% annual revenue growth based on industry benchmark medians for established inner-suburban Australian cafes. Actual growth will vary.
+                  Year 1 annualises the base case (~$68k/mo × 12). Years 2–3 assume ~10% annual revenue growth — the median compound growth rate for established inner-suburban Australian café operators (IBISWorld Cafés in Australia, 2025). Actual growth will vary.
                 </p>
                 <div style={{ marginTop: 12, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' as const }}>
                   <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.5 }}>Year 2 &amp; 3 growth model — including compounding revenue, reinvestment scenarios and break-even trajectory — unlocks when you run a full report on your actual address.</p>
@@ -624,7 +624,7 @@ export default function SampleReportClient() {
                         <span style={{ fontSize: 10, fontWeight: 800, color: c.threatColor, background: c.threatBg, borderRadius: 100, padding: '2px 8px' }}>Threat: {c.threat}</span>
                       </div>
                       <div style={{ display: 'flex', gap: 12, marginBottom: 4 }}>
-                        <span style={{ fontSize: 11, color: S.amber, fontWeight: 700 }}>★ {c.rating}</span>
+                        <span style={{ fontSize: 11, color: S.amber, fontWeight: 700 }}> {c.rating}</span>
                         <span style={{ fontSize: 11, color: S.n400 }}>{c.reviews} reviews</span>
                         <span style={{ fontSize: 11, color: S.n400 }}>{c.distance} away</span>
                       </div>

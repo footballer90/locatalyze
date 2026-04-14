@@ -356,7 +356,7 @@ function ChecklistUnlock() {
       marginBottom: '48px',
     }}>
       <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Restaurant Checklist
+        Checklist Unlock the Full Restaurant Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Bendigo restaurant startup checklist + events calendar overlay model (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -677,7 +677,7 @@ export default function BendigoRestaurantPage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function BendigoRestaurantPage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -934,7 +934,7 @@ export default function BendigoRestaurantPage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Bendigo is an excellent restaurant market combining tourism, university, and events revenue streams.</strong> Bendigo CBD (81/100) delivers $198k annual profit within 40 months, supported by Rosalind Park cultural tourism (15% traffic lift), La Trobe University partnerships (events catering: +15–20% revenue), and growing hospitality ecosystem (+22% business growth 2022–2026). For risk-adjusted returns, Golden Square (75/100) achieves 34-month payback with family demographics and anchor-tenant stability. Kangaroo Flat (70/100) positioned for long-term growth (+8% annual projection via residential expansion + emerging dining reputation clustering). Restaurant model (full-service, higher ATV $52–$62, 30–36% gross margins) fundamentally stronger than café economics.

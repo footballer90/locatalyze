@@ -630,7 +630,7 @@ export default function DashboardPage() {
                     <div style={{ display: 'flex', gap: 6 }}>
                       {[
                         { key: 'all',   label: `All (${reports.length})` },
-                        { key: 'saved', label: `📍 Saved (${savedCount})` },
+                        { key: 'saved', label: `Location Saved (${savedCount})` },
                       ].map(tab => (
                         <button key={tab.key} onClick={() => setViewFilter(tab.key as any)}
                           style={{
@@ -651,7 +651,7 @@ export default function DashboardPage() {
                   {/* Empty saved state */}
                   {viewFilter === 'saved' && savedCount === 0 && (
                     <div style={{ background: S.white, borderRadius: 16, border: `1px solid ${S.n200}`, padding: '40px 28px', textAlign: 'center' }}>
-                      <div style={{ fontSize: 32, marginBottom: 10 }}>📍</div>
+                      <div style={{ fontSize: 32, marginBottom: 10 }}>Location</div>
                       <p style={{ fontSize: 14, fontWeight: 700, color: S.n700, marginBottom: 6 }}>No saved locations yet</p>
                       <p style={{ fontSize: 12, color: S.n400 }}>Open any report and click "Save location" to track it here.</p>
                     </div>
@@ -752,7 +752,7 @@ export default function DashboardPage() {
                                 )}
                                 {!isRenaming && r.is_saved && (
                                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: statusCfg.bg, color: statusCfg.color, border: `1px solid ${statusCfg.color}30`, borderRadius: 100, padding: '2px 9px', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
-                                    📍 {statusCfg.label}
+                                    Location {statusCfg.label}
                                   </span>
                                 )}
                               </div>
