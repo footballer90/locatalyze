@@ -107,7 +107,7 @@ export default function ChadstonePage() {
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Chadstone</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
             Opening a Business in Chadstone VIC 3148: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
@@ -225,7 +225,7 @@ export default function ChadstonePage() {
           <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The condition for success in Chadstone: choose a category that Westfield doesn't serve well, negotiate a strip rent that reflects actual foot traffic (not hypothetical centre spillover), and build a concept that gives residents of the adjacent new development a reason to walk to you specifically. Operators who meet these conditions can sustain a profitable business in Chadstone. Those who assume proximity to Australia's largest shopping centre is an advantage will discover it's actually a competitor.</p>
         </section>
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Chadstone address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Analyse your Chadstone address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
         </div>

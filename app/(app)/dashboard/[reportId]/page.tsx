@@ -3461,7 +3461,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F87171" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </div>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: S.white, marginBottom: 8 }}>Analysis failed</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>Analysis failed</h2>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 24, lineHeight: 1.6 }}>{report?.progress_step || 'The analysis engine could not be reached. Please try again.'}</p>
               <button onClick={() => window.history.back()} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>Try again</button>
             </>
@@ -3507,7 +3507,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </div>
 
               {/* ── Title + active step ──────────────────────── */}
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 6 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 6 }}>
                 Building your report
               </h2>
               <p style={{ fontSize: 13, color: S.brandLight, marginBottom: 6, fontWeight: 600, minHeight: 20 }}>
@@ -3895,7 +3895,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, marginBottom: 10, letterSpacing: '-0.03em' }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginBottom: 10, letterSpacing: '-0.03em' }}>
             Analysis failed
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginBottom: 8, lineHeight: 1.65 }}>

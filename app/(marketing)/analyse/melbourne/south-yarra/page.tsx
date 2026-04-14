@@ -107,7 +107,7 @@ export default function SouthYarraPage() {
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>South Yarra</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
             Opening a Business in South Yarra VIC 3141: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
@@ -225,7 +225,7 @@ export default function SouthYarraPage() {
           <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The key conditions: sign north of Toorak Road, negotiate hard on effective rent (not face rent), and build a concept for the $115K household income demographic — not a concept hoping to find customers. South Yarra's premium demographic rewards operators who meet their standard from day one. It does not give time to find your feet.</p>
         </section>
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your South Yarra address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Analyse your South Yarra address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
         </div>

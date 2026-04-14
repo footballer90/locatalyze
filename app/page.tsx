@@ -834,7 +834,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
 
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 20 }}>
             <div>
-              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#fff', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
+              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: d.verdictBg, border: `2px solid ${d.verdictBorder}`, borderRadius: 14, padding: '8px 18px' }}>
                 <div>
                   <p style={{ fontSize: 16, fontWeight: 900, color: d.verdictColor, lineHeight: 1 }}>{d.verdict}</p>

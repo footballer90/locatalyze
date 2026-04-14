@@ -107,7 +107,7 @@ export default function DocklandsPage() {
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Docklands</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
             Opening a Business in Docklands VIC 3008: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
@@ -225,7 +225,7 @@ export default function DocklandsPage() {
           <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The only defensible reason to sign a Docklands lease in 2026 is if you can negotiate an exceptional effective rent (12+ months rent-free, substantial fit-out contribution) that reduces your occupancy cost to a level that the weekday-only revenue model can sustain. Without that negotiation, the risk-adjusted economics of Docklands compare unfavourably to Footscray, Northcote, or Preston — all of which offer better foot traffic quality, lower rents, and more sustainable customer bases.</p>
         </section>
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your Docklands address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Analyse your Docklands address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
         </div>

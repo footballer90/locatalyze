@@ -482,7 +482,7 @@ export default function SydneyPage() {
         }}
       >
         <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0F172A', marginBottom: '12px', lineHeight: '1.3' }}>
             Have a specific Sydney address in mind?
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', marginBottom: '24px', lineHeight: '1.65' }}>
@@ -745,7 +745,7 @@ export default function SydneyPage() {
           <div style={{ fontSize: '12px', fontWeight: 700, color: C.brandLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
             Location Intelligence
           </div>
-          <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>
+          <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#0F172A', marginBottom: '12px', lineHeight: '1.3' }}>
             Don't guess. Choosing the wrong Sydney location costs 6–12 months of revenue.
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', marginBottom: '28px', lineHeight: '1.65' }}>

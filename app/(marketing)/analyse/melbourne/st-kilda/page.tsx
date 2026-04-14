@@ -107,7 +107,7 @@ export default function StKildaPage() {
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>St Kilda</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: S.white, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
             Opening a Business in St Kilda VIC 3182: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
@@ -225,7 +225,7 @@ export default function StKildaPage() {
           <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The specific advice: a quality café on Carlisle Street at $6,500–$9,000/month, serving the resident demographic (not the tourist trade), building loyal repeat customers who come 2–3 times per week. This model generates less revenue than a summer-peak Fitzroy Street venue but generates it more consistently, with lower seasonal variance and a lower probability of the cash flow crisis that catches out tourist-dependent St Kilda operators between May and September.</p>
         </section>
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: S.white, marginBottom: 12 }}>Analyse your St Kilda address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Analyse your St Kilda address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
         </div>

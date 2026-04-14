@@ -491,7 +491,7 @@ export default function MelbournePage() {
         }}
       >
         <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0F172A', marginBottom: '12px', lineHeight: '1.3' }}>
             Have a specific Melbourne address in mind?
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', marginBottom: '24px', lineHeight: '1.65' }}>

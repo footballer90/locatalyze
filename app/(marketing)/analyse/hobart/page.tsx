@@ -46,7 +46,7 @@ export default function HobartAnalysePage() {
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.2)', border: '1px solid rgba(20,184,166,0.3)', borderRadius: 20, padding: '4px 14px', fontSize: 11, fontWeight: 700, color: S.brandLight, marginBottom: 20, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
           Hobart Location Intelligence
         </div>
-        <h1 style={{ fontSize: 40, fontWeight: 900, color: S.white, maxWidth: 700, margin: '0 auto 16px' }}>
+        <h1 style={{ fontSize: 40, fontWeight: 900, color: '#0F172A', maxWidth: 700, margin: '0 auto 16px' }}>
           Best Suburbs to Open a Business in Hobart
         </h1>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', maxWidth: 560, margin: '0 auto 32px', lineHeight: 1.7 }}>
@@ -181,7 +181,7 @@ export default function HobartAnalysePage() {
 
         {/* MID CTA */}
         <div style={{ background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, borderRadius: 16, padding: '32px', marginBottom: 56, textAlign: 'center' }}>
-          <h3 style={{ fontSize: 22, fontWeight: 800, color: S.white, marginBottom: 8 }}>Not sure which suburb is right for you?</h3>
+          <h3 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>Not sure which suburb is right for you?</h3>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>Enter your exact address and get a full GO / CAUTION / NO verdict in about 90 seconds.</p>
           <Link href="/auth/signup" style={{ display: 'inline-block', background: S.white, color: S.brand, borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
             Run a free location analysis →
@@ -375,7 +375,7 @@ export default function HobartAnalysePage() {
 
         {/* FINAL CTA */}
         <section style={{ background: S.n900, borderRadius: 20, padding: '48px 32px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 900, color: S.white, marginBottom: 12 }}>Ready to analyse your exact Hobart location?</h2>
+          <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Ready to analyse your exact Hobart location?</h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginBottom: 28, maxWidth: 480, margin: '0 auto 28px' }}>
             Stop guessing. Get a full GO / CAUTION / NO verdict with competitor data, demographics, and a 3-year financial model — in about 90 seconds.
           </p>

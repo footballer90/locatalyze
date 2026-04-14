@@ -319,7 +319,7 @@ export default function PremiumReport({ verdict, isMobile }: { verdict: 'go' | '
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 20 }}>
       <div>
-              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#fff', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
+              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: d.verdictBg, border: `2px solid ${d.verdictBorder}`, borderRadius: 14, padding: '8px 18px' }}>
         <span style={{ display: 'inline-flex' }}>{verdict === 'go' ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={d.verdictColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg> : verdict === 'caution' ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={d.verdictColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={d.verdictColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}</span>
         <div>

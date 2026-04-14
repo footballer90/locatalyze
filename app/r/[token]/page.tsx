@@ -211,7 +211,7 @@ const supabase = await createClient()
 
         {/* CTA */}
         <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 24, padding: '36px 32px', textAlign: 'center', marginTop: 24, boxShadow: '0 12px 40px rgba(15,118,110,0.2)' }}>
-     <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 10 }}>
+     <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 10 }}>
       Want to analyse your own location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 24, lineHeight: 1.6 }}>

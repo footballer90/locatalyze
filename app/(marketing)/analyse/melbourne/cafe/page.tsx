@@ -338,7 +338,7 @@ export default function MelbourneCafePage() {
               Melbourne · Café · 2026 Analysis
             </div>
 
-            <h1 style={{ fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 16 }}>
+            <h1 style={{ fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 16 }}>
               Best Suburbs to Open a Café<br/>in Melbourne (2026)
             </h1>
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.65)', maxWidth: 560, lineHeight: 1.75, marginBottom: 28 }}>
@@ -449,7 +449,7 @@ export default function MelbourneCafePage() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 16 }}>
                   <div>
                     <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>#{sub.rank} — {sub.postcode}</p>
-                    <h3 style={{ fontSize: 28, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 8 }}>{sub.name}</h3>
+                    <h3 style={{ fontSize: 28, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 8 }}>{sub.name}</h3>
                     <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic', lineHeight: 1.55, maxWidth: 420 }}>{sub.angle}</p>
                   </div>
                   <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
@@ -536,7 +536,7 @@ export default function MelbourneCafePage() {
 
           {/* Final CTA */}
           <div style={{ background: 'linear-gradient(135deg, #0F766E, #0891B2)', borderRadius: 20, padding: '40px 36px', textAlign: 'center' as const }}>
-            <h2 style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 12 }}>
+            <h2 style={{ fontSize: 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 12 }}>
               Got a specific Melbourne address in mind?
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 8, lineHeight: 1.7 }}>

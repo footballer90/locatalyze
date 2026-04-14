@@ -212,7 +212,7 @@ export default function SampleReportClient() {
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitor data · Google Maps · illustrative sample only</span>
               </div>
-              <h1 style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
                 Specialty Café
               </h1>
               {/* Verdict badge */}

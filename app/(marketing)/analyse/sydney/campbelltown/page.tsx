@@ -160,7 +160,7 @@ export default function CampbelltownPage() {
           <div style={{ fontSize: 14, color: S.white, marginBottom: 16, opacity: 0.9 }}>
             <Link href="/analyse/sydney" style={{ color: S.white, textDecoration: 'none' }}>Sydney</Link> / Campbelltown
           </div>
-          <h1 style={{ fontSize: 48, fontWeight: 900, color: S.white, marginBottom: 24 }}>Campbelltown</h1>
+          <h1 style={{ fontSize: 48, fontWeight: 900, color: '#0F172A', marginBottom: 24 }}>Campbelltown</h1>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
             <VerdictBadge v="GO" />
             <div style={{ fontSize: 32, fontWeight: 900, color: S.white }}>73</div>

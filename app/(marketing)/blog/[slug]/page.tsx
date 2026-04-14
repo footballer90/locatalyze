@@ -437,7 +437,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
               <h1 style={{
               fontSize: BLOG_THEME.type.h1, fontWeight: 800,
-              color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.2,
+              color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.2,
             }}>
               {post.title}
             </h1>
@@ -518,7 +518,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               borderRadius: 14, padding: '32px',
               textAlign: 'center', marginTop: 52, marginBottom: 16,
             }}>
-              <h3 style={{ fontSize: 19, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
+              <h3 style={{ fontSize: 19, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>
                 Check if your location is worth it
               </h3>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 6, lineHeight: 1.6 }}>

@@ -159,7 +159,7 @@ function ComparisonView({ reports, onClose }: { reports: Report[]; onClose: () =
     <div style={{ background: S.white, borderRadius: 20, border: `1px solid ${S.n200}`, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', overflow: 'hidden', marginBottom: 24 }}>
       <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, padding: '20px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: 18, fontWeight: 900, color: S.white, letterSpacing: '-0.02em' }}>Location Comparison</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em' }}>Location Comparison</h2>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{reports.length} locations side by side</p>
         </div>
         <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: S.white, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 700 }}> Close</button>

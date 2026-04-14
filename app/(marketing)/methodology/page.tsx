@@ -228,7 +228,7 @@ export default function MethodologyPage() {
 
         {/* ── CTA ── */}
         <section style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 20, padding: '36px', textAlign: 'center' }}>
-     <h2 style={{ fontSize: 26, fontWeight: 900, color: S.white, letterSpacing: '-0.03em', marginBottom: 10 }}>
+     <h2 style={{ fontSize: 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 10 }}>
       Ready to analyse your location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>
