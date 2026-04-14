@@ -126,9 +126,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Dapto', postcode: '2526', score: 40, verdict: : "NO' as const, reason: 'Car-dependent, big-box retail dominated (shopping centre gravity), and median household income of $52,000 makes restaurant dining a discretionary purchase rather than habitual. Fast-food chains dominate because the customer base defaults to supermarket and chain options under any financial pressure. Fine dining viability threshold is $65,000+ income; Dapto falls materially below this." },
-  { name: 'Warrawong', postcode: '2502', score: 34, verdict: : "NO' as const, reason: 'Westfield Shopping Centre proximity creates structural headwind: retail foot traffic is purpose-driven (shopping), not leisure-oriented. Independent restaurants within 500m of major shopping centres struggle because customers optimize for convenience (food court options) over destination dining. Median income of $58,000 offers insufficient margin for premium positioning." },
-  { name: 'Unanderra', postcode: '2526', score: 30, verdict: : "NO' as const, reason: 'Industrial area with zero destination appeal. Median household income of $48,000 is below viability thresholds. No ambient dining culture, no weekend leisure traffic, no tourist flow. This is a commute-through suburb, not a destination. Operating a restaurant here requires pricing so low that the business model never reaches sustainability." },
+  { name: 'Dapto', postcode: '2526', score: 40, verdict: 'NO' as const, reason: 'Car-dependent, big-box retail dominated (shopping centre gravity), and median household income of $52,000 makes restaurant dining a discretionary purchase rather than habitual. Fast-food chains dominate because the customer base defaults to supermarket and chain options under any financial pressure. Fine dining viability threshold is $65,000+ income; Dapto falls materially below this.' },
+  { name: 'Warrawong', postcode: '2502', score: 34, verdict: 'NO' as const, reason: 'Westfield Shopping Centre proximity creates structural headwind: retail foot traffic is purpose-driven (shopping), not leisure-oriented. Independent restaurants within 500m of major shopping centres struggle because customers optimize for convenience (food court options) over destination dining. Median income of $58,000 offers insufficient margin for premium positioning.' },
+  { name: 'Unanderra', postcode: '2526', score: 30, verdict: 'NO' as const, reason: 'Industrial area with zero destination appeal. Median household income of $48,000 is below viability thresholds. No ambient dining culture, no weekend leisure traffic, no tourist flow. This is a commute-through suburb, not a destination. Operating a restaurant here requires pricing so low that the business model never reaches sustainability.' },
 ]
 
 const S = {
@@ -140,7 +140,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
     : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -149,7 +149,7 @@ function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
     : v === 'CAUTION'
     ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {
@@ -506,7 +506,7 @@ export default function WollongongRestaurantPage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 14 }}>
             Watch: How to Choose a Restaurant Location in Wollongong
           </h2>
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C2F38', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: : "column' as const, gap: 12, cursor: 'pointer" }}
+          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C2F38', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' as const, gap: 12, cursor: 'pointer' }}
             onClick={() => window.open('https://www.youtube.com/@locatalyze', '_blank')}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(8,145,178,0.15)', border: '2px solid rgba(8,145,178,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #0891B2', marginLeft: 4 }}/>

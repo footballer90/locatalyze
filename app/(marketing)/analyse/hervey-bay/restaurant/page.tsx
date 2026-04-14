@@ -120,8 +120,8 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Scarness', postcode: '4655', score: 62, verdict: : "CAUTION' as const, reason: 'Scarness is a declining strip with increasing chain competition (Fish &apos;n&apos; Chips franchises, generic pubs). Foot traffic is soft (56 vs Torquay 88). Positioning is unclear — not premium enough for Torquay branding, not local-focused enough for residential. Only viable with very specific differentiation (raw bar, fine dining niche, specific cuisine)." },
-  { name: 'Maryborough', postcode: '4650', score: 39, verdict: : "NO' as const, reason: 'Maryborough is a nearby city (50km away) without coastal positioning or premium market. Median income ($52k) and foot traffic (32) are below viability. This is an inland regional centre, not a coastal tourism destination. Restaurant economics fail unless positioned as ultra-casual (RSA club equivalent)." },
+  { name: 'Scarness', postcode: '4655', score: 62, verdict: 'CAUTION' as const, reason: 'Scarness is a declining strip with increasing chain competition (Fish &apos;n&apos; Chips franchises, generic pubs). Foot traffic is soft (56 vs Torquay 88). Positioning is unclear — not premium enough for Torquay branding, not local-focused enough for residential. Only viable with very specific differentiation (raw bar, fine dining niche, specific cuisine).' },
+  { name: 'Maryborough', postcode: '4650', score: 39, verdict: 'NO' as const, reason: 'Maryborough is a nearby city (50km away) without coastal positioning or premium market. Median income ($52k) and foot traffic (32) are below viability. This is an inland regional centre, not a coastal tourism destination. Restaurant economics fail unless positioned as ultra-casual (RSA club equivalent).' },
 ]
 
 const S = {
@@ -133,7 +133,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
     : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -142,7 +142,7 @@ function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
     : v === 'CAUTION'
     ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {

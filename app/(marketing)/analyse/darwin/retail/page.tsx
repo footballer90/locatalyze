@@ -139,9 +139,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Berrimah', postcode: '0828', score: 38, verdict: : "NO' as const, reason: 'Industrial and warehouse zone with no retail foot traffic infrastructure. Businesses here serve wholesale and B2B only. Residential population density is insufficient to support retail. Zero walk-in traffic; all revenue must come from destination shopping by vehicle." },
-  { name: 'Humpty Doo', postcode: '0836', score: 33, verdict: : "NO' as const, reason: 'Rural fringe population is severely dispersed across large geographic area. The \"drive-through retail culture\" means customers do not walk or browse — they drive purposefully to destination retailers. No retail foot traffic generation. Population too sparse to support independent retail economics." },
-  { name: 'Winnellie', postcode: '0821', score: 30, verdict: : "NO' as const, reason: 'Light industrial zone with transient business visitors only. No residential density; no repeat customer base. Foot traffic is incidental to industrial activity, not retail-driving. Viable only for wholesale, office supply, or B2B operations targeting industrial tenants." },
+  { name: 'Berrimah', postcode: '0828', score: 38, verdict: 'NO' as const, reason: 'Industrial and warehouse zone with no retail foot traffic infrastructure. Businesses here serve wholesale and B2B only. Residential population density is insufficient to support retail. Zero walk-in traffic; all revenue must come from destination shopping by vehicle.' },
+  { name: 'Humpty Doo', postcode: '0836', score: 33, verdict: 'NO' as const, reason: 'Rural fringe population is severely dispersed across large geographic area. The \"drive-through retail culture\" means customers do not walk or browse — they drive purposefully to destination retailers. No retail foot traffic generation. Population too sparse to support independent retail economics.' },
+  { name: 'Winnellie', postcode: '0821', score: 30, verdict: 'NO' as const, reason: 'Light industrial zone with transient business visitors only. No residential density; no repeat customer base. Foot traffic is incidental to industrial activity, not retail-driving. Viable only for wholesale, office supply, or B2B operations targeting industrial tenants.' },
 ]
 
 const S = {
@@ -153,7 +153,7 @@ const S = {
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
       : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -162,7 +162,7 @@ function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
     : v === 'CAUTION'
       ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
       : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {

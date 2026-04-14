@@ -78,11 +78,7 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: 'Opening a Business in Collingwood VIC 3066: 2026 Location Analysis',
-<<<<<<< HEAD
-    description: "Smith Street's seamless continuation south. Same demographic as Fitzroy, rents 15-20% lower. The creative industry concentration generates weekday lunch trade that residential counts alone don't predi",
-=======
     description: "Smith Street's seamless continuation south. Same demographic as Fitzroy, rents 15–20% lower. The creative industry concentration generates weekday lunch trade that residential counts alone don't predict.",
->>>>>>> bb2cf9a6c315984248b71733802f37df8f6ace6c
     datePublished: '2026-04-01',
     author: { '@type': 'Organization', name: 'Locatalyze' },
   },

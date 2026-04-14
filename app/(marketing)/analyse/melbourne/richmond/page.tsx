@@ -87,11 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Swan Street Richmond good for a café or restaurant in 2026?',
-<<<<<<< HEAD
-      acceptedAnswer: { '@type': 'Answer', text: "Yes — Swan Street Richmond is Melbourne's best risk-adjusted hospitality position. The demographic is virtually identical to Fitzroy (average $88K household income, professional, 25–45 age bracket) at rents that are 15–20% lower. The customer-to-venue ratio is more favourable than Smith Street Fitzr" },
-=======
       acceptedAnswer: { '@type': 'Answer', text: "Yes — Swan Street Richmond is Melbourne's best risk-adjusted hospitality position. The demographic is virtually identical to Fitzroy (average $88K household income, professional, 25–45 age bracket) at rents that are 15–20% lower. The customer-to-venue ratio is more favourable than Smith Street Fitzroy." },
->>>>>>> bb2cf9a6c315984248b71733802f37df8f6ace6c
     }],
   },
 ]

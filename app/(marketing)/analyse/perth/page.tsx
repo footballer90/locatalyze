@@ -144,7 +144,7 @@ export default function PerthHubPage() {
           <p style={{ fontSize: 17, color: 'rgba(167,243,208,0.7)', maxWidth: 620, lineHeight: 1.75, marginBottom: 32 }}>
       Perth has Australia's best business unit economics right now. Mining-driven household incomes above the national average, commercial rents 30–45% below Sydney, and an inner suburb food and retail culture that is maturing rapidly. This guide covers all six business categories.
      </p>
-          <div style={{ display: 'flex', gap: 28, flexWrap: : "wrap' as const, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' as const, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
       {PERTH_STATS.map(({ value, label, source }) => (
               <div key={label}>
                 <p style={{ fontSize: 22, fontWeight: 900, color: '#34D399', lineHeight: 1 }}>{value}</p>

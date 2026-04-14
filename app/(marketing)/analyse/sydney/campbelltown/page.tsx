@@ -63,7 +63,7 @@ function SuburbPoll({ suburb }: { suburb: string }) {
           const pct = Math.round((votes[i] / total) * 100)
           return (
             <button key={opt} onClick={() => handleVote(i)} disabled={voted !== null}
-              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: : "left' as const, fontFamily: 'inherit", overflow: 'hidden' }}>
+              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left' as const, fontFamily: 'inherit', overflow: 'hidden' }}>
               {voted !== null && (
                 <div style={{ position: 'absolute', inset: 0, left: 0, width: `${pct}%`, background: 'rgba(8,145,178,0.07)' }}/>
               )}

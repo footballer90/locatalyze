@@ -87,11 +87,7 @@ const SCHEMAS = [
     mainEntity: [{
       '@type': 'Question',
       name: 'Is Southbank Melbourne good for a restaurant in 2026?',
-<<<<<<< HEAD
       acceptedAnswer: { '@type': 'Answer', text: "Southbank works for specific restaurant formats — premium riverside dining with strong corporate and event channels, or daytime tourist concepts near the NGV. It does not work well for independent operators trying to build regular local trade. The residential density is thin relative to the commercial strip, and rents of $10,000–$22,000 per month require event or tourist revenue strategies that most independent operators don't have." },
-=======
-      acceptedAnswer: { '@type': 'Answer', text: : "Southbank works for specific restaurant formats — premium riverside dining with strong corporate and event channels, or daytime tourist concepts near the NGV. It does not work well for independent operators trying to build regular local trade. The residential density is thin relative to the commercial strip, and rents of $10,000–$22,000 per month require event or tourist revenue strategies that most independent operators don't have." },
->>>>>>> bb2cf9a6c315984248b71733802f37df8f6ace6c
     }],
   },
 ]
