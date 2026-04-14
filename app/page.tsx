@@ -72,7 +72,7 @@ const RP_CASES = [
   {
     id: 0,
     biz: 'Specialty Coffee Shop', icon: 'coffee', location: 'Subiaco WA 6008',
-    verdict: 'GO', verdictSub: 'Strong Opportunity',
+    verdict: 'GO', verdictSub: 'Low Risk',
     score: 82, scoreLabel: 'Feasibility Score',
     color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
@@ -124,7 +124,7 @@ function ReportPreview() {
   const [animKey, setAnimKey]   = useState(0)
   const [score, setScore]       = useState(0)          // start at 0 — animate to real value after mount
   const [snapping, setSnapping] = useState(false)
-  const [visible, setVisible]   = useState(false)
+  const [visible, setVisible]   = useState(true)
   const rpRef                   = useRef<HTMLDivElement>(null)
 
   // Animate score ring from 0 → target when visible and on case switch
@@ -285,7 +285,7 @@ function ReportPreview() {
 
         {/* Footer */}
         <div style={{ background:'#F8FAFC', borderTop:`1px solid ${L.border}`, padding:'10px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <span style={{ fontSize:10, color:L.muted }}>Based on live data · Australian addresses only</span>
+          <span style={{ fontSize:10, color:L.muted }}>Illustrative demo data · Australian addresses</span>
           <span style={{ fontSize:10, fontWeight:700, color:c.color }}>View full report →</span>
         </div>
       </div>
@@ -529,17 +529,18 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
     kpis: [
       { label: 'Est. monthly revenue', value: '$78k–$88k',  sub: 'range estimate',   up: true },
-      { label: 'Monthly Profit',       value: '~$27k',      sub: '~33% margin',       up: true },
+      { label: 'Monthly Profit',       value: '~$27k',      sub: '~33% margin (excl. owner salary)',       up: true },
       { label: 'Est. annual revenue',  value: '$936k–$1.1m', sub: 'range estimate',  up: true },
       { label: 'Break-even (est.)',    value: '35–50/day',  sub: 'assumptions-based', up: true },
     ],
     revenue: [58, 67, 74, 80, 86, 91],
     profit:  [10, 14, 17, 21, 23, 25],
     scores: [
-      { label: 'Area Demographics',   score: 85, icon: 'activity' },
-      { label: 'Rent Affordability',  score: 78, icon: 'home' },
-      { label: 'Competition',         score: 72, icon: 'target' },
-      { label: 'Profitability',       score: 90, icon: 'trendingUp' },
+      { label: 'Rent Affordability (20%)', score: 78, icon: 'home' },
+      { label: 'Competition (25%)',        score: 72, icon: 'target' },
+      { label: 'Market Demand (20%)',      score: 85, icon: 'activity' },
+      { label: 'Profitability (25%)',      score: 90, icon: 'trendingUp' },
+      { label: 'Location Quality (10%)',   score: 84, icon: 'mapPin' },
     ],
     heatmap: [8,6,5,7,9,8,7, 4,3,2,4,6,5,4, 6,5,4,6,8,7,6, 5,4,3,5,7,6,5, 7,6,5,7,9,8,7],
     swot: {
@@ -556,17 +557,18 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#B45309 0%,#D97706 100%)',
     kpis: [
       { label: 'Monthly Revenue',  value: '$28,000',  sub: '-14% vs benchmark', up: false },
-      { label: 'Monthly Profit',   value: '$4,200',   sub: '15% margin',        up: false },
+      { label: 'Monthly Profit',   value: '$4,200',   sub: '15% margin (excl. owner salary)',        up: false },
       { label: 'Est. annual revenue',  value: '$280k–$420k', sub: 'range estimate', up: false },
       { label: 'Break-even (est.)',    value: '60–80/day', sub: 'higher risk', up: false },
     ],
     revenue: [42, 55, 68, 74, 70, 74],
     profit:  [4,  8,  12, 11, 9,  11],
     scores: [
-      { label: 'Area Demographics',  score: 68, icon: 'activity' },
-      { label: 'Rent Affordability', score: 55, icon: 'home' },
-      { label: 'Competition',        score: 60, icon: 'target' },
-      { label: 'Profitability',      score: 62, icon: 'trendingUp' },
+      { label: 'Rent Affordability (20%)', score: 55, icon: 'home' },
+      { label: 'Competition (25%)',        score: 60, icon: 'target' },
+      { label: 'Market Demand (20%)',      score: 68, icon: 'activity' },
+      { label: 'Profitability (25%)',      score: 62, icon: 'trendingUp' },
+      { label: 'Location Quality (10%)',   score: 58, icon: 'mapPin' },
     ],
     heatmap: [7,8,9,8,6,4,3, 3,4,5,5,4,3,2, 5,6,7,7,5,4,3, 4,5,6,6,4,3,2, 6,7,8,8,6,4,3],
     swot: {
@@ -583,26 +585,27 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#991B1B 0%,#DC2626 100%)',
     kpis: [
       { label: 'Monthly Revenue',  value: '$17,000',  sub: '-52% vs benchmark',  up: false },
-      { label: 'Monthly Profit',   value: '$1,020',   sub: '6% margin',          up: false },
+      { label: 'Monthly Profit',   value: '$1,020',   sub: '6% margin (excl. owner salary)',          up: false },
       { label: 'Est. annual revenue',  value: '$168k–$228k', sub: 'range estimate', up: false },
       { label: 'Break-even (est.)',    value: '80–100/day', sub: 'very high risk', up: false },
     ],
     revenue: [38, 42, 46, 50, 51, 51],
     profit:  [1,  1,  2,  3,  3,  3],
     scores: [
-      { label: 'Area Demographics',  score: 48, icon: 'activity' },
-      { label: 'Rent Affordability', score: 38, icon: 'home' },
-      { label: 'Competition',        score: 42, icon: 'target' },
-      { label: 'Profitability',      score: 46, icon: 'trendingUp' },
+      { label: 'Rent Affordability (20%)', score: 38, icon: 'home' },
+      { label: 'Competition (25%)',        score: 42, icon: 'target' },
+      { label: 'Market Demand (20%)',      score: 48, icon: 'activity' },
+      { label: 'Profitability (25%)',      score: 46, icon: 'trendingUp' },
+      { label: 'Location Quality (10%)',   score: 40, icon: 'mapPin' },
     ],
     heatmap: [3,2,1,2,3,2,1, 2,1,1,1,2,2,1, 4,3,2,3,4,3,2, 3,2,1,2,3,2,1, 2,1,1,2,2,2,1],
     swot: {
       strengths:     ['Large 15km residential catchment', 'No specialist CrossFit within 2km'],
-      weaknesses:    ['4 established gyms already within 1km', 'Rent at $6,800/mo consumes 34% revenue'],
+      weaknesses:    ['4 established gyms already within 500m', 'Rent at $6,800/mo consumes 34% revenue'],
       opportunities: ['Underserved women-only fitness niche', 'Corporate wellness contracts potential'],
       threats:       ['Planet Fitness opening 800m away Q3', 'Membership churn risk in saturated market'],
     },
-    rec: 'Data does not support this location. Rent consumes 34% of projected revenue — well above the viable threshold — and the area already has four established gyms within 1km. A differentiated concept may help, but the numbers are structurally difficult.',
+    rec: 'Data does not support this location. Rent consumes 34% of projected revenue — well above the viable threshold — and the area already has four established gyms within 500m. A differentiated concept may help, but the numbers are structurally difficult.',
   },
 }
 
@@ -827,6 +830,9 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.6)', fontWeight: 500 }}>
               {d.suburb}
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.6)', fontWeight: 600 }}>
+              Scoring v2.1
+            </div>
             <div style={{ marginLeft: 'auto' as const, background: 'rgba(255,255,255,.1)', borderRadius: 8, padding: '3px 10px', fontSize: 10, color: 'rgba(255,255,255,.5)', fontWeight: 500 }}>
               {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
@@ -965,7 +971,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
                 <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 12 }}>Competitor Proximity</p>
                 {[
                   { name: 'Direct competitors (500m)', val: verdict === 'go' ? '3' : verdict === 'caution' ? '8' : '4', risk: verdict === 'go' ? 'low' : verdict === 'caution' ? 'high' : 'med' },
-                  { name: 'Indirect competitors (1km)', val: verdict === 'go' ? '7' : verdict === 'caution' ? '14' : '12', risk: verdict === 'go' ? 'low' : 'high' },
+                  { name: 'Indirect competitors (500m)', val: verdict === 'go' ? '7' : verdict === 'caution' ? '14' : '12', risk: verdict === 'go' ? 'low' : 'high' },
                   { name: 'Competition intensity', val: verdict === 'go' ? 'Moderate' : verdict === 'caution' ? 'High' : 'Very High', risk: verdict === 'go' ? 'low' : 'high' },
                   { name: 'Market gap score', val: verdict === 'go' ? '72 / 100' : verdict === 'caution' ? '44 / 100' : '28 / 100', risk: verdict === 'go' ? 'low' : 'high' },
                 ].map(row => (
@@ -1660,7 +1666,7 @@ export default function LandingPage() {
               </span>
             </h2>
             <p style={{ fontSize: isMobile ? 14 : 16, color:'rgba(204,235,229,.55)', maxWidth:540, margin:'0 auto', lineHeight:1.75 }}>
-              Every verdict is computed from real, live sources — cross-referenced and weighted by our AI. No static databases. No educated guesses.
+              Every verdict is computed from real, live sources — cross-referenced by one AI model and a deterministic scoring engine. No static databases. No educated guesses.
             </p>
           </div>
 
@@ -1669,7 +1675,7 @@ export default function LandingPage() {
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:0, marginBottom:64 }}>
               {[
                 { icon: 'globe',    label: 'Live Data' },
-                { icon: 'activity', label: '8 AI Agents' },
+                { icon: 'activity', label: '1 AI model + compute engine' },
                 { icon: 'barChart', label: 'Scoring Engine' },
                 { icon: 'shield',   label: 'Your Verdict' },
               ].map((step, i) => (
@@ -1722,7 +1728,7 @@ export default function LandingPage() {
                 color:'#EF4444', colorBg:'rgba(239,68,68,.08)', colorBorder:'rgba(239,68,68,.2)',
               },
               {
-                icon: 'bot', source:'AI Financial Model', badge:'Proprietary',
+                icon: 'bot', source:'AI Narrative + Compute Engine', badge:'Proprietary',
                 headline:'Break-even, profit and 3-year outlook',
                 body:'Input your rent and transaction value — our model calculates daily volume needed, monthly profit, payback period and a 3-year revenue projection.',
                 proof:'Based on ABS Census + live business data',

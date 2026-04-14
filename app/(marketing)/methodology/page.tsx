@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
  title: 'How It Works — Data Methodology',
- description: 'See exactly how Locatalyze scores locations across four weighted dimensions: rent affordability, competition, profitability, and demographics plus demand signals. All based on real data, not guesses.',
+ description: 'See exactly how Locatalyze scores locations across five weighted dimensions: rent affordability, competition, market demand, profitability, and location quality. All based on real data, not guesses.',
 }
 
 const S = {
@@ -145,15 +145,16 @@ export default function MethodologyPage() {
             <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>Scoring system</p>
       <h2 style={{ fontSize: 28, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 12 }}>How your Location Score is calculated</h2>
       <p style={{ fontSize: 15, color: S.n500, lineHeight: 1.75 }}>
-              The Location Score (0–100) is a weighted composite of four dimensions. Each dimension is scored independently then combined into a final score that determines your GO / CAUTION / NO verdict. Every report also shows a separate Data Completeness % and Model Confidence label so you can see how much of the analysis relied on your own inputs versus fallback benchmarks.
+              The Location Score (0–100) is a weighted composite of five dimensions. Each dimension is scored independently then combined into a final score that determines your GO / CAUTION / NO verdict. Every report also shows a separate Data Completeness % and Model Confidence label so you can see how much of the analysis relied on your own inputs versus fallback benchmarks.
             </p>
           </div>
 
           <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
-      <ScoreRow label="Rent Affordability" weight="30%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 20% = danger zone. This is the single biggest predictor of long-term viability." />
-      <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 1km, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
+      <ScoreRow label="Rent Affordability" weight="20%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 20% = danger zone. This is the single biggest predictor of long-term viability." />
+      <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 500m, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
+      <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Search demand signals, population density, income fit, household growth and demographic alignment for your business category." />
       <ScoreRow label="Profitability" weight="25%" color={S.emerald} desc="Net profit margin after all costs. Calculated from your revenue estimate minus rent, COGS, labour and fixed costs." />
-      <ScoreRow label="Demographics + Demand Signals" weight="20%" color={S.blue} desc="Population density, income, age fit and demand signals are blended into one market-fit score. Demand signals are weighted inside this dimension (they are not a separate headline dimension)." />
+      <ScoreRow label="Location Quality" weight="10%" color={S.n400} desc="Physical location signals: access quality, anchor proximity, and local activity conditions around your specific site." />
      </div>
 
           {/* Verdict thresholds */}
@@ -189,6 +190,7 @@ export default function MethodologyPage() {
        { label: 'Fixed Costs (for break-even)', formula: 'Monthly rent + Estimated staffing costs', note: 'Only fixed costs are used in the break-even calculation — not COGS, which is variable. This is the contribution margin break-even formula, which avoids double-counting variable costs.' },
        { label: 'Break-even Customers / Day', formula: 'Fixed costs ÷ (avg_ticket × (gross_margin% − other_variable_costs%) × 30)', note: 'The minimum daily customers needed to cover rent and staffing only. Compared against your projected daily demand. If projected > break-even, the location is viable at current inputs.' },
               { label: 'Payback Period', formula: 'Setup cost ÷ Monthly net profit', note: 'Months to recover your initial investment. Only shown when monthly net profit is positive and setup cost is greater than $0. Under 12 months is excellent. Over 24 months carries meaningful risk.' },
+              { label: '3-Year Projection Assumption', formula: 'Year2 = Year1 × 1.08, Year3 = Year2 × 1.10', note: 'Projection growth assumptions use a two-step rate: +8% then +10% when sufficient live revenue signals are available.' },
       ].map((row, i, arr) => (
               <div key={row.label} style={{ padding: '18px 0', borderBottom: i < arr.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: S.n800, marginBottom: 4 }}>{row.label}</p>

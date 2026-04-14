@@ -312,9 +312,9 @@ export default function SampleReportClient() {
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontSize: 32, fontWeight: 900, color: S.amber, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>11.2%</div>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.amberBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
                             <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.amber }} />
-                            <span style={{ fontSize: 10, fontWeight: 800, color: S.amber, letterSpacing: '0.06em' }}>MONITOR</span>
+                            <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.06em' }}>EXCELLENT</span>
                           </div>
                         </div>
                       </div>
@@ -340,7 +340,7 @@ export default function SampleReportClient() {
                       <ScoreBar label="Profitability"       score={80} weight="25%" />
                       <ScoreBar label="Location Quality"    score={88} weight="10%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 6 verified competitors within 1km, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (88) — high footfall and excellent transit access. Sub-scores rounded to nearest 5 (±5pt model accuracy). Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 88×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>83</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (88) — high footfall and excellent transit access. Sub-scores rounded to nearest 5 (±5pt model accuracy). Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 88×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
                     <div style={{ textAlign: 'center' }}>
@@ -394,7 +394,7 @@ export default function SampleReportClient() {
                       <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
                         <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Median Income</p>
                         <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, fontFamily: S.mono }}>$96,000<span style={{ fontSize: 10, fontWeight: 500, color: S.n400, fontFamily: S.font }}>/yr</span></p>
-                        <p style={{ fontSize: 9, color: S.n400, marginTop: 2 }}>ABS 2021 Census</p>
+                        <p style={{ fontSize: 9, color: S.n400, marginTop: 2 }}>ABS 2021 data (Census)</p>
                       </div>
                       <div style={{ background: S.n50, borderRadius: 9, padding: '10px 12px', border: `1px solid ${S.n200}` }}>
                         <p style={{ fontSize: 9, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Affordability</p>
@@ -530,7 +530,7 @@ export default function SampleReportClient() {
                   </div>
                 </div>
                 <p style={{ fontSize: 10, color: S.n400, marginTop: 8, fontStyle: 'italic', lineHeight: 1.5 }}>
-                  Year 1 annualises the base case (~$68k/mo × 12). Years 2–3 assume ~10% annual revenue growth — the median compound growth rate for established inner-suburban Australian café operators (IBISWorld Cafés in Australia, 2025). Actual growth will vary.
+                  Year 1 annualises the base case (~$68k/mo × 12). Years 2–3 assume a 10% annual revenue growth rate using industry benchmarks. Actual growth will vary.
                 </p>
                 <div style={{ marginTop: 12, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' as const }}>
                   <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.5 }}>Year 2 &amp; 3 growth model — including compounding revenue, reinvestment scenarios and break-even trajectory — unlocks when you run a full report on your actual address.</p>
@@ -590,7 +590,7 @@ export default function SampleReportClient() {
                     <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
                     <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Competitor Overview</span>
                   </div>
-                  <span style={{ fontSize: 9, color: S.n400, fontStyle: 'italic' }}>Google Places · up to 48 hr cache</span>
+                  <span style={{ fontSize: 9, color: S.n400, fontStyle: 'italic' }}>Google Places · competitor data cached up to 48 hours</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 16 }}>
                   <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 9, padding: '12px', textAlign: 'center' }}>
@@ -658,6 +658,7 @@ export default function SampleReportClient() {
             {/* Verdict summary */}
             <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Verdict</p>
+              <p style={{ fontSize: 9, color: S.n400, marginBottom: 8 }}>Scoring v2.1 · 5 factors</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 <span style={{ fontSize: 28, fontWeight: 900, color: S.emerald, lineHeight: 1 }}>84</span>
                 <div>
@@ -666,6 +667,18 @@ export default function SampleReportClient() {
                 </div>
               </div>
               <p style={{ fontSize: 11, color: S.n700, lineHeight: 1.55 }}>Strong location fundamentals. Proceed with lease negotiation — push for a 5-year term with CPI-capped rent reviews and a 12-month break clause.</p>
+            </div>
+
+            <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Data Quality</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: S.n500 }}>Data Completeness</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: S.n800 }}>78%</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: S.n500 }}>Model Confidence</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: S.n800 }}>Medium</span>
+              </div>
             </div>
 
             {/* Key numbers */}

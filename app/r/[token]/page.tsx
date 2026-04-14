@@ -111,6 +111,7 @@ const supabase = await createClient()
     </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
      <span style={{ fontSize: 11, color: S.n500, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 100, padding: '3px 10px', fontWeight: 600 }}>SHARED REPORT</span>
+     <span style={{ fontSize: 11, color: S.n500, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 100, padding: '3px 10px', fontWeight: 600 }}>SCORING v2.1</span>
      <Link href="/onboarding" style={{ fontSize: 12, background: S.brand, color: S.white, borderRadius: 9, padding: '7px 14px', fontWeight: 700 }}>Get your free analysis →</Link>
     </div>
       </nav>
