@@ -1,11 +1,18 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'api.mapbox.com' },
       { protocol: 'https', hostname: 'events.mapbox.com' },
     ],
+  },
+  async rewrites() {
+    return [
+      { source: '/ingest/static/:path*', destination: 'https://us-assets.i.posthog.com/static/:path*' },
+      { source: '/ingest/:path*',        destination: 'https://us.i.posthog.com/:path*' },
+    ]
   },
   async redirects() {
     return [

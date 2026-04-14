@@ -3,6 +3,7 @@ import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import posthog from 'posthog-js'
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6',
@@ -29,6 +30,12 @@ function LoginForm() {
     })
     setLoading(false)
     if (err) { setError('Invalid email or password. Please try again.'); return }
+
+    const supabaseUser = (await createClient().auth.getUser()).data.user
+    if (supabaseUser) {
+      posthog.identify(supabaseUser.id, { email: email.trim().toLowerCase() })
+      posthog.capture('user_logged_in', { email: email.trim().toLowerCase() })
+    }
 
     // Respect the redirectTo param set by middleware (or by our own code)
     const redirectTo = searchParams.get('redirectTo')

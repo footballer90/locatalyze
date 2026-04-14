@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Turnstile } from '@marsidev/react-turnstile'
+import posthog from 'posthog-js'
 
 const S = {
  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
@@ -94,6 +95,8 @@ function SignUpInner() {
       return
     }
 
+    posthog.identify(data.user!.id, { email: email.trim().toLowerCase() })
+    posthog.capture('user_signed_up', { email: email.trim().toLowerCase() })
     setDone(true)
   }
 

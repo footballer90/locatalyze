@@ -5,23 +5,27 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { POST_LIST } from '@/lib/blog-posts'
+import { BLOG_CATEGORY_COLORS, BLOG_THEME } from '@/lib/blog-theme'
 
 const S = {
- brand:       '#0F766E',
- brandLight:  '#14B8A6',
- brandFaded:  '#F0FDFA',
- brandBorder: '#99F6E4',
- n50:  '#FAFAF9',
- n100: '#F5F5F4',
- n200: '#E7E5E4',
- n400: '#A8A29E',
- n500: '#78716C',
- n700: '#44403C',
- n900: '#1C1917',
- white: '#FFFFFF',
- headerBg:   '#0C1F1C',
- headerBdr:  'rgba(255,255,255,0.07)',
- font: "'DM Sans', sans-serif",
+ brand: BLOG_THEME.color.primary,
+ brandHover: BLOG_THEME.color.primaryHover,
+ brandLight: BLOG_THEME.color.accent,
+ brandFaded: BLOG_THEME.color.primarySoft,
+ brandBorder: BLOG_THEME.color.primaryBorder,
+ n50: BLOG_THEME.color.bg,
+ n100: BLOG_THEME.color.surfaceAlt,
+ n200: BLOG_THEME.color.border,
+ n400: BLOG_THEME.color.textFaint,
+ n500: BLOG_THEME.color.textSubtle,
+ n700: BLOG_THEME.color.textMuted,
+ n900: BLOG_THEME.color.text,
+ white: BLOG_THEME.color.surface,
+ headerBg: BLOG_THEME.color.headerBg,
+ headerBdr: 'rgba(255,255,255,0.09)',
+ headerText: BLOG_THEME.color.headerText,
+ headerMuted: BLOG_THEME.color.headerMuted,
+ font: BLOG_THEME.font.sans,
 }
 
 const CATS = [
@@ -31,12 +35,7 @@ const CATS = [
 ]
 
 // Category → muted accent color for the pill
-const CAT_COLOR: Record<string, string> = {
- Cafes: '#0F766E', Restaurants: '#B45309', Gyms: '#0369A1',
- Retail: '#7C3AED', Finance: '#059669', Strategy: '#64748B',
- Data: '#0891B2', Sydney: '#1D4ED8', Melbourne: '#7C3AED',
- Brisbane: '#B45309', Perth: '#0F766E', Tools: '#6B7280',
-}
+const CAT_COLOR = BLOG_CATEGORY_COLORS
 
 function CategoryPill({ label }: { label: string }) {
  const color = CAT_COLOR[label] || S.brand
@@ -89,12 +88,12 @@ function NewsletterBlock() {
         Weekly briefing
       </p>
       <h3 style={{
-        fontSize: 22, fontWeight: 800, color: '#F9FAFB',
+        fontSize: BLOG_THEME.type.h2, fontWeight: 800, color: S.headerText,
     letterSpacing: '-0.03em', marginBottom: 10, lineHeight: 1.3,
    }}>
         Location intelligence in your inbox
       </h3>
-      <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 28, maxWidth: 420, margin: '0 auto 28px' }}>
+      <p style={{ fontSize: 14, color: S.headerMuted, marginBottom: 28, maxWidth: 420, margin: '0 auto 28px' }}>
     One email per week. Suburb analysis, rent benchmarks and location strategy for Australian founders.
       </p>
 
@@ -112,6 +111,7 @@ function NewsletterBlock() {
       ) : (
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' as const }}>
      <input
+            className="blog-input"
             type="email"
       placeholder="your@email.com"
       value={email}
@@ -124,6 +124,7 @@ function NewsletterBlock() {
             }}
           />
           <button
+            className="blog-button"
             onClick={subscribe}
             disabled={loading || !email.includes('@')}
       style={{
@@ -138,7 +139,7 @@ function NewsletterBlock() {
      </button>
         </div>
       )}
-      <p style={{ fontSize: 11, color: '#374151', marginTop: 12 }}>
+      <p style={{ fontSize: 11, color: S.headerMuted, marginTop: 12 }}>
     No spam. Unsubscribe any time.
       </p>
     </div>
@@ -166,10 +167,15 @@ export default function BlogPageClient() {
    />
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .article-card:hover { border-color: #0F766E !important; }
-        .article-card:hover .read-link { color: #0F766E !important; }
+        .article-card { transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+        .article-card:hover { border-color: ${S.brand} !important; box-shadow: 0 10px 24px rgba(15,118,110,.08); transform: translateY(-1px); }
+        .article-card:hover .read-link { color: ${S.brand} !important; }
         .cat-btn { transition: all 0.15s; }
-        .cat-btn:hover { border-color: #0F766E !important; color: #0F766E !important; }
+        .cat-btn:hover { border-color: ${S.brand} !important; color: ${S.brand} !important; }
+        .blog-link:focus-visible, .cat-btn:focus-visible, .blog-input:focus-visible, .blog-button:focus-visible {
+          outline: 2px solid ${S.brand};
+          outline-offset: 2px;
+        }
       `}</style>
 
       <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
@@ -180,19 +186,20 @@ export default function BlogPageClient() {
 
       {/* Nav */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 48 }}>
-       <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+       <Link href="/" className="blog-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
         <div style={{
                   width: 28, height: 28, borderRadius: 8,
                   background: 'linear-gradient(135deg,#0F766E,#14B8A6)',
          display: 'flex', alignItems: 'center', justifyContent: 'center',
          color: '#fff', fontWeight: 900, fontSize: 13,
         }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-                <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>
+                <span style={{ fontWeight: 800, fontSize: 15, color: S.headerText, letterSpacing: '-0.02em' }}>
          Locatalyze
                 </span>
               </Link>
               <Link
                 href="/onboarding"
+                className="blog-link"
         style={{
                   fontSize: 13, fontWeight: 700, color: S.brandLight,
                   textDecoration: 'none', border: `1px solid ${S.brand}40`,
@@ -213,12 +220,12 @@ export default function BlogPageClient() {
                 Location intelligence blog
               </p>
               <h1 style={{
-                fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 800,
-        color: '#F9FAFB', letterSpacing: '-0.04em', lineHeight: 1.15, marginBottom: 12,
+                fontSize: BLOG_THEME.type.h1, fontWeight: 800,
+        color: S.headerText, letterSpacing: '-0.04em', lineHeight: 1.15, marginBottom: 12,
        }}>
                 Guides, data and insights for<br />Australian founders
               </h1>
-              <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.7 }}>
+              <p style={{ fontSize: 14, color: S.headerMuted, lineHeight: 1.7 }}>
         {POST_LIST.length} articles covering location strategy, market analysis and business planning.
               </p>
             </div>
@@ -266,8 +273,8 @@ export default function BlogPageClient() {
                   <CategoryPill label={featured.category} />
                   <span style={{ fontSize: 12, color: S.n400 }}>{featured.readTime}</span>
                 </div>
-                <h2 style={{
-                  fontSize: 'clamp(17px, 2.5vw, 22px)', fontWeight: 800,
+            <h2 style={{
+                  fontSize: BLOG_THEME.type.h3, fontWeight: 800,
          color: S.n900, letterSpacing: '-0.03em', lineHeight: 1.3, marginBottom: 12,
         }}>
                   {featured.title}
@@ -350,7 +357,7 @@ export default function BlogPageClient() {
                         <span style={{ fontSize: 11, color: S.n400 }}>{post.readTime}</span>
                       </div>
                       <h3 style={{
-                        fontSize: 16, fontWeight: 700, color: S.n900,
+                        fontSize: 18, fontWeight: 700, color: S.n900,
                         lineHeight: 1.4, marginBottom: 8, letterSpacing: '-0.01em',
            }}>
                         {post.title}
@@ -415,7 +422,7 @@ export default function BlogPageClient() {
                         <span style={{ fontSize: 11, color: S.n400 }}>{post.readTime}</span>
                       </div>
                       <h3 style={{
-                        fontSize: 14, fontWeight: 700, color: S.n900,
+                        fontSize: 16, fontWeight: 700, color: S.n900,
                         lineHeight: 1.45, marginBottom: 8, flex: 1,
                         letterSpacing: '-0.01em',
            }}>

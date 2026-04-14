@@ -9,6 +9,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import posthog from 'posthog-js'
 
 const S = {
   font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -250,6 +251,14 @@ export default function OnboardingPage() {
 
       const setupBudget = biz.setupMid
       const avgTicketSize = avgOrderValue ? parseFloat(avgOrderValue) || biz.avgTicket : biz.avgTicket
+
+      posthog.capture('analysis_started', {
+        business_type: biz.label,
+        address: addr.trim(),
+        monthly_rent: monthlyRentNum,
+        rent_source: rentSource,
+        model_accuracy: modelAccuracy,
+      })
 
       const res = await fetch('/api/analyse', {
         method: 'POST',
