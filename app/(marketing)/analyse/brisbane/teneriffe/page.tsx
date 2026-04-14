@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -151,7 +151,7 @@ export default function TeneriffePage() {
           <ScoreBar label='Competition Gap' value={73} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Teneriffe's commercial identity was created by accident. When the wool stores along the Brisbane River were converted from industrial to residential and office use in the 1990s and 2000s, the suburb acquired a built character — exposed brick, timber floors, warehouse scale — that naturally attracted the creative and professional classes. Architects, designers, advertising agencies, and technology companies moved into the converted wool stores because the spaces suited their working culture. The employees who followed built the residential demographic that now surrounds the commercial opportunities. Teneriffe is, in short, a suburb whose commercial strip is catching up to a demographic that moved in before the shops did.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Teneriffe precinct — primarily along Wyandra Street and the riverfront — has a weekday professional lunch market that is its most immediate commercial opportunity. The wool store offices hold thousands of workers who currently walk to New Farm or drive to Fortitude Valley for quality lunch and coffee. An operator positioned on Wyandra Street or adjacent to the wool store cluster serves this captive weekday market without requiring the weekend foot traffic of a residential strip. The economic model is more corporate-catering than community-café, which affects positioning but not revenue potential.</p>
@@ -163,25 +163,25 @@ export default function TeneriffePage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Teneriffe has limited commercial operators relative to its demographic quality and worker population. The wool store precinct's office tenants currently leave the suburb for quality food — which is both the evidence of the opportunity and the current commercial gap. Competition is thin, which makes the first-mover advantage real. A quality café or lunch operator on Wyandra Street would not be fighting incumbent loyalty; they would be capturing pent-up demand from an established professional population.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Café (Office Precinct Position)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Café (Office Precinct Position)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The wool store office concentration creates a captive weekday professional market currently underserved by quality coffee and food. A specialty café with quality food program positioned for the worker demographic achieves consistent Monday–Friday revenue with lower weekend dependency than residential strips. Revenue $40,000–$65,000/month.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Lunch (Mid-Price, Takeaway-Forward)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Lunch (Mid-Price, Takeaway-Forward)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Wool store workers want quality lunch within walking distance. A mid-price lunch operation at $18–$28 per meal with strong takeaway format serves the working demographic efficiently. Revenue $35,000–$55,000/month from weekday-focused trading.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Evening Dining</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Evening Dining</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Teneriffe's evening foot traffic is growing but not yet at West End or New Farm levels. An evening concept requires strong proactive marketing and a reason for broader Brisbane to travel to Teneriffe rather than defaulting to established evening precincts.</p>
@@ -192,21 +192,21 @@ export default function TeneriffePage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekend Foot Traffic Still Developing</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekend Foot Traffic Still Developing</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Teneriffe's residential population is growing but weekend commercial foot traffic is below what the weekday professional market suggests. Operators who model weekend revenue at weekday levels will be disappointed.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Limited Walk-In Commercial Strip</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Limited Walk-In Commercial Strip</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Teneriffe does not yet have the walk-in commercial strip culture of Paddington or West End. Customer acquisition requires active marketing and community presence, not just quality product in a passing foot traffic location.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Gentrification Premium on Rent</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Gentrification Premium on Rent</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Teneriffe rents reflect the suburb's aspirational positioning — $4,000–$6,500/month for commercial positions that may not yet have the foot traffic to justify the premium. Revenue modelling needs to be conservative in the first 12 months.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/new-farm" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

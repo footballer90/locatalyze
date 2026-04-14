@@ -6,7 +6,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
@@ -111,7 +111,7 @@ export default function BulimbaPage() {
           <ScoreBar label='Competition Gap' value={76} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The operators who have discovered Bulimba speak about Oxford Street the way Fitzroy operators spoke about Smith Street 20 years ago: a residential strip with exceptional demographics, loyal community customers, and rents that haven't caught up to the quality of the catchment. Oxford Street from Morningside Road to Wynnum Road is compact — about 400 metres of active commercial strip — but what it delivers in those 400 metres is disproportionate to its geographic scale. The families and professionals who live in Bulimba and adjacent Hawthorne shop local, eat local, and actively support independent operators by habit.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Median household income in Bulimba approaches $95,000 — placing it comfortably above Brisbane average and comparable to Paddington by income profile. The demographic composition is primarily owner-occupier families and professional couples aged 30–50 who bought into Bulimba before prices reflected its quality and have no incentive to leave. These residents generate consistent, seasonal-resistant spending that doesn't disappear when tourism softens or when major events are not scheduled. The customer base is structural — it derives from residential loyalty, not from discretionary destination visits.</p>
@@ -123,25 +123,25 @@ export default function BulimbaPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Oxford Street competition is established in café and casual dining but not overwhelming. There are quality operators who have been trading for years and have community loyalty that new entrants must work around. The gap is in categories the current strip does not fully serve: quality evening dining (Oxford Street is lunch-and-café dominant; evenings are underserved), premium wellness, and boutique lifestyle retail. Healthcare demand is also structurally underserved for the demographic quality.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Premium Café (Weekend Brunch-Focused)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Premium Café (Weekend Brunch-Focused)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Bulimba's residential demographic generates consistent weekend brunch demand. Oxford Street Saturday morning foot traffic from residents, ferry users, and cyclists supports a quality café with strong weekend trade. Revenue $45,000–$70,000/month for a well-positioned 40-seat operator.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Evening Dining (Neighbourhood Restaurant)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Evening Dining (Neighbourhood Restaurant)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Oxford Street's evening offering is weaker than its lunch and café strength. A 35–40 seat neighbourhood restaurant at $55–$75 per head with Thursday–Sunday evening focus fills a gap that Bulimba residents currently leave the suburb to satisfy. Revenue $40,000–$65,000/month.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Boutique Lifestyle Retail</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Boutique Lifestyle Retail</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The Bulimba demographic actively shops local for lifestyle products — homewares, fashion, gifts. A well-curated boutique with a clear concept finds loyal support from residents who choose independent over online as a community act. Revenue $35,000–$55,000/month.</p>
@@ -152,21 +152,21 @@ export default function BulimbaPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Compact Strip Limits Availability</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Compact Strip Limits Availability</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Oxford Street's active commercial zone is short. Quality positions are limited and turnover is low — established operators tend to stay. Be prepared to wait for the right position or consider secondary Hawthorne Road positions.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Car Parking Constraints</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Car Parking Constraints</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Oxford Street parking is limited, which constrains the catchment radius for drive-in customers. The commercial strength is residential walk-in and ferry-access customers — not drive-from-outer-suburbs destination visits.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Ferry Service Reliability</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Ferry Service Reliability</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>CityCat service disruptions (flood events, maintenance) periodically reduce the ferry-access foot traffic layer. Businesses dependent on ferry customers should model their base revenue from residents alone and treat ferry trade as upside.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/woolloongabba" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

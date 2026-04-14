@@ -148,7 +148,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 

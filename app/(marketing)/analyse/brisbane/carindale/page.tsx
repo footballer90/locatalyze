@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
+const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#475569', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
 function VerdictBadge({ v }: { v: Verdict }) { const cfg = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald } : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber } : { bg: S.redBg, bdr: S.redBdr, txt: S.red }; return <span style={{ fontSize: 11, fontWeight: 700, color: cfg.txt, background: cfg.bg, border: `1px solid ${cfg.bdr}`, borderRadius: 6, padding: '2px 9px' }}>{v}</span> }
 function ScoreBar({ label, value }: { label: string; value: number }) { return <div style={{ marginBottom: 12 }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}><span style={{ fontSize: 12, color: S.muted }}>{label}</span><span style={{ fontSize: 12, fontWeight: 700 }}>{value}</span></div><div style={{ height: 6, background: S.n100, borderRadius: 100 }}><div style={{ height: '100%', width: `${value}%`, background: S.brand, borderRadius: 100 }} /></div></div> }

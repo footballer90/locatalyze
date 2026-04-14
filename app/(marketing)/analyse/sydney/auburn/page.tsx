@@ -12,7 +12,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -256,15 +256,15 @@ export default function AuburnPage() {
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Community Trust Barrier</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Community Trust Barrier</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>New entrants without community connection face loyalty barriers in established cultural food sector. Professional café market is lower-risk entry point.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Property Price Compression</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Property Price Compression</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Auburn has seen 28% price growth since 2022. Rents rising. The 40% below Parramatta window may not last another 3 years.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Parking Constraints</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Parking Constraints</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Weekend parking is constrained on Auburn Road during peak periods. Car-dependent customers from outer suburbs face friction reducing impulse visitation.</p>
             </div>
           </div>

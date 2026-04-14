@@ -12,7 +12,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -256,15 +256,15 @@ export default function GranvillePage() {
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Foot Traffic Ceiling</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Foot Traffic Ceiling</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>8,500 daily station boardings is solid but not exceptional. A food operator needs 100+ daily transactions; achievable but requires execution precision.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Parramatta Leakage</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Parramatta Leakage</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Residents with options drive or train 3km to Parramatta for better choices. Granville operators fight this leakage constantly.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Commercial Strip Condition</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Commercial Strip Condition</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Some sections of South Street have vacancy and physical decline affecting perception. Location selection within Granville matters more than in Parramatta.</p>
             </div>
           </div>

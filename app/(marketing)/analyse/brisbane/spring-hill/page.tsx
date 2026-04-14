@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -151,7 +151,7 @@ export default function SpringHillPage() {
           <ScoreBar label='Competition Gap' value={67} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Spring Hill's commercial argument is simple and specific: 15,000 professional workers arrive on weekday mornings and depart on weekday evenings. These workers need breakfast, coffee, lunch, and afternoon snacks. They are paid above average, have limited options within walking distance, and make habitual purchasing decisions based on convenience and quality. An operator who serves this specific customer at the right time in the right format builds a consistent, predictable weekday revenue base. The problem is that the business model breaks on Saturday and Sunday when those 15,000 workers are not there.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The permanent residential population of Spring Hill is approximately 2,000 people — mostly apartment dwellers with inner-city lifestyle preferences. This is enough to sustain a café at thin margins on weekends but not enough to support the lease cost of a position that was priced for weekday professional trade. Operators who enter Spring Hill without a clear answer to the weekend revenue problem typically exit within 24 months when they discover that their strong Monday–Friday revenue does not average out across a 7-day trading week at levels sufficient to cover occupancy.</p>
@@ -163,25 +163,25 @@ export default function SpringHillPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Spring Hill office-serving competition is moderate — not overpopulated, but there are established players serving the weekday corporate market. Niche opportunities exist in specific cuisines (Japanese, Vietnamese, and Indian lunch spots are underrepresented for the office density), premium corporate catering, and allied health positioned for the professional worker demographic. Healthcare and physiotherapy serving the professional segment find light competition relative to the catchment size.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Corporate Lunch Concept (Weekday-Only)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Corporate Lunch Concept (Weekday-Only)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Monday–Friday lunch for professional workers is the core Spring Hill opportunity. High throughput, efficient service, quality food at $15–$25 meal prices. A well-run 50-seat lunch operation with takeaway-focused format can achieve $45,000–$55,000/month on a 5-day trading model.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Dentist)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Allied Health (Physio, Dentist)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Professional workers with private health insurance actively seek quality allied health within walking distance. A physiotherapy or dentistry practice in a Spring Hill office building captures consistent weekday demand from the 15,000 professional worker catchment. Revenue $40,000–$65,000/month.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>All-Day Café (7 Days)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>All-Day Café (7 Days)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Viable only with a clear weekend revenue strategy — resident neighbourhood programming, events, or a weekend product that genuinely draws from beyond the immediate resident population. Without a specific weekend answer, the 7-day model underperforms the lease cost.</p>
@@ -192,21 +192,21 @@ export default function SpringHillPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekend Revenue Gap</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekend Revenue Gap</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The fundamental Spring Hill risk. 15,000 workers Mon–Fri; approximately 2,000 residents on weekends. Revenue model must reflect this reality, not average it away.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Hybrid Work Continues to Reduce Peak Days</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Hybrid Work Continues to Reduce Peak Days</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Brisbane CBD and Spring Hill office occupancy is at 70–75% of 2019 levels on best days. Monday and Friday remain at 50–60%. Operators building on 2019 peak occupancy assumptions will persistently underperform projections.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Lease Terms Priced for Weekday Trade</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Lease Terms Priced for Weekday Trade</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Spring Hill rents are set by weekday professional demand. The same rent is paid on Saturday and Sunday when the revenue base is a fraction of weekday levels. Negotiate rent-free periods and fit-out contributions to compensate for the inherent weekend drag.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/fortitude-valley" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

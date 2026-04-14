@@ -6,7 +6,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
@@ -111,7 +111,7 @@ export default function IndooroopillyPage() {
           <ScoreBar label='Competition Gap' value={66} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Indooroopilly's commercial landscape is defined by a central tension: Westfield Indooroopilly is one of Queensland's top-performing shopping centres, drawing 12+ million visits per year and concentrating significant retail spending inside its walls. Strip retail operators on Moggill Road and Station Road exist in the gravitational field of a retail asset that outmarketed and outspends them every day of the year. This is not unique to Indooroopilly — it is the same dynamic as Chermside and Carindale — but Indooroopilly's residential demographics and UQ proximity add commercial context that makes the challenge navigable for correctly positioned operators.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>University of Queensland St Lucia campus is 2km from Indooroopilly station by bus, and the Indooroopilly ferry terminal provides direct CityCat access to UQ and the broader university catchment. This creates a student and academic population who pass through Indooroopilly daily and who are the natural customer base for a café or food operator positioned at their transit point. The student cohort spending habits — coffee, quick meals, occasional sit-down study sessions — are predictable and consistent during semester. This is a different customer profile than the Westfield shopper, and it is one that the mall itself does not serve well.</p>
@@ -123,25 +123,25 @@ export default function IndooroopillyPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Inside the Westfield, chain competition is dominant and not worth entering. Outside the Westfield on Moggill Road and Station Road, the competition for quality food and specialty services is thin. The student and academic transit customer is underserved. The family healthcare market is underserved. Any operator who positions clearly outside the Westfield orbit — specialty services, healthcare, independent café — finds less direct competition than the suburb's overall density would suggest.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>University-Adjacent Café (Transit Position)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>University-Adjacent Café (Transit Position)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The CityCat ferry terminal and bus connection to UQ St Lucia creates a student-academic morning transit pattern through Indooroopilly. A café positioned at or near the transit point serves this captive morning market efficiently. Revenue $30,000–$50,000/month from weekday student-academic and weekend family trade.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Family Allied Health (Outside Westfield Orbit)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Family Allied Health (Outside Westfield Orbit)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Indooroopilly's family demographic (children, private health, quality-seeking) has allied health needs that the Westfield's internal health services don't fully serve. A family physiotherapy or children's dentistry practice on Moggill Road finds consistent demand from the family catchment. Revenue $40,000–$65,000/month.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Independent Retail (Non-Competing with Westfield)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Independent Retail (Non-Competing with Westfield)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Retail that directly competes with Westfield category tenants (fashion, electronics, homewares) will struggle. Specialty retail — local artisan products, specialty food, niche lifestyle goods — finds a different customer and avoids the centre's competitive pressure.</p>
@@ -152,21 +152,21 @@ export default function IndooroopillyPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Westfield Gravity is Structural</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Westfield Gravity is Structural</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Operators who underestimate Westfield's customer capture effect will be disappointed by lower walk-in foot traffic than suburb demographics imply. The mall captures the mainstream commercial spending; strip retail captures the residual. Position for the residual deliberately, not incidentally.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Student Seasonality</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Student Seasonality</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>UQ semester structure creates January and June–July revenue gaps for operators primarily serving the student market. Annual revenue modelling must reflect the semester calendar.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Parking Competition from Westfield</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Parking Competition from Westfield</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Westfield's free parking draws customers who drive to the centre rather than park on strip. Strip operators need to either be walkable from the station or positioned for the residential walk-in market rather than the car-dependent shopper.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/toowong" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

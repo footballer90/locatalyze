@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -173,7 +173,7 @@ export default function BrisbaneCBDPage() {
 
         {/* Business environment */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Brisbane CBD operates at two speeds simultaneously. Queen Street Mall on a Saturday afternoon has foot traffic density that competes with any retail precinct in Australia. Queen Street between 11am and 2pm on a Tuesday carries a professional worker concentration that is real and substantial. Both of these observations are true, and neither of them changes the fundamental arithmetic problem of CBD rent: at $15,000–$28,000/month for a viable retail position, you need extraordinary revenue just to be standing. Most independent operators are not in the position to absorb 12 months of rent while establishing customer base.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The structural change from hybrid work is now permanent, not transitional. Brisbane CBD office occupancy runs at 68–72% of 2019 peak levels on the best days — Tuesdays and Wednesdays — and falls to 45–55% on Mondays and Fridays. The lunchtime populations that made the CBD viable for a 60-seat café in 2018 are not fully there anymore. Operators who signed pre-2020 leases and model their 2026 revenue against 2018 foot traffic assumptions are the ones in trouble. New operators entering the CBD need to model against current occupancy data, not historical benchmarks.</p>
@@ -189,25 +189,25 @@ export default function BrisbaneCBDPage() {
 
         {/* What works */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Premium Fine Dining ($80+ per head)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Premium Fine Dining ($80+ per head)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The CBD corporate entertainment market is real and premium-priced. Quality three-course dining with wine at $100–$150 per person is well-supported by Friday and Saturday evening trade, corporate lunches, and pre-theatre. Revenue potential $90,000–$130,000/month for a well-positioned 60-seat restaurant.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Corporate Allied Health (Physio, Psychology)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Corporate Allied Health (Physio, Psychology)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>CBD workers with corporate health funds actively seek quality allied health within walking distance. Medicare-funded bulk-billing services or privately-billed premium practices in CBD towers attract consistent professional clientele. Revenue $50,000–$80,000/month with low competition from chains.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Coffee (Owner-Operated)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Coffee (Owner-Operated)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Viable only with a differentiating angle: roaster retail, cold brew production, or a distinct concept that builds loyalty beyond convenience. Strip-mall coffee competing on location alone will be squeezed out by chain positions.</p>
@@ -220,15 +220,15 @@ export default function BrisbaneCBDPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Rent Mathematics</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Rent Mathematics</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>At $20,000+/month rent, you need $200,000+ monthly revenue before profit. Most categories cannot sustain this without extraordinary volume or high average transaction values.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Hybrid Work Structural Decline</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Hybrid Work Structural Decline</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Office population is not returning to 2019 levels. Models built on full-week CBD occupancy assumptions will persistently underperform against projections.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Queen Street Mall Leasing Terms</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Queen Street Mall Leasing Terms</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Mall tenancies often carry percentage-of-revenue clauses that claw back profits during strong trading periods. Read lease terms carefully before CBD commitments.</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function BrisbaneCBDPage() {
 
         {/* Nearby suburbs */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/fortitude-valley" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

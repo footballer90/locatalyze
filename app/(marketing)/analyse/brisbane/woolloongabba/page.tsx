@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -151,7 +151,7 @@ export default function WoolloongabbaPage() {
           <ScoreBar label='Competition Gap' value={79} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Woolloongabba's commercial transformation is the single most consequential real estate story in inner Brisbane in 2026. The Gabba has been Brisbane's sports precinct for 100 years — cricket, AFL, State of Origin — but the Olympic build-out is changing its commercial character in ways that sports ancillary alone never could. Cross River Rail's Woolloongabba station opened in 2024 and has brought the suburb to within 12 minutes of the CBD by direct rail. The precinct upgrade for the 2032 Olympics — $1B+ in committed infrastructure — has transformed developer sentiment. Residential towers are under construction. The demographic arriving into new Woolloongabba apartments is the same professional cohort driving West End and Paddington's commercial success.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Logan Road between Ipswich Road and Main Street has been Woolloongabba's commercial anchor for decades. The strip has historically served a patchy mix of automotive service businesses, fast food, and convenience retail — not the food and lifestyle mix its new residential population demands. This mismatch between arriving demographic and existing commercial supply is precisely the opportunity window. Operators who enter Logan Road now capture the gap between the demographic that is arriving and the commercial supply that has not yet responded to it.</p>
@@ -163,25 +163,25 @@ export default function WoolloongabbaPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Woolloongabba's current commercial mix is thin in quality food and hospitality relative to its arriving demographic. Logan Road has chains (McDonald's, Red Rooster) and established automotive and trade businesses but few quality independent operators targeting the professional cohort. The gap between incoming residential demographic and current commercial supply is among the largest of any inner-Brisbane suburb. First-mover operators entering in 2025–2026 are establishing before the market has repriced to reflect Olympic-era demand.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Café (Professional and Family)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Café (Professional and Family)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The arriving residential population — professional, 28–45, income $85,000–$110,000 — needs quality coffee and food that the current Logan Road supply does not provide. A specialty café positioned for this demographic can achieve $40,000–$65,000/month within 18 months of opening, rising as residential density increases.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Allied Health (Physio, GP, Psychology)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Allied Health (Physio, GP, Psychology)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Woolloongabba's new residential population has healthcare needs that current supply does not meet. A GP practice or physiotherapy clinic in the precinct captures structural demand from residents who currently travel to Annerley or Greenslopes. Revenue $45,000–$75,000/month with low competition from established operators.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Stadium-Anchored Casual Dining</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Stadium-Anchored Casual Dining</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Event-day revenue from Gabba crowds (25,000+ attendance per major match) adds a structural layer to annual economics. A casual dining operator that handles high event-day throughput efficiently and builds weekday resident trade as a base revenue floor can achieve strong annual revenue with the event-day layer as upside.</p>
@@ -192,21 +192,21 @@ export default function WoolloongabbaPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Olympic Timeline Risk</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Olympic Timeline Risk</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The 2032 Olympics are the long-term demand driver but the current position requires 6 years of trading before the Olympic-era commercial maturity arrives. Operators must model interim revenue at current (pre-Olympic) demand levels, not projected 2032 levels.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Logan Road Strip Character Transition</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Logan Road Strip Character Transition</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Logan Road's current automotive and trade character makes the strip's presentation less attractive than West End or Paddington. Foot traffic culture is forming, not established. Early operators must build customer habit, not inherit it.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Construction Disruption</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Construction Disruption</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Active Olympic precinct construction creates noise, access, and parking disruption near the Gabba. Operators should assess specific position impacts from construction timelines before committing to leases near active build sites.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/annerley" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

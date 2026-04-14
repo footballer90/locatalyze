@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -173,7 +173,7 @@ export default function FortitudeValleyPage() {
 
         {/* Business environment */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Fortitude Valley reputation problem is now a decade out of date, but it persists in the minds of operators who haven't visited recently. In 2015, the Valley was Queensland's nightlife precinct — Ann Street and Brunswick Street were for bars and clubs, daytime trading was quiet, and the residential population was sparse. In 2026, the Valley is something else. The apartment build-out since 2016 — substantial post-GFC residential towers that transformed the Valley's population density — has brought 8,000+ permanent residents to a precinct that previously had almost none. These residents need cafés, lunch, and professional services in the same way that any residential population does.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Brunswick Street Mall daytime trading is now the highest it has been in the Valley's commercial history. The demographic mix includes creative industry workers (the Brunswick Street creative agency and media cluster is real and substantial), residents of the post-2015 apartment stock, and spill-over from Newstead and Teneriffe to the north, which have been the primary beneficiaries of the Valley's residential growth. Daytime foot traffic between 8am and 3pm on weekdays is genuinely different from what it was five years ago.</p>
@@ -189,25 +189,25 @@ export default function FortitudeValleyPage() {
 
         {/* What works */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Daytime Specialty Café (Creative Industry Positioning)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Daytime Specialty Café (Creative Industry Positioning)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The Valley's Brunswick Street creative cluster (media, design, advertising agencies) creates a quality-seeking weekday lunch and coffee market. A specialty café with strong food program and laptop-friendly format finds consistent Monday–Friday revenue from creative professionals. Revenue $40,000–$65,000/month for a well-positioned 50-seat operator.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Casual Dinner + Bar</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Casual Dinner + Bar</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Valley evenings on Thursday–Saturday have real foot traffic from residents and the broader Brisbane population. A mid-price restaurant with bar program ($50–$70 per head) can build Thursday–Saturday evening revenue that supplements weekend brunch. Revenue $45,000–$80,000/month with strong evening trading.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Breakfast-Only Café (Mon–Fri)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Breakfast-Only Café (Mon–Fri)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Viable but constrained — weekend Valley foot traffic is event-driven and requires a different customer acquisition strategy than weekday resident-and-worker trade. Businesses that only trade well Monday–Friday will find the Valley's weekday profile works but weekends require additional programming.</p>
@@ -220,15 +220,15 @@ export default function FortitudeValleyPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Reputation Lag Among Non-Residents</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Reputation Lag Among Non-Residents</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Outer-suburb customers still associate the Valley with its 2010 nightlife identity. Building a customer base that extends beyond residents and the immediate creative precinct requires active marketing to counter the outdated reputation.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Alcohol Licensing Complexity</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Alcohol Licensing Complexity</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The Valley's late-night trading history has produced complex liquor licensing conditions in the precinct. Operators planning venues with evening liquor service should obtain independent licensing advice before signing leases.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekend Foot Traffic Inconsistency</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekend Foot Traffic Inconsistency</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Valley weekend foot traffic is event-dependent in a way that weekday professional trade is not. Revenue planning must distinguish between event-weekend peaks and quiet weekend troughs.</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function FortitudeValleyPage() {
 
         {/* Nearby suburbs */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/teneriffe" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

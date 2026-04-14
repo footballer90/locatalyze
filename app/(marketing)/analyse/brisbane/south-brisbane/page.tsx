@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -173,7 +173,7 @@ export default function SouthBrisbanePage() {
 
         {/* Business environment */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>South Brisbane's commercial character is inseparable from South Bank Parklands and the cultural precinct — GOMA, QPAC, the Queensland Museum, and the Gallery of Modern Art. On a Saturday between 10am and 4pm, South Bank draws 20,000–30,000 visitors who are in an experiential spending mindset. They have left their suburbs to be somewhere. They are willing to pay for quality dining and experiences in a way that Tuesday-afternoon suburbia is not. This is the structural advantage of South Brisbane: it is a destination, not a neighbourhood strip.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Grey Street and Melbourne Street corridors are the primary commercial zones for independent operators. These streets carry a mix of permanent residents (apartment stock has grown substantially since 2018), cultural precinct workers, and weekend tourists. The operator mix includes established restaurants that have built loyal followings over a decade and newer entries taking positions vacated by post-pandemic closures. Current vacancy on Grey Street runs at approximately 12% — not extreme, but lower than it was in 2022 when it peaked at 18%.</p>
@@ -189,25 +189,25 @@ export default function SouthBrisbanePage() {
 
         {/* What works */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Cultural Precinct Restaurant (Mid–Premium)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Cultural Precinct Restaurant (Mid–Premium)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Grey Street and Melbourne Street dinner trade is strong on weekends and Friday evenings. Cultural audience willingness to pay for quality dining is above Brisbane average. Revenue $55,000–$90,000/month for 50-seat restaurant well-positioned for pre- and post-QPAC trade.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Café (Weekend Brunch Focus)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Café (Weekend Brunch Focus)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>South Bank weekend brunch draws from across Brisbane. A quality specialty café on Grey Street with outdoor seating builds strong weekend trade. Revenue $35,000–$55,000/month. Weekday lunch from cultural precinct workers and residents adds consistent mid-week volume.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Independent Retail (Lifestyle/Art)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Independent Retail (Lifestyle/Art)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Viable for concepts aligned to the cultural audience — art prints, design objects, quality lifestyle products. Standard retail faces competition from South Bank's internal retail and the online pricing transparency that affects all middle-tier retail.</p>
@@ -220,15 +220,15 @@ export default function SouthBrisbanePage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekday-Weekend Revenue Split</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekday-Weekend Revenue Split</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Cultural precinct trade peaks on weekends and school holiday periods. Operators must model realistic weekday trading — resident population without tourist and cultural event support is meaningful but thinner than weekend data implies.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Flood Risk in Lease Terms</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Flood Risk in Lease Terms</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>South Brisbane has documented flood risk for some positions near the riverfront. Tenants should confirm insurance terms and flood documentation before committing to leases in lower-lying positions.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Event Dependency</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Event Dependency</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Major QPAC and GOMA events drive revenue spikes; quiet periods in the cultural calendar create soft weeks. Revenue planning must account for the cultural events calendar, not assume constant foot traffic.</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function SouthBrisbanePage() {
 
         {/* Nearby suburbs */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/west-end" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

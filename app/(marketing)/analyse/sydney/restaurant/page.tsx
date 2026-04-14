@@ -102,7 +102,7 @@ const RISK_SUBURBS = [
     reason: 'Lower average dining spend ($42 per head versus $68 Sydney inner average) combined with strong chain restaurant competition makes independent restaurant economics very challenging. Rent-to-revenue ratios for new entrants typically exceed 20%. Score breakdown: footfall is adequate but demographics, rent fit, and competition all score poorly for independent operators.' },
 ]
 
-const S = { brand: '#0F766E', brandLight: '#14B8A6', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
+const S = { brand: '#0F766E', brandLight: '#14B8A6', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#475569', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
 
 function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
  const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald } : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber } : { bg: S.redBg, bdr: S.redBdr, txt: S.red }

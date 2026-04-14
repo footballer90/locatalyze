@@ -174,7 +174,7 @@ const S = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',

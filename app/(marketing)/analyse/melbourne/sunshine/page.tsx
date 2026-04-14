@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
+const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#475569', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
 const SCORE_BARS = [{ label: 'Foot Traffic', value: 70 }, { label: 'Demographics', value: 60 }, { label: 'Rent Viability', value: 88 }, { label: 'Competition Gap', value: 62 }]
 const NEARBY = [{ name: 'Footscray', slug: 'footscray', score: 76, verdict: 'GO' as Verdict }, { name: 'Werribee', slug: 'werribee', score: 72, verdict: 'GO' as Verdict }, { name: 'Hoppers Crossing', slug: 'hoppers-crossing', score: 70, verdict: 'GO' as Verdict }]

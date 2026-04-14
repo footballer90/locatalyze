@@ -6,7 +6,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
@@ -111,7 +111,7 @@ export default function NewmarketPage() {
           <ScoreBar label='Competition Gap' value={69} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Newmarket is at the stage of commercial development that Nundah was at five years ago: a suburb whose demographic is improving faster than its commercial offering has responded to. The residential story is clear — younger professionals have been pricing out of Windsor, Paddington, and Kelvin Grove and finding Newmarket a 4–5km inner-city alternative with house and unit stock at 15–20% below those suburbs. The resulting demographic shift is visible in café culture: there is appetite for quality food and specialty coffee that the current strip on Enoggera Road does not fully serve.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Newmarket's Enoggera Road commercial strip runs from Ashgrove Avenue to Newmarket Road — approximately 800 metres of active retail. The current operator mix reflects the older demographic and commercial character: a mix of convenience retail, established takeaway operators, and a handful of independent cafés that serve quality but not specialty positioning. The gap between incoming demographic expectation (specialty coffee, quality brunch, fresh food) and current supply is the commercial opportunity that the early-mover operator can capture before the strip reprices.</p>
@@ -123,25 +123,25 @@ export default function NewmarketPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Newmarket's commercial competition is moderate and not yet high-quality. The strip has established operators but few specialty operators targeting the arriving professional demographic. The competitive gap is real — a quality specialty café or quality lunch operator entering Newmarket in 2026 will not be fighting incumbent quality competition; they will be establishing the quality benchmark for a strip that doesn't yet have one.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Café (Professional and Community Positioning)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Café (Professional and Community Positioning)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The arriving professional demographic in Newmarket is the same cohort who would patronise a Paddington or West End café if they lived closer. They are seeking quality and are currently compromising on it in Newmarket. A specialty café with strong breakfast and brunch trade achieves community loyalty quickly. Revenue $30,000–$50,000/month within 12 months.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Fresh and Healthy Lunch (Takeaway-Forward)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Fresh and Healthy Lunch (Takeaway-Forward)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Commuter foot traffic at Newmarket station creates a weekday takeaway lunch opportunity for a quality healthy food concept. QUT Kelvin Grove and professional residents add to the daily volume. Revenue $25,000–$40,000/month from a well-positioned takeaway operation.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Premium Dining (Full Service)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Premium Dining (Full Service)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Newmarket's demographic is improving but not yet at Paddington or Bulimba levels for premium evening dining. A mid-price casual restaurant ($40–$55 per head) is viable; a premium concept ($70–$90 per head) requires additional time for the demographic to mature and develop evening dining habits locally.</p>
@@ -152,21 +152,21 @@ export default function NewmarketPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Demographic Transition Still in Progress</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Demographic Transition Still in Progress</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Newmarket's professional demographic shift is real but not yet complete. Revenue in the first 12 months may underperform models built on the demographic endpoint rather than the current midpoint. Budget for an 18-month establishment curve.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Strip Character Improvement Required</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Strip Character Improvement Required</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Enoggera Road's current mix of convenience retail and older food operators is not yet the character strip that attracts destination-shopping from across the northern suburbs. Early operators are building the strip's character as much as serving existing demand.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Moderate Foot Traffic Base</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Moderate Foot Traffic Base</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Newmarket's foot traffic score (70/100) reflects real but not exceptional foot traffic. Operators who rely on passive walk-in customer acquisition alone will find customer acquisition slower than in Paddington or West End. Active community marketing required.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/paddington" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

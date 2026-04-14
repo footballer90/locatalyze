@@ -12,7 +12,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -256,15 +256,15 @@ export default function MerrylandsPage() {
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>RSL Competition for Casual Dining</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>RSL Competition for Casual Dining</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The RSL's subsidised food operation is a direct dining competitor. Non-dining categories (café, retail, health) are unaffected.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Stockland Expansion</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Stockland Expansion</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Stockland Merrylands expansion (approved 2025) will increase chain operator density 2026–2028. Independent operators must establish before repricing cycle completes.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Income Sensitivity</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Income Sensitivity</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>At $74,000 median income, discretionary spending is vulnerable to economic shocks. Revenue variance is higher in this income band than in $90k+ suburbs.</p>
             </div>
           </div>

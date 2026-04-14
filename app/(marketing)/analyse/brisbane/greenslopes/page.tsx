@@ -6,7 +6,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
@@ -111,7 +111,7 @@ export default function GreenslopesPage() {
           <ScoreBar label='Competition Gap' value={72} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Greenslopes Private Hospital is one of Queensland's largest private hospitals — 550+ beds, 25+ operating theatres, and a specialist medical complex that attracts patients and medical professionals from across Brisbane's southern suburbs. The hospital employs 3,000+ staff and draws patients from a wide geographic catchment for elective surgery, rehabilitation, and specialist consultations. This creates a commercial demand base that is structurally different from a residential suburb: it is institution-anchored, calendar-driven, and largely insulated from economic cycles. Healthcare demand doesn't evaporate in a recession.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Greenslopes commercial strip — primarily Chatsworth Road and Logan Road near the hospital — has historically underdelivered quality commercial services relative to the hospital's demand base. Visitors accompanying patients need food and coffee; medical staff need accessible lunch and healthcare services themselves; post-surgical rehabilitation patients need physiotherapy, pharmacy, and support services. Current commercial supply on Chatsworth Road is a mix of established operators and thin quality — the gap between institutional demand and commercial supply creates the opportunity.</p>
@@ -123,25 +123,25 @@ export default function GreenslopesPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Greenslopes allied health competition is thinner than the hospital's demand base would justify. A small cluster of GPs, pharmacies, and specialist rooms occupies positions in the hospital precinct, but the surrounding strip has limited quality allied health supply. Physiotherapy, psychology, and dental operators within a 300–500m radius of the hospital serve a captive post-surgical and specialist-referred patient base with minimal quality competition. The café and food market adjacent to the hospital is adequately served but not specialty-positioned — the institutional staff and visitor market is accepting of adequate rather than demanding of excellent.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Psychology, Occupational Therapy)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Allied Health (Physio, Psychology, Occupational Therapy)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Post-surgical rehabilitation and specialist-referred allied health demand from Greenslopes Private Hospital is significant and underserved within walking distance. A physiotherapy or occupational therapy practice near the hospital captures specialist referrals and private health fund patients. Revenue $45,000–$70,000/month with low demand volatility.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Café (Hospital Staff and Visitor Positioning)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Café (Hospital Staff and Visitor Positioning)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Hospital staff (3,000+ employees) need quality food and coffee within walking distance. A café positioned for the hospital precinct — consistent quality, efficient service, good seating, accessible from staff entry points — achieves consistent Mon–Fri volume with lower weekend dependency than residential strips. Revenue $35,000–$55,000/month.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialist Pharmacy or Compounding Pharmacy</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialist Pharmacy or Compounding Pharmacy</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Hospital-adjacent pharmacy with compounding capability serves specialist prescriptions and post-surgical medication needs that standard chain pharmacies handle less efficiently. Revenue $50,000–$80,000/month for a well-run specialist pharmacy capturing hospital referral volume.</p>
@@ -152,21 +152,21 @@ export default function GreenslopesPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekend Foot Traffic Falls Without Hospital Activity</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekend Foot Traffic Falls Without Hospital Activity</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Hospital activity is lower on weekends (elective surgery not scheduled, fewer outpatient visits). Hospital-serving businesses see reduced weekend volume. Models must be built on a realistic weekend-reduced trading profile.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Hospital Competition for Space</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Hospital Competition for Space</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The hospital precinct itself has commercial tenancies that compete with nearby strip operators for the most captive staff and patient foot traffic. External positions need to build reason for hospital staff to exit the precinct — quality product is the primary driver.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Specialist Referral Dependency</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Specialist Referral Dependency</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Allied health practices dependent on hospital specialist referrals need to establish referral relationships before revenue reaches model levels. Building referral pipelines takes 6–12 months. Budget for a slow establishment period.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/woolloongabba" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

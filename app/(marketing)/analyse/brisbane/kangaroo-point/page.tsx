@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -151,7 +151,7 @@ export default function KangarooPointPage() {
           <ScoreBar label='Competition Gap' value={75} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Kangaroo Point is the Brisbane suburb that keeps being 'discovered' by operators, then failing to hold their attention, then being rediscovered. The pattern reveals something real about the suburb: the opportunity is genuine, but the execution requirements are more specific than the residential demographics suggest. The suburb's appeal is obvious — riverfront lifestyle, proximity to the CBD (1.2km to the Story Bridge), and a residential population of professionals and young families who earn above average incomes and have established quality-spending habits. The problem has historically been that weekday commercial foot traffic is thin relative to what residential quality implies.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Kangaroo Point Cliffs are the commercial wildcard. On a warm Saturday morning, the Cliffs strip (primarily near Wharf Street and the ferry terminal) draws cyclists, joggers, and families from across inner Brisbane in volumes that dwarf the suburb's residential population. These visitors — healthy, activity-oriented, with disposable income and post-exercise appetites — are an ideal customer base for a café or casual food concept. The challenge is that this foot traffic is heavily concentrated in weekend mornings (7am–12pm) and dissipates quickly; the same positions may be very quiet Monday–Friday.</p>
@@ -163,25 +163,25 @@ export default function KangarooPointPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Kangaroo Point commercial competition is notably thin for a suburb of its residential profile. The Story Bridge Hotel is the dominant venue and its scale makes it more complement than competition for smaller operators. A handful of café operators serve the Cliffs weekend trade but the strip is not crowded. Quality dinner is almost entirely absent from the suburb's commercial offering. The competitive gap is larger than in West End or Paddington — and the demographic to fill it is there.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Weekend Café (Cliffs and Ferry Terminal Position)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Weekend Café (Cliffs and Ferry Terminal Position)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Saturday and Sunday 7am–12pm Cliffs foot traffic is genuine and high-quality. A café with outdoor positioning, quality coffee, and post-exercise food (acai bowls, eggs, smoothies) reaches the cyclist and jogger demographic at its peak spending moment. Revenue $35,000–$55,000/month, heavily weighted to weekends.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Weekday Professional Lunch (Resident-Serving)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Weekday Professional Lunch (Resident-Serving)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Main Street and surrounding streets have a permanent resident base that currently drives to Woolloongabba or the CBD for quality lunch. A quality lunch offering (80% takeaway, 20% dine-in) serving the professional resident population Monday–Friday builds consistent weekday revenue. Revenue $25,000–$40,000/month from weekday-only trading.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Evening Dining (Quality Casual)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Evening Dining (Quality Casual)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Viable for a well-conceived concept but requires building loyalty from scratch in a suburb without established dinner culture. The residential demographic has the spending capacity; the dining habit has not yet formed locally. 12–18 month establishment period required before revenue stabilises at model levels.</p>
@@ -192,21 +192,21 @@ export default function KangarooPointPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekday-Weekend Revenue Imbalance</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekday-Weekend Revenue Imbalance</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Cliffs foot traffic is powerfully weekend-concentrated. Models built on weekend-only revenue need to account for thin weekday trading from the resident base alone. Monthly revenue will have high variance between weekend-peak and weekday-trough weeks.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weather Dependency</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weather Dependency</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Outdoor Cliffs trade is weather-dependent in a way that indoor café and restaurant trade is not. A wet July can materially reduce weekend revenue. Revenue modelling must include weather-impact buffers.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Parking Constraints for Destination Customers</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Parking Constraints for Destination Customers</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Kangaroo Point is accessible by ferry and on foot from the CBD and New Farm, but car parking is limited. Concepts that require destination-drive customers from outer suburbs face access constraints.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/woolloongabba" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

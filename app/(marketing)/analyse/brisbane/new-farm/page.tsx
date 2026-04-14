@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -173,7 +173,7 @@ export default function NewFarmPage() {
 
         {/* Business environment */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>New Farm's commercial opportunity is most clearly articulated by a single data point: on a Saturday morning between 9am and 12pm, Brunswick Street and Merthyr Road carry genuine brunch foot traffic that rivals any inner-suburb strip in Brisbane — and there are three independent cafés to absorb it. Three. In Paddington or West End, that same foot traffic would be served by 12–15 operators. The demand-supply gap in New Farm's weekend brunch market is one of the most acute in Brisbane, and it exists because New Farm has been a residential suburb whose commercial strip has not kept pace with its population quality.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The demographic profile of New Farm is among the strongest in Queensland. Median household income approaches $95,000 — placing it among the top 10 suburbs in the state by income concentration. The residential character is established professionals, architects, lawyers, and media figures who have chosen New Farm precisely because it is quieter and more refined than Paddington or West End. These residents have the same spending habits as Paddington customers but fewer local options for those habits. The New Farm customer who wants quality brunch currently either queues at one of the three existing operators or drives to Paddington.</p>
@@ -189,25 +189,25 @@ export default function NewFarmPage() {
 
         {/* What works */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Brunch Café (Weekend Revenue Engine)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Brunch Café (Weekend Revenue Engine)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Saturday–Sunday 8am–2pm is where New Farm's commercial opportunity concentrates. A 40–50 seat specialty café with strong brunch program, quality coffee, and outdoor seating along Brunswick Street could achieve $55,000–$80,000/month. The demand-supply ratio makes customer acquisition easier than any comparable suburb.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Premium Evening Dining</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Premium Evening Dining</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>New Farm residents currently travel to Paddington or West End for quality dinner. A 40-seat mid-price restaurant ($55–$75 per head) positioned for Thursday–Sunday evening trade would find immediate support from a demographic that wants quality locally. Revenue $50,000–$75,000/month within 12 months of opening.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Retail (Lifestyle/Homewares)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Retail (Lifestyle/Homewares)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>New Farm's affluent residential base supports quality lifestyle retail, but the strip has limited pedestrian retail habit compared to Paddington. Destination retail with a strong online presence to complement in-store sales is more viable than walk-in retail alone.</p>
@@ -220,15 +220,15 @@ export default function NewFarmPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Weekday Residential Base is Smaller Than Weekend</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekday Residential Base is Smaller Than Weekend</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>New Farm's commercial strip relies heavily on weekend and evening trade. Weekday foot traffic is primarily residential — residents walking for coffee or lunch. A business that requires strong Monday–Friday volume to support its cost base will find New Farm challenging.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Premium Rent for Premium Positioning</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Premium Rent for Premium Positioning</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>New Farm riverfront positions ($5,500–$7,500/month) are premium for the suburb's current commercial development. Revenue models need to account for weekend-heavy trading patterns before the rent position works.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Limited Public Transport for Non-Residents</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Limited Public Transport for Non-Residents</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>New Farm lacks direct train access. Ferry is available at Merthyr Park but serves primarily weekend leisure. Operators dependent on a broad city-wide customer base find that most customers arrive by car, creating parking constraints on weekends.</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function NewFarmPage() {
 
         {/* Nearby suburbs */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/teneriffe" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

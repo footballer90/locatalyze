@@ -6,7 +6,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
@@ -111,7 +111,7 @@ export default function NundahPage() {
           <ScoreBar label='Competition Gap' value={68} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Nundah has completed the early stage of the demographic transition that Newmarket and Aspley are still moving through. The suburb's Sandgate Road and Nundah Village strip has developed a café culture that is real, community-driven, and relatively well-established. Young professionals who priced out of Fortitude Valley and New Farm over the past decade found Nundah — 8km north of the CBD, 15 minutes to the Valley by train, affordable by inner-city standards — and brought their spending habits with them. The result is a strip with an improving quality ceiling that didn't exist 10 years ago.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Nundah Village precinct around Sandgate Road between Buckland Road and Gibbon Street has become the commercial heart of the suburb's café culture. Quality operators have established here and built loyal customer bases from the surrounding residential catchment — not just immediate Nundah residents, but professionals from Clayfield, Hendra, and Wavell Heights who travel to Nundah for the community character. This cross-suburb draw is the commercial signal that a strip has reached a quality threshold: customers don't just visit because it's convenient, they visit because they prefer it.</p>
@@ -123,25 +123,25 @@ export default function NundahPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Nundah's café competition is established — several quality independents have built loyal customer bases on Sandgate Road. The competitive gap is in specific categories: quality evening dining (the strip is lunch-and-café dominant; good-quality dinner is underserved), specialty wellness and fitness (the professional demographic demands quality yoga and fitness; current operators are moderate), and allied health (growing professional population with healthcare needs thin on quality supply). New café entrants must differentiate clearly — generic positioning against established loyalty will be slow.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Evening Dining (Neighbourhood Restaurant)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Evening Dining (Neighbourhood Restaurant)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Nundah's professional demographic currently drives to New Farm or Fortitude Valley for quality dinner. A 35-seat neighbourhood restaurant at $50–$65 per head with Thursday–Sunday focus fills the gap. Community loyalty in Nundah builds quickly for quality operators. Revenue $30,000–$50,000/month.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Psychology, Yoga)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Allied Health (Physio, Psychology, Yoga)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The arriving young professional demographic has above-average demand for allied health and wellness. A physiotherapy or yoga studio positioned for the professional catchment finds referral-driven growth from a demographic that prioritises health spending. Revenue $30,000–$50,000/month.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Café (Differentiated)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Café (Differentiated)</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Café market is established. A new entrant must offer genuine differentiation — specialty roaster, distinct food program, community programming — to displace loyalty from existing operators. Generic café entry will establish slowly. Revenue $25,000–$40,000/month for a well-differentiated operator.</p>
@@ -152,21 +152,21 @@ export default function NundahPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Established Café Loyalty</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Established Café Loyalty</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Nundah's café culture has established operators with strong community loyalty. New café entrants face a longer establishment period than in earlier-stage suburbs like Newmarket. Budget for 12–18 months to build revenue to model levels.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Strip Length Limits Prime Positions</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Strip Length Limits Prime Positions</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The Nundah Village core is compact. Prime positions (high foot traffic, good visibility) are limited. Secondary positions on Sandgate Road away from the village core have materially lower walk-in foot traffic.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Airport Traffic Doesn't Convert Well</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Airport Traffic Doesn't Convert Well</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Despite proximity to the airport, airport-transit foot traffic doesn't convert to commercial customers at high rates. Operators who model revenue based on airport worker or traveller volumes will be disappointed; the suburb's commercial strength comes from the residential catchment, not transit traffic.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/chermside" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

@@ -6,7 +6,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 type Verdict = 'GO' | 'CAUTION' | 'NO'
@@ -111,7 +111,7 @@ export default function ToowongPage() {
           <ScoreBar label='Competition Gap' value={70} />
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Toowong sits between two major commercial influences: the University of Queensland campus (1.5km west) and the Toowong Village shopping centre. Both generate foot traffic but attract operators with different business models. The UQ connection means that students, academics, and professional services associated with the university make Toowong their natural gateway suburb — cafés, services, and quality food between the campus and the CBD train line. The Toowong Village shopping centre concentrates mainstream retail inside its walls, which creates the familiar challenge for strip retailers of competing with a centre that has higher marketing budgets and parking advantages.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The demographic profile of Toowong is genuinely mixed — students on thin incomes share the suburb with professionals and families who earn $80,000–$100,000+ per household. This bifurcation requires operators to decide which demographic they are primarily serving. The student market rewards value positioning and efficiency; the professional-family market rewards quality and reliability. Operators who try to serve both simultaneously often find their product positioning unclear and their margins under pressure from both directions. The strongest Toowong operators have picked a lane and committed to it.</p>
@@ -123,25 +123,25 @@ export default function ToowongPage() {
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Toowong has established operators in café and casual dining, but the quality ceiling is below what the professional demographic demands. The competitive gap is in specialty coffee (the UQ academic demographic spends on quality coffee at higher rates than income would predict), quality dinner (the professional-family catchment drives to Paddington for evening dining), and allied health (UQ health sciences creates demand that the suburb's current allied health supply does not fully meet). Premium positioning in any of these categories finds a receptive market.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Café (Academic and Professional Positioning)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Café (Academic and Professional Positioning)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>UQ academics and professional residents in the Toowong catchment have strong specialty coffee spending habits. A cafe with quality beans, laptop-friendly format, and quality food achieves consistent Monday–Saturday revenue from both student-academic weekday traffic and professional-family weekend trade. Revenue $35,000–$55,000/month.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Psychology, Dentistry)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Allied Health (Physio, Psychology, Dentistry)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>Toowong serves UQ students (40,000+ enrolled), academics, and surrounding professional families — all with healthcare needs that the current supply underserves. A physiotherapy or dental practice positioned for both student and professional patients builds consistent revenue from two non-correlated catchment groups. Revenue $40,000–$65,000/month.</p>
             </div>
             <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Quality Evening Dining</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Quality Evening Dining</h3>
                 <VerdictBadge v="CAUTION" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The professional-family demographic has the spending capacity for quality dinner; the student demographic does not. An evening dining concept in Toowong must be clearly positioned for the professional market and priced accordingly. Mixed positioning that tries to capture both markets at different price points typically finds neither comfortable.</p>
@@ -152,21 +152,21 @@ export default function ToowongPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Student-Professional Split Positioning Challenge</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Student-Professional Split Positioning Challenge</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Toowong's dual demographic requires deliberate positioning. Generic positioning that tries to capture both students (value-sensitive) and professionals (quality-sensitive) satisfies neither fully. Pick your primary demographic and design your product and pricing accordingly.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Shopping Centre Gravity</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Shopping Centre Gravity</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Toowong Village concentrates mainstream retail spending inside its walls. Strip retail operators on High Street must offer something the centre cannot: specialty positioning, community character, or categories the centre doesn't host well (healthcare, specialty food).</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Student Seasonality</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Student Seasonality</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>UQ semester structure means January, June, and July have reduced student population. Operators primarily serving the student demographic need to plan for semester-break revenue reduction.</p>
             </div>
           </div>
         </div>
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/paddington" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}

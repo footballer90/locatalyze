@@ -12,7 +12,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -256,15 +256,15 @@ export default function LakembaPage() {
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Community Trust Barrier</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Community Trust Barrier</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Operators without community connection face structural disadvantage. High and slow to build—operators with no endorsement fail regardless of quality.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Income Volatility</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Income Volatility</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The demographic is disproportionately affected by economic downturns and employment shocks. Revenue can drop materially during broader economic stress.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Ramadan Lumpiness</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Ramadan Lumpiness</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Non-Ramadan periods can be quieter. Eid and Ramadan spikes create lumpiness requiring careful budget planning.</p>
             </div>
           </div>

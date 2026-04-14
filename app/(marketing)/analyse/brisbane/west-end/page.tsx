@@ -7,7 +7,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', mutedLight: '#94A3B8', border: '#E2E8F0',
+  muted: '#475569', mutedLight: '#94A3B8', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -173,7 +173,7 @@ export default function WestEndPage() {
 
         {/* Business environment */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Business Environment</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>West End is the suburb that Brisbane hospitality operators point to when they want to prove Brisbane can do what Melbourne does. Boundary Street from Vulture Street to Montague Road has accumulated 30 years of independent operator culture — venues that have survived multiple economic cycles, built genuine community loyalty, and created a street character that is the product of authentic decisions rather than precinct branding. The customers here are not tourists or passing foot traffic. They are residents who walk from home, regulars who have been coming to the same café for a decade, and a community that actively chooses independent over chain as a point of identity.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The demographic profile of West End is one of the most commercially advantageous in Queensland. Median household income sits at approximately $88,000 — above Brisbane average but not stratospheric. More importantly, the income composition skews toward younger professionals, creative industry workers, academics from nearby universities, and established residents who have maintained spending habits through successive economic cycles. This demographic spends on food, culture, and experience at rates significantly above what income alone would predict. The West End customer is not value-hunting — they are quality-seeking.</p>
@@ -189,25 +189,25 @@ export default function WestEndPage() {
 
         {/* What works */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>What Works Here</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Specialty Café (Differentiated Concept)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Specialty Café (Differentiated Concept)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>West End rewards differentiation. A café with a roasting program, specialty origin coffee, or distinct food concept attracts loyal West End regulars who are bored of generic offerings. Revenue $50,000–$75,000/month for a well-positioned 40-seat operator with strong weekend brunch trade.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Evening Dining — Wine and Small Plates</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Evening Dining — Wine and Small Plates</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>The West End evening market is underserved relative to its lunch dominance. A natural wine bar or quality small-plates restaurant fills a gap that the current operator mix doesn't fully address. Revenue $45,000–$70,000/month for a venue with strong Thursday–Sunday evening trade.</p>
             </div>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Psychology, Yoga)</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1C1917', margin: 0 }}>Allied Health (Physio, Psychology, Yoga)</h3>
                 <VerdictBadge v="GO" />
               </div>
               <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.6, margin: 0 }}>West End's professional and creative demographic has above-average demand for allied health and wellness services. Yoga studios, physiotherapy, and psychology practices find strong referral networks and loyal clientele. Revenue $40,000–$65,000/month for a well-positioned allied health practice.</p>
@@ -220,15 +220,15 @@ export default function WestEndPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Established Operator Loyalty</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Established Operator Loyalty</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>West End regulars are loyal to incumbents. New entrants take longer to establish than in suburbs with less embedded operator culture. Budget for a 9–12 month establishment period before revenue stabilises.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Limited Vacancy</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Limited Vacancy</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Quality Boundary Street tenancies move quickly. Operators waiting for the perfect position may wait 18+ months. Secondary streets (Vulture, Montague) offer faster entry at lower rent but with lower foot traffic.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Parking Constraints</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Parking Constraints</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>West End has limited parking, which deters some demographics. The residential walk-in customer is strong; the car-dependent outer-suburbs customer is harder to reach. Concepts requiring destination-drive customer acquisition face access constraints.</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function WestEndPage() {
 
         {/* Nearby suburbs */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1C1917', margin: '0 0 20px 0' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             <Link href="/analyse/brisbane/south-brisbane" style={{ textDecoration: 'none' }}>
               <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer' }}
