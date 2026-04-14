@@ -340,7 +340,7 @@ export default function BrisbaneCafePage() {
       </nav>
 
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)', padding: '60px 24px 52px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '60px 24px 52px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, flexWrap: 'wrap' as const }}>
             {[['Location Guides', '/analyse'], ['Brisbane', '/analyse/brisbane']].map(([label, href]) => (
@@ -605,7 +605,7 @@ export default function BrisbaneCafePage() {
 
         {/* 4 Key factors */}
         <section style={{ marginBottom: 44 }}>
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 14 }}>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 14 }}>
             The 4 Factors That Determine Brisbane Café Success
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
@@ -617,7 +617,7 @@ export default function BrisbaneCafePage() {
             ].map(f => (
               <div key={f.title} style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: '20px 22px' }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F0FDFA', border: '1px solid #CCFBF1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>{f.icon}</div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 3 }}>{f.title}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 800, color: '#F8FAFC', marginBottom: 3 }}>{f.title}</h3>
                 <p style={{ fontSize: 11, fontWeight: 700, color: S.emerald, marginBottom: 10 }}>{f.weight}</p>
                 <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.75 }}>{f.detail}</p>
               </div>

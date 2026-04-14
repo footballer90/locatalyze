@@ -94,7 +94,7 @@ export default function Page() {
           </div>
 
           <div style={{ marginBottom: 56 }}>
-            <h2 style={{ fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 20 }}>SWOT: How location shapes your retail outlook</h2>
+            <h2 style={{ fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 20 }}>SWOT: How location shapes your retail outlook</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 14 }}>
        {[
                 { label: 'Strengths', icon: '', c: S.emerald, bg: S.emeraldBg, bdr: S.emeraldBdr, items: ['High pedestrian volume from anchor stores nearby', 'Demographics precisely matched to price point', 'Low vacancy rate signals healthy street demand', 'Corner position with dual visibility'] },

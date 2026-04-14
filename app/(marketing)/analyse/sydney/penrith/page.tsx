@@ -155,12 +155,12 @@ export default function PenrithPage() {
         <Link href="/onboarding" style={{ fontSize: 14, fontWeight: 600, color: S.brand, textDecoration: 'none', padding: '8px 16px', border: `1px solid ${S.brand}`, borderRadius: 8 }}>Analyse your location</Link>
       </nav>
 
-      <div style={{ background: `linear-gradient(135deg, ${S.brand} 0%, ${S.brandLight} 100%)`, padding: '60px 24px', textAlign: 'center' }}>
+      <div style={{ background: `linear-gradient(135deg, #0F766E 0%, #0B5E57 100%)`, padding: '60px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div style={{ fontSize: 14, color: S.white, marginBottom: 16, opacity: 0.9 }}>
             <Link href="/analyse/sydney" style={{ color: S.white, textDecoration: 'none' }}>Sydney</Link> / Penrith
           </div>
-          <h1 style={{ fontSize: 48, fontWeight: 900, color: '#0F172A', marginBottom: 24 }}>Penrith</h1>
+          <h1 style={{ fontSize: 48, fontWeight: 900, color: '#FFFFFF', marginBottom: 24 }}>Penrith</h1>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
             <VerdictBadge v="GO" />
             <div style={{ fontSize: 32, fontWeight: 900, color: S.white }}>76</div>

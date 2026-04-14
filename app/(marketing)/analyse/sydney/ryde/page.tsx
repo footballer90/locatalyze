@@ -962,7 +962,7 @@ export default function RydePage() {
         {/* CTA Banner */}
         <div
           style={{
-            background: `linear-gradient(135deg, ${S.brand} 0%, ${S.brandLight} 100%)`,
+            background: `linear-gradient(135deg, #0F766E 0%, #0B5E57 100%)`,
             borderRadius: 12,
             padding: 32,
             textAlign: 'center',

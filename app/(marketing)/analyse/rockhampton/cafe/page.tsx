@@ -319,7 +319,7 @@ export default function RockhamptonCafePage() {
       </nav>
 
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)', padding: '60px 24px 52px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '60px 24px 52px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, flexWrap: 'wrap' as const }}>
             {[['Location Guides', '/analyse'], ['Rockhampton', '/analyse/rockhampton']].map(([label, href]) => (

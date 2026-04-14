@@ -392,7 +392,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#fff', fontWeight: 900, fontSize: 12,
             }}>
-              L
+              <img src="/logo-mark.svg" alt="" style={{ width: '12px', height: '12px' }} />
             </div>
             <span style={{ fontWeight: 800, fontSize: 14, color: S.headerText, letterSpacing: '-0.02em' }}>
               Locatalyze
@@ -402,6 +402,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <Link href="/blog" className="blog-link" style={{ fontSize: 13, color: S.headerMuted }}>Blog</Link>
           <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 14 }}>/</span>
           <span style={{ fontSize: 13, color: S.headerMuted }}>{post.category}</span>
+          <div style={{ flex: 1 }} />
+          <Link href="/onboarding" style={{
+            fontSize: 12, fontWeight: 700, color: S.brandLight,
+            textDecoration: 'none', border: `1px solid ${S.brand}50`,
+            borderRadius: 7, padding: '6px 14px',
+            background: `${S.brand}18`,
+            marginLeft: 'auto',
+          }}>
+            Check your location
+          </Link>
         </div>
 
         {/* Hero */}
@@ -423,10 +433,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
               <span style={{
                 fontSize: 10, fontWeight: 700,
-                color: catColor, textTransform: 'uppercase',
+                color: '#FFFFFF', textTransform: 'uppercase',
                 letterSpacing: '0.07em',
-                background: 'rgba(255,255,255,0.12)',
-                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'rgba(255,255,255,0.18)',
+                border: '1px solid rgba(255,255,255,0.3)',
                 borderRadius: 4, padding: '3px 9px',
               }}>
                 {post.category}
@@ -437,7 +447,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
               <h1 style={{
               fontSize: BLOG_THEME.type.h1, fontWeight: 800,
-              color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.2,
+              color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.2,
             }}>
               {post.title}
             </h1>
@@ -459,7 +469,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <div style={{ maxWidth: 1040, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 48, alignItems: 'flex-start' }}>
 
           {/* Main content */}
-          <div style={{ flex: 1, minWidth: 0, padding: '44px 0 80px' }}>
+          <div style={{ flex: 1, minWidth: 0, maxWidth: 720, padding: '44px 0 80px' }}>
 
             {/* Intro */}
             <p style={{
@@ -518,13 +528,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               borderRadius: 14, padding: '32px',
               textAlign: 'center', marginTop: 52, marginBottom: 16,
             }}>
-              <h3 style={{ fontSize: 19, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>
+              <h3 style={{ fontSize: 19, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>
                 Check if your location is worth it
               </h3>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 6, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 6, lineHeight: 1.6 }}>
                 See competition, demand, and risk before committing to a lease.
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>No signup required to start</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginBottom: 20 }}>No signup required to start</p>
               <Link href="/onboarding" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 background: '#fff', color: S.brand,
@@ -637,10 +647,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               }}>
                 Check your location
               </p>
-              <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: '#CBD5E1', marginBottom: 6, lineHeight: 1.6 }}>
                 See competition and risk instantly.
               </p>
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 14 }}>No signup required to start</p>
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 14 }}>No signup required to start</p>
               <Link href="/onboarding" style={{
                 display: 'block', textAlign: 'center',
                 background: S.brand, color: '#fff',

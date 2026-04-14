@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -62,6 +63,7 @@ export default function UpgradePage() {
   async function checkout(plan: Plan) {
     setLoading(plan)
     setError('')
+    posthog.capture('checkout_initiated', { plan })
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',

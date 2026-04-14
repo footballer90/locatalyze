@@ -46,7 +46,7 @@ export default function CanberraAnalysePage() {
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.2)', border: '1px solid rgba(20,184,166,0.3)', borderRadius: 20, padding: '4px 14px', fontSize: 11, fontWeight: 700, color: S.brandLight, marginBottom: 20, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
           Canberra Location Intelligence
         </div>
-        <h1 style={{ fontSize: 40, fontWeight: 900, color: '#0F172A', maxWidth: 700, margin: '0 auto 16px' }}>
+        <h1 style={{ fontSize: 40, fontWeight: 900, color: '#F8FAFC', maxWidth: 700, margin: '0 auto 16px' }}>
           Best Suburbs to Open a Business in Canberra
         </h1>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', maxWidth: 560, margin: '0 auto 32px', lineHeight: 1.7 }}>
@@ -375,7 +375,7 @@ export default function CanberraAnalysePage() {
 
         {/* FINAL CTA */}
         <section style={{ background: S.n900, borderRadius: 20, padding: '48px 32px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Ready to analyse your exact Canberra location?</h2>
+          <h2 style={{ fontSize: 28, fontWeight: 900, color: '#F8FAFC', marginBottom: 12 }}>Ready to analyse your exact Canberra location?</h2>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginBottom: 28, maxWidth: 480, margin: '0 auto 28px' }}>
             Stop guessing. Get a full GO / CAUTION / NO verdict with competitor data, demographics, and a 3-year financial model — in about 90 seconds.
           </p>

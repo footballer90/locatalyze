@@ -100,14 +100,14 @@ export default function FootscrayPage() {
         <Link href="/analyse/melbourne" style={{ fontWeight: 700, fontSize: 14, color: S.brand, textDecoration: 'none' }}>← Melbourne</Link>
         <Link href="/onboarding" style={{ background: S.brand, color: S.white, borderRadius: 8, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
       </nav>
-      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)', padding: '52px 24px 44px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '52px 24px 44px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
             <Link href="/analyse/melbourne" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textDecoration: 'none' }}>Melbourne</Link>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>›</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Footscray</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+          <h1 style={{ fontSize: 'clamp(26px,5vw,44px)', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
             Opening a Business in Footscray VIC 3011: 2026 Location Analysis
           </h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.78)', maxWidth: 600, lineHeight: 1.7, marginBottom: 22 }}>
@@ -225,7 +225,7 @@ export default function FootscrayPage() {
           <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 14, color: S.muted }}>The specific playbook: specialty coffee or quality evening restaurant on Hopkins or Barkly Street, serving the professional residential demographic that has arrived and is actively looking for more quality options. At $4,500–$6,500/month rent for a concept that generates $80,000–$120,000/month, the economics are among Melbourne's best. In 2028–2030, these rents will be materially higher as the suburb's transformation becomes more apparent. The time to sign is now.</p>
         </section>
         <div style={{ background: 'linear-gradient(135deg, #047857, #059669)', borderRadius: 14, padding: 40, textAlign: 'center', marginBottom: 44 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0F172A', marginBottom: 12 }}>Analyse your Footscray address</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: '#FFFFFF', marginBottom: 12 }}>Analyse your Footscray address</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 24, lineHeight: 1.6 }}>Get a specific rent benchmark, competitor map, and GO/CAUTION/NO verdict for your exact address. Free.</p>
           <Link href="/onboarding" style={{ background: S.white, color: S.emerald, borderRadius: 10, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', display: 'inline-block' }}>Start free analysis →</Link>
         </div>

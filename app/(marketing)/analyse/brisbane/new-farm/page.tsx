@@ -120,7 +120,7 @@ const SCHEMAS = [
 
 export default function NewFarmPage() {
   return (
-    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: S.n900 }}>
       {SCHEMAS.map((s, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
       ))}
@@ -132,7 +132,7 @@ export default function NewFarmPage() {
       </div>
 
       {/* Hero */}
-      <div style={{ background: `linear-gradient(135deg, #0891B2 0%, #0369A1 100%)`, padding: '56px 24px 48px', color: S.white }}>
+      <div style={{ background: `linear-gradient(135deg, #0369A1 0%, #024F80 100%)`, padding: '56px 24px 48px', color: S.white }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginBottom: 16, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>
             <Link href="/analyse" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Analyse</Link>
@@ -164,7 +164,7 @@ export default function NewFarmPage() {
 
         {/* Score card */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: S.n900, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={82} />
           <ScoreBar label='Demographics' value={83} />
           <ScoreBar label='Rent Viability' value={71} />
@@ -183,7 +183,7 @@ export default function NewFarmPage() {
 
         {/* Competition */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: S.n900, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Competition in New Farm is thin relative to demand — which is the core opportunity. Three independent cafés, a small number of established restaurants, and very little recent new entrant activity. The absence of competition should be read as an opportunity signal, not a warning sign: New Farm's residential character has historically discouraged commercial investment rather than signalling weak demand. The residential quality is superb; the operator quality has not caught up.</p>
         </div>
 
@@ -217,7 +217,7 @@ export default function NewFarmPage() {
 
         {/* Key risks */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: S.n900, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekday Residential Base is Smaller Than Weekend</h4>
@@ -282,7 +282,7 @@ export default function NewFarmPage() {
 
         {/* Final verdict */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: S.n900, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>New Farm is a GO with one of the most compelling specific arguments of any Brisbane suburb: demand-supply imbalance in the weekend brunch market is acute and currently unresolved. Three independent cafés for a suburb of New Farm's demographic quality is an unusual market condition. Operators who move first to close this gap will build customer loyalty and revenue momentum before competition arrives.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The caveat is that New Farm's commercial opportunity concentrates in specific time windows — weekend brunch and Thursday–Sunday evenings. An operator who builds around these peaks and manages costs conservatively through the mid-week trough will find New Farm viable. An operator who models New Farm as an all-week, all-hours commercial strip will be disappointed by Monday–Wednesday revenue.</p>
@@ -291,7 +291,7 @@ export default function NewFarmPage() {
 
         {/* FAQ */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: S.n900, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
             <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Why does New Farm have so few cafés?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>New Farm has historically been a residential suburb with a commercial strip that hasn't attracted the operator investment its demographics would suggest. Low historical vacancy, established operator loyalty among the three existing operators, and the suburb's quieter character relative to Paddington or West End have kept new entrant numbers low. This is changing as the residential population grows and word of the demand gap spreads among operators.</p>
@@ -308,7 +308,7 @@ export default function NewFarmPage() {
 
         {/* CTA */}
         <div style={{ background: `linear-gradient(135deg, #059669 0%, #047857 100%)`, borderRadius: 16, padding: '40px 32px', marginBottom: 48, textAlign: 'center' as const }}>
-          <h3 style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '0 0 10px 0' }}>Ready to analyse your New Farm location?</h3>
+          <h3 style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', margin: '0 0 10px 0' }}>Ready to analyse your New Farm location?</h3>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', margin: '0 0 24px 0' }}>Get foot traffic, competition, demographics, and a GO/CAUTION/NO verdict for your specific address.</p>
           <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: '#059669', padding: '13px 28px', borderRadius: 8, fontWeight: 700, textDecoration: 'none', fontSize: 14 }}>Analyse your address →</Link>
         </div>

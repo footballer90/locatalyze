@@ -120,7 +120,7 @@ function NewsletterBlock() {
       style={{
               padding: '12px 16px', borderRadius: 10, border: 'none',
        fontSize: 14, fontFamily: S.font, outline: 'none',
-       minWidth: 240, color: S.n900,
+       minWidth: 240, color: S.n900, background: '#FFFFFF',
             }}
           />
           <button
@@ -175,6 +175,10 @@ export default function BlogPageClient() {
         .blog-link:focus-visible, .cat-btn:focus-visible, .blog-input:focus-visible, .blog-button:focus-visible {
           outline: 2px solid ${S.brand};
           outline-offset: 2px;
+        }
+        @media (max-width: 640px) {
+          .featured-grid { grid-template-columns: 1fr !important; }
+          .featured-img { min-height: 200px !important; max-height: 220px; }
         }
       `}</style>
 
@@ -247,7 +251,7 @@ export default function BlogPageClient() {
               boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
        transition: 'border-color 0.15s',
       }}
-              className="article-card"
+              className="article-card featured-grid"
       >
               <div style={{ position: 'relative', overflow: 'hidden' }}>
         <img

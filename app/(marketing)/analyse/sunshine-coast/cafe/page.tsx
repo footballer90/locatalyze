@@ -422,7 +422,7 @@ export default function SunshineCoastCafePage() {
       {/* Hero */}
       <div
         style={{
-          background: `linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)`,
+          background: `linear-gradient(135deg, #0E7490 0%, #0891B2 100%)`,
           color: S.white,
           padding: '64px 24px',
           textAlign: 'center',

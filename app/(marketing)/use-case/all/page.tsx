@@ -114,7 +114,7 @@ export default function Page() {
           {/* What we analyse */}
           <div style={{ marginBottom: 72 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, textAlign: 'center' }}>What we analyse</p>
-      <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 36 }}>Every factor that determines profitability</h2>
+      <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 36 }}>Every factor that determines profitability</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16 }}>
        {[
                 { icon: '', title: 'Foot traffic & daytime population', body: 'We combine ABS daytime worker data with commuter density to estimate the real population that passes your site daily — not just residents.' },
