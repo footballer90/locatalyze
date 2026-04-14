@@ -37,7 +37,7 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   }
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 24, marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {['Yes', 'Maybe', 'No'].map((opt, i) => {
           const pct = Math.round((votes[i] / total) * 100)
@@ -116,7 +116,7 @@ export default function MountLawley() {
       {/* Scores */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}` }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Detailed Score Breakdown</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Detailed Score Breakdown</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40 }}>
             <div>
               <ScoreBar label="Foot Traffic" value={87} />
@@ -142,7 +142,7 @@ export default function MountLawley() {
       {/* Key Insights */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Why Mount Lawley Scores 85 (HIGHEST IN PERTH)</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Why Mount Lawley Scores 85 (HIGHEST IN PERTH)</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 32 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Foot Traffic (87)</h3>
@@ -167,7 +167,7 @@ export default function MountLawley() {
       {/* Rent Analysis */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Commercial Rent Ranges</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Commercial Rent Ranges</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Beaufort Street (Prime)</h3>
@@ -239,7 +239,7 @@ export default function MountLawley() {
       {/* Weekend Pattern */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>The Mount Lawley Weekend Model</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>The Mount Lawley Weekend Model</h2>
           <p style={{ fontSize: 14, color: S.muted, marginBottom: 24, lineHeight: 1.6 }}>Mount Lawley is one of the few Australian suburb strips where weekend foot traffic EXCEEDS weekday foot traffic. This is different from typical CBDs.</p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 32 }}>
@@ -278,7 +278,7 @@ export default function MountLawley() {
 
       {/* Nearby Suburbs */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
-        <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Nearby High-Performing Suburbs</h2>
+        <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Nearby High-Performing Suburbs</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
           {nearby.map(s => (
             <Link key={s.slug} href={`/analyse/perth/${s.slug}`} style={{ textDecoration: 'none' }}>
@@ -299,7 +299,7 @@ export default function MountLawley() {
       {/* Competitive Landscape */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Competitive Landscape & Differentiation</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Competitive Landscape & Differentiation</h2>
           <p style={{ fontSize: 14, color: S.muted, marginBottom: 24, lineHeight: 1.6 }}>Mount Lawley has established café and dining venues. However, the competition gap (83/100) indicates room for differentiated operators. Key is understanding what makes venues succeed here.</p>
 
           <div style={{ marginBottom: 32 }}>
@@ -329,7 +329,7 @@ export default function MountLawley() {
       {/* FAQ */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Frequently Asked Questions</h2>
 
           <div style={{ marginBottom: 28 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 8 }}>Why is Mount Lawley the highest-scoring Perth suburb?</h3>

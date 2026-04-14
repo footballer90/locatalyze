@@ -104,7 +104,7 @@ export default function GreenslopesPage() {
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={71} />
           <ScoreBar label='Demographics' value={75} />
           <ScoreBar label='Rent Viability' value={78} />
@@ -119,7 +119,7 @@ export default function GreenslopesPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Greenslopes allied health competition is thinner than the hospital's demand base would justify. A small cluster of GPs, pharmacies, and specialist rooms occupies positions in the hospital precinct, but the surrounding strip has limited quality allied health supply. Physiotherapy, psychology, and dental operators within a 300–500m radius of the hospital serve a captive post-surgical and specialist-referred patient base with minimal quality competition. The café and food market adjacent to the hospital is adequately served but not specialty-positioned — the institutional staff and visitor market is accepting of adequate rather than demanding of excellent.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
@@ -149,7 +149,7 @@ export default function GreenslopesPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekend Foot Traffic Falls Without Hospital Activity</h4>
@@ -173,7 +173,7 @@ export default function GreenslopesPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Woolloongabba</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Woolloongabba</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>79</div>
@@ -185,7 +185,7 @@ export default function GreenslopesPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Annerley</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Annerley</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>70</div>
@@ -197,7 +197,7 @@ export default function GreenslopesPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Mount Gravatt</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Mount Gravatt</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>72</div>
@@ -208,24 +208,24 @@ export default function GreenslopesPage() {
         </div>
         <SuburbPoll suburb="Greenslopes" votes={[50, 33, 17]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Greenslopes is a GO and one of the most defensible commercial positions in middle-ring Brisbane for healthcare and healthcare-adjacent operators. The hospital anchor creates demand that is not weather-dependent, not event-dependent, and not highly sensitive to economic cycles. Healthcare spending is need-driven, not discretionary — which is the commercial characteristic that most independent operators cannot access in retail or hospitality.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Greenslopes opportunity is narrow in category but very strong within it. Healthcare, healthcare-adjacent services (café, pharmacy, allied health), and professional services serving the hospital workforce and patients are the core commercial opportunity. Generic retail or hospitality without a healthcare connection finds Greenslopes competitive with nearby middle-ring suburbs but without the institutional advantage that makes the suburb exceptional.</p>
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Why is Greenslopes good for healthcare businesses?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Why is Greenslopes good for healthcare businesses?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Greenslopes Private Hospital (550+ beds, 3,000+ staff, 25+ operating theatres) creates structural demand for allied health, pharmacy, and healthcare-adjacent services that is not economically cyclical. Post-surgical patients need physiotherapy. Specialist patients need follow-up care. Hospital staff need accessible allied health for their own needs. This demand exists regardless of economic conditions.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Greenslopes?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Greenslopes?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Chatsworth Road and Logan Road positions near the hospital: $2,800–$4,500/month. Secondary positions: $1,800–$3,000/month. Greenslopes rents are moderate and appropriate for a middle-ring suburb — below inner-ring costs and defensible against the hospital's institutional demand base.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Can a café succeed in Greenslopes?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Can a café succeed in Greenslopes?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Yes, particularly a café positioned for hospital staff — consistent quality, efficient service during peak breaks (7–8am, 12–1pm), and accessible location from hospital staff entrances. The 3,000+ hospital employees represent a captive weekday customer base. The challenge is weekend revenue, which is lower without hospital activity.</p>
           </div>
         </div>

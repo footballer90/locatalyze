@@ -104,7 +104,7 @@ export default function NewmarketPage() {
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={70} />
           <ScoreBar label='Demographics' value={73} />
           <ScoreBar label='Rent Viability' value={79} />
@@ -119,7 +119,7 @@ export default function NewmarketPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Newmarket's commercial competition is moderate and not yet high-quality. The strip has established operators but few specialty operators targeting the arriving professional demographic. The competitive gap is real — a quality specialty café or quality lunch operator entering Newmarket in 2026 will not be fighting incumbent quality competition; they will be establishing the quality benchmark for a strip that doesn't yet have one.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
@@ -149,7 +149,7 @@ export default function NewmarketPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Demographic Transition Still in Progress</h4>
@@ -173,7 +173,7 @@ export default function NewmarketPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Paddington</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Paddington</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>87</div>
@@ -185,7 +185,7 @@ export default function NewmarketPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Toowong</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Toowong</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>73</div>
@@ -197,7 +197,7 @@ export default function NewmarketPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Nundah</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Nundah</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>72</div>
@@ -208,24 +208,24 @@ export default function NewmarketPage() {
         </div>
         <SuburbPoll suburb="Newmarket" votes={[44, 36, 20]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Newmarket is a GO for patient operators who understand that the suburb is mid-transition, not post-transition. The demographic is arriving, the demand for quality is forming, and the rents ($2,500–$4,500/month) remain accessible. An operator who enters now and establishes quality ahead of the demographic completing its transition builds the loyalty that later entrants will find harder to displace.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Newmarket opportunity is most compelling for café and food operators willing to be community builders, not just product sellers. The suburb's commercial culture is forming — the operator who becomes part of that formation builds a position that is structurally advantaged relative to those who arrive after the strip has developed its character.</p>
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Newmarket Brisbane a good suburb for business?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Newmarket Brisbane a good suburb for business?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>For early-mover operators targeting the arriving professional demographic, yes. For operators requiring an immediately established customer base, Paddington or West End are safer. Newmarket rewards patience and community investment; it does not reward operators who need immediate high-volume trading from an established customer base.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Newmarket?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Newmarket?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Enoggera Road prime positions: $3,000–$4,500/month. Secondary positions: $1,800–$3,000/month. Newmarket rents are among the most accessible of any Brisbane inner-northern suburb — appropriate for the current commercial development level.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How does Newmarket compare to Nundah?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How does Newmarket compare to Nundah?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Both are middle-ring Brisbane suburbs at a similar stage of demographic transition. Nundah (Sandgate Road) has a more established café culture and community strip character, making it slightly more proven as an entry market. Newmarket has lower rents and less existing competition, making it the better early-mover value play for patient operators.</p>
           </div>
         </div>

@@ -514,7 +514,7 @@ export default function NewtownPage() {
 
       <section style={{ padding: '48px 24px', backgroundColor: C.n900, color: C.white }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '12px' }}>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '12px' }}>
             Ready to open in Newtown?
           </h2>
           <p style={{ fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', opacity: 0.95 }}>

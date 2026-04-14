@@ -57,7 +57,7 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   const opts = ['Yes', 'Maybe', 'No']
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '24px', marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {opts.map((opt, i) => {
           const pct = Math.round((votes[i] / total) * 100)
@@ -171,7 +171,7 @@ export default function MountDruittPage() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Quick Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Quick Verdict</h2>
           <p style={{ fontSize: 16, lineHeight: 1.6, color: S.n900, marginBottom: 16 }}>
             Mount Druitt scores CAUTION — not NO. The distinction is critical. Australia's lowest commercial rents for any suburban train station precinct ($1,200–$2,800/month) create operational economics that don't exist elsewhere in Sydney. Spending power constraints are real and operators who fight them with premium pricing consistently fail.
           </p>
@@ -181,12 +181,12 @@ export default function MountDruittPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Location Scores</h2>
           {SCORE_BARS.map(bar => <ScoreBar key={bar.label} label={bar.label} value={bar.value} />)}
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Business Environment</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Business Environment</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Mount Druitt produces two types of business results: operators who understand the market achieve sustainable businesses with minimal competition; operators who try to apply inner-city models consistently fail. A café charging $7.50 for a flat white in Surry Hills trades on branding and experience. The same café in Mount Druitt prices at the edge of what the local demographic can sustain. At $5.50 for a flat white, a quality independent café at Mount Druitt Station can achieve 150–200 daily transactions and $22,000–28,000 monthly revenue.
           </p>
@@ -199,7 +199,7 @@ export default function MountDruittPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Competition Analysis</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Competition is mostly chain-based. Westfield Mount Druitt houses the full suite of quick-service chains. Independent operators outside the centre face lower foot traffic but also zero chain competition on specific products. Strategic positioning for independents is product categories Westfield's food court doesn't cover: specialty coffee (genuinely absent), quality Asian street food beyond existing Chinese/Vietnamese, and health services (entirely absent from the Westfield model).
           </p>
@@ -209,7 +209,7 @@ export default function MountDruittPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Demographics</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Demographics</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Mount Druitt LGA has Sydney's highest concentration of NDIS participants by suburb, along with above-average rates of welfare dependence and chronic health conditions. This is not only social — it's economic. Allied health operators who work within NDIS funding frameworks access a captive, funded demand stream that bypasses income limitation entirely. NDIS-funded physio, psychology, and occupational therapy generate sustainable revenue regardless of local median income.
           </p>
@@ -219,24 +219,24 @@ export default function MountDruittPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Works Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Works Here</h2>
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>NDIS-Aligned Allied Health (Physio, Psychology, OT)</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>NDIS-Aligned Allied Health (Physio, Psychology, OT)</h3>
               <VerdictBadge v="GO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Funded demand stream bypasses income constraint entirely. Sustainable revenue independent of local median income. Zero competition outside existing GP practices.</p>
           </div>
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Quality Affordable Food (Flat White &lt;$6, Meals &lt;$18)</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Quality Affordable Food (Flat White &lt;$6, Meals &lt;$18)</h3>
               <VerdictBadge v="GO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Right price point unlocks strong volume that premium pricing never achieves. Independent specialty coffee completely absent from station precinct despite 6,000+ daily commuters.</p>
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Tutoring/Education Support</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Tutoring/Education Support</h3>
               <VerdictBadge v="GO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Mount Druitt has high school-age population with parents who spend on education outcomes. Established tutoring operators report strong demand and minimal competition.</p>
@@ -244,17 +244,17 @@ export default function MountDruittPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Fails Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Fails Here</h2>
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Premium Positioning (Main Course Over $25, Coffee Over $7)</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Premium Positioning (Main Course Over $25, Coffee Over $7)</h3>
               <VerdictBadge v="NO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>This market cannot sustain premium pricing. Attempting to apply premium-focused business models fails consistently.</p>
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Specialty Retail with $100+ ATV</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Specialty Retail with $100+ ATV</h3>
               <VerdictBadge v="NO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>The demographic cannot sustain high transaction value retail regardless of quality or marketing investment.</p>
@@ -262,36 +262,36 @@ export default function MountDruittPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Underrated Opportunity</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Underrated Opportunity</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, margin: 0 }}>
             Quality affordable breakfast/brunch (8am–12pm) is genuinely absent from Mount Druitt station precinct. Morning commuter volume at the station (6,000+ daily boardings) passes through with zero quality coffee or food option beyond a convenience store and Westfield food court. A compact café (30 seats, specialty coffee at $5.50, breakfast at $12–16) positioned on the station exit could achieve 120–150 daily transactions generating $18,000–24,000/month revenue at a $1,800/month rent. That's a 7–8% rent ratio that inner Sydney can only dream about.
           </p>
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Key Risks</h2>
           <div style={{ marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Income Ceiling is Real and Persistent</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Income Ceiling is Real and Persistent</h3>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Pricing above the market's tolerance ceiling fails consistently. The ceiling is lower than any other major Sydney hub. Operators must price for volume, not margin per transaction.</p>
           </div>
           <div style={{ marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Social Complexity</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Social Complexity</h3>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Mount Druitt's challenges (homelessness, crime, community services concentration) create an operational environment requiring more staff training and security awareness than most suburban locations.</p>
           </div>
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Westfield Gravitational Pull</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Westfield Gravitational Pull</h3>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Any product overlapping with the centre's offer loses on price and convenience. Differentiation is mandatory for survival on independent strips.</p>
           </div>
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Compare Nearby</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Compare Nearby</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
             {NEARBY.map(suburb => (
               <Link key={suburb.slug} href={`/analyse/sydney/${suburb.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: S.n50, border: `1px solid ${S.border}`, borderRadius: 12, padding: '20px', cursor: 'pointer', transition: 'border-color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)} onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{suburb.name}</h3>
+                    <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>{suburb.name}</h3>
                     <VerdictBadge v={suburb.verdict} />
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 900, color: S.brand }}>{suburb.score}</div>
@@ -304,7 +304,7 @@ export default function MountDruittPage() {
         <SuburbPoll suburb="Mount Druitt" />
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Final Verdict</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Mount Druitt is a CAUTION location that can work exceptionally well for the right operator. This is not a location to apply standard inner-city business models. Success requires understanding the market, accepting its constraints, and positioning around them rather than against them.
           </p>

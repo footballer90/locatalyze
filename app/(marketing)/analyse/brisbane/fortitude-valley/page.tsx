@@ -164,7 +164,7 @@ export default function FortitudeValleyPage() {
 
         {/* Score card */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={78} />
           <ScoreBar label='Demographics' value={73} />
           <ScoreBar label='Rent Viability' value={70} />
@@ -183,7 +183,7 @@ export default function FortitudeValleyPage() {
 
         {/* Competition */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Competition in the Valley is changing character. Established nightlife operators (bars, clubs, late-night venues) are being joined by daytime café and lunch operators who have recognised the residential and professional opportunity. The competitive gap is in categories the nightlife economy doesn't serve: specialty coffee with all-day food, premium lunch for creative industry workers, wellness and fitness for the apartment resident population. Healthcare and allied health are undersupplied for the resident density.</p>
         </div>
 
@@ -217,7 +217,7 @@ export default function FortitudeValleyPage() {
 
         {/* Key risks */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Reputation Lag Among Non-Residents</h4>
@@ -243,7 +243,7 @@ export default function FortitudeValleyPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Teneriffe</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Teneriffe</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>75</div>
@@ -255,7 +255,7 @@ export default function FortitudeValleyPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>New Farm</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>New Farm</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>80</div>
@@ -267,7 +267,7 @@ export default function FortitudeValleyPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Brisbane CBD</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Brisbane CBD</h4>
                   <VerdictBadge v="CAUTION" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>72</div>
@@ -282,7 +282,7 @@ export default function FortitudeValleyPage() {
 
         {/* Final verdict */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Fortitude Valley is a GO for operators who understand its current reality, not its historical reputation. The daytime trading conditions have materially improved and the residential population has grown substantially. Operators who enter the Valley in 2026 with a quality daytime concept — specialty café, lunch, wellness — find a market that has underinvested in quality food relative to its current demographic.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Valley GO verdict carries an asterisk: success requires understanding that the Valley is still a neighbourhood in transition. The establishment period may be longer than in West End or Paddington, where community loyalty cycles are more mature. Valley customers are forming habits, not carrying them. Operators who are patient with the establishment curve and consistent in quality will find the Valley a viable and improving market.</p>
@@ -291,17 +291,17 @@ export default function FortitudeValleyPage() {
 
         {/* FAQ */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Fortitude Valley safe for daytime business?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Fortitude Valley safe for daytime business?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Yes — the security issues associated with the Valley's late-night economy are time-limited. Daytime and early evening trading (9am–9pm) is safe and operates normally. The Valley's retail and café operators trade without safety concerns during standard business hours. Late-night trading (after 10pm) carries different considerations.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Fortitude Valley?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Fortitude Valley?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Brunswick Street Mall and primary strip positions: $5,000–$7,000/month. Ann Street and secondary positions: $3,500–$5,500/month. Off-strip and laneway positions: $2,500–$4,000/month. The Valley offers inner-city positioning at rent levels materially below the CBD and Paddington.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How has the Valley's daytime food culture changed?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How has the Valley's daytime food culture changed?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Significantly. Pre-2015, the Valley had minimal quality daytime food offering — a handful of cafés for the thin daytime worker population. Post-residential build-out, the Valley has a permanent population that demands café quality comparable to New Farm or Paddington. The supply of quality operators has not yet fully caught up, creating opportunity for new entrants.</p>
           </div>
         </div>

@@ -144,7 +144,7 @@ export default function PaddingtonPage() {
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={86} />
           <ScoreBar label='Demographics' value={87} />
           <ScoreBar label='Rent Viability' value={80} />
@@ -159,7 +159,7 @@ export default function PaddingtonPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Given Terrace competition is established and quality-focused. Landmark operators (Taro's Fish and Chips, cafe institutions that have been trading for decades) hold positions with loyal customer bases that new entrants must work around rather than displace. The competitive gap is in specific categories: quality evening dining (the Terrace is stronger at lunch and café than at dinner), premium wellness and fitness (strong demographic demand, limited quality operators), and retail concepts with genuine lifestyle positioning. Generic café opening on Given Terrace against established operators will have a difficult two years. Differentiated concept with a clear offering will find an audience.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
@@ -189,7 +189,7 @@ export default function PaddingtonPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Limited Vacancy</h4>
@@ -213,7 +213,7 @@ export default function PaddingtonPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>West End</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>West End</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>85</div>
@@ -225,7 +225,7 @@ export default function PaddingtonPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>New Farm</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>New Farm</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>80</div>
@@ -237,7 +237,7 @@ export default function PaddingtonPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Toowong</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Toowong</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>73</div>
@@ -248,24 +248,24 @@ export default function PaddingtonPage() {
         </div>
         <SuburbPoll suburb="Paddington" votes={[68, 22, 10]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Paddington is Queensland's highest-scoring commercial location and deserves the score. The combination of exceptional demographics, genuine community loyalty to independent operators, and an established culture of quality-seeking hospitality customers creates a market that rewards operators who meet its standards. The score of 87 is not promotional — it reflects real market conditions.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The constraint is vacancy. Operators who want Paddington must be prepared to move quickly when positions come available and to pay competitive rent for prime positions. The alternative is patience with a secondary position at lower rent while building customer base. Either strategy can work — but both require the quality of product that the Paddington customer demands. Average is not sufficient here.</p>
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What makes Paddington Brisbane's best commercial suburb?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What makes Paddington Brisbane's best commercial suburb?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Three factors: demographic quality (median household income ~$105,000, professional and creative concentration), community loyalty (residents actively choose independent operators over chains as a point of identity), and an established culture of quality-seeking hospitality customers who return consistently. The combination creates a market that is uniquely forgiving of premium pricing and uniquely rewarding of quality execution.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent on Given Terrace?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent on Given Terrace?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Prime Given Terrace positions: $5,500–$8,000/month. Secondary Given Terrace positions: $4,000–$6,000/month. Off-street Latrobe Terrace and Enoggera Terrace: $2,500–$4,500/month. Paddington rents are justified by the demographic quality but require revenue modelling before committing.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Paddington oversaturated?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Paddington oversaturated?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Not by Brisbane standards — but it has established operators with deep community loyalty. The saturation question is category-specific: café and casual dining have strong incumbents; evening dining and premium wellness have competitive gaps. A new entrant with differentiation finds room; a generic concept taking on established loyalty does not.</p>
           </div>
         </div>

@@ -104,7 +104,7 @@ export default function NundahPage() {
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={72} />
           <ScoreBar label='Demographics' value={73} />
           <ScoreBar label='Rent Viability' value={76} />
@@ -119,7 +119,7 @@ export default function NundahPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Nundah's café competition is established — several quality independents have built loyal customer bases on Sandgate Road. The competitive gap is in specific categories: quality evening dining (the strip is lunch-and-café dominant; good-quality dinner is underserved), specialty wellness and fitness (the professional demographic demands quality yoga and fitness; current operators are moderate), and allied health (growing professional population with healthcare needs thin on quality supply). New café entrants must differentiate clearly — generic positioning against established loyalty will be slow.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
@@ -149,7 +149,7 @@ export default function NundahPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Established Café Loyalty</h4>
@@ -173,7 +173,7 @@ export default function NundahPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Chermside</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Chermside</h4>
                   <VerdictBadge v="CAUTION" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>68</div>
@@ -185,7 +185,7 @@ export default function NundahPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Newmarket</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Newmarket</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>72</div>
@@ -197,7 +197,7 @@ export default function NundahPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Fortitude Valley</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Fortitude Valley</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>74</div>
@@ -208,24 +208,24 @@ export default function NundahPage() {
         </div>
         <SuburbPoll suburb="Nundah" votes={[47, 35, 18]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Nundah is a GO for operators who understand that the suburb's commercial opportunity is in its evening and wellness gaps, not in its café market (which is adequately served). The professional demographic is there, the community loyalty pattern is established, and the rents ($2,500–$4,500/month) remain accessible relative to the demographic quality. An operator who fills the evening dining or wellness gap finds a receptive community that actively patronises local quality.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Nundah value proposition is most compelling for operators who want an established community character without Paddington or West End rents. The trade-off is lower foot traffic density and a longer establishment curve than the premier inner-ring strips. For operators who understand that trade-off and plan accordingly, Nundah is a reliable and improving commercial market.</p>
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Nundah a good suburb for a café?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Nundah a good suburb for a café?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>For a well-differentiated specialty café, yes. For a generic café entering an established community market, the establishment period will be longer than in earlier-stage suburbs. Nundah's café culture is real and community-loyal — new entrants must earn that loyalty through quality and community presence, not inherit it through location alone.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Nundah?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Nundah?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Nundah Village core positions (Sandgate Road and Buckland Road precinct): $3,000–$4,500/month. Secondary Sandgate Road positions: $2,000–$3,500/month. Off-strip residential positions: $1,500–$2,500/month. Nundah rents reflect the suburb's middle-ring quality — accessible but not entry-level.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How has Nundah changed commercially in the last 5 years?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How has Nundah changed commercially in the last 5 years?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Significantly. The café and hospitality quality ceiling has risen materially as young professionals moved in and incumbent operators raised their game to meet new customer expectations. The strip character has shifted from functional suburban to genuine community café culture. This transition is now well-advanced — Nundah is established rather than transitioning, which means lower early-mover advantage but lower establishment risk.</p>
           </div>
         </div>

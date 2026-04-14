@@ -104,7 +104,7 @@ export default function ToowongPage() {
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={73} />
           <ScoreBar label='Demographics' value={74} />
           <ScoreBar label='Rent Viability' value={76} />
@@ -119,7 +119,7 @@ export default function ToowongPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Toowong has established operators in café and casual dining, but the quality ceiling is below what the professional demographic demands. The competitive gap is in specialty coffee (the UQ academic demographic spends on quality coffee at higher rates than income would predict), quality dinner (the professional-family catchment drives to Paddington for evening dining), and allied health (UQ health sciences creates demand that the suburb's current allied health supply does not fully meet). Premium positioning in any of these categories finds a receptive market.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
@@ -149,7 +149,7 @@ export default function ToowongPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Student-Professional Split Positioning Challenge</h4>
@@ -173,7 +173,7 @@ export default function ToowongPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Paddington</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Paddington</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>87</div>
@@ -185,7 +185,7 @@ export default function ToowongPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Indooroopilly</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Indooroopilly</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>71</div>
@@ -197,7 +197,7 @@ export default function ToowongPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Newmarket</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Newmarket</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>72</div>
@@ -208,24 +208,24 @@ export default function ToowongPage() {
         </div>
         <SuburbPoll suburb="Toowong" votes={[47, 35, 18]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Toowong is a GO for operators who understand the dual demographic and commit to serving one of the two lanes clearly. The UQ connection brings a consistent weekday demand base that is not weather-dependent or event-dependent. The professional-family residential catchment brings quality-seeking weekend spending. These are two complementary customer profiles that a quality operator can serve across the week without contradiction.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The risk in Toowong is generic positioning. Operators who enter without a clear primary customer in mind find their product landing between the two demographics without fully satisfying either. The suburb's strongest commercial performers — cafés with specialty coffee credentials for the academic market, allied health practices positioned for the professional family catchment — succeed by being specific about who they serve and why.</p>
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Toowong a good suburb for a café?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Toowong a good suburb for a café?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Yes, particularly a specialty café with academic and professional positioning. The UQ connection brings a quality-coffee-spending demographic to the suburb every weekday during semester. Professional families in the residential catchment drive weekend trade. The gap is in quality — most Toowong cafés serve the volume market rather than the specialty market, leaving the academic and professional demographic underserved.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Toowong?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Toowong?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>High Street and Sherwood Road prime positions: $3,500–$5,500/month. Secondary positions and off-strip: $2,000–$3,500/month. Toowong rents are accessible and below Paddington equivalents — appropriate for the current commercial development level.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How does the University of Queensland affect Toowong business?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How does the University of Queensland affect Toowong business?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>UQ's 40,000+ enrolled students and thousands of staff create weekday foot traffic that is calendar-driven but consistent during semester. The academic demographic spends heavily on coffee and food relative to income. The key risk is semester-break revenue gaps (January, June–July) which must be modelled in annual revenue projections.</p>
           </div>
         </div>

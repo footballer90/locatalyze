@@ -1000,7 +1000,7 @@ export default function NorthSydneyPage() {
             marginBottom: 40,
           }}
         >
-          <h3 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 12px 0' }}>
+          <h3 style={{ color: '#1C1917', fontSize: 20, fontWeight: 700, margin: '0 0 12px 0' }}>
             Ready to find your location?
           </h3>
           <p

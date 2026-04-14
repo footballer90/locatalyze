@@ -288,7 +288,7 @@ function SuburbPoll() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ color: '#1C1917', marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
         Which suburb would you open a restaurant in?
       </h3>
       {votes.map((option, i) => (
@@ -355,7 +355,7 @@ function ChecklistUnlock() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ color: '#1C1917', marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
         Checklist Unlock the Full Restaurant Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
@@ -549,7 +549,7 @@ export default function BendigoRestaurantPage() {
 
       {/* Market Context */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Bendigo Restaurant Market Context
         </h2>
         <p style={{ marginBottom: '16px', lineHeight: '1.6', color: S.n900 }}>
@@ -564,7 +564,7 @@ export default function BendigoRestaurantPage() {
 
         {/* Scatter Chart */}
         <div style={{ marginBottom: '48px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
             Rent vs. Revenue Potential
           </h3>
           <ResponsiveContainer width="100%" height={400}>
@@ -592,7 +592,7 @@ export default function BendigoRestaurantPage() {
 
       {/* Suburb Scores Bar Chart */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Suburb Viability Scores (0–100)
         </h2>
         <ResponsiveContainer width="100%" height={400}>
@@ -617,7 +617,7 @@ export default function BendigoRestaurantPage() {
 
       {/* Top Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }} id="top-suburbs">
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
           Top 4 Suburbs for Restaurant (GO Verdict)
         </h2>
         {TOP_SUBURBS.map((suburb) => (
@@ -630,7 +630,7 @@ export default function BendigoRestaurantPage() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px' }}>
               <div>
-                <h3 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
                   #{suburb.rank} {suburb.name} ({suburb.postcode})
                 </h3>
                 <p style={{ color: S.muted, fontSize: '14px' }}>
@@ -712,7 +712,7 @@ export default function BendigoRestaurantPage() {
         textAlign: 'center',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Need a Custom Site Analysis?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>
@@ -743,7 +743,7 @@ export default function BendigoRestaurantPage() {
 
       {/* Risk Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Caution & No-Go Suburbs
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
@@ -755,7 +755,7 @@ export default function BendigoRestaurantPage() {
               borderRadius: '12px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '700' }}>
                   {suburb.name} ({suburb.postcode})
                 </h3>
                 <VerdictBadge verdict={suburb.verdict} />
@@ -783,7 +783,7 @@ export default function BendigoRestaurantPage() {
         padding: '0 24px',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           How to Validate Your Bendigo Restaurant Idea (4 min)
         </h2>
         <div style={{
@@ -809,7 +809,7 @@ export default function BendigoRestaurantPage() {
 
       {/* FAQ */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           FAQ: Bendigo Restaurant Economics
         </h2>
         {[
@@ -868,7 +868,7 @@ export default function BendigoRestaurantPage() {
 
       {/* City vs Australia Table */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Bendigo vs Australia: Restaurant Economics
         </h2>
         <div style={{ overflowX: 'auto' }}>
@@ -948,7 +948,7 @@ export default function BendigoRestaurantPage() {
         color: S.white,
         textAlign: 'center',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Ready to Validate Your Bendigo Restaurant Idea?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>

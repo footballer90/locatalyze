@@ -144,7 +144,7 @@ export default function WoolloongabbaPage() {
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={78} />
           <ScoreBar label='Demographics' value={76} />
           <ScoreBar label='Rent Viability' value={82} />
@@ -159,7 +159,7 @@ export default function WoolloongabbaPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Woolloongabba's current commercial mix is thin in quality food and hospitality relative to its arriving demographic. Logan Road has chains (McDonald's, Red Rooster) and established automotive and trade businesses but few quality independent operators targeting the professional cohort. The gap between incoming residential demographic and current commercial supply is among the largest of any inner-Brisbane suburb. First-mover operators entering in 2025–2026 are establishing before the market has repriced to reflect Olympic-era demand.</p>
         </div>
         <div style={{ marginBottom: 48 }}>
@@ -189,7 +189,7 @@ export default function WoolloongabbaPage() {
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Olympic Timeline Risk</h4>
@@ -213,7 +213,7 @@ export default function WoolloongabbaPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Annerley</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Annerley</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>70</div>
@@ -225,7 +225,7 @@ export default function WoolloongabbaPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>South Brisbane</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>South Brisbane</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>74</div>
@@ -237,7 +237,7 @@ export default function WoolloongabbaPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Kangaroo Point</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Kangaroo Point</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>76</div>
@@ -248,24 +248,24 @@ export default function WoolloongabbaPage() {
         </div>
         <SuburbPoll suburb="Woolloongabba" votes={[56, 32, 12]} />
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Woolloongabba is the opportunity call of 2026 for Brisbane operators. The combination of Olympic infrastructure, Cross River Rail access, and residential demographic arrival creates a window for early entry at below-future-market rent levels. Operators who enter in 2025–2026 capture the lease before the Olympic-era repricing arrives. The comparison is to operators who entered Paddington 15 years ago or West End 20 years ago — before the rents reflected the demographic.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The risk is timeline: the full commercial maturity of Woolloongabba is 2030+, not 2026. Operators who enter now must model 3–5 years of below-full-potential revenue before the precinct reaches maturity. Operators with conservative cost structures, correct positioning for the arriving demographic, and patience with establishment curve will find Woolloongabba the best commercial value play in inner Brisbane.</p>
           </div>
         </div>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How will the 2032 Olympics affect Woolloongabba businesses?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How will the 2032 Olympics affect Woolloongabba businesses?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Directly and materially. The Gabba is the primary Olympic stadium, requiring full precinct upgrade. Cross River Rail, residential build-out, and hospitality precinct development are transforming the suburb's commercial character now, before 2032. Operators who establish in 2026 will have 6 years of below-market rent before the Olympic-era commercial maturity arrives.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Woolloongabba?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in Woolloongabba?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Logan Road prime positions: $4,000–$6,500/month. Secondary street positions: $2,500–$4,000/month. Stadium-adjacent positions (Stanley Street): $3,000–$5,500/month. Rents currently reflect the old Woolloongabba, not the post-Olympic version. This is the window.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Woolloongabba safe and accessible?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Woolloongabba safe and accessible?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Yes. Cross River Rail makes Woolloongabba 12 minutes from the CBD by direct train. The precinct is undergoing active urban upgrade funded by Olympic infrastructure. The historic safety concerns of the 1990s Woolloongabba are not current — the suburb has been stable and improving for over a decade.</p>
           </div>
         </div>

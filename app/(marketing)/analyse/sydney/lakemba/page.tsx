@@ -57,7 +57,7 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   const opts = ['Yes', 'Maybe', 'No']
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '24px', marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Would you open a business in {suburb}?</h3>
       <p style={{ fontSize: 13, color: S.muted, marginBottom: 18 }}>{voted === null ? 'Based on this analysis — would you take the risk?' : `You voted. Here\'s how ${total} readers responded:`}</p>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {opts.map((opt, i) => {
@@ -174,7 +174,7 @@ export default function LakembaPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ fontSize: 12, color: S.muted, margin: '0 0 8px 0', textTransform: 'uppercase', fontWeight: 600 }}>Business Verdict</p>
-              <h2 style={{ fontSize: 32, fontWeight: 800, margin: 0, marginBottom: 12 }}>Lakemba</h2>
+              <h2 style={{ color: '#1C1917', fontSize: 32, fontWeight: 800, margin: 0, marginBottom: 12 }}>Lakemba</h2>
               <p style={{ fontSize: 14, color: S.n900, margin: 0, lineHeight: 1.6, maxWidth: 480 }}>Lakemba scores CAUTION. Specific business models work well; generic ones fail quickly. Haldon Street is one of Sydney's most culturally specific commercial precincts. Ramadan and Eid periods create extraordinary trading windows. Community trust and halal certification are binary requirements.</p>
             </div>
             <div style={{ textAlign: 'center', minWidth: 120 }}>
@@ -185,13 +185,13 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 24, marginBottom: 40 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 20px 0' }}>Scores by Category</h3>
+          <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 20px 0' }}>Scores by Category</h3>
           {SCORE_BARS.map(bar => <ScoreBar key={bar.label} label={bar.label} value={bar.value} />)}
           <p style={{ fontSize: 12, color: S.muted, marginTop: 20, marginBottom: 0 }}>Postcode 2195 • Median income $63,000 • Rent $800–$2,500/mo</p>
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Business Environment</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Haldon Street, Lakemba is one of Sydney's most culturally specific and commercially misunderstood streets. It functions primarily as a community commercial precinct—serving day-to-day needs of Lebanese, Palestinian, Iraqi, Syrian, and wider Arab community—rather than a general consumer high street. Operators who try inserting generic Western commercial concepts into this environment consistently fail not because quality is wrong but because positioning doesn't match the street's commercial identity or customer expectations.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>What Haldon Street does well, it does exceptionally. Lebanese pastry shops selling baklava and knafeh at $3–6 per piece generate extraordinary volume during Eid and Ramadan periods. Food operators who align with the community's religious calendar—operating extended hours during Ramadan, stock depth for Eid preparation, culturally resonant menus—access peak trading windows that the suburb's income profile doesn't suggest possible. Lakemba's annual Eid market day draws 50,000+ visitors from across Western and South-West Sydney.</p>
@@ -200,7 +200,7 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Competition Analysis</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Competition in Haldon Street's food sector is intense within established categories. Lebanese bakeries, kebab operators, and sweets shops compete with well-established operators holding 10–20 years of community loyalty. New entrants compete not on product quality alone but on community trust—something that takes years to build or requires pre-existing community relationships. The market doesn't reward generic quality; it rewards community connection.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Healthcare competition is the commercial opportunity with the most favourable competitive environment in Lakemba. Bulk-billing GP clinics run at overcapacity with wait times of 2–4 weeks for new patients. Allied health (physio, psychology, dietitian, dental) is barely represented on the commercial strip despite the demographic's significant health needs. An operator with genuine Arabic and Lebanese language capability faces near-zero competition for large, underserved demand.</p>
@@ -208,7 +208,7 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Demographics</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Demographics</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Lakemba's demographic is predominantly Lebanese-Australian and Arab-Muslim with significant Palestinian, Iraqi, and Syrian communities. Income median of $63,000 reflects working-class and welfare-dependent demographic mix, but spending pattern is concentrated rather than uniformly low. The community spends generously on food (especially for family gatherings and religious occasions), children's education, and community-endorsed services. An operator who accesses community endorsement—through the local mosque network, community organisations, or word-of-mouth from respected community members—can generate strong revenue regardless of mainstream marketing.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The religious calendar is the most important commercial variable in Lakemba that non-community operators consistently fail to account for. Ramadan (30 days of evening breaking of fast, iftar meals) and two Eid celebrations create revenue spikes that can generate 300–500% of normal daily revenue. A food operator who understands this calendar and positions for it—extended evening Ramadan trading, Eid product ranges, community iftar packages—accesses a commercial cycle with no equivalent in any other Sydney suburb.</p>
@@ -216,7 +216,7 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Works Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 16 }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: S.emerald, margin: '0 0 6px 0' }}>Authentic Arab Food with Halal Certification</h4>
@@ -234,7 +234,7 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Fails Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Fails Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 12, padding: 16 }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: S.red, margin: '0 0 6px 0' }}>Non-Halal Food Operators</h4>
@@ -253,7 +253,7 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Community Trust Barrier</h4>
@@ -271,13 +271,13 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Compare Nearby</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Compare Nearby</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
             {NEARBY.map(suburb => (
               <Link key={suburb.slug} href={`/analyse/sydney/${suburb.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer', transition: 'all 0.2s', height: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                    <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>{suburb.name}</h4>
+                    <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>{suburb.name}</h4>
                     <VerdictBadge v={suburb.verdict} />
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: S.brand }}>
@@ -292,7 +292,7 @@ export default function LakembaPage() {
         <SuburbPoll suburb="Lakemba" />
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Lakemba is CAUTION, not a generic recommendation. Success is conditional on specific positioning: authentic halal Arab food with community endorsement, halal-certified lifestyle retail, or Arabic-speaking healthcare. The religious calendar is not a side variable—it's the structural foundation of the commercial environment.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Haldon Street is among Sydney's lowest commercial rents ($800–$1,200 primary positions). For operators with the right model—one that understands and aligns with community needs and religious calendar—the economics are compelling. For operators without community connection or halal positioning, Lakemba is one of Sydney's highest-risk commercial locations. The difference is structural, not marginal.</p>
@@ -300,7 +300,7 @@ export default function LakembaPage() {
         </div>
 
         <div style={{ background: S.brand, borderRadius: 16, padding: 32, marginBottom: 48, color: S.white }}>
-          <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 8px 0' }}>Ready to analyse your location?</h3>
+          <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, margin: '0 0 8px 0' }}>Ready to analyse your location?</h3>
           <p style={{ fontSize: 14, margin: '0 0 16px 0', opacity: 0.9 }}>Get a detailed business analysis for your specific address—foot traffic, competition, demographics, and revenue potential.</p>
           <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: S.brand, padding: '12px 24px', borderRadius: 8, fontWeight: 700, textDecoration: 'none', fontSize: 14 }}>Analyse your address →</Link>
         </div>

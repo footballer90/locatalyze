@@ -164,7 +164,7 @@ export default function SouthBrisbanePage() {
 
         {/* Score card */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={80} />
           <ScoreBar label='Demographics' value={76} />
           <ScoreBar label='Rent Viability' value={65} />
@@ -183,7 +183,7 @@ export default function SouthBrisbanePage() {
 
         {/* Competition */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>South Brisbane has established competition in casual dining and café, particularly on Grey Street and around South Bank. Chain operators hold positions inside the South Bank precinct itself (the Rainforest Walk and Beach venues). The competitive gap is in premium hospitality — fine dining and specialty dining concepts — and in retail that serves the cultural audience rather than the tourist impulse buyer. A gallery café model, a specialty wine bar, or a chef-driven mid-price restaurant finds less direct competition than a generic café entering a crowded strip.</p>
         </div>
 
@@ -217,7 +217,7 @@ export default function SouthBrisbanePage() {
 
         {/* Key risks */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Weekday-Weekend Revenue Split</h4>
@@ -243,7 +243,7 @@ export default function SouthBrisbanePage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>West End</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>West End</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>85</div>
@@ -255,7 +255,7 @@ export default function SouthBrisbanePage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Brisbane CBD</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Brisbane CBD</h4>
                   <VerdictBadge v="CAUTION" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>72</div>
@@ -267,7 +267,7 @@ export default function SouthBrisbanePage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Woolloongabba</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Woolloongabba</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>79</div>
@@ -282,7 +282,7 @@ export default function SouthBrisbanePage() {
 
         {/* Final verdict */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>South Brisbane is a GO for operators who understand the cultural precinct dynamic. The demand is real and above-average in spending willingness. The foot traffic is event-driven but substantial. The rents are defensible against the revenue potential for well-positioned concepts. The key is alignment with the audience: cultural, aspirational, quality-seeking, and willing to pay for experience.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The operators who underperform in South Brisbane are those who assume South Bank foot traffic is the same as residential foot traffic — it is not. Cultural precinct visitors are weekend and event visitors who plan their dining choices in advance and compare quality. Generic café or generic casual dining positioned for impulse walk-ins will find the cultural audience less captive than expected. Premium and specialty positioning with a clear reason for the cultural audience to seek you out is what works.</p>
@@ -291,17 +291,17 @@ export default function SouthBrisbanePage() {
 
         {/* FAQ */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is South Brisbane good for a restaurant?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is South Brisbane good for a restaurant?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Yes, particularly for mid-price to premium restaurants aligned to the cultural precinct audience. Grey Street and Melbourne Street dinner trade is strong on weekends and Friday evenings. Pre-QPAC dining and post-GOMA lunch are established patterns. Revenue $55,000–$90,000/month for a well-positioned 50-seat restaurant.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in South Brisbane?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the commercial rent in South Brisbane?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Grey Street prime positions: $7,000–$10,000/month. Secondary positions on Melbourne Street and Cultural Centre adjacent: $5,500–$8,000/month. South Bank precinct internal positions require direct negotiation with South Bank Corporation and carry different commercial terms than private tenancy.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How does South Brisbane compare to West End?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How does South Brisbane compare to West End?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>West End is more consistent — its trade is residential and community-driven, generating reliable week-round foot traffic. South Brisbane is more event-dependent — stronger weekend and event peaks, softer weekday base. West End suits operators who need consistent week-round revenue; South Brisbane suits operators who can perform strongly in peak periods and manage quieter ones.</p>
           </div>
         </div>

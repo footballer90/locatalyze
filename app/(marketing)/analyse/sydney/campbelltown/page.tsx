@@ -57,7 +57,7 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   const opts = ['Yes', 'Maybe', 'No']
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '24px', marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {opts.map((opt, i) => {
           const pct = Math.round((votes[i] / total) * 100)
@@ -171,7 +171,7 @@ export default function CampbelltownPage() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Quick Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Quick Verdict</h2>
           <p style={{ fontSize: 16, lineHeight: 1.6, color: S.n900, marginBottom: 16 }}>
             Campbelltown is the Macarthur region's largest commercial hub anchoring 350,000+ residents. Two institutions define the commercial story: Western Sydney University Macarthur campus and Campbelltown Hospital. Together, they employ and attract 20,000+ people daily, generating reliable calendar-driven demand that doesn't depend on retail sentiment.
           </p>
@@ -181,12 +181,12 @@ export default function CampbelltownPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Location Scores</h2>
           {SCORE_BARS.map(bar => <ScoreBar key={bar.label} label={bar.label} value={bar.value} />)}
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Business Environment</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Business Environment</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Campbelltown's commercial story is defined by two institutions that most business analysts from Sydney's north don't register: Western Sydney University Macarthur and Campbelltown Hospital. Together, they employ and attract 20,000+ people daily — staff, students, visitors — generating a reliable, calendar-driven demand base that doesn't depend on retail sentiment or discretionary spending. Businesses within 800m of either institution have a structural foundation that street-level foot traffic alone cannot provide.
           </p>
@@ -199,7 +199,7 @@ export default function CampbelltownPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Competition Analysis</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Campbelltown's competitive landscape is moderately developed with room for new entry. Macarthur Square houses the predictable chain operators. Queen Street strip has independent operators in café, Thai dining, and small retail — but concentration is thin enough that a new quality operator draws attention rather than disappearing into a crowded field.
           </p>
@@ -209,7 +209,7 @@ export default function CampbelltownPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Demographics</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Demographics</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Macarthur region demographic is in structural transition. Established Campbelltown residential base (median income $70,000, family-oriented) is being supplemented by Narellan/Oran Park professional corridor ($95,000–$110,000 median household income). This bifurcation requires operators to understand which demographic they're serving — the value-oriented Campbelltown resident, or the quality-seeking estate-corridor family.
           </p>
@@ -219,24 +219,24 @@ export default function CampbelltownPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Works Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Works Here</h2>
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>University-Adjacent Café</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>University-Adjacent Café</h3>
               <VerdictBadge v="GO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>15,000 daily campus visitors, Mon–Fri primary revenue, proven concept. $50,000–$65,000/month achievable within 12 months of opening at right positioning.</p>
           </div>
           <div style={{ marginBottom: 28 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Psychology, Dentistry)</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Allied Health (Physio, Psychology, Dentistry)</h3>
               <VerdictBadge v="GO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Between hospital, university, and residential growth corridor, demand is strong across all three catchments. Competition is minimal — currently underserved by 3–4× existing supply.</p>
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Family-Format Casual Dining</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Family-Format Casual Dining</h3>
               <VerdictBadge v="GO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Serving estate corridor family demographic (45+ minutes to Parramatta) who have no quality local equivalent. $40,000–$55,000/month weekend-anchored revenue achievable.</p>
@@ -244,17 +244,17 @@ export default function CampbelltownPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Fails Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>What Fails Here</h2>
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Premium Fine Dining ($80+ Per Person)</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Premium Fine Dining ($80+ Per Person)</h3>
               <VerdictBadge v="NO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Market doesn't currently support it. In 5 years, potentially. In 2026, operators who open with fine dining ambitions find a thin customer base.</p>
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Nightclub or Late-Night Bar</h3>
+              <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>Nightclub or Late-Night Bar</h3>
               <VerdictBadge v="NO" />
             </div>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Campbelltown's social scene is family-oriented. Late-night hospitality is served by the RSL and established venues. New entrants face entrenched social loyalty with uphill competition.</p>
@@ -262,36 +262,36 @@ export default function CampbelltownPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Underrated Opportunity</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Underrated Opportunity</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, margin: 0 }}>
             The Oran Park to Campbelltown CBD commuter corridor is completely devoid of quality food or coffee options. The 15,000 daily commuters passing through Gregory Hills/Narellan corridor have a 25–35 minute car-dependent commute to Campbelltown. A drive-through café concept or compact highway-adjacent café at the Narellan/Camden Road intersection captures this commuter spend at zero direct competition. Daily revenue potential: 150–200 transactions, $18,000–22,000/month at a $1,500/month rent position.
           </p>
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Key Risks</h2>
           <div style={{ marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Queen Street Vacancy Persistence</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Queen Street Vacancy Persistence</h3>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>If urban renewal investment doesn't continue to convert vacancy, the street's perception problem remains. New operators must select positions on the improving end of the strip, not the declining end.</p>
           </div>
           <div style={{ marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Retail Leakage to Parramatta</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Retail Leakage to Parramatta</h3>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>Campbelltown residents with cars (which is most of them) continue to drive north for higher-quality retail. Independent retail operators face structural leakage that landlord vacancy rates don't fully capture.</p>
           </div>
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Student Spend Seasonality</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Student Spend Seasonality</h3>
             <p style={{ fontSize: 15, color: S.muted, lineHeight: 1.6, margin: 0 }}>WSU Macarthur has significant revenue gaps during semester breaks (January, June, July). University-adjacent operators must model both semester and break periods in annual revenue projections.</p>
           </div>
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Compare Nearby</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Compare Nearby</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
             {NEARBY.map(suburb => (
               <Link key={suburb.slug} href={`/analyse/sydney/${suburb.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: S.n50, border: `1px solid ${S.border}`, borderRadius: 12, padding: '20px', cursor: 'pointer', transition: 'border-color 0.2s' }} onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)} onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{suburb.name}</h3>
+                    <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: 0 }}>{suburb.name}</h3>
                     <VerdictBadge v={suburb.verdict} />
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 900, color: S.brand }}>{suburb.score}</div>
@@ -304,7 +304,7 @@ export default function CampbelltownPage() {
         <SuburbPoll suburb="Campbelltown" />
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '32px', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 24, fontWeight: 800, marginBottom: 24 }}>Final Verdict</h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: S.n900, marginBottom: 20 }}>
             Campbelltown is a GO location. The combination of university and hospital anchors, improving commercial environment, and growing estate-corridor demographics creates a favorable entry environment. Queen Street's falling vacancy (14% in 2026, down from 22% in 2021) indicates an optimal entry point before the recovery is fully priced.
           </p>

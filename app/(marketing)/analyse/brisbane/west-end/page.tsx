@@ -164,7 +164,7 @@ export default function WestEndPage() {
 
         {/* Score card */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={84} />
           <ScoreBar label='Demographics' value={83} />
           <ScoreBar label='Rent Viability' value={78} />
@@ -183,7 +183,7 @@ export default function WestEndPage() {
 
         {/* Competition */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>West End competition is real and established. Boundary Street has been occupied by quality operators for decades — Gunshop Café, Gauge, Burrito Bar are institutions that have customer loyalty that new entrants cannot replicate immediately. The competitive gap is not in café or casual dining (both are well-served) but in underexplored categories: specialty wine and natural wine bars, premium wellness and personal training, quality retail with a distinct concept, and mid-price dinner dining (the strip's weakness relative to its lunch trade). Healthcare and allied health are also underserved relative to the demographic.</p>
         </div>
 
@@ -217,7 +217,7 @@ export default function WestEndPage() {
 
         {/* Key risks */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Established Operator Loyalty</h4>
@@ -243,7 +243,7 @@ export default function WestEndPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>South Brisbane</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>South Brisbane</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>74</div>
@@ -255,7 +255,7 @@ export default function WestEndPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Woolloongabba</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Woolloongabba</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>79</div>
@@ -267,7 +267,7 @@ export default function WestEndPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Annerley</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Annerley</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>70</div>
@@ -282,7 +282,7 @@ export default function WestEndPage() {
 
         {/* Final verdict */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>West End is one of Queensland's strongest commercial locations for independent operators with quality concepts. The economics work, the demographics are right, and the community actively supports independent businesses. A score of 85 reflects both the genuine quality of the market and the reality that competition is meaningful — this is not an empty strip waiting to be filled.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The error operators make in West End is underestimating how long it takes to earn community loyalty in a suburb where existing operators have 10-year relationships with their customers. The first six months require sustained quality, visible community engagement, and patience with below-forecast revenue while trust is built. Operators who approach West End with that understanding build durable businesses here. Those who expect immediate demand based on demographics alone are typically disappointed by slower establishment than projected.</p>
@@ -291,17 +291,17 @@ export default function WestEndPage() {
 
         {/* FAQ */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is West End Brisbane known for commercially?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is West End Brisbane known for commercially?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Boundary Street is Brisbane's premier independent hospitality strip — 30 years of café, restaurant, and bar culture built by owner-operators rather than chains. The demographic (educated, 25–45, high discretionary spend) actively supports independent operators. It is the commercial precinct that most closely resembles Melbourne's Fitzroy or Sydney's Newtown.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What rent should I expect in West End Brisbane?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What rent should I expect in West End Brisbane?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Boundary Street prime positions: $6,000–$9,000/month. Secondary Vulture Street positions: $3,500–$5,500/month. Off-strip Boggo Road and Montague Road: $2,500–$4,500/month. Incentives (rent-free periods, fit-out contributions) are available in current market conditions — negotiate before signing.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is West End oversaturated for cafés?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is West End oversaturated for cafés?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>For generic cafés, yes — the strip has strong existing operators with deep community loyalty. For differentiated concepts (specialty roaster, distinct food program, wellness café), the market can absorb new quality entrants. The key is a genuine point of difference that gives the West End community a reason to switch from their existing loyalty.</p>
           </div>
         </div>

@@ -164,7 +164,7 @@ export default function BrisbaneCBDPage() {
 
         {/* Score card */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginTop: 32, marginBottom: 40 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 24px 0' }}>Location Scores</h2>
           <ScoreBar label='Foot Traffic' value={88} />
           <ScoreBar label='Demographics' value={74} />
           <ScoreBar label='Rent Viability' value={52} />
@@ -183,7 +183,7 @@ export default function BrisbaneCBDPage() {
 
         {/* Competition */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 16px 0' }}>Competition Analysis</h2>
           <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>CBD competition is intense across all categories. Coffee is particularly saturated — major chains (Toby's Estate, Single O, Mecca Espresso) hold positions across the CBD grid that independent operators cannot outcompete on convenience or marketing reach. The competitive opportunity in the CBD is where chains do not go: highly specific cuisine concepts, premium wellness, allied health in CBD-adjacent buildings, and corporate service operators with relationships that drive captive revenue.</p>
         </div>
 
@@ -217,7 +217,7 @@ export default function BrisbaneCBDPage() {
 
         {/* Key risks */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.amber}` }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Rent Mathematics</h4>
@@ -243,7 +243,7 @@ export default function BrisbaneCBDPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Fortitude Valley</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Fortitude Valley</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>74</div>
@@ -255,7 +255,7 @@ export default function BrisbaneCBDPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>South Brisbane</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>South Brisbane</h4>
                   <VerdictBadge v="GO" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>74</div>
@@ -267,7 +267,7 @@ export default function BrisbaneCBDPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = S.brand)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = S.border)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>Spring Hill</h4>
+                  <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>Spring Hill</h4>
                   <VerdictBadge v="CAUTION" />
                 </div>
                 <div style={{ fontSize: 26, fontWeight: 800, color: S.brand }}>69</div>
@@ -282,7 +282,7 @@ export default function BrisbaneCBDPage() {
 
         {/* Final verdict */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 20px 0' }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Brisbane CBD is CAUTION, not NO. The distinction matters. The CBD has genuine foot traffic, real professional spending, and specific categories that perform. Premium hospitality, corporate allied health, and specialty concepts with non-generic positioning can and do succeed here. The error is not that the CBD is impossible — it is that the CBD is unforgiving of average concepts.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Operators considering the CBD should model at 70% of assumed peak foot traffic, not 100%. They should budget for six months of below-model trading while establishing customer loyalty. They should identify a specific competitive angle that neither chains nor generic independent operators occupy. With that preparation, the CBD is a viable market. Without it, the rent mathematics will end the business within 18 months.</p>
@@ -291,17 +291,17 @@ export default function BrisbaneCBDPage() {
 
         {/* FAQ */}
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 28, marginBottom: 48 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 18, fontWeight: 700, margin: '0 0 4px 0' }}>Frequently Asked Questions</h2>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Brisbane CBD good for a café?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>Is Brisbane CBD good for a café?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Only with differentiation. Generic café economics don't survive $15,000–$28,000/month rent without extraordinary volume. A specialty concept with roaster retail, corporate catering, or a specific offering that builds loyalty beyond convenience can work. A standard café in a strip position hoping for CBD foot traffic will be marginalised by chain positions.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the rent in Brisbane CBD?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>What is the rent in Brisbane CBD?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Prime Queen Street Mall positions: $20,000–$28,000/month. CBD laneway and secondary street positions: $12,000–$18,000/month. CBD fringe (creek end, upper CBD): $8,000–$14,000/month. All figures gross — negotiate hard for fit-out contributions and rent-free periods in current market conditions.</p>
           </div>
           <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 20, marginTop: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How has the Brisbane CBD changed post-pandemic?</h3>
+            <h3 style={{ color: '#1C1917', fontSize: 15, fontWeight: 700, margin: '0 0 8px 0' }}>How has the Brisbane CBD changed post-pandemic?</h3>
             <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.7, margin: 0 }}>Office occupancy has settled at 68–72% of 2019 peak on best days (Tues–Wed) and 45–55% on Mondays and Fridays. This is now structural, not transitional. CBD operators who have survived have repositioned around premium, corporate entertainment, and higher average transaction values rather than volume-dependent models.</p>
           </div>
         </div>

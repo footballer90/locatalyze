@@ -405,7 +405,7 @@ export default function PerthRestaurantPage() {
       {/* ── CTA ─────────────────────────────────────────────────────────────── */}
       <section style={{ padding: '48px 24px', background: `linear-gradient(135deg, #0E7490 0%, ${S.brand} 50%, ${S.brandLight} 100%)`, color: S.white }}>
         <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 12px', fontFamily: S.font }}>Analyse your specific Perth address</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 28, fontWeight: 800, margin: '0 0 12px', fontFamily: S.font }}>Analyse your specific Perth address</h2>
           <p style={{ fontSize: 16, opacity: 0.9, margin: '0 0 28px', lineHeight: 1.6, fontFamily: S.font }}>
             Get a full location report — competitors mapped, rent benchmarked, break-even calculated — for any Perth address in in about 90 seconds.
           </p>

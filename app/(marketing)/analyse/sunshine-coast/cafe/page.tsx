@@ -257,7 +257,7 @@ const SuburbPoll = () => {
 
   return (
     <div style={{ margin: '48px 0', padding: '32px', backgroundColor: S.n50, borderRadius: '12px' }}>
-      <h3 style={{ marginTop: 0, marginBottom: '24px', fontSize: '18px', fontWeight: '700' }}>
+      <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '24px', fontSize: '18px', fontWeight: '700' }}>
         Which suburb would you open a café in?
       </h3>
       {POLL_OPTIONS.map((option, i) => (
@@ -484,7 +484,7 @@ export default function SunshineCoastCafePage() {
 
         {/* Market context section */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Sunshine Coast Café Market Context</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Sunshine Coast Café Market Context</h2>
           <p style={{ lineHeight: '1.8', color: '#374151', marginBottom: '24px' }}>
             The Sunshine Coast is experiencing unprecedented growth. Population has grown 42% since 2016, driven by sea-change migration from Brisbane and Sydney. Simultaneously, tourism has recovered strongly post-COVID, with 1.8M+ annual visitors as of 2025. This creates a unique dual-market opportunity: tourists plus new residents with high disposable income.
           </p>
@@ -494,7 +494,7 @@ export default function SunshineCoastCafePage() {
 
           {/* Scatter chart */}
           <div style={{ marginTop: '32px', backgroundColor: S.n50, padding: '24px', borderRadius: '8px' }}>
-            <h3 style={{ marginTop: 0, fontSize: '16px', fontWeight: '700' }}>Rent vs. Revenue Potential</h3>
+            <h3 style={{ color: '#1C1917', marginTop: 0, fontSize: '16px', fontWeight: '700' }}>Rent vs. Revenue Potential</h3>
             <ResponsiveContainer width="100%" height={300}>
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={S.border} />
@@ -514,7 +514,7 @@ export default function SunshineCoastCafePage() {
 
         {/* Bar chart */}
         <div style={{ margin: '48px 0', backgroundColor: S.n50, padding: '24px', borderRadius: '8px' }}>
-          <h2 style={{ marginTop: 0, fontSize: '20px', fontWeight: '700', marginBottom: '24px' }}>Suburb Scores</h2>
+          <h2 style={{ color: '#1C1917', marginTop: 0, fontSize: '20px', fontWeight: '700', marginBottom: '24px' }}>Suburb Scores</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={SUBURB_SCORES}>
               <CartesianGrid strokeDasharray="3 3" stroke={S.border} />
@@ -531,7 +531,7 @@ export default function SunshineCoastCafePage() {
 
         {/* Top suburbs */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>The Strong Markets</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>The Strong Markets</h2>
           {TOP_SUBURBS.map((suburb, i) => (
             <div
               key={i}
@@ -544,7 +544,7 @@ export default function SunshineCoastCafePage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
                 <div>
-                  <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '22px', fontWeight: '700' }}>
+                  <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '8px', fontSize: '22px', fontWeight: '700' }}>
                     {suburb.name}
                   </h3>
                   <div style={{ fontSize: '13px', color: S.muted }}>Postcode {suburb.postcode}</div>
@@ -612,7 +612,7 @@ export default function SunshineCoastCafePage() {
             color: S.white,
           }}
         >
-          <h3 style={{ marginTop: 0, fontSize: '20px', fontWeight: '700' }}>Ready to Scout Your Location?</h3>
+          <h3 style={{ color: '#1C1917', marginTop: 0, fontSize: '20px', fontWeight: '700' }}>Ready to Scout Your Location?</h3>
           <p style={{ marginBottom: '20px' }}>
             Start with interactive maps, rent data, and foot traffic heatmaps for any suburb.
           </p>
@@ -641,7 +641,7 @@ export default function SunshineCoastCafePage() {
 
         {/* Risk suburbs */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Markets to Avoid</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Markets to Avoid</h2>
           {RISK_SUBURBS.map((suburb, i) => (
             <div
               key={i}
@@ -655,7 +655,7 @@ export default function SunshineCoastCafePage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <div>
-                  <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '18px', fontWeight: '700' }}>
+                  <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '8px', fontSize: '18px', fontWeight: '700' }}>
                     {suburb.name}
                   </h3>
                   <div style={{ fontSize: '13px', color: S.muted, marginBottom: '8px' }}>Postcode {suburb.postcode} — Score {suburb.score}/100</div>
@@ -671,7 +671,7 @@ export default function SunshineCoastCafePage() {
 
         {/* Video placeholder */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Watch: Mooloolaba Café Location Scout</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Watch: Mooloolaba Café Location Scout</h2>
           <div
             style={{
               width: '100%',
@@ -703,7 +703,7 @@ export default function SunshineCoastCafePage() {
 
         {/* FAQ */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Frequently Asked Questions</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
               {
@@ -724,7 +724,7 @@ export default function SunshineCoastCafePage() {
               },
             ].map((item, i) => (
               <div key={i} style={{ padding: '20px', border: `1px solid ${S.border}`, borderRadius: '8px' }}>
-                <h4 style={{ marginTop: 0, marginBottom: '12px', fontSize: '15px', fontWeight: '700' }}>
+                <h4 style={{ color: '#1C1917', marginTop: 0, marginBottom: '12px', fontSize: '15px', fontWeight: '700' }}>
                   {item.q}
                 </h4>
                 <p style={{ margin: '0', fontSize: '14px', color: S.muted, lineHeight: '1.6' }}>
@@ -737,7 +737,7 @@ export default function SunshineCoastCafePage() {
 
         {/* City comparison */}
         <div style={{ margin: '48px 0', padding: '24px', backgroundColor: S.n50, borderRadius: '8px' }}>
-          <h2 style={{ marginTop: 0, fontSize: '24px', fontWeight: '700', marginBottom: '20px' }}>
+          <h2 style={{ color: '#1C1917', marginTop: 0, fontSize: '24px', fontWeight: '700', marginBottom: '20px' }}>
             Sunshine Coast vs. Gold Coast vs. Melbourne
           </h2>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
