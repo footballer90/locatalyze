@@ -144,10 +144,10 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Surfers Paradise', postcode: '4217', score: 41, verdict: : "NO' as const, reason: 'Heavily transient tourist population (60%+ of members are visitors). Seasonal demand swings create 40–50% membership variance between high (July–August, December–January) and low (March–May) seasons. Chain gyms (Fitness First, Anytime Fitness) dominate with economies of scale that crush independent operators. Membership turnover is 70%+ annually — acquisition cost is punitive." },
-  { name: 'Broadbeach', postcode: '4218', score: 67, verdict: : "CAUTION' as const, reason: 'Tourist-dependent (similar to Surfers) but with better beachfront positioning. 8 gyms within 500m create saturation. Rent is premium ($5,500–$7,500) because landlords exploit tourist traffic, but underlying membership base is 35–40% transient. Viable only for hotel-integrated gyms or strength specialists with robust local positioning. Independent boutique operators struggle." },
-  { name: 'Coomera', postcode: '4209', score: 37, verdict: : "NO' as const, reason: 'Car-dependent sprawl with minimal pedestrian foot traffic. $62,000 median income creates price resistance to gym membership ($15+/week = stretch purchase). Demographic is service sector and trades — price-sensitive buyers with high churn. No walkability creates acquisition friction; members must plan gym visits, not impulse-attend classes. Retail vacancy in nearby commercial strips signals insufficient traffic." },
-  { name: 'Nerang', postcode: '4211', score: 33, verdict: : "NO' as const, reason: 'Inland location with no wellness tourism, minimal pedestrian culture, lowest median income on the coast ($61,000). Gym membership is a luxury discretionary spend. Competition from free outdoor fitness (beachfront trail runs, beach volleyball) and low-cost council facilities suppresses pricing power. 15+ month payback period with high churn risk." },
+  { name: 'Surfers Paradise', postcode: '4217', score: 41, verdict: 'NO' as const, reason: 'Heavily transient tourist population (60%+ of members are visitors). Seasonal demand swings create 40–50% membership variance between high (July–August, December–January) and low (March–May) seasons. Chain gyms (Fitness First, Anytime Fitness) dominate with economies of scale that crush independent operators. Membership turnover is 70%+ annually — acquisition cost is punitive.' },
+  { name: 'Broadbeach', postcode: '4218', score: 67, verdict: 'CAUTION' as const, reason: 'Tourist-dependent (similar to Surfers) but with better beachfront positioning. 8 gyms within 500m create saturation. Rent is premium ($5,500–$7,500) because landlords exploit tourist traffic, but underlying membership base is 35–40% transient. Viable only for hotel-integrated gyms or strength specialists with robust local positioning. Independent boutique operators struggle.' },
+  { name: 'Coomera', postcode: '4209', score: 37, verdict: 'NO' as const, reason: 'Car-dependent sprawl with minimal pedestrian foot traffic. $62,000 median income creates price resistance to gym membership ($15+/week = stretch purchase). Demographic is service sector and trades — price-sensitive buyers with high churn. No walkability creates acquisition friction; members must plan gym visits, not impulse-attend classes. Retail vacancy in nearby commercial strips signals insufficient traffic.' },
+  { name: 'Nerang', postcode: '4211', score: 33, verdict: 'NO' as const, reason: 'Inland location with no wellness tourism, minimal pedestrian culture, lowest median income on the coast ($61,000). Gym membership is a luxury discretionary spend. Competition from free outdoor fitness (beachfront trail runs, beach volleyball) and low-cost council facilities suppresses pricing power. 15+ month payback period with high churn risk.' },
 ]
 
 const S = {
@@ -155,11 +155,11 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
       : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -168,7 +168,7 @@ function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
     : v === 'CAUTION'
       ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
       : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {
@@ -600,7 +600,7 @@ export default function GoldCoastGymPage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 14 }}>
             Watch: How to Choose a Gym Location on the Gold Coast
           </h2>
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C3A52', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: : "column' as const, gap: 12, cursor: 'pointer" }}
+          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C3A52', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' as const, gap: 12, cursor: 'pointer' }}
             onClick={() => window.open('https://www.youtube.com/@locatalyze', '_blank')}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(6,182,212,0.15)', border: '2px solid rgba(6,182,212,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #06B6D4', marginLeft: 4 }} />

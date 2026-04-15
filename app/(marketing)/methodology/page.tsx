@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
  title: 'How It Works — Data Methodology',
- description: 'See exactly how Locatalyze scores locations. Five scoring dimensions: rent affordability, competition, market demand, profitability, and location quality. All based on real data, not guesses.',
+ description: 'See exactly how Locatalyze scores locations across five weighted dimensions: rent affordability, competition, market demand, profitability, and location quality. All based on real data, not guesses.',
 }
 
 const S = {
@@ -131,7 +131,7 @@ export default function MethodologyPage() {
      </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
       <DataCard icon="" title="Google Maps Platform" badge="Live API" desc="Competitor locations, ratings, review counts, and price levels queried live for your specific coordinates within a 500m radius." />
-      <DataCard icon="" title="ABS Census Estimates" badge="2021–2026" desc="Population demographics, median income, household size and age distribution aligned to Australian Bureau of Statistics data." />
+      <DataCard icon="" title="ABS Census Estimates" badge="2021 base + rolling estimates" desc="Population demographics, median income, household size and age distribution anchored to ABS 2021 Census with rolling estimate updates where available." />
       <DataCard icon="" title="Commercial Rent Database" badge="Benchmarks" desc="Suburb-level commercial rent benchmarks built from publicly available property listings. Sources vary by state: REIWA for WA, RealCommercial and Domain for NSW/VIC/QLD/SA/ACT. Your submitted rent is validated against the relevant state benchmark." />
       <DataCard icon="" title="Industry Benchmarks" badge="By category" desc="Daily customers baseline, average ticket size, COGS %, gross margin, and staffing cost ratios segmented by business type. Used as the fallback when you do not provide your own figures." />
       <DataCard icon="" title="Deterministic Compute Engine" badge="Rules-based" desc="A rules-based financial model (not AI) that builds the P&L from your calibrated inputs. Formulas are deterministic and documented — no black box outputs." />
@@ -151,10 +151,10 @@ export default function MethodologyPage() {
 
           <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
       <ScoreRow label="Rent Affordability" weight="20%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 20% = danger zone. This is the single biggest predictor of long-term viability." />
-      <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 1km, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
-      <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Search demand signals (Google Trends, SerpApi category queries), population density, median income, household growth and demographic fit for your business category. Demand signal data from the A3 pipeline agent feeds directly into this dimension alongside ABS demographic data." />
+      <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 500m, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
+      <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Search demand signals, population density, income fit, household growth and demographic alignment for your business category." />
       <ScoreRow label="Profitability" weight="25%" color={S.emerald} desc="Net profit margin after all costs. Calculated from your revenue estimate minus rent, COGS, labour and fixed costs." />
-      <ScoreRow label="Location Quality" weight="10%" color={S.n400} desc="Physical location signals: foot traffic levels, public transport access, nearby anchor tenants, and street visibility. Premium locations score higher." />
+      <ScoreRow label="Location Quality" weight="10%" color={S.n400} desc="Physical location signals: access quality, anchor proximity, and local activity conditions around your specific site." />
      </div>
 
           {/* Verdict thresholds */}
@@ -189,7 +189,8 @@ export default function MethodologyPage() {
        { label: 'Labour Costs', formula: 'Staffing tiers by business type and size', note: 'Calculated from typical staffing requirements: cafe (2 FT + 2 casual) = $25,000–35,000/mo; restaurant = $35,000–55,000/mo; retail = $15,000–25,000/mo. Does not include owner salary.' },
        { label: 'Fixed Costs (for break-even)', formula: 'Monthly rent + Estimated staffing costs', note: 'Only fixed costs are used in the break-even calculation — not COGS, which is variable. This is the contribution margin break-even formula, which avoids double-counting variable costs.' },
        { label: 'Break-even Customers / Day', formula: 'Fixed costs ÷ (avg_ticket × (gross_margin% − other_variable_costs%) × 30)', note: 'The minimum daily customers needed to cover rent and staffing only. Compared against your projected daily demand. If projected > break-even, the location is viable at current inputs.' },
-       { label: 'Payback Period', formula: 'Setup cost ÷ Monthly net profit', note: 'Months to recover your initial investment. Only shown when monthly net profit is positive. Under 12 months is excellent. Over 24 months carries meaningful risk.' },
+              { label: 'Payback Period', formula: 'Setup cost ÷ Monthly net profit', note: 'Months to recover your initial investment. Only shown when monthly net profit is positive and setup cost is greater than $0. Under 12 months is excellent. Over 24 months carries meaningful risk.' },
+              { label: '3-Year Projection Assumption', formula: 'Year2 = Year1 × 1.08, Year3 = Year2 × 1.10', note: 'Projection growth assumptions use a two-step rate: +8% then +10% when sufficient live revenue signals are available.' },
       ].map((row, i, arr) => (
               <div key={row.label} style={{ padding: '18px 0', borderBottom: i < arr.length - 1 ? `1px solid ${S.n100}` : 'none' }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: S.n800, marginBottom: 4 }}>{row.label}</p>
@@ -229,11 +230,11 @@ export default function MethodologyPage() {
 
         {/* ── CTA ── */}
         <section style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 20, padding: '36px', textAlign: 'center' }}>
-     <h2 style={{ fontSize: 26, fontWeight: 900, color: S.white, letterSpacing: '-0.03em', marginBottom: 10 }}>
+     <h2 style={{ fontSize: 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 10 }}>
       Ready to analyse your location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>
-      Get a full data-driven report in about 90 seconds. First location free — no card required.
+      Get a full data-driven report in about 90 seconds. First report free — no card required.
           </p>
           <Link href="/onboarding" style={{ display: 'inline-flex', background: S.white, color: S.brand, borderRadius: 12, padding: '13px 28px', fontWeight: 800, fontSize: 15 }}>
       Analyse my location free →

@@ -319,7 +319,7 @@ export default async function SuburbPage({ params }: Props) {
               }}
             >
               <h3 style={{ fontSize: '16px', fontWeight: 700, color: C.emerald, marginBottom: '16px' }}>
-                ✓ Advantages
+                Check Advantages
               </h3>
               <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {data.advantages.map((adv) => (
@@ -339,7 +339,7 @@ export default async function SuburbPage({ params }: Props) {
               }}
             >
               <h3 style={{ fontSize: '16px', fontWeight: 700, color: C.amber, marginBottom: '16px' }}>
-                ⚠ Disadvantages
+                Warning Disadvantages
               </h3>
               <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {data.disadvantages.map((dis) => (

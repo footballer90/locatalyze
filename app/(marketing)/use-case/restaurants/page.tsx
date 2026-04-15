@@ -73,7 +73,7 @@ export default function Page() {
        {[
                 { icon: '', color: '#1D4ED8', bg: '#EFF6FF', title: 'Evening foot traffic', body: 'Restaurants live or die on dinner trade. Visit at 7:30pm on a Friday. Are other restaurants full? Are groups of people walking past deciding where to eat? 15 minutes of direct observation tells you more about dinner viability than any data platform.' },
         { icon: '', color: '#B45309', bg: '#FFFBEB', title: 'Car parking within 400m', body: 'Dinner diners drive. A restaurant without accessible parking within 400m will lose a real percentage of potential customers — particularly families and those over 40. Public transport helps for lunch and younger demographics, but dinner requires parking.' },
-        { icon: '🍷', color: '#7C3AED', bg: '#F5F3FF', title: 'Dining precinct dynamics', body: 'Being in an established dining strip means customers arrive in the area specifically to eat and may be deciding between you and two other options. That is a better position than being an isolated destination. The question is whether the precinct has room for another operator.' },
+        { icon: 'Wine', color: '#7C3AED', bg: '#F5F3FF', title: 'Dining precinct dynamics', body: 'Being in an established dining strip means customers arrive in the area specifically to eat and may be deciding between you and two other options. That is a better position than being an isolated destination. The question is whether the precinct has room for another operator.' },
         { icon: '', color: '#0F766E', bg: '#F0FDFA', title: 'Spend per head viability', body: 'A restaurant at $75 average spend needs far fewer covers to break even than one at $28. Know your concept pricing and confirm that the suburb demographic will sustain it. ABS median income data tells you what the area will bear.' },
         { icon: '', color: '#DC2626', bg: '#FEF2F2', title: 'Liquor licence pathway', body: 'Licensed venues typically derive 25–35% of revenue from beverages. A site that cannot be licensed, or where the council approval process is uncertain, carries significant financial risk for any full-service restaurant concept.' },
        ].map(f => (
@@ -121,7 +121,7 @@ export default function Page() {
                 { label: 'Strengths', icon: '', c: S.emerald, bg: S.emeraldBg, bdr: S.emeraldBdr, items: ['Established dining precinct draws diners actively choosing the area', 'Liquor licence potential adds 25–35% beverage revenue', 'High-income demographics support $65–$90+ spend per head', 'Dense residential within 1km builds loyal regular base'] },
         { label: 'Weaknesses', icon: '', c: S.amber, bg: S.amberBg, bdr: S.amberBdr, items: ['Mon–Wed dinner trade often cashflow-negative in first year', 'High labour (35–40%) plus rent above 12% is unsustainable', 'Long lease commitment before concept has been market-tested', 'Seasonal volatility in tourist-dependent precincts'] },
         { label: 'Opportunities', icon: '', c: '#1D4ED8', bg: '#EFF6FF', bdr: '#BFDBFE', items: ['Underserved cuisine category in established suburb', 'Precinct with ageing or low-rated existing operators', 'Growth corridor suburb with new residential population', 'Hybrid dine-in and delivery model for additional revenue'] },
-        { label: 'Threats', icon: '🚨', c: S.red, bg: S.redBg, bdr: S.redBdr, items: ['Well-funded competitor opening in same precinct', 'Office vacancy reducing weekday lunch trade', 'Rent escalation at market review above trading capacity', 'Delivery platforms eroding dine-in covers per night'] },
+        { label: 'Threats', icon: 'Alert', c: S.red, bg: S.redBg, bdr: S.redBdr, items: ['Well-funded competitor opening in same precinct', 'Office vacancy reducing weekday lunch trade', 'Rent escalation at market review above trading capacity', 'Delivery platforms eroding dine-in covers per night'] },
        ].map(q => (
                 <div key={q.label} style={{ background: q.bg, border: `1px solid ${q.bdr}`, borderRadius: 14, padding: '20px' }}>
          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -148,7 +148,7 @@ export default function Page() {
        <h3 style={{ fontSize: 16, fontWeight: 700, color: S.red, marginBottom: 16 }}> Red flags — walk away</h3>
               {['No parking within 400m in a dinner dining context', 'Rent above 15% of conservatively projected revenue', 'Purely corporate area that empties after 5pm on weekdays', 'Multiple restaurant vacancies or closures on the same street', 'Liquor licence unobtainable or restricted at the site', 'No residential population within 1km for regular customers'].map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>✕</span>
+         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>X</span>
                   <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6 }}>{item}</p>
         </div>
               ))}

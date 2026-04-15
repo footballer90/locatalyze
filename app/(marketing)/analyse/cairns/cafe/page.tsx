@@ -214,7 +214,7 @@ const S = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',
@@ -288,7 +288,7 @@ function SuburbPoll() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ color: '#1C1917', marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
         Which suburb would you open a café in?
       </h3>
       {votes.map((option, i) => (
@@ -355,8 +355,8 @@ function ChecklistUnlock() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Café Checklist
+      <h3 style={{ color: '#1C1917', marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
+        Checklist Unlock the Full Café Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Cairns café startup checklist + wet season revenue model (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -549,7 +549,7 @@ export default function CairnsCafePage() {
 
       {/* Market Context */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Cairns Café Market Context
         </h2>
         <p style={{ marginBottom: '16px', lineHeight: '1.6', color: S.n900 }}>
@@ -564,7 +564,7 @@ export default function CairnsCafePage() {
 
         {/* Scatter Chart */}
         <div style={{ marginBottom: '48px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
             Rent vs. Revenue Potential
           </h3>
           <ResponsiveContainer width="100%" height={400}>
@@ -592,7 +592,7 @@ export default function CairnsCafePage() {
 
       {/* Suburb Scores Bar Chart */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Suburb Viability Scores (0–100)
         </h2>
         <ResponsiveContainer width="100%" height={400}>
@@ -617,7 +617,7 @@ export default function CairnsCafePage() {
 
       {/* Top Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }} id="top-suburbs">
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
           Top 4 Suburbs for Café (GO Verdict)
         </h2>
         {TOP_SUBURBS.map((suburb) => (
@@ -630,7 +630,7 @@ export default function CairnsCafePage() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px' }}>
               <div>
-                <h3 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
                   #{suburb.rank} {suburb.name} ({suburb.postcode})
                 </h3>
                 <p style={{ color: S.muted, fontSize: '14px' }}>
@@ -677,7 +677,7 @@ export default function CairnsCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function CairnsCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -712,7 +712,7 @@ export default function CairnsCafePage() {
         textAlign: 'center',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Need a Custom Site Analysis?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>
@@ -743,7 +743,7 @@ export default function CairnsCafePage() {
 
       {/* Risk Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Caution & No-Go Suburbs
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
@@ -755,7 +755,7 @@ export default function CairnsCafePage() {
               borderRadius: '12px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '700' }}>
                   {suburb.name} ({suburb.postcode})
                 </h3>
                 <VerdictBadge verdict={suburb.verdict} />
@@ -783,7 +783,7 @@ export default function CairnsCafePage() {
         padding: '0 24px',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           How to Validate Your Cairns Café Idea (3 min)
         </h2>
         <div style={{
@@ -809,7 +809,7 @@ export default function CairnsCafePage() {
 
       {/* FAQ */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           FAQ: Cairns Café Economics
         </h2>
         {[
@@ -868,7 +868,7 @@ export default function CairnsCafePage() {
 
       {/* City vs Australia Table */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Cairns vs Australia: Café Economics
         </h2>
         <div style={{ overflowX: 'auto' }}>
@@ -934,7 +934,7 @@ export default function CairnsCafePage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Cairns is a strong market for café expansion if you accept tourism volatility.</strong> Cairns City and Edge Hill both score 80+ and deliver profitability within 3 years. Tourism dependency (74% revenue) requires hedging through corporate contracts and wet season planning, but international visitor recovery and farm-to-table positioning create premium pricing power unavailable in mainland regional cities. Wet season (Nov–Apr) demands 40% revenue haircut and outdoor shade structure investment. For bootstrapped founders, Edge Hill offers better risk-adjusted returns; for capital-backed operators, Cairns City esplanade positions command sustainable competitive advantage.
@@ -948,7 +948,7 @@ export default function CairnsCafePage() {
         color: S.white,
         textAlign: 'center',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Ready to Validate Your Cairns Café Idea?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>

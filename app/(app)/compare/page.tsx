@@ -112,7 +112,7 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
         justifyContent: 'center', padding: 40, color: S.n400, textAlign: 'center',
         minHeight: 400,
       }}>
-        <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>📍</div>
+        <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>Location</div>
         <p style={{ fontSize: 14, fontWeight: 700, color: S.n500, marginBottom: 6 }}>Slot {slot + 1} empty</p>
         <p style={{ fontSize: 12, color: S.n400 }}>Select a report from your history below</p>
       </div>
@@ -144,7 +144,7 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
         borderRadius: '50%', width: 24, height: 24, fontSize: 12, color: S.n400,
         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontFamily: S.font,
-      }}>✕</button>
+      }}>X</button>
 
       {/* Verdict */}
       <div style={{ padding: '28px 22px 20px', borderBottom: `1px solid ${S.n100}` }}>
@@ -227,7 +227,7 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
           borderRadius: 16, border: '2px solid #E7E5E4',
         }}>
           <div style={{ textAlign: 'center', padding: '0 32px' }}>
-            <div style={{ fontSize: 28, marginBottom: 10 }}>🔒</div>
+            <div style={{ fontSize: 28, marginBottom: 10 }}>Locked</div>
             <p style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 6 }}>Compare more locations</p>
             <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6, marginBottom: 20 }}>
               Unlock full reports to compare locations side by side with complete financial breakdowns. Single report $29 or save with a 3-pack for $59.
@@ -273,7 +273,7 @@ function WinnerRow({ label, reports, getValue, higherIsBetter = true }: {
           background: i === winnerIdx && values[i] != null ? S.emeraldBg : 'transparent',
         }}>
           {values[i] != null ? String(values[i]) : '—'}
-          {i === winnerIdx && values[i] != null && <span style={{ marginLeft: 4, fontSize: 10 }}>✓</span>}
+          {i === winnerIdx && values[i] != null && <span style={{ marginLeft: 4, fontSize: 10 }}>Check</span>}
         </td>
       ))}
     </tr>
@@ -467,7 +467,7 @@ export default function ComparePage() {
                         {report.overall_score != null && <span style={{ fontSize: 10, color: vc.color, opacity: 0.7 }}>{report.overall_score}</span>}
                       </div>
                     </div>
-                    {isUsed && <p style={{ fontSize: 11, color: S.brand, fontWeight: 600, marginTop: 4 }}>✓ Added to comparison</p>}
+                    {isUsed && <p style={{ fontSize: 11, color: S.brand, fontWeight: 600, marginTop: 4 }}>Check Added to comparison</p>}
                   </button>
                 )
               })}

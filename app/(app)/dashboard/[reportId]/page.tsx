@@ -2166,7 +2166,7 @@ function ScoreBar({ label, score, weight, estimated, estimatedReason }: { label:
       </div>
       {/* Always-visible explanation, or estimated reason when data is missing */}
       <p style={{ fontSize: 12, color: estimated ? '#92400E' : S.n500, lineHeight: 1.5 }}>
-        {estimated && estimatedReason ? `⚠ ${estimatedReason}` : explain}
+        {estimated && estimatedReason ? `Warning ${estimatedReason}` : explain}
       </p>
     </div>
   )
@@ -2766,7 +2766,7 @@ function PaywallGate({ locked, label, reportId, children }: {
         borderRadius: 12, border: '1.5px solid #E7E5E4',
       }}>
         <div style={{ textAlign: 'center', padding: '24px 32px', maxWidth: 360 }}>
-          <div style={{ fontSize: 24, marginBottom: 10 }}>🔒</div>
+          <div style={{ fontSize: 24, marginBottom: 10 }}>Locked</div>
           <p style={{ fontSize: 14, fontWeight: 800, color: '#1C1917', marginBottom: 6 }}>{label}</p>
           <p style={{ fontSize: 12, color: '#78716C', lineHeight: 1.6, marginBottom: 14 }}>
             Unlock the full financial model, break-even analysis, revenue projections, SWOT insights, and PDF export for this location.
@@ -3461,7 +3461,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F87171" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </div>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: S.white, marginBottom: 8 }}>Analysis failed</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>Analysis failed</h2>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 24, lineHeight: 1.6 }}>{report?.progress_step || 'The analysis engine could not be reached. Please try again.'}</p>
               <button onClick={() => window.history.back()} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>Try again</button>
             </>
@@ -3507,7 +3507,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </div>
 
               {/* ── Title + active step ──────────────────────── */}
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 6 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 6 }}>
                 Building your report
               </h2>
               <p style={{ fontSize: 13, color: S.brandLight, marginBottom: 6, fontWeight: 600, minHeight: 20 }}>
@@ -3895,7 +3895,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, marginBottom: 10, letterSpacing: '-0.03em' }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginBottom: 10, letterSpacing: '-0.03em' }}>
             Analysis failed
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', marginBottom: 8, lineHeight: 1.65 }}>
@@ -3977,7 +3977,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 fontSize: 12, fontWeight: 700, cursor: saveLoading ? 'default' : 'pointer',
                 fontFamily: S.font, opacity: saveLoading ? 0.6 : 1, transition: 'all 0.15s',
               }}>
-              {isSaved ? '📍' : '🔖'}
+              {isSaved ? 'Location' : 'Bookmark'}
               {isSaved
                 ? ({ researching: 'Researching', shortlisted: 'Shortlisted', visited: 'Visited', opened: 'Opened', rejected: 'Rejected' }[locationStatus] ?? 'Saved')
                 : 'Save location'
@@ -3992,10 +3992,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 minWidth: 170, overflow: 'hidden',
               }}>
                 {[
-                  { value: 'shortlisted', label: '📋 Shortlisted',  desc: 'On my radar' },
-                  { value: 'visited',     label: '🚶 Site visited',  desc: 'Inspected in person' },
-                  { value: 'opened',      label: '✅ Opened here',   desc: 'Business launched' },
-                  { value: 'rejected',    label: '❌ Not pursuing',  desc: 'Ruled out' },
+                  { value: 'shortlisted', label: 'Checklist Shortlisted',  desc: 'On my radar' },
+                  { value: 'visited',     label: 'Visited Site visited',  desc: 'Inspected in person' },
+                  { value: 'opened',      label: 'Approved Opened here',   desc: 'Business launched' },
+                  { value: 'rejected',    label: 'Not suitable Not pursuing',  desc: 'Ruled out' },
                 ].map(opt => (
                   <button key={opt.value} onClick={() => updateStatus(opt.value)}
                     style={{
@@ -4010,7 +4010,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 ))}
                 <button onClick={() => { toggleSave(); setShowStatusMenu(false) }}
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: S.font }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: S.red }}>✕ Unsave</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: S.red }}>X Unsave</p>
                 </button>
               </div>
             )}
@@ -4047,7 +4047,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: '#92400E' }}>
-                  How did this location work out? 🏪
+                  How did this location work out? Store
                 </p>
                 {feedbackProceeded === null ? (
                   <p style={{ fontSize: 11, color: '#B45309', marginTop: 2 }}>
@@ -4062,7 +4062,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               {feedbackProceeded === null ? (
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                   <button onClick={() => submitFeedback(true)} disabled={feedbackLoading} style={{ background: S.emerald, color: S.white, border: 'none', borderRadius: 7, padding: '7px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>
-                    ✅ Yes, I opened here
+                    Approved Yes, I opened here
                   </button>
                   <button onClick={() => submitFeedback(false)} disabled={feedbackLoading} style={{ background: S.white, color: S.n700, border: `1px solid ${S.n200}`, borderRadius: 7, padding: '7px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: S.font }}>
                     Didn't proceed
@@ -4083,7 +4083,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </button>
                 </div>
               ) : (
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.emerald }}>Thanks — your feedback helps calibrate our model. 🙏</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: S.emerald }}>Thanks — your feedback helps calibrate our model. Thanks</p>
               )}
             </div>
           </div>
@@ -4210,7 +4210,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               }}>
                 <div style={{ flex: 1, minWidth: 220 }}>
                   <p style={{ fontSize: 14, fontWeight: 800, color: S.n900, marginBottom: 4, lineHeight: 1.4 }}>
-                    🔒 {headline}
+                    Locked {headline}
                   </p>
                   <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.6 }}>{sub}</p>
                 </div>
@@ -4645,7 +4645,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(2px)',
                 }}>
                   <div style={{ textAlign: 'center', padding: '24px 28px', maxWidth: 360 }}>
-                    <div style={{ fontSize: 26, marginBottom: 8 }}>🔒</div>
+                    <div style={{ fontSize: 26, marginBottom: 8 }}>Locked</div>
                     <p style={{ fontSize: 15, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', marginBottom: 5 }}>
                       SWOT analysis + 3-year scenarios locked
                     </p>
@@ -5024,7 +5024,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
                 <div style={{ padding: '18px 22px', borderRight: `1px solid ${S.n100}` }}>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>✓ What's modelled</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Check What's modelled</p>
                   {[
                     'Competitor density within your business-type catchment radius',
                     'Rent-to-revenue ratio and break-even timeline',
@@ -5034,13 +5034,13 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     'Scenario modelling: worst / base / optimistic revenue',
                   ].map(item => (
                     <div key={item} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                      <span style={{ color: S.emerald, fontSize: 12, flexShrink: 0, marginTop: 1 }}>✓</span>
+                      <span style={{ color: S.emerald, fontSize: 12, flexShrink: 0, marginTop: 1 }}>Check</span>
                       <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6 }}>{item}</p>
                     </div>
                   ))}
                 </div>
                 <div style={{ padding: '18px 22px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>✗ What's not modelled</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>X What's not modelled</p>
                   {[
                     { item: 'Lease negotiation outcomes', note: 'Incentives, fit-out contributions, and rent reviews are between you and the landlord' },
                     { item: 'Tenancy mix and anchor changes', note: 'Future tenant departures or new anchors can shift foot traffic significantly' },
@@ -5049,7 +5049,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     { item: 'Operator execution', note: 'Staff quality, product-market fit, and marketing are not factored into projections' },
                   ].map(({ item, note }) => (
                     <div key={item} style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                      <span style={{ color: S.amber, fontSize: 12, flexShrink: 0, marginTop: 1 }}>✗</span>
+                      <span style={{ color: S.amber, fontSize: 12, flexShrink: 0, marginTop: 1 }}>X</span>
                       <div>
                         <p style={{ fontSize: 12, color: S.n800, fontWeight: 600, lineHeight: 1.5 }}>{item}</p>
                         <p style={{ fontSize: 11, color: S.n400, lineHeight: 1.5, marginTop: 2 }}>{note}</p>
@@ -5809,7 +5809,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   <SectionHeading sub={_anyBench ? 'Industry-average channel split — your actual mix will differ.' : 'Projected revenue split across channels at base demand.'}>Revenue Channels</SectionHeading>
                   {_anyBench && (
                     <div style={{ background: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: 8, padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: 14, flexShrink: 0 }}>⚠️</span>
+                      <span style={{ fontSize: 14, flexShrink: 0 }}>Warning</span>
                       <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, margin: 0 }}>
                         <strong>Benchmark split — not verified for this business.</strong> A5 agent did not return channel data, so these percentages use industry-average ratios for this business type. Your actual channel mix may differ significantly.
                       </p>
@@ -6141,7 +6141,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       {(mapInsights as any).foursquareVerified ? (
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20 }}>
                           <div style={{ width: 5, height: 5, borderRadius: '50%', background: S.emerald }} />
-                          <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.04em' }}>✓ FOURSQUARE VERIFIED</span>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.04em' }}>Check FOURSQUARE VERIFIED</span>
                         </div>
                       ) : (
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: S.blueBg, border: `1px solid ${S.blueBdr}`, borderRadius: 20 }}>

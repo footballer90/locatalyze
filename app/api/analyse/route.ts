@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createAuthClient } from '@/lib/supabase/server'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 // ─── Rate limiting (graceful no-op if not configured) ───────────────────────
 let ratelimit: any = null
@@ -366,6 +367,24 @@ export async function POST(request: NextRequest) {
     console.error('[Analyse] Failed to create pending row:', insertErr.message)
     return errorResponse('Failed to initialise report. Please try again.', 500)
   }
+
+  // Track analysis started (server-side)
+  try {
+    const posthog = getPostHogClient()
+    posthog.capture({
+      distinctId: userId ?? 'anonymous',
+      event: 'analysis_started',
+      properties: {
+        report_id: reportId,
+        business_type: data.businessType,
+        area: data.area,
+        city: data.city,
+        state: data.state,
+        monthly_rent: data.monthlyRent,
+        authenticated: userId !== null,
+      },
+    })
+  } catch { /* non-fatal */ }
 
   // ── Trigger n8n via after() — runs after response is sent, keeps function alive ──
   // n8n master now ACKs immediately (202) then processes A1-A8 asynchronously.

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
+const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#475569', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
 
 type Verdict = 'GO' | 'CAUTION' | 'NO'
 
@@ -37,13 +37,13 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   }
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 24, marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 16 }}>Would you open a business in {suburb}?</h3>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {['Yes', 'Maybe', 'No'].map((opt, i) => {
           const pct = Math.round((votes[i] / total) * 100)
           return (
             <button key={opt} onClick={() => handleVote(i)} disabled={voted !== null}
-              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: : "left' as const, fontFamily: 'inherit", overflow: 'hidden' }}>
+              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left' as const, fontFamily: 'inherit', overflow: 'hidden' }}>
               {voted !== null && <div style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: 'rgba(8,145,178,0.07)' }} />}
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 14, fontWeight: 600 }}>{opt}</span>
@@ -116,7 +116,7 @@ export default function PerthCBD() {
       {/* Scores */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}` }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Detailed Score Breakdown</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Detailed Score Breakdown</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40 }}>
             <div>
               <ScoreBar label="Foot Traffic" value={82} />
@@ -142,7 +142,7 @@ export default function PerthCBD() {
       {/* Key Insights */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Why Perth CBD Scores 76 (GO)</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Why Perth CBD Scores 76 (GO)</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 32 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Foot Traffic (82)</h3>
@@ -167,7 +167,7 @@ export default function PerthCBD() {
       {/* Rent Analysis */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Commercial Rent Ranges</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Commercial Rent Ranges</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Premium (Hay/Murray St Malls)</h3>
@@ -210,7 +210,7 @@ export default function PerthCBD() {
       {/* Infrastructure & Development */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Upcoming Development & Infrastructure (2026–2027)</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Upcoming Development & Infrastructure (2026–2027)</h2>
           <div style={{ marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Elizabeth Quay Expansion (Ongoing)</h3>
             <p style={{ fontSize: 14, color: S.muted, marginBottom: 12 }}>Swan River precinct is being redeveloped. New residential apartments (500+ units) will add evening/weekend foot traffic. Current construction creates access challenges but long-term uplift is significant.</p>
@@ -229,7 +229,7 @@ export default function PerthCBD() {
       {/* Day-Part Analysis */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Day-Part Revenue Patterns</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Day-Part Revenue Patterns</h2>
           <p style={{ fontSize: 14, color: S.muted, marginBottom: 24 }}>Success in Perth CBD is entirely dependent on which day-part you target. Revenue distribution is NOT uniform.</p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 32 }}>
@@ -286,7 +286,7 @@ export default function PerthCBD() {
 
       {/* Nearby Suburbs */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
-        <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Nearby Higher-Scoring Suburbs</h2>
+        <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 24 }}>Nearby Higher-Scoring Suburbs</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
           {nearby.map(s => (
             <Link key={s.slug} href={`/analyse/perth/${s.slug}`} style={{ textDecoration: 'none' }}>
@@ -307,7 +307,7 @@ export default function PerthCBD() {
       {/* FAQ */}
       <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 20px' }}>
         <div style={{ background: S.white, padding: 40, borderRadius: 16, border: `1px solid ${S.border}`, marginBottom: 32 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 20, fontWeight: 800, marginBottom: 32 }}>Frequently Asked Questions</h2>
 
           <div style={{ marginBottom: 28 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 8 }}>Is Perth CBD's rent viability (58) a dealbreaker?</h3>

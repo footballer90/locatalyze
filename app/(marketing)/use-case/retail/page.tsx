@@ -69,7 +69,7 @@ export default function Page() {
         { icon: '', color: '#1D4ED8', bg: '#EFF6FF', title: 'Anchor store proximity', body: 'Anchor tenants — Woolworths, Chemist Warehouse, major pharmacy chains — generate habitual foot traffic that benefits nearby retailers. Being within 100–200m of a strong anchor store is one of the most reliable foot traffic multipliers available to independent retail.' },
         { icon: '', color: '#7C3AED', bg: '#F5F3FF', title: 'Spend demographics', body: 'Median household income, age profile and household type determine whether passing traffic matches your price point. ABS Census data by suburb gives you this profile. A $120 average transaction concept does not work in a suburb with a $65K median income.' },
         { icon: '', color: '#B45309', bg: '#FFFBEB', title: 'Rent-to-revenue ratio', body: 'Retail can sustain slightly higher rent ratios (10–15%) than food businesses because labour costs are lower. But above 18%, the margin erosion becomes severe. Always model rent as a percentage of realistic weekly revenue — not an absolute dollar amount.' },
-        { icon: '🪟', color: '#DC2626', bg: '#FEF2F2', title: 'Street vacancy rate', body: 'Walk the full retail strip. Count vacant or for-lease premises. More than 15% vacancy signals declining demand or oversupply. A healthy retail strip has low vacancy and active trading from its tenants. High vacancy often precedes a broader area decline.' },
+        { icon: 'Window', color: '#DC2626', bg: '#FEF2F2', title: 'Street vacancy rate', body: 'Walk the full retail strip. Count vacant or for-lease premises. More than 15% vacancy signals declining demand or oversupply. A healthy retail strip has low vacancy and active trading from its tenants. High vacancy often precedes a broader area decline.' },
        ].map(f => (
                 <div key={f.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '22px' }}>
          <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, marginBottom: 14 }}>{f.icon}</div>
@@ -94,13 +94,13 @@ export default function Page() {
           </div>
 
           <div style={{ marginBottom: 56 }}>
-            <h2 style={{ fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 20 }}>SWOT: How location shapes your retail outlook</h2>
+            <h2 style={{ fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 20 }}>SWOT: How location shapes your retail outlook</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 14 }}>
        {[
                 { label: 'Strengths', icon: '', c: S.emerald, bg: S.emeraldBg, bdr: S.emeraldBdr, items: ['High pedestrian volume from anchor stores nearby', 'Demographics precisely matched to price point', 'Low vacancy rate signals healthy street demand', 'Corner position with dual visibility'] },
         { label: 'Weaknesses', icon: '', c: S.amber, bg: S.amberBg, bdr: S.amberBdr, items: ['Premium locations carry premium rents', 'Online retail continues to pressure in-store volume', 'Seasonal variation in outdoor shopping strips', 'Limited differentiation if adjacent to similar retailers'] },
         { label: 'Opportunities', icon: '', c: '#1D4ED8', bg: '#EFF6FF', bdr: '#BFDBFE', items: ['Suburb with high income but no quality equivalent option', 'Village strip with loyal community customer base', 'Gentrifying suburb with rising income demographics', 'Category underserved within 1km catchment'] },
-        { label: 'Threats', icon: '🚨', c: S.red, bg: S.redBg, bdr: S.redBdr, items: ['Online pure-play competitor with lower price point', 'Anchor tenant closing and removing passive traffic', 'Street decline due to new development diverting foot traffic', 'Rent increase at review above sustainable level'] },
+        { label: 'Threats', icon: 'Alert', c: S.red, bg: S.redBg, bdr: S.redBdr, items: ['Online pure-play competitor with lower price point', 'Anchor tenant closing and removing passive traffic', 'Street decline due to new development diverting foot traffic', 'Rent increase at review above sustainable level'] },
        ].map(q => (
                 <div key={q.label} style={{ background: q.bg, border: `1px solid ${q.bdr}`, borderRadius: 14, padding: '20px' }}>
          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}><span style={{ fontSize: 18 }}>{q.icon}</span><span style={{ fontSize: 14, fontWeight: 800, color: q.c }}>{q.label}</span></div>
@@ -124,7 +124,7 @@ export default function Page() {
        <h3 style={{ fontSize: 16, fontWeight: 700, color: S.red, marginBottom: 16 }}> Red flags — walk away</h3>
               {['Under 200 pedestrians/hour at peak weekend time', 'Rent above 18% of projected weekly revenue', 'High vacancy rate on surrounding street', 'No anchor tenant or foot traffic driver within 300m', 'Demographics significantly misaligned with price point', 'Declining shopping centre with visibly falling traffic', 'Multiple direct competitors immediately adjacent'].map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>✕</span>
+         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>X</span>
                   <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6 }}>{item}</p>
         </div>
               ))}

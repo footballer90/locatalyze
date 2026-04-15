@@ -94,7 +94,7 @@ const CONFIGS: Record<string, Config> = {
   description: 'Locatalyze works for any business that depends on a physical location. Whether you are opening a bookshop, a dog groomer, a nail salon or a co-working space — the same location fundamentals apply.',
   keyFactors: [
       { icon: '', title: 'Target customer proximity', desc: 'The most important question: where are your customers? Map their likely home or work location against your prospective site.' },
-   { icon: '👀', title: 'Competitor awareness', desc: 'For any business type, knowing who is nearby — and how they are performing — tells you whether the market is saturated or has room for you.' },
+   { icon: 'View', title: 'Competitor awareness', desc: 'For any business type, knowing who is nearby — and how they are performing — tells you whether the market is saturated or has room for you.' },
    { icon: '', title: 'Rent affordability', desc: 'The fundamental test: can you generate enough revenue at this location to make the rent viable? Our model calculates this for your specific inputs.' },
    { icon: '', title: 'Feasibility scoring', desc: 'Locatalyze scores demand, competition, rent and profitability on a 0–100 scale and delivers a single GO / CAUTION / NO verdict.' },
   ],
@@ -110,7 +110,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
  '': <UtensilsCrossed size={20} strokeWidth={1.6} />,
  '': <ShoppingBag size={20} strokeWidth={1.6} />,
  '': <Dumbbell size={20} strokeWidth={1.6} />,
- '🥐': <Croissant size={20} strokeWidth={1.6} />,
+ 'Bakery': <Croissant size={20} strokeWidth={1.6} />,
  '': <Scissors size={20} strokeWidth={1.6} />,
  '': <Store size={20} strokeWidth={1.6} />,
 }
@@ -172,7 +172,7 @@ export function UseCasePage({ type }: { type: string }) {
      </div>
 
           <div style={{ background: `linear-gradient(135deg,${S.brand},#0891B2)`, borderRadius: 20, padding: '40px', textAlign: 'center' }}>
-      <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: 10 }}>Analyse your location now</h3>
+      <h3 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 10 }}>Analyse your location now</h3>
       <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24 }}>Paste any Australian address and get a full feasibility report in 30 seconds. Free to start.</p>
       <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff', color: S.brand, borderRadius: 10, padding: '12px 24px', fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
        Run my free analysis →

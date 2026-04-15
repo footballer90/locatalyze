@@ -521,7 +521,7 @@ export default function AnalysePage() {
         }}
       >
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: 800, color: S.white, marginBottom: '14px', lineHeight: '1.3' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#0F172A', marginBottom: '14px', lineHeight: '1.3' }}>
             Have a specific address in mind?
           </h2>
           <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.85)', marginBottom: '28px', lineHeight: '1.65' }}>
@@ -687,7 +687,7 @@ export default function AnalysePage() {
             style={{
               fontSize: 'clamp(22px, 4vw, 32px)',
               fontWeight: 800,
-              color: S.white,
+              color: '#0F172A',
               marginBottom: '14px',
               lineHeight: '1.25',
             }}
@@ -909,7 +909,7 @@ export default function AnalysePage() {
         }}
       >
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '34px', fontWeight: 900, color: S.white, marginBottom: '16px', lineHeight: '1.2' }}>
+          <h2 style={{ fontSize: '34px', fontWeight: 900, color: '#0F172A', marginBottom: '16px', lineHeight: '1.2' }}>
             Stop guessing. Start analysing.
           </h2>
           <p style={{ fontSize: '17px', color: 'rgba(255,255,255,0.88)', marginBottom: '32px', lineHeight: '1.65' }}>

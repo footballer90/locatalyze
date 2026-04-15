@@ -64,7 +64,7 @@ const BUSINESS_TYPES = [
  },
   {
     type: 'bakery',
-  icon: '🥐',
+  icon: 'Bakery',
   label: 'Artisan Bakeries',
   score: 80,
     topSuburb: 'Leederville',
@@ -107,7 +107,7 @@ const PERTH_STATS = [
  { value: '5–8%', label: 'typical café rent-to-revenue', source: 'REIWA + Locatalyze' },
 ]
 
-const S = { brand: '#0F766E', brandLight: '#14B8A6', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', muted: '#64748B', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
+const S = { brand: '#0F766E', brandLight: '#14B8A6', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', muted: '#475569', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
 
 function DataNote({ text }: { text: string }) { return <p style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic', marginTop: 6, lineHeight: 1.6 }}>{text}</p> }
 
@@ -144,7 +144,7 @@ export default function PerthHubPage() {
           <p style={{ fontSize: 17, color: 'rgba(167,243,208,0.7)', maxWidth: 620, lineHeight: 1.75, marginBottom: 32 }}>
       Perth has Australia's best business unit economics right now. Mining-driven household incomes above the national average, commercial rents 30–45% below Sydney, and an inner suburb food and retail culture that is maturing rapidly. This guide covers all six business categories.
      </p>
-          <div style={{ display: 'flex', gap: 28, flexWrap: : "wrap' as const, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' as const, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
       {PERTH_STATS.map(({ value, label, source }) => (
               <div key={label}>
                 <p style={{ fontSize: 22, fontWeight: 900, color: '#34D399', lineHeight: 1 }}>{value}</p>
@@ -232,7 +232,7 @@ export default function PerthHubPage() {
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: S.white, minWidth: 640 }}>
        <thead>
                 <tr style={{ borderBottom: `1px solid ${S.border}`, background: S.n50 }}>
-                  {['Suburb','Postcode',' Café',' Restaurant',' Retail',' Gym','🥐 Bakery',' Salon','Highlight'].map(h => (
+                  {['Suburb','Postcode',' Café',' Restaurant',' Retail',' Gym','Bakery',' Salon','Highlight'].map(h => (
           <th key={h} style={{ textAlign: 'left', padding: '11px 14px', fontSize: 11, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' as const }}>{h}</th>
          ))}
                 </tr>

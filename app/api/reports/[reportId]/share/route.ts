@@ -20,9 +20,17 @@ export async function POST(
       return secureHeaders(NextResponse.json({ error: 'Unauthorised' }, { status: 401 }))
     }
 
-    const { action } = await request.json()
-    if (!['enable', 'disable', 'rotate'].includes(action)) {
+    const body = await request.json()
+    const { action } = body
+    if (!['enable', 'disable', 'rotate', 'revoke'].includes(action)) {
       return secureHeaders(NextResponse.json({ error: 'Invalid action' }, { status: 400 }))
+    }
+    const expiresInDays = Number(body.expiresInDays || 0)
+    const hasExpiry = Number.isFinite(expiresInDays) && expiresInDays > 0
+    const expiresAtUnix = hasExpiry ? Math.floor(Date.now() / 1000 + expiresInDays * 86400) : null
+    const buildToken = () => {
+      const random = crypto.randomBytes(16).toString('hex')
+      return expiresAtUnix ? `${random}.${expiresAtUnix}` : random
     }
 
     const { data: report, error: fetchError } = await supabase
@@ -40,7 +48,7 @@ export async function POST(
     }
 
     if (action === 'enable') {
-      const token = report.public_token || crypto.randomBytes(16).toString('hex')
+      const token = report.public_token || buildToken()
       const { error: updateError } = await supabase
         .from('reports')
         .update({ is_public: true, public_token: token })
@@ -51,11 +59,12 @@ export async function POST(
         is_public: true,
         public_token: token,
         share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'}/r/${token}`,
+        expires_at: expiresAtUnix ? new Date(expiresAtUnix * 1000).toISOString() : null,
       }))
     } else if (action === 'rotate') {
       // Rotate = generate a new token while keeping sharing enabled.
       // The old URL becomes a 404 immediately — anyone who had it loses access.
-      const newToken = crypto.randomBytes(16).toString('hex')
+      const newToken = buildToken()
       const { error: updateError } = await supabase
         .from('reports')
         .update({ is_public: true, public_token: newToken })
@@ -66,6 +75,7 @@ export async function POST(
         is_public: true,
         public_token: newToken,
         share_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'}/r/${newToken}`,
+        expires_at: expiresAtUnix ? new Date(expiresAtUnix * 1000).toISOString() : null,
       }))
     } else {
       const { error: updateError } = await supabase

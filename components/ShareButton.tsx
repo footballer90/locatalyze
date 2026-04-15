@@ -21,6 +21,7 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
   const [showPanel, setShowPanel] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [rotating, setRotating] = useState(false)
+  const [expiresInDays, setExpiresInDays] = useState<number>(0)
 
   const shareUrl = token
     ? `${window.location.origin}/r/${token}`
@@ -32,8 +33,8 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
     try {
       const res = await fetch(`/api/reports/${reportId}/share`, {
         method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: isPublic ? 'disable' : 'enable' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: isPublic ? 'disable' : 'enable', expiresInDays }),
    })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to update sharing')
@@ -54,7 +55,7 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
       const res = await fetch(`/api/reports/${reportId}/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'rotate' }),
+        body: JSON.stringify({ action: 'rotate', expiresInDays }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to rotate link')
@@ -151,6 +152,32 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
               </button>
             </div>
 
+            <div style={{ marginBottom: isPublic ? 14 : 12 }}>
+              <label htmlFor={`expiry-${reportId}`} style={{ display: 'block', fontSize: 11, color: S.n500, marginBottom: 6 }}>
+                Link expiry
+              </label>
+              <select
+                id={`expiry-${reportId}`}
+                value={String(expiresInDays)}
+                onChange={(e) => setExpiresInDays(Number(e.target.value))}
+                style={{
+                  width: '100%',
+                  borderRadius: 8,
+                  border: `1px solid ${S.n200}`,
+                  background: S.white,
+                  color: S.n700,
+                  fontSize: 12,
+                  padding: '8px 10px',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <option value="0">Never expires</option>
+                <option value="1">24 hours</option>
+                <option value="7">7 days</option>
+                <option value="30">30 days</option>
+              </select>
+            </div>
+
             {/* Link field */}
             {isPublic && shareUrl && (
               <div>
@@ -179,18 +206,32 @@ export default function ShareButton({ reportId, initialIsPublic, initialToken }:
                   <p style={{ fontSize: 11, color: S.n400 }}>
                     Disable sharing to revoke all access.
                   </p>
-                  <button
-                    onClick={rotateLink}
-                    disabled={rotating}
-                    title="Generate a new link — invalidates the current URL immediately"
-                    style={{
-                      fontSize: 11, color: S.n500, background: 'none', border: `1px solid ${S.n200}`,
-                      borderRadius: 6, padding: '3px 8px', cursor: rotating ? 'wait' : 'pointer',
-                      fontFamily: 'inherit', flexShrink: 0,
-                    }}
-                  >
-                    {rotating ? 'Rotating…' : 'Rotate link'}
-                  </button>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      onClick={rotateLink}
+                      disabled={rotating}
+                      title="Generate a new link — invalidates the current URL immediately"
+                      style={{
+                        fontSize: 11, color: S.n500, background: 'none', border: `1px solid ${S.n200}`,
+                        borderRadius: 6, padding: '3px 8px', cursor: rotating ? 'wait' : 'pointer',
+                        fontFamily: 'inherit', flexShrink: 0,
+                      }}
+                    >
+                      {rotating ? 'Rotating…' : 'Rotate link'}
+                    </button>
+                    <button
+                      onClick={toggleShare}
+                      disabled={loading}
+                      title="Revoke this link immediately"
+                      style={{
+                        fontSize: 11, color: '#b91c1c', background: '#fff', border: '1px solid #fecaca',
+                        borderRadius: 6, padding: '3px 8px', cursor: loading ? 'wait' : 'pointer',
+                        fontFamily: 'inherit', flexShrink: 0,
+                      }}
+                    >
+                      Revoke now
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

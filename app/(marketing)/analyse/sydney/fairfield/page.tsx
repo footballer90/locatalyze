@@ -12,7 +12,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -57,14 +57,14 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   const opts = ['Yes', 'Maybe', 'No']
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '24px', marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Would you open a business in {suburb}?</h3>
       <p style={{ fontSize: 13, color: S.muted, marginBottom: 18 }}>{voted === null ? 'Based on this analysis — would you take the risk?' : `You voted. Here\'s how ${total} readers responded:`}</p>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {opts.map((opt, i) => {
           const pct = Math.round((votes[i] / total) * 100)
           return (
             <button key={opt} onClick={() => handleVote(i)} disabled={voted !== null}
-              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: : "left' as const, fontFamily: 'inherit", overflow: 'hidden' }}>
+              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left' as const, fontFamily: 'inherit', overflow: 'hidden' }}>
               {voted !== null && <div style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: 'rgba(8,145,178,0.07)' }}/>}
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 14, fontWeight: 600 }}>{opt}</span>
@@ -174,7 +174,7 @@ export default function FairfieldPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ fontSize: 12, color: S.muted, margin: '0 0 8px 0', textTransform: 'uppercase', fontWeight: 600 }}>Business Verdict</p>
-              <h2 style={{ fontSize: 32, fontWeight: 800, margin: 0, marginBottom: 12 }}>Fairfield</h2>
+              <h2 style={{ color: '#1C1917', fontSize: 32, fontWeight: 800, margin: 0, marginBottom: 12 }}>Fairfield</h2>
               <p style={{ fontSize: 14, color: S.n900, margin: 0, lineHeight: 1.6, maxWidth: 480 }}>Fairfield scores CAUTION. The suburb is Vietnam's food capital and Australia's refugee hub—both create specific demand that generic operators cannot access. The income constraint is real, but cultural precision and healthcare specialisation unlock strong unit economics.</p>
             </div>
             <div style={{ textAlign: 'center', minWidth: 120 }}>
@@ -185,13 +185,13 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 24, marginBottom: 40 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 20px 0' }}>Scores by Category</h3>
+          <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 20px 0' }}>Scores by Category</h3>
           {SCORE_BARS.map(bar => <ScoreBar key={bar.label} label={bar.label} value={bar.value} />)}
           <p style={{ fontSize: 12, color: S.muted, marginTop: 20, marginBottom: 0 }}>Postcode 2165 • Median income $65,000 • Rent $1,000–$3,200/mo</p>
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Business Environment</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Fairfield's commercial environment is defined by a concentration of cultural spending that most operators from outside the community struggle to access. The Vietnamese, Cantonese, Khmer, and Assyrian communities each have established operators, loyal spending patterns, and strong preference for culturally aligned businesses. An operator entering from outside these communities without genuine community connection faces a trust deficit that discounts cannot resolve.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The rent environment is Fairfield's clearest advantage over any other Sydney LGA with comparable population density. Smart Street and The Crescent positions rent at $1,500–$3,200/month—lower than Cabramatta, lower than Bankstown, comparable only to Mount Druitt. For a service-based business or a food operator who achieves 80–120 daily transactions at $8–16 per transaction, the unit economics are genuinely compelling.</p>
@@ -200,7 +200,7 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Competition Analysis</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Competition in Fairfield's food sector is intense within cultural segments. Vietnamese operators compete with Vietnamese operators; Cantonese with Cantonese. New entrants who position within an established cultural food segment face loyalty barriers without exceptional quality or community provenance. Operators in unserved cultural segments—Korean, South Asian Pakistani, and Ethiopian—face different competitive conditions.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Healthcare competition is extremely light relative to demand. Fairfield LGA's GP-to-resident ratio is one of the worst in metropolitan Sydney. Bulk-billing GP clinics run at capacity with 2–3 week wait times. Allied health practices are virtually absent from main commercial strips. A healthcare operator navigating language and cultural complexity faces near-zero competition for large, consistent demand.</p>
@@ -208,7 +208,7 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Demographics</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Demographics</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Fairfield LGA is one of Australia's most culturally diverse local government areas—75% of residents were born overseas or have at least one parent born overseas. Dominant communities: Vietnamese (25%), Assyrian/Chaldean (18%), Chinese (12%), Filipino (9%). This demographic structure creates deeply segmented consumer preferences that reward cultural precision and punish generic positioning.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Median household income of $65,000 is below Sydney median, but household size is above average (3.2 vs 2.6 persons). Per-person income is comparable to working-class Sydney suburbs once adjusted. Spending is concentrated in food, essentials, and children's education—operators in these categories access genuine purchasing power despite income constraints.</p>
@@ -216,7 +216,7 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Works Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 16 }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: S.emerald, margin: '0 0 6px 0' }}>Authentic Cultural Cuisine</h4>
@@ -234,7 +234,7 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Fails Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Fails Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 12, padding: 16 }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: S.red, margin: '0 0 6px 0' }}>Generic Western Food</h4>
@@ -253,31 +253,31 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Cultural Trust Barrier</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Cultural Trust Barrier</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Operators without community connection struggle regardless of quality. Not a marketing problem—a structural barrier in community-organised markets.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Income Volatility</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Income Volatility</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The demographic is disproportionately affected by unemployment and cost-of-living pressure. Revenue is volatile.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Westfield Gravity</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Westfield Gravity</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>The centre pulls spending from independent strip operators. Location selection within Fairfield matters.</p>
             </div>
           </div>
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Compare Nearby</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Compare Nearby</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
             {NEARBY.map(suburb => (
               <Link key={suburb.slug} href={`/analyse/sydney/${suburb.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer', transition: 'all 0.2s', height: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                    <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>{suburb.name}</h4>
+                    <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>{suburb.name}</h4>
                     <VerdictBadge v={suburb.verdict} />
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: S.brand }}>
@@ -292,7 +292,7 @@ export default function FairfieldPage() {
         <SuburbPoll suburb="Fairfield" />
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Fairfield is CAUTION not NO. The suburb has real competitive niches for operators who understand the cultural market—Vietnamese, Assyrian, Pakistani food operators with community connection; healthcare operators with language capability; services operators serving the refugee and humanitarian population. Income constraint is real, but for specific business models aligned to Fairfield's actual customer base, the economics work.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Generic Western retail and premium positioning will fail. Success in Fairfield requires either cultural specificity or service positioning in healthcare, education, or community support. The rent advantage (40–50% below comparable Parramatta or Bankstown positions) makes the financial case compelling for operators who can navigate the cultural and community requirements.</p>
@@ -300,7 +300,7 @@ export default function FairfieldPage() {
         </div>
 
         <div style={{ background: S.brand, borderRadius: 16, padding: 32, marginBottom: 48, color: S.white }}>
-          <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 8px 0' }}>Ready to analyse your location?</h3>
+          <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, margin: '0 0 8px 0' }}>Ready to analyse your location?</h3>
           <p style={{ fontSize: 14, margin: '0 0 16px 0', opacity: 0.9 }}>Get a detailed business analysis for your specific address—foot traffic, competition, demographics, and revenue potential.</p>
           <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: S.brand, padding: '12px 24px', borderRadius: 8, fontWeight: 700, textDecoration: 'none', fontSize: 14 }}>Analyse your address →</Link>
         </div>

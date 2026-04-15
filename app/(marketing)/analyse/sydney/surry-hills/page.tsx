@@ -13,7 +13,7 @@ const C = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',
@@ -48,7 +48,7 @@ function VerdictBadge({ v }: { v: Verdict }) {
   )
 }
 
-function RiskBadge({ risk }: { risk: : "GO' | 'CAUTION' | 'NO" }) {
+function RiskBadge({ risk }: { risk: 'GO' | 'CAUTION' | 'NO' }) {
   const styles: Record<string, { bg: string; color: string; text: string }> = {
     GO: { bg: C.emeraldBg, color: C.emerald, text: 'GO' },
     CAUTION: { bg: C.amberBg, color: C.amber, text: 'CAUTION' },
@@ -514,7 +514,7 @@ export default function SurryHillsPage() {
 
       <section style={{ padding: '48px 24px', backgroundColor: C.n900, color: C.white }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '12px' }}>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '12px' }}>
             Ready to open in Surry Hills?
           </h2>
           <p style={{ fontSize: '16px', lineHeight: '1.6', marginBottom: '24px', opacity: 0.95 }}>

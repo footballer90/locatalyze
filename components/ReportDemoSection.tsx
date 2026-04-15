@@ -89,7 +89,7 @@ const DATA: Record<Verdict, ReportData> = {
       { l: 'Break-even (est.)',   v: '35–50/day', d: 'assumptions-based', c: D.e },
       { l: 'Competitors 800m', v: '4',        d: 'Low density',       c: D.e },
     ],
-    ai: 'Strong directional signal. Competitor density is low and demographic income is above average for this category. This location warrants further investigation — visit in person and validate foot traffic before committing.',
+    ai: 'Strong directional signal. Competitor density is low and demographic income is above average for this category. This location is commercially viable on current assumptions — still validate foot traffic and lease terms before committing.',
     pentagon: [
       { name: 'Rent Afford.',  val: 78, color: D.e     },
       { name: 'Profitability', val: 90, color: D.e     },
@@ -920,6 +920,7 @@ export default function ReportDemoSection() {
             <div style={{ fontSize: 10, fontWeight: 700, color: D.bl, letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 6 }}>Sample data only</div>
             <div style={{ fontSize: 19, fontWeight: 700, marginBottom: 4, color: D.text1 }}>Your real report uses your exact address</div>
             <div style={{ fontSize: 13, color: D.text2, lineHeight: 1.6 }}>Live competitor mapping, ABS income data, AI financial model. Every report is unique.</div>
+            <div style={{ fontSize: 11, color: D.text3, marginTop: 6 }}>Competitor names shown in this demo are fabricated placeholders for UI preview only.</div>
           </div>
           <Link href="/analyse" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,

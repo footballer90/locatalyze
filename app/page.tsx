@@ -72,7 +72,7 @@ const RP_CASES = [
   {
     id: 0,
     biz: 'Specialty Coffee Shop', icon: 'coffee', location: 'Subiaco WA 6008',
-    verdict: 'GO', verdictSub: 'Strong Opportunity',
+    verdict: 'GO', verdictSub: 'Low Risk',
     score: 82, scoreLabel: 'Feasibility Score',
     color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
@@ -83,7 +83,7 @@ const RP_CASES = [
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
     tags: ['High Income Area', 'Low Competition', '500m Radius Checked'],
-    snap: [{ l: 'Market Demand', v: 85 }, { l: 'Rent Afford.', v: 78 }, { l: 'Comp.', v: 72 }],
+    snap: [{ l: 'Demand', v: 85 }, { l: 'Rent Fit', v: 78 }, { l: 'Comp.', v: 72 }],
   },
   {
     id: 1,
@@ -99,7 +99,7 @@ const RP_CASES = [
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
     tags: ['Seasonal Risk', 'High Competition', 'Review Financials'],
-    snap: [{ l: 'Market Demand', v: 68 }, { l: 'Rent Afford.', v: 55 }, { l: 'Comp.', v: 60 }],
+    snap: [{ l: 'Demand', v: 68 }, { l: 'Rent Fit', v: 55 }, { l: 'Comp.', v: 60 }],
   },
   {
     id: 2,
@@ -115,7 +115,7 @@ const RP_CASES = [
       { l: 'Note',                  v: 'High risk',        highlight: true },
     ],
     tags: ['Oversaturated', 'Rent Too High', 'Not Viable'],
-    snap: [{ l: 'Market Demand', v: 48 }, { l: 'Rent Afford.', v: 38 }, { l: 'Comp.', v: 42 }],
+    snap: [{ l: 'Demand', v: 48 }, { l: 'Rent Fit', v: 38 }, { l: 'Comp.', v: 42 }],
   },
 ]
 
@@ -124,15 +124,22 @@ function ReportPreview() {
   const [animKey, setAnimKey]   = useState(0)
   const [score, setScore]       = useState(0)          // start at 0 — animate to real value after mount
   const [snapping, setSnapping] = useState(false)
-  const [visible, setVisible]   = useState(false)
+  const [visible, setVisible]   = useState(true)
   const rpRef                   = useRef<HTMLDivElement>(null)
 
-  // Animate score ring from 0 → target on mount and case switch
+  // Animate score ring from 0 → target when visible and on case switch
   useEffect(() => {
+    if (!visible) return
     setScore(0)
-    const t = setTimeout(() => setScore(RP_CASES[caseIdx].score), 80)
-    return () => clearTimeout(t)
-  }, [caseIdx])
+    const target = RP_CASES[caseIdx].score
+    let current = 0
+    const id = setInterval(() => {
+      current = Math.min(current + 2, target)
+      setScore(current)
+      if (current >= target) clearInterval(id)
+    }, 16)
+    return () => clearInterval(id)
+  }, [caseIdx, visible])
 
   useEffect(() => {
     const el = rpRef.current
@@ -234,7 +241,7 @@ function ReportPreview() {
                       style={{ transition:'stroke-dashoffset 0.85s cubic-bezier(.4,0,.2,1)', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{c.score}</span>
+                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{score}</span>
                     <span style={{ fontSize:10, color:'rgba(255,255,255,.4)' }}>/100</span>
                   </div>
                 </div>
@@ -278,7 +285,7 @@ function ReportPreview() {
 
         {/* Footer */}
         <div style={{ background:'#F8FAFC', borderTop:`1px solid ${L.border}`, padding:'10px 20px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <span style={{ fontSize:10, color:L.muted }}>Based on live data · Australian addresses only</span>
+          <span style={{ fontSize:10, color:L.muted }}>Illustrative demo data · Australian addresses</span>
           <span style={{ fontSize:10, fontWeight:700, color:c.color }}>View full report →</span>
         </div>
       </div>
@@ -333,7 +340,7 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
       </div>
-      {[{l:'Profitability',p:85,c:D.e,v:'High'},{l:'Market Demand',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Affordability',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
+      {[{l:'Profitability',p:85,c:D.e,v:'High'},{l:'Area Demographics',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Affordability',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
         <div key={i} style={{ marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}><span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.l}</span><span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.v}</span></div>
           <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', background: b.c, borderRadius: 2, width: bars?`${b.p}%`:'0%', transition: `width 1.1s ease ${i*.12}s` }}/></div>
@@ -413,7 +420,7 @@ function ShowcaseReportUI() {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 88</p>
         </div>
       </div>
-      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Profitability',v:'Strong',c:D.e},{dot:D.amber,l:'Competition',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Affordability',v:'Viable',c:D.e},{dot:'#34D399',l:'Market Demand',v:'Excellent',c:D.e}].map((r,i)=>(
+      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Profitability',v:'Strong',c:D.e},{dot:D.amber,l:'Competition',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Affordability',v:'Viable',c:D.e},{dot:'#34D399',l:'Area Demographics',v:'Excellent',c:D.e}].map((r,i)=>(
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i<4?'1px solid rgba(255,255,255,.05)':'none' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: r.dot, flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: '#9CA3AF', flex: 1 }}>{r.l}</span>
@@ -522,18 +529,18 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
     kpis: [
       { label: 'Est. monthly revenue', value: '$78k–$88k',  sub: 'range estimate',   up: true },
-      { label: 'Monthly Profit',       value: '~$27k',      sub: '~33% margin',       up: true },
+      { label: 'Monthly Profit',       value: '~$27k',      sub: '~33% margin (excl. owner salary)',       up: true },
       { label: 'Est. annual revenue',  value: '$936k–$1.1m', sub: 'range estimate',  up: true },
       { label: 'Break-even (est.)',    value: '35–50/day',  sub: 'assumptions-based', up: true },
     ],
     revenue: [58, 67, 74, 80, 86, 91],
     profit:  [10, 14, 17, 21, 23, 25],
     scores: [
-      { label: 'Market Demand',      score: 85, icon: 'activity' },
-      { label: 'Rent Affordability', score: 78, icon: 'home' },
-      { label: 'Competition',        score: 72, icon: 'target' },
-      { label: 'Profitability',      score: 90, icon: 'trendingUp' },
-      { label: 'Location Quality',   score: 85, icon: 'mapPin' },
+      { label: 'Rent Affordability (20%)', score: 78, icon: 'home' },
+      { label: 'Competition (25%)',        score: 72, icon: 'target' },
+      { label: 'Market Demand (20%)',      score: 85, icon: 'activity' },
+      { label: 'Profitability (25%)',      score: 90, icon: 'trendingUp' },
+      { label: 'Location Quality (10%)',   score: 84, icon: 'mapPin' },
     ],
     heatmap: [8,6,5,7,9,8,7, 4,3,2,4,6,5,4, 6,5,4,6,8,7,6, 5,4,3,5,7,6,5, 7,6,5,7,9,8,7],
     swot: {
@@ -550,18 +557,18 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#B45309 0%,#D97706 100%)',
     kpis: [
       { label: 'Monthly Revenue',  value: '$28,000',  sub: '-14% vs benchmark', up: false },
-      { label: 'Monthly Profit',   value: '$4,200',   sub: '15% margin',        up: false },
+      { label: 'Monthly Profit',   value: '$4,200',   sub: '15% margin (excl. owner salary)',        up: false },
       { label: 'Est. annual revenue',  value: '$280k–$420k', sub: 'range estimate', up: false },
       { label: 'Break-even (est.)',    value: '60–80/day', sub: 'higher risk', up: false },
     ],
     revenue: [42, 55, 68, 74, 70, 74],
     profit:  [4,  8,  12, 11, 9,  11],
     scores: [
-      { label: 'Market Demand',      score: 68, icon: 'activity' },
-      { label: 'Rent Affordability', score: 55, icon: 'home' },
-      { label: 'Competition',        score: 60, icon: 'target' },
-      { label: 'Profitability',      score: 62, icon: 'trendingUp' },
-      { label: 'Location Quality',   score: 58, icon: 'mapPin' },
+      { label: 'Rent Affordability (20%)', score: 55, icon: 'home' },
+      { label: 'Competition (25%)',        score: 60, icon: 'target' },
+      { label: 'Market Demand (20%)',      score: 68, icon: 'activity' },
+      { label: 'Profitability (25%)',      score: 62, icon: 'trendingUp' },
+      { label: 'Location Quality (10%)',   score: 58, icon: 'mapPin' },
     ],
     heatmap: [7,8,9,8,6,4,3, 3,4,5,5,4,3,2, 5,6,7,7,5,4,3, 4,5,6,6,4,3,2, 6,7,8,8,6,4,3],
     swot: {
@@ -578,27 +585,27 @@ const PR_DATA = {
     accentGrad: 'linear-gradient(135deg,#991B1B 0%,#DC2626 100%)',
     kpis: [
       { label: 'Monthly Revenue',  value: '$17,000',  sub: '-52% vs benchmark',  up: false },
-      { label: 'Monthly Profit',   value: '$1,020',   sub: '6% margin',          up: false },
+      { label: 'Monthly Profit',   value: '$1,020',   sub: '6% margin (excl. owner salary)',          up: false },
       { label: 'Est. annual revenue',  value: '$168k–$228k', sub: 'range estimate', up: false },
       { label: 'Break-even (est.)',    value: '80–100/day', sub: 'very high risk', up: false },
     ],
     revenue: [38, 42, 46, 50, 51, 51],
     profit:  [1,  1,  2,  3,  3,  3],
     scores: [
-      { label: 'Market Demand',      score: 48, icon: 'activity' },
-      { label: 'Rent Affordability', score: 38, icon: 'home' },
-      { label: 'Competition',        score: 42, icon: 'target' },
-      { label: 'Profitability',      score: 46, icon: 'trendingUp' },
-      { label: 'Location Quality',   score: 40, icon: 'mapPin' },
+      { label: 'Rent Affordability (20%)', score: 38, icon: 'home' },
+      { label: 'Competition (25%)',        score: 42, icon: 'target' },
+      { label: 'Market Demand (20%)',      score: 48, icon: 'activity' },
+      { label: 'Profitability (25%)',      score: 46, icon: 'trendingUp' },
+      { label: 'Location Quality (10%)',   score: 40, icon: 'mapPin' },
     ],
     heatmap: [3,2,1,2,3,2,1, 2,1,1,1,2,2,1, 4,3,2,3,4,3,2, 3,2,1,2,3,2,1, 2,1,1,2,2,2,1],
     swot: {
       strengths:     ['Large 15km residential catchment', 'No specialist CrossFit within 2km'],
-      weaknesses:    ['4 established gyms already within 1km', 'Rent at $6,800/mo consumes 34% revenue'],
+      weaknesses:    ['4 established gyms already within 500m', 'Rent at $6,800/mo consumes 34% revenue'],
       opportunities: ['Underserved women-only fitness niche', 'Corporate wellness contracts potential'],
       threats:       ['Planet Fitness opening 800m away Q3', 'Membership churn risk in saturated market'],
     },
-    rec: 'Data does not support this location. Rent consumes 34% of projected revenue — well above the viable threshold — and the area already has four established gyms within 1km. A differentiated concept may help, but the numbers are structurally difficult.',
+    rec: 'Data does not support this location. Rent consumes 34% of projected revenue — well above the viable threshold — and the area already has four established gyms within 500m. A differentiated concept may help, but the numbers are structurally difficult.',
   },
 }
 
@@ -823,6 +830,9 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.6)', fontWeight: 500 }}>
               {d.suburb}
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.08)', borderRadius: 8, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,.6)', fontWeight: 600 }}>
+              Scoring v2.1
+            </div>
             <div style={{ marginLeft: 'auto' as const, background: 'rgba(255,255,255,.1)', borderRadius: 8, padding: '3px 10px', fontSize: 10, color: 'rgba(255,255,255,.5)', fontWeight: 500 }}>
               {new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
@@ -830,7 +840,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
 
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 20 }}>
             <div>
-              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#fff', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
+              <h3 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-.03em', marginBottom: 12, lineHeight: 1.1 }}>{d.biz}</h3>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: d.verdictBg, border: `2px solid ${d.verdictBorder}`, borderRadius: 14, padding: '8px 18px' }}>
                 <div>
                   <p style={{ fontSize: 16, fontWeight: 900, color: d.verdictColor, lineHeight: 1 }}>{d.verdict}</p>
@@ -961,7 +971,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
                 <p style={{ fontSize: 10, fontWeight: 700, color: d.verdictColor, textTransform: 'uppercase' as const, letterSpacing: '.08em', marginBottom: 12 }}>Competitor Proximity</p>
                 {[
                   { name: 'Direct competitors (500m)', val: verdict === 'go' ? '3' : verdict === 'caution' ? '8' : '4', risk: verdict === 'go' ? 'low' : verdict === 'caution' ? 'high' : 'med' },
-                  { name: 'Indirect competitors (1km)', val: verdict === 'go' ? '7' : verdict === 'caution' ? '14' : '12', risk: verdict === 'go' ? 'low' : 'high' },
+                  { name: 'Indirect competitors (500m)', val: verdict === 'go' ? '7' : verdict === 'caution' ? '14' : '12', risk: verdict === 'go' ? 'low' : 'high' },
                   { name: 'Competition intensity', val: verdict === 'go' ? 'Moderate' : verdict === 'caution' ? 'High' : 'Very High', risk: verdict === 'go' ? 'low' : 'high' },
                   { name: 'Market gap score', val: verdict === 'go' ? '72 / 100' : verdict === 'caution' ? '44 / 100' : '28 / 100', risk: verdict === 'go' ? 'low' : 'high' },
                 ].map(row => (
@@ -977,7 +987,7 @@ function PremiumReport({ verdict, isMobile }: { verdict: 'go' | 'caution' | 'no'
                   { label: 'Population (5km)', value: verdict === 'go' ? '42,800' : verdict === 'caution' ? '31,200' : '58,400' },
                   { label: 'Median Income', value: verdict === 'go' ? '$94,200' : verdict === 'caution' ? '$71,400' : '$68,800' },
                   { label: 'Primary Age Group', value: verdict === 'go' ? '25–44 yrs' : verdict === 'caution' ? '20–35 yrs' : '35–55 yrs' },
-                  { label: 'Market Demand Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
+                  { label: 'Area Demographics Score', value: verdict === 'go' ? '85 / 100' : verdict === 'caution' ? '68 / 100' : '48 / 100' },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${L.border}` }}>
                     <span style={{ fontSize: 12, color: L.muted }}>{row.label}</span>
@@ -1233,7 +1243,7 @@ function CinematicWalkthrough() {
                   ))}
                 </div>
 
-                {[{l:'Market Demand',s:85},{l:'Rent Affordability',s:78},{l:'Competition',s:72},{l:'Profitability',s:90},{l:'Location Quality',s:85}].map((b, i) => (
+                {[{l:'Area Demographics',s:85},{l:'Rent Affordability',s:78},{l:'Competition',s:72},{l:'Profitability',s:90}].map((b, i) => (
                   <div key={b.l} style={{ marginBottom: 7 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                       <span style={{ fontSize: 11, color: L.muted }}>{b.l}</span>
@@ -1656,7 +1666,7 @@ export default function LandingPage() {
               </span>
             </h2>
             <p style={{ fontSize: isMobile ? 14 : 16, color:'rgba(204,235,229,.55)', maxWidth:540, margin:'0 auto', lineHeight:1.75 }}>
-              Every verdict is computed from real, live sources — cross-referenced and weighted by our AI. No static databases. No educated guesses.
+              Every verdict is computed from real, live sources — cross-referenced by one AI model and a deterministic scoring engine. No static databases. No educated guesses.
             </p>
           </div>
 
@@ -1665,7 +1675,7 @@ export default function LandingPage() {
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:0, marginBottom:64 }}>
               {[
                 { icon: 'globe',    label: 'Live Data' },
-                { icon: 'activity', label: '8 AI Agents' },
+                { icon: 'activity', label: '1 AI model + compute engine' },
                 { icon: 'barChart', label: 'Scoring Engine' },
                 { icon: 'shield',   label: 'Your Verdict' },
               ].map((step, i) => (
@@ -1718,7 +1728,7 @@ export default function LandingPage() {
                 color:'#EF4444', colorBg:'rgba(239,68,68,.08)', colorBorder:'rgba(239,68,68,.2)',
               },
               {
-                icon: 'bot', source:'AI Financial Model', badge:'Proprietary',
+                icon: 'bot', source:'AI Narrative + Compute Engine', badge:'Proprietary',
                 headline:'Break-even, profit and 3-year outlook',
                 body:'Input your rent and transaction value — our model calculates daily volume needed, monthly profit, payback period and a 3-year revenue projection.',
                 proof:'Based on ABS Census + live business data',
@@ -1917,7 +1927,7 @@ export default function LandingPage() {
                 { label:'PDF export', included:false },
               ].map(f => (
                 <p key={f.label} style={{ fontSize:12, color: f.included ? '#334155' : '#CBD5E1', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>
-                  <span style={{ color: f.included ? L.emerald : '#CBD5E1', fontWeight:700, flexShrink:0 }}>{f.included ? '✓' : '—'}</span> {f.label}
+                  <span style={{ color: f.included ? L.emerald : '#CBD5E1', fontWeight:700, flexShrink:0 }}>{f.included ? 'Check' : '—'}</span> {f.label}
                 </p>
               ))}
               <div style={{ flexGrow: 1 }}/>
@@ -1932,7 +1942,7 @@ export default function LandingPage() {
               </div>
               <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>One-time · per location</p>
               {['Full financial model','Break-even analysis','Revenue projections','SWOT & AI insights','PDF export'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/onboarding" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:L.emerald, borderRadius:11, fontSize:12, fontWeight:700, color:'#fff', textDecoration:'none' }}>Get your report — $29</a>
             </div>
@@ -1946,7 +1956,7 @@ export default function LandingPage() {
               <p style={{ fontSize:12, color:'rgba(255,255,255,.7)', fontWeight:600, marginBottom:4 }}>$19.67 per report · save 32%</p>
               <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:18 }}>Compare 3 locations</p>
               {['Everything in Single Report','Compare up to 3 locations side-by-side','Use credits on any address','Credits never expire'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
+                <p key={f} style={{ fontSize:12, color:'rgba(255,255,255,.85)', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:'#fff', borderRadius:11, fontSize:12, fontWeight:800, color:'#0F766E', textDecoration:'none' }}>Get 3-Pack — $59</a>
             </div>
@@ -1959,7 +1969,7 @@ export default function LandingPage() {
               <p style={{ fontSize:12, color:'#059669', fontWeight:600, marginBottom:4 }}>$14.90 per report · save 49%</p>
               <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>For agencies & multi-site</p>
               {['Everything in Single Report','10 report credits','Bulk location research','Priority support'].map(f => (
-                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>✓ {f}</p>
+                <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Get 10-Pack — $149</a>
             </div>

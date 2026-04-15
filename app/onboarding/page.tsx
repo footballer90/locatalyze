@@ -731,7 +731,7 @@ export default function OnboardingPage() {
                   </select>
                   {locationAccess === 'side_street' || locationAccess === 'arcade' ? (
                     <p style={{ fontSize: 10, color: S.amber, marginTop: 3, fontWeight: 600 }}>
-                      ⚠ Lower foot traffic — customer projections adjusted down
+                      Warning Lower foot traffic — customer projections adjusted down
                     </p>
                   ) : locationAccess === 'street_frontage' || locationAccess === 'transport_hub' ? (
                     <p style={{ fontSize: 10, color: S.emerald, marginTop: 3, fontWeight: 600 }}>
@@ -963,7 +963,7 @@ export default function OnboardingPage() {
 
             {authDone ? (
               <div style={{ textAlign: 'center', padding: '16px 0' }}>
-                <div style={{ fontSize: 40, marginBottom: 16 }}>📧</div>
+                <div style={{ fontSize: 40, marginBottom: 16 }}>Email</div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 8 }}>Check your email</h3>
                 <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6 }}>
                   We sent a confirmation link to <strong style={{ color: S.n800 }}>{authEmail}</strong>.<br />

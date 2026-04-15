@@ -307,7 +307,7 @@ export default function AdminDashboard() {
 
             {/* Most active users */}
             <div style={{ background: S.white, borderRadius: 16, border: `1px solid ${S.n200}`, padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-       <p style={{ fontSize: 13, fontWeight: 700, color: S.n900, marginBottom: 16 }}>🔥 Most active users</p>
+       <p style={{ fontSize: 13, fontWeight: 700, color: S.n900, marginBottom: 16 }}>Top Most active users</p>
               {[...users].sort((a, b) => b.reportCount - a.reportCount).slice(0, 5).map((u, i) => (
                 <div key={u.user_id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < 4 ? `1px solid ${S.n100}` : 'none' }}>
          <div style={{ width: 32, height: 32, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: S.brand, flexShrink: 0 }}>

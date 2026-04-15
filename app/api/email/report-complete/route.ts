@@ -13,12 +13,12 @@ const sb = createServiceClient(
 )
 
 function verdictEmoji(verdict: string | null) {
-  if (!verdict) return '📋'
+  if (!verdict) return 'Checklist'
   const v = verdict.toUpperCase()
-  if (v === 'GO')      return '✅'
-  if (v === 'CAUTION') return '⚠️'
-  if (v === 'NO')      return '🚫'
-  return '📋'
+  if (v === 'GO')      return 'Approved'
+  if (v === 'CAUTION') return 'Warning'
+  if (v === 'NO')      return 'No'
+  return 'Checklist'
 }
 
 function fmtMoney(n: number | null | undefined) {
@@ -89,7 +89,7 @@ function buildEmailHtml(opts: {
           </table>
 
           ${isEstimated ? `<p style="margin:0 0 20px;font-size:12px;color:#A8A29E;background:#FAFAF9;border:1px solid #E7E5E4;border-radius:6px;padding:10px 14px;">
-            ⚡ Financials are benchmark estimates — see the full report for data sources and confidence levels.
+            Fast Financials are benchmark estimates — see the full report for data sources and confidence levels.
           </p>` : ''}
 
           <!-- CTA -->
@@ -185,10 +185,10 @@ export async function POST(req: NextRequest) {
     const html = buildEmailHtml({ verdict, score, location, businessType, netProfit, rent, reportUrl, isEstimated })
 
     const subject = verdict === 'GO'
-      ? `✅ ${businessType} at ${location} — Report ready (GO)`
+      ? `Approved ${businessType} at ${location} — Report ready (GO)`
       : verdict === 'CAUTION'
-      ? `⚠️ ${businessType} at ${location} — Report ready (Caution)`
-      : `🚫 ${businessType} at ${location} — Report ready (Not recommended)`
+      ? `Warning ${businessType} at ${location} — Report ready (Caution)`
+      : `No ${businessType} at ${location} — Report ready (Not recommended)`
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

@@ -214,7 +214,7 @@ const S = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',
@@ -288,7 +288,7 @@ function SuburbPoll() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ color: '#1C1917', marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
         Which suburb would you open a retail store in?
       </h3>
       {votes.map((option, i) => (
@@ -355,8 +355,8 @@ function ChecklistUnlock() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Retail Checklist
+      <h3 style={{ color: '#1C1917', marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
+        Checklist Unlock the Full Retail Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Mackay retail startup checklist + FIFO roster cycle calendar + commodity price model (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -549,7 +549,7 @@ export default function MackayRetailPage() {
 
       {/* Market Context */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Mackay Retail Market Context
         </h2>
         <p style={{ marginBottom: '16px', lineHeight: '1.6', color: S.n900 }}>
@@ -564,7 +564,7 @@ export default function MackayRetailPage() {
 
         {/* Scatter Chart */}
         <div style={{ marginBottom: '48px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
             Rent vs. Revenue Potential
           </h3>
           <ResponsiveContainer width="100%" height={400}>
@@ -592,7 +592,7 @@ export default function MackayRetailPage() {
 
       {/* Suburb Scores Bar Chart */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Suburb Viability Scores (0–100)
         </h2>
         <ResponsiveContainer width="100%" height={400}>
@@ -617,7 +617,7 @@ export default function MackayRetailPage() {
 
       {/* Top Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }} id="top-suburbs">
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
           Top 4 Suburbs for Retail (GO Verdict)
         </h2>
         {TOP_SUBURBS.map((suburb) => (
@@ -630,7 +630,7 @@ export default function MackayRetailPage() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px' }}>
               <div>
-                <h3 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
                   #{suburb.rank} {suburb.name} ({suburb.postcode})
                 </h3>
                 <p style={{ color: S.muted, fontSize: '14px' }}>
@@ -677,7 +677,7 @@ export default function MackayRetailPage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function MackayRetailPage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -712,7 +712,7 @@ export default function MackayRetailPage() {
         textAlign: 'center',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Need a Custom Site Analysis?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>
@@ -743,7 +743,7 @@ export default function MackayRetailPage() {
 
       {/* Risk Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Caution & No-Go Suburbs
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
@@ -755,7 +755,7 @@ export default function MackayRetailPage() {
               borderRadius: '12px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '700' }}>
                   {suburb.name} ({suburb.postcode})
                 </h3>
                 <VerdictBadge verdict={suburb.verdict} />
@@ -783,7 +783,7 @@ export default function MackayRetailPage() {
         padding: '0 24px',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           How to Validate Your Mackay Retail Idea (4 min)
         </h2>
         <div style={{
@@ -809,7 +809,7 @@ export default function MackayRetailPage() {
 
       {/* FAQ */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           FAQ: Mackay Retail Economics
         </h2>
         {[
@@ -868,7 +868,7 @@ export default function MackayRetailPage() {
 
       {/* City vs Australia Table */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Mackay vs Australia: Retail Economics
         </h2>
         <div style={{ overflowX: 'auto' }}>
@@ -934,7 +934,7 @@ export default function MackayRetailPage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Mackay is Australia\'s highest-income secondary retail market with exceptional profit potential offset by commodity/roster cycle volatility.</strong> Mount Pleasant (82/100) delivers $224k annual profit within 32 months, supported by mining professional income ($112k median—highest non-capital regional city) and FIFO roster spending spikes. However, coal commodity sensitivity and roster downtime (30–40% traffic reduction) require sophisticated inventory/staffing planning. Mackay City (79/100) provides diversified revenue (tourism 30%, families, retail workers) with higher foot traffic (7,100/day) and lower mining dependency; suitable for risk-averse operators. Andergrove (74/100) offers family-focused stability + emerging shopping corridor growth. FIFO roster cycle modeling and commodity price hedging essential. Premium positioning viable; margin profile 22–26% gross (vs 15–18% volume retail). Northern Beaches expansion (2026–2028) creates secondary retail corridor opportunity.
@@ -948,7 +948,7 @@ export default function MackayRetailPage() {
         color: S.white,
         textAlign: 'center',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Ready to Validate Your Mackay Retail Idea?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>

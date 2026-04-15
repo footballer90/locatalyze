@@ -140,9 +140,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Fortitude Valley', postcode: '4006', score: 68, verdict: : "CAUTION' as const, reason: 'Fortitude Valley is transitioning from nightlife to daytime vibrancy, but the economics are challenging. Rents are $4,200–$6,000/month — the highest in Brisbane — while median income is only $72,000. Foot traffic is high on Friday–Sunday nights; weekday mornings are softer. Rent-to-revenue for most day-focused café concepts exceeds 16%, leaving thin margins. Viability depends on strong brand differentiation and premium pricing." },
-  { name: 'Chermside', postcode: '4032', score: 42, verdict: : "NO' as const, reason: 'Chermside shopping centre dominates the precinct, forcing independent operators into a race-to-the-bottom competition with chains (The Coffee Club, Dome, Gloria Jean\'s). The mall takes a 15% commission from sales. Independent café economics at the Chermside shopping centre are structurally unviable. Suburban standalone locations lack foot traffic and lack the density to support quality pricing." },
-  { name: 'Caboolture', postcode: '4510', score: 31, verdict: : "NO' as const, reason: 'Median household income of $64,000 — 20% below Brisbane median — makes the premium café price point a genuine stretch purchase rather than habitual spend. Customer traffic exists but willingness-to-pay is insufficient to support the rent and cost structure a quality café requires. At these income levels, customers default to supermarket coffee during any economic uncertainty." },
+  { name: 'Fortitude Valley', postcode: '4006', score: 68, verdict: 'CAUTION' as const, reason: 'Fortitude Valley is transitioning from nightlife to daytime vibrancy, but the economics are challenging. Rents are $4,200–$6,000/month — the highest in Brisbane — while median income is only $72,000. Foot traffic is high on Friday–Sunday nights; weekday mornings are softer. Rent-to-revenue for most day-focused café concepts exceeds 16%, leaving thin margins. Viability depends on strong brand differentiation and premium pricing.' },
+  { name: 'Chermside', postcode: '4032', score: 42, verdict: 'NO' as const, reason: 'Chermside shopping centre dominates the precinct, forcing independent operators into a race-to-the-bottom competition with chains (The Coffee Club, Dome, Gloria Jean\'s). The mall takes a 15% commission from sales. Independent café economics at the Chermside shopping centre are structurally unviable. Suburban standalone locations lack foot traffic and lack the density to support quality pricing.' },
+  { name: 'Caboolture', postcode: '4510', score: 31, verdict: 'NO' as const, reason: 'Median household income of $64,000 — 20% below Brisbane median — makes the premium café price point a genuine stretch purchase rather than habitual spend. Customer traffic exists but willingness-to-pay is insufficient to support the rent and cost structure a quality café requires. At these income levels, customers default to supermarket coffee during any economic uncertainty.' },
 ]
 
 const S = {
@@ -150,11 +150,11 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
   const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
     : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
     : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -163,7 +163,7 @@ function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
     : v === 'CAUTION'
     ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {
@@ -340,7 +340,7 @@ export default function BrisbaneCafePage() {
       </nav>
 
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)', padding: '60px 24px 52px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '60px 24px 52px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, flexWrap: 'wrap' as const }}>
             {[['Location Guides', '/analyse'], ['Brisbane', '/analyse/brisbane']].map(([label, href]) => (
@@ -592,7 +592,7 @@ export default function BrisbaneCafePage() {
           <h2 style={{ fontSize: 20, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em', marginBottom: 14 }}>
             Watch: How to Choose a Café Location in Brisbane
           </h2>
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C1F1C', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: : "column' as const, gap: 12, cursor: 'pointer" }}
+          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C1F1C', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' as const, gap: 12, cursor: 'pointer' }}
             onClick={() => window.open('https://www.youtube.com/@locatalyze', '_blank')}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', border: '2px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #22C55E', marginLeft: 4 }}/>
@@ -605,7 +605,7 @@ export default function BrisbaneCafePage() {
 
         {/* 4 Key factors */}
         <section style={{ marginBottom: 44 }}>
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 14 }}>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 14 }}>
             The 4 Factors That Determine Brisbane Café Success
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
@@ -617,7 +617,7 @@ export default function BrisbaneCafePage() {
             ].map(f => (
               <div key={f.title} style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: '20px 22px' }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F0FDFA', border: '1px solid #CCFBF1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>{f.icon}</div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 3 }}>{f.title}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 800, color: '#F8FAFC', marginBottom: 3 }}>{f.title}</h3>
                 <p style={{ fontSize: 11, fontWeight: 700, color: S.emerald, marginBottom: 10 }}>{f.weight}</p>
                 <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.75 }}>{f.detail}</p>
               </div>

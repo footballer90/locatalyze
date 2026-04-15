@@ -3,15 +3,35 @@
 
 import Link from 'next/link'
 import { POSTS, POST_LIST, type Section } from '@/lib/blog-posts'
+import { BLOG_CATEGORY_COLORS, BLOG_THEME } from '@/lib/blog-theme'
 
 const S = {
-  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
-  n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4', n400: '#A8A29E', n500: '#78716C',
-  n700: '#44403C', n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
-  headerBg: '#0C1F1C', font: "'DM Sans', sans-serif",
-  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
-  amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
-  red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
+  brand: BLOG_THEME.color.primary,
+  brandLight: BLOG_THEME.color.accent,
+  brandFaded: BLOG_THEME.color.primarySoft,
+  brandBorder: BLOG_THEME.color.primaryBorder,
+  n50: BLOG_THEME.color.bg,
+  n100: BLOG_THEME.color.surfaceAlt,
+  n200: BLOG_THEME.color.border,
+  n400: BLOG_THEME.color.textFaint,
+  n500: BLOG_THEME.color.textSubtle,
+  n700: BLOG_THEME.color.textMuted,
+  n800: BLOG_THEME.color.textStrong,
+  n900: BLOG_THEME.color.text,
+  white: BLOG_THEME.color.surface,
+  headerBg: BLOG_THEME.color.headerBg,
+  headerText: BLOG_THEME.color.headerText,
+  headerMuted: BLOG_THEME.color.headerMuted,
+  font: BLOG_THEME.font.sans,
+  emerald: BLOG_THEME.color.success,
+  emeraldBg: '#ECFDF5',
+  emeraldBdr: '#A7F3D0',
+  amber: BLOG_THEME.color.warning,
+  amberBg: '#FFFBEB',
+  amberBdr: '#FDE68A',
+  red: BLOG_THEME.color.danger,
+  redBg: '#FEF2F2',
+  redBdr: '#FECACA',
 }
 
 const VARIANT_COLORS = {
@@ -28,14 +48,17 @@ function stripEmojis(str: string): string {
 
 function renderSection(section: Section, idx: number) {
   const body: React.CSSProperties = {
-    fontSize: 16, color: '#57534E', lineHeight: 1.9, marginBottom: 20,
+    fontSize: BLOG_THEME.type.body,
+    color: S.n700,
+    lineHeight: 1.85,
+    marginBottom: 20,
   }
   switch (section.type) {
 
     case 'h2':
       return (
         <h2 key={idx} style={{
-          fontSize: 'clamp(18px,3vw,22px)', fontWeight: 800,
+          fontSize: BLOG_THEME.type.h2, fontWeight: 800,
           color: S.n900, letterSpacing: '-0.02em',
           marginBottom: 14, marginTop: 44, lineHeight: 1.25,
           paddingTop: 8, borderTop: `1px solid ${S.n100}`,
@@ -47,7 +70,7 @@ function renderSection(section: Section, idx: number) {
     case 'h3':
       return (
         <h3 key={idx} style={{
-          fontSize: 16, fontWeight: 700, color: S.n800,
+          fontSize: 20, fontWeight: 700, color: S.n800,
           marginBottom: 10, marginTop: 28, lineHeight: 1.35,
         }}>
           {section.text}
@@ -341,12 +364,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const showRelated = related.length > 0 ? related : fallbackRelated
 
   // Category pill colour
-  const CAT_COLOR: Record<string, string> = {
-    Cafes: '#0F766E', Restaurants: '#B45309', Gyms: '#0369A1',
-    Retail: '#7C3AED', Finance: '#059669', Strategy: '#64748B',
-    Data: '#0891B2', Sydney: '#1D4ED8', Melbourne: '#7C3AED',
-    Brisbane: '#B45309', Perth: '#0F766E', Tools: '#6B7280',
-  }
+  const CAT_COLOR = BLOG_CATEGORY_COLORS
   const catColor = CAT_COLOR[post.category] || S.brand
 
   return (
@@ -355,6 +373,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         a { text-decoration: none; }
+        .blog-link:focus-visible { outline: 2px solid ${S.brand}; outline-offset: 2px; }
+        .blog-link:hover { color: ${S.brandLight}; }
       `}</style>
 
       <div style={{ minHeight: '100vh', background: S.white, fontFamily: S.font }}>
@@ -372,16 +392,26 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#fff', fontWeight: 900, fontSize: 12,
             }}>
-              L
+              <img src="/logo-mark.svg" alt="" style={{ width: '12px', height: '12px' }} />
             </div>
-            <span style={{ fontWeight: 800, fontSize: 14, color: '#F9FAFB', letterSpacing: '-0.02em' }}>
+            <span style={{ fontWeight: 800, fontSize: 14, color: S.headerText, letterSpacing: '-0.02em' }}>
               Locatalyze
             </span>
           </Link>
-          <span style={{ color: '#374151', fontSize: 14 }}>/</span>
-          <Link href="/blog" style={{ fontSize: 13, color: '#9CA3AF' }}>Blog</Link>
-          <span style={{ color: '#374151', fontSize: 14 }}>/</span>
-          <span style={{ fontSize: 13, color: '#6B7280' }}>{post.category}</span>
+          <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 14 }}>/</span>
+          <Link href="/blog" className="blog-link" style={{ fontSize: 13, color: S.headerMuted }}>Blog</Link>
+          <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 14 }}>/</span>
+          <span style={{ fontSize: 13, color: S.headerMuted }}>{post.category}</span>
+          <div style={{ flex: 1 }} />
+          <Link href="/onboarding" style={{
+            fontSize: 12, fontWeight: 700, color: S.brandLight,
+            textDecoration: 'none', border: `1px solid ${S.brand}50`,
+            borderRadius: 7, padding: '6px 14px',
+            background: `${S.brand}18`,
+            marginLeft: 'auto',
+          }}>
+            Check your location
+          </Link>
         </div>
 
         {/* Hero */}
@@ -403,10 +433,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
               <span style={{
                 fontSize: 10, fontWeight: 700,
-                color: catColor, textTransform: 'uppercase',
+                color: '#FFFFFF', textTransform: 'uppercase',
                 letterSpacing: '0.07em',
-                background: 'rgba(255,255,255,0.12)',
-                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'rgba(255,255,255,0.18)',
+                border: '1px solid rgba(255,255,255,0.3)',
                 borderRadius: 4, padding: '3px 9px',
               }}>
                 {post.category}
@@ -415,9 +445,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 {post.date} · {post.readTime}
               </span>
             </div>
-            <h1 style={{
-              fontSize: 'clamp(20px,4vw,30px)', fontWeight: 800,
-              color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.2,
+              <h1 style={{
+              fontSize: BLOG_THEME.type.h1, fontWeight: 800,
+              color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.2,
             }}>
               {post.title}
             </h1>
@@ -427,8 +457,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   {post.author.split(' ').map((n: string) => n[0]).join('')}
                 </div>
                 <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{post.author}</p>
-                  {post.authorRole && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>{post.authorRole}</p>}
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{post.author}</p>
+                  {post.authorRole && <p style={{ fontSize: 11, color: S.headerMuted }}>{post.authorRole}</p>}
                 </div>
               </div>
             )}
@@ -439,7 +469,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <div style={{ maxWidth: 1040, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 48, alignItems: 'flex-start' }}>
 
           {/* Main content */}
-          <div style={{ flex: 1, minWidth: 0, padding: '44px 0 80px' }}>
+          <div style={{ flex: 1, minWidth: 0, maxWidth: 720, padding: '44px 0 80px' }}>
 
             {/* Intro */}
             <p style={{
@@ -498,13 +528,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               borderRadius: 14, padding: '32px',
               textAlign: 'center', marginTop: 52, marginBottom: 16,
             }}>
-              <h3 style={{ fontSize: 19, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
+              <h3 style={{ fontSize: 19, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>
                 Check if your location is worth it
               </h3>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 6, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 6, lineHeight: 1.6 }}>
                 See competition, demand, and risk before committing to a lease.
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>No signup required to start</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginBottom: 20 }}>No signup required to start</p>
               <Link href="/onboarding" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 background: '#fff', color: S.brand,
@@ -617,10 +647,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               }}>
                 Check your location
               </p>
-              <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: '#CBD5E1', marginBottom: 6, lineHeight: 1.6 }}>
                 See competition and risk instantly.
               </p>
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 14 }}>No signup required to start</p>
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 14 }}>No signup required to start</p>
               <Link href="/onboarding" style={{
                 display: 'block', textAlign: 'center',
                 background: S.brand, color: '#fff',

@@ -48,11 +48,18 @@ function fmtCurrency(n: number | null) {
 
 export default async function PublicReportPage({ params }: { params: { token: string } }) {
 const supabase = await createClient()
+  const rawToken = params.token
+  const tokenParts = rawToken.split('.')
+  const tokenHasExpiry = tokenParts.length === 2 && /^\d+$/.test(tokenParts[1] || '')
+  if (tokenHasExpiry) {
+    const expiresAtMs = Number(tokenParts[1]) * 1000
+    if (Date.now() > expiresAtMs) notFound()
+  }
 
  const { data: report, error } = await supabase
     .from('reports')
   .select('*')
-  .eq('public_token', params.token)
+  .eq('public_token', rawToken)
   .eq('is_public', true)
   .single()
 
@@ -85,11 +92,11 @@ const supabase = await createClient()
     THREATS:       { bg: S.redBg,   border: S.redBorder,     text: '#991B1B' },
   }
 
-  const scoreFields = [
+ const scoreFields = [
     { label: 'Rent Affordability', key: 'score_rent',    weight: '30%' },
   { label: 'Profitability',   key: 'score_profitability', weight: '25%' },
   { label: 'Competition',    key: 'score_competition', weight: '25%' },
-  { label: 'Demographics',    key: 'score_demand',    weight: '20%' },
+  { label: 'Demographics + Demand', key: 'score_demand',    weight: '20%' },
  ]
 
   return (
@@ -104,6 +111,7 @@ const supabase = await createClient()
     </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
      <span style={{ fontSize: 11, color: S.n500, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 100, padding: '3px 10px', fontWeight: 600 }}>SHARED REPORT</span>
+     <span style={{ fontSize: 11, color: S.n500, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 100, padding: '3px 10px', fontWeight: 600 }}>SCORING v2.1</span>
      <Link href="/onboarding" style={{ fontSize: 12, background: S.brand, color: S.white, borderRadius: 9, padding: '7px 14px', fontWeight: 700 }}>Get your free analysis →</Link>
     </div>
       </nav>
@@ -139,14 +147,15 @@ const supabase = await createClient()
           {/* Metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
       {[
-              { l: 'Monthly Revenue',  v: rd.financials?.monthlyRevenue   ? fmtCurrency(rd.financials.monthlyRevenue)  : '—' },
-       { l: 'Monthly Net Profit', v: rd.financials?.monthlyNetProfit ? fmtCurrency(rd.financials.monthlyNetProfit) : '—' },
+              { l: 'Monthly Revenue',  v: rd.financials?.monthlyRevenue   ? `~${fmtCurrency(rd.financials.monthlyRevenue)}`  : '—', sub: 'benchmark estimate' },
+       { l: 'Monthly Net Profit', v: rd.financials?.monthlyNetProfit ? `~${fmtCurrency(rd.financials.monthlyNetProfit)}` : '—', sub: 'excludes owner salary' },
        { l: 'Break-even / Day',  v: report.breakeven_daily ? `${report.breakeven_daily} customers` : '—' },
        { l: 'Payback Period',   v: report.breakeven_months ? `${report.breakeven_months} months` : '—' },
       ].map((m, i) => (
               <div key={m.l} style={{ padding: '14px 10px', textAlign: 'center', borderRight: i < 3 ? `1px solid ${S.n100}` : 'none', borderTop: `1px solid ${S.n100}` }}>
         <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5 }}>{m.l}</p>
         <p style={{ fontSize: 14, fontWeight: 800, color: S.n800, letterSpacing: '-0.01em' }}>{m.v}</p>
+        {'sub' in m && m.sub ? <p style={{ fontSize: 9, color: S.n400, marginTop: 4 }}>{m.sub}</p> : null}
        </div>
             ))}
           </div>
@@ -163,7 +172,10 @@ const supabase = await createClient()
         {/* SWOT */}
         {Object.keys(swot).length > 0 && (
           <div style={card({ padding: '22px 24px', marginBottom: 14 })}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>SWOT Analysis</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em' }}>SWOT Analysis</p>
+        <span style={{ fontSize: 9, fontWeight: 700, color: S.n500, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 999, padding: '2px 8px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>AI-generated</span>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
        {Object.entries(swot).map(([key, items]) => {
                 const cfg = swotConfig[key]
@@ -194,10 +206,13 @@ const supabase = await createClient()
       <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{s.content}</p>
           </div>
         ))}
+        <p style={{ fontSize: 11, color: S.n400, marginBottom: 10, padding: '0 2px' }}>
+          Competitor data may be cached for up to 48 hours from the latest fetch.
+        </p>
 
         {/* CTA */}
         <div style={{ background: `linear-gradient(135deg,${S.brand} 0%,#0891B2 100%)`, borderRadius: 24, padding: '36px 32px', textAlign: 'center', marginTop: 24, boxShadow: '0 12px 40px rgba(15,118,110,0.2)' }}>
-     <h2 style={{ fontSize: 22, fontWeight: 800, color: S.white, letterSpacing: '-0.03em', marginBottom: 10 }}>
+     <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 10 }}>
       Want to analyse your own location?
           </h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', marginBottom: 24, lineHeight: 1.6 }}>

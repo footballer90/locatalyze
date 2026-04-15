@@ -55,7 +55,7 @@ export default function QuotaMeter({ used, variant, onUpgrade }: QuotaMeterProps
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
             {['Full financial model', 'Break-even analysis', 'PDF export', 'Revenue projections'].map(f => (
-              <span key={f} style={{ fontSize: 12, color: S.brand, fontWeight: 600 }}>✓ {f}</span>
+              <span key={f} style={{ fontSize: 12, color: S.brand, fontWeight: 600 }}>Check {f}</span>
             ))}
           </div>
           <button onClick={onUpgrade} style={{ width: '100%', background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '12px', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -118,7 +118,7 @@ export default function QuotaMeter({ used, variant, onUpgrade }: QuotaMeterProps
           <p style={{ fontSize: 11, fontWeight: 700, color: S.n700, marginBottom: 8 }}>Unlock includes:</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
             {['Full financial model', 'Break-even analysis', 'Revenue & cost projections', 'PDF export', 'SWOT / AI insights', 'Location comparison'].map(f => (
-              <p key={f} style={{ fontSize: 11, color: S.brand, fontWeight: 600 }}>✓ {f}</p>
+              <p key={f} style={{ fontSize: 11, color: S.brand, fontWeight: 600 }}>Check {f}</p>
             ))}
           </div>
         </div>

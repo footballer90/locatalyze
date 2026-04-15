@@ -203,7 +203,7 @@ function SuburbPoll() {
           const isWinner = votes[i] === Math.max(...votes)
           return (
             <button key={option.label} onClick={() => handleVote(i)} disabled={voted !== null}
-              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: voted !== null ? (isWinner ? S.emeraldBg : S.n50) : S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: : "left' as const, overflow: 'hidden", fontFamily: S.font }}>
+              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: voted !== null ? (isWinner ? S.emeraldBg : S.n50) : S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left' as const, overflow: 'hidden', fontFamily: S.font }}>
               {voted !== null && (
                 <div style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: isWinner ? 'rgba(5,150,105,0.1)' : 'rgba(148,163,184,0.08)', borderRadius: 10 }}/>
               )}
@@ -334,11 +334,11 @@ export default function MelbourneCafePage() {
               <span style={{ color: 'rgba(255,255,255,0.7)' }}>Café</span>
             </nav>
 
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 20, padding: '4px 14px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: : "uppercase' as const, letterSpacing: '0.08em", marginBottom: 16 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 20, padding: '4px 14px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 16 }}>
               Melbourne · Café · 2026 Analysis
             </div>
 
-            <h1 style={{ fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 16 }}>
+            <h1 style={{ fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 16 }}>
               Best Suburbs to Open a Café<br/>in Melbourne (2026)
             </h1>
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.65)', maxWidth: 560, lineHeight: 1.75, marginBottom: 28 }}>
@@ -449,7 +449,7 @@ export default function MelbourneCafePage() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: 16 }}>
                   <div>
                     <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>#{sub.rank} — {sub.postcode}</p>
-                    <h3 style={{ fontSize: 28, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 8 }}>{sub.name}</h3>
+                    <h3 style={{ fontSize: 28, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 8 }}>{sub.name}</h3>
                     <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic', lineHeight: 1.55, maxWidth: 420 }}>{sub.angle}</p>
                   </div>
                   <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
@@ -478,7 +478,7 @@ export default function MelbourneCafePage() {
                   { l: 'Est. annual profit', v: sub.annualProfit },
                 ].map(item => (
                   <div key={item.l} style={{ background: S.n50, borderRadius: 12, border: `1px solid ${S.border}`, padding: '12px 14px' }}>
-                    <p style={{ fontSize: 9, fontWeight: 700, color: S.muted, textTransform: : "uppercase' as const, letterSpacing: '0.07em", marginBottom: 4 }}>{item.l}</p>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 4 }}>{item.l}</p>
                     <p style={{ fontSize: 15, fontWeight: 800, color: S.n900, lineHeight: 1.2 }}>{item.v}</p>
                   </div>
                 ))}
@@ -486,7 +486,7 @@ export default function MelbourneCafePage() {
 
               {/* Score bars */}
               <div style={{ background: S.n50, borderRadius: 14, border: `1px solid ${S.border}`, padding: '18px 20px', marginBottom: 24 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: S.muted, textTransform: : "uppercase' as const, letterSpacing: '0.08em", marginBottom: 14 }}>Score breakdown</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 14 }}>Score breakdown</p>
                 <ScoreBar label="Foot traffic & demand" value={sub.footTraffic} color={vs.color}/>
                 <ScoreBar label="Income demographics" value={sub.demographics} color={vs.color}/>
                 <ScoreBar label="Rent-to-revenue fit" value={sub.rentFit} color={vs.color}/>
@@ -502,11 +502,11 @@ export default function MelbourneCafePage() {
               {/* Risks and opportunity */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 20 }}>
                 <div style={{ background: '#FEF9F0', border: '1px solid #FED7AA', borderRadius: 12, padding: '16px 18px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: '#92400E', textTransform: : "uppercase' as const, letterSpacing: '0.07em", marginBottom: 8 }}>Key risks</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: '#92400E', textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 8 }}>Key risks</p>
                   <p style={{ fontSize: 13, color: '#92400E', lineHeight: 1.65 }}>{sub.risks}</p>
                 </div>
                 <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: '16px 18px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: '#065F46', textTransform: : "uppercase' as const, letterSpacing: '0.07em", marginBottom: 8 }}>Opportunity gap</p>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: '#065F46', textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 8 }}>Opportunity gap</p>
                   <p style={{ fontSize: 13, color: '#047857', lineHeight: 1.65 }}>{sub.opportunity}</p>
                 </div>
               </div>
@@ -536,7 +536,7 @@ export default function MelbourneCafePage() {
 
           {/* Final CTA */}
           <div style={{ background: 'linear-gradient(135deg, #0F766E, #0891B2)', borderRadius: 20, padding: '40px 36px', textAlign: 'center' as const }}>
-            <h2 style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', marginBottom: 12 }}>
+            <h2 style={{ fontSize: 26, fontWeight: 900, color: '#0F172A', letterSpacing: '-0.03em', marginBottom: 12 }}>
               Got a specific Melbourne address in mind?
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 8, lineHeight: 1.7 }}>

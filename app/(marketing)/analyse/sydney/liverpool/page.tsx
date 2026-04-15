@@ -24,7 +24,7 @@ const S = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',
@@ -978,7 +978,7 @@ export default function LiverpoolPage() {
         {/* CTA Banner */}
         <div
           style={{
-            background: `linear-gradient(135deg, ${S.brand} 0%, ${S.brandLight} 100%)`,
+            background: `linear-gradient(135deg, #0F766E 0%, #0B5E57 100%)`,
             borderRadius: 12,
             padding: 32,
             textAlign: 'center',
@@ -986,7 +986,7 @@ export default function LiverpoolPage() {
             marginBottom: 40,
           }}
         >
-          <h3 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 12px 0' }}>
+          <h3 style={{ color: '#1C1917', fontSize: 20, fontWeight: 700, margin: '0 0 12px 0' }}>
             Find your winning location
           </h3>
           <p

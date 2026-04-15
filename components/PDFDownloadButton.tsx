@@ -672,7 +672,7 @@ function ReportPDF({ report }: { report: any }) {
               <View key={i} style={styles.compRow}>
                 <Text style={styles.compName}>{c.name}</Text>
                 <Text style={{ width: 80, fontSize: 7.5, color: C.n500 }}>{(c.address || '').split(',').slice(-2).join(',').trim()}</Text>
-                <Text style={styles.compRating}>★ {c.rating ?? '—'}</Text>
+                <Text style={styles.compRating}> {c.rating ?? '—'}</Text>
               </View>
             ))}
           </View>

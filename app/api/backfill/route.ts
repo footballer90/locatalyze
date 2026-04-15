@@ -70,12 +70,12 @@ export async function POST(request: NextRequest) {
         skipped++
       } else if (res.ok && json.success) {
         processed++
-        console.log(`[backfill] ✓ ${report_id} — netProfit=${json.netProfit} verdict=${json.verdict}`)
+        console.log(`[backfill] Check ${report_id} — netProfit=${json.netProfit} verdict=${json.verdict}`)
       } else {
         failed++
         const errMsg = `${report_id}: HTTP ${res.status} — ${json.error ?? 'unknown'}`
         errors.push(errMsg)
-        console.error(`[backfill] ✗ ${errMsg}`)
+        console.error(`[backfill] X ${errMsg}`)
       }
     } catch (e: any) {
       failed++

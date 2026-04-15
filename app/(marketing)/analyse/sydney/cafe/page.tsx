@@ -122,9 +122,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Sydney CBD', postcode: '2000', score: 48, verdict: : "CAUTION' as const, reason: 'Hybrid work has permanently reduced weekday foot traffic by an estimated 25–35% from pre-2020 levels (Property Council of Australia data). Rents have not corrected proportionally. The rent-to-revenue ratio for new CBD entrants now averages 18.9% — well above the viable threshold. Only operators who can negotiate sub-market rents on vacancies should consider this location." },
- { name: 'Parramatta', postcode: '2150', score: 39, verdict: : "NO' as const, reason: 'Major chain saturation (The Coffee Club, Starbucks, Gloria Jean\'s, Muffin Break) makes independent market capture very difficult. The income demographic at $72,000 median does not support premium pricing, creating a margin squeeze between high competition and lower average ticket sizes." },
- { name: 'Blacktown', postcode: '2148', score: 28, verdict: : "NO' as const, reason: 'Median household income of $72,000 combined with very high competition density and limited foot traffic infrastructure makes specialty coffee economics non-viable. Standard café price points face resistance from a demographic accustomed to chain pricing." },
+  { name: 'Sydney CBD', postcode: '2000', score: 48, verdict: 'CAUTION' as const, reason: 'Hybrid work has permanently reduced weekday foot traffic by an estimated 25–35% from pre-2020 levels (Property Council of Australia data). Rents have not corrected proportionally. The rent-to-revenue ratio for new CBD entrants now averages 18.9% — well above the viable threshold. Only operators who can negotiate sub-market rents on vacancies should consider this location.' },
+ { name: 'Parramatta', postcode: '2150', score: 39, verdict: 'NO' as const, reason: 'Major chain saturation (The Coffee Club, Starbucks, Gloria Jean\'s, Muffin Break) makes independent market capture very difficult. The income demographic at $72,000 median does not support premium pricing, creating a margin squeeze between high competition and lower average ticket sizes.' },
+ { name: 'Blacktown', postcode: '2148', score: 28, verdict: 'NO' as const, reason: 'Median household income of $72,000 combined with very high competition density and limited foot traffic infrastructure makes specialty coffee economics non-viable. Standard café price points face resistance from a demographic accustomed to chain pricing.' },
 ]
 
 const S = {
@@ -132,15 +132,15 @@ const S = {
  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
  amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
  red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
- muted: '#64748B', border: '#E2E8F0',
+ muted: '#475569', border: '#E2E8F0',
  n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
  const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
   : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
   : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const }}>{v === 'GO' ? '' : v === 'CAUTION' ? '' : '"} {v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const }}>{v === 'GO' ? '' : v === 'CAUTION' ? '' : ''} {v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {

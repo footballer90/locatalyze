@@ -214,7 +214,7 @@ const S = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',
@@ -288,7 +288,7 @@ function SuburbPoll() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ color: '#1C1917', marginBottom: '24px', fontSize: '18px', fontWeight: '600' }}>
         Which suburb would you open a café in?
       </h3>
       {votes.map((option, i) => (
@@ -355,8 +355,8 @@ function ChecklistUnlock() {
       borderRadius: '12px',
       marginBottom: '48px',
     }}>
-      <h3 style={{ marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
-        📋 Unlock the Full Café Checklist
+      <h3 style={{ color: '#1C1917', marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>
+        Checklist Unlock the Full Café Checklist
       </h3>
       <p style={{ marginBottom: '16px', color: S.muted }}>
         Get the Launceston café startup checklist + farm-to-table sourcing guide (free)
@@ -385,7 +385,7 @@ function ChecklistUnlock() {
           fontWeight: '600',
           cursor: 'pointer',
         }}>
-          {submitted ? '✓ Sent' : 'Send'}
+          {submitted ? 'Check Sent' : 'Send'}
         </button>
       </form>
     </div>
@@ -549,7 +549,7 @@ export default function LauncestonCafePage() {
 
       {/* Market Context */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Launceston Café Market Context
         </h2>
         <p style={{ marginBottom: '16px', lineHeight: '1.6', color: S.n900 }}>
@@ -564,7 +564,7 @@ export default function LauncestonCafePage() {
 
         {/* Scatter Chart */}
         <div style={{ marginBottom: '48px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
             Rent vs. Revenue Potential
           </h3>
           <ResponsiveContainer width="100%" height={400}>
@@ -592,7 +592,7 @@ export default function LauncestonCafePage() {
 
       {/* Suburb Scores Bar Chart */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
           Suburb Viability Scores (0–100)
         </h2>
         <ResponsiveContainer width="100%" height={400}>
@@ -617,7 +617,7 @@ export default function LauncestonCafePage() {
 
       {/* Top Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }} id="top-suburbs">
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>
           Top 4 Suburbs for Café (GO Verdict)
         </h2>
         {TOP_SUBURBS.map((suburb) => (
@@ -630,7 +630,7 @@ export default function LauncestonCafePage() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px' }}>
               <div>
-                <h3 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
                   #{suburb.rank} {suburb.name} ({suburb.postcode})
                 </h3>
                 <p style={{ color: S.muted, fontSize: '14px' }}>
@@ -677,7 +677,7 @@ export default function LauncestonCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.red, marginBottom: '8px' }}>
-                  ⚠ RISKS
+                  Warning RISKS
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.risks}
@@ -690,7 +690,7 @@ export default function LauncestonCafePage() {
                 borderRadius: '8px',
               }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: S.emerald, marginBottom: '8px' }}>
-                  ✓ OPPORTUNITY
+                  Check OPPORTUNITY
                 </p>
                 <p style={{ fontSize: '14px', color: S.n900 }}>
                   {suburb.opportunity}
@@ -712,7 +712,7 @@ export default function LauncestonCafePage() {
         textAlign: 'center',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Need a Custom Site Analysis?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>
@@ -743,7 +743,7 @@ export default function LauncestonCafePage() {
 
       {/* Risk Suburbs */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Caution & No-Go Suburbs
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
@@ -755,7 +755,7 @@ export default function LauncestonCafePage() {
               borderRadius: '12px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700' }}>
+                <h3 style={{ color: '#1C1917', fontSize: '18px', fontWeight: '700' }}>
                   {suburb.name} ({suburb.postcode})
                 </h3>
                 <VerdictBadge verdict={suburb.verdict} />
@@ -783,7 +783,7 @@ export default function LauncestonCafePage() {
         padding: '0 24px',
         marginBottom: '48px',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           How to Validate Your Launceston Café Idea (3 min)
         </h2>
         <div style={{
@@ -809,7 +809,7 @@ export default function LauncestonCafePage() {
 
       {/* FAQ */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           FAQ: Launceston Café Economics
         </h2>
         {[
@@ -868,7 +868,7 @@ export default function LauncestonCafePage() {
 
       {/* City vs Australia Table */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', marginBottom: '48px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
           Launceston vs Australia: Café Economics
         </h2>
         <div style={{ overflowX: 'auto' }}>
@@ -934,7 +934,7 @@ export default function LauncestonCafePage() {
         marginBottom: '48px',
       }}>
         <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px', color: S.emerald }}>
-          ✓ Final Verdict
+          Check Final Verdict
         </h2>
         <p style={{ lineHeight: '1.6', color: S.n900 }}>
           <strong>Launceston is Australia\'s best secondary café market: exceptional rent-to-revenue fit, farm-to-table pricing power, and lower risk than capital cities.</strong> Launceston CBD (83/100) delivers $116k annual profit within 36 months with tourism leverage (480k visitors) + MONA spillover + UTAS foundation. For fastest payback, Inveresk (79/100, 32 months) captures UTAS redevelopment growth wave. For maximum stability, Newstead (75/100, 30-month payback) offers professional demographics + zero tourism volatility. Farm-to-table supply advantage (Tasmanian berries, organic dairy, grass-fed meat) enables 22% pricing premium unavailable in mainland regional cities. 40% rent savings vs Hobart enable superior margins despite lower absolute revenue. UTAS holiday volatility (Apr, Jul, Sep–Oct) manageable via professional + tourism diversification.
@@ -948,7 +948,7 @@ export default function LauncestonCafePage() {
         color: S.white,
         textAlign: 'center',
       }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
+        <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>
           Ready to Validate Your Launceston Café Idea?
         </h2>
         <p style={{ marginBottom: '24px', opacity: 0.95 }}>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getPostHogClient } from '@/lib/posthog-server'
 import {
   calculateScore,
   calculateBreakEven,
@@ -121,6 +122,20 @@ export async function POST(req: NextRequest) {
     .from('profiles')
     .update({ reports_used: profile.reports_used + 1 })
     .eq('id', user.id)
+
+  const posthog = getPostHogClient()
+  posthog.capture({
+    distinctId: user.id,
+    event: 'report_generated',
+    properties: {
+      report_id: report.id,
+      business_type: input.businessType,
+      address: input.address,
+      verdict,
+      overall_score: score.overall,
+      monthly_rent: input.monthlyRent,
+    },
+  })
 
   return NextResponse.json({ report })
 }

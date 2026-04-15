@@ -146,7 +146,7 @@ export function scoreCompetitorStrength(competitor: {
     reviewInsight = `Budget operator — volume-focused, price competition risk`
   } else {
     reviewInsight = rating > 0
-      ? `${rating.toFixed(1)}★ · ${reviewCount > 0 ? reviewCount + ' reviews' : 'review count unknown'}`
+      ? `${rating.toFixed(1)} · ${reviewCount > 0 ? reviewCount + ' reviews' : 'review count unknown'}`
       : 'Mid-market competitor — standard local presence'
   }
 

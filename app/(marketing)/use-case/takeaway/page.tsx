@@ -67,7 +67,7 @@ export default function Page() {
                 { icon: '', color: '#1D4ED8', bg: '#EFF6FF', title: 'Office density for lunch trade', body: 'The 12–1pm lunch rush is where most takeaway businesses make their weekday revenue. Offices within 500m — particularly large employers — are the most reliable source of high-frequency lunch customers. Check the ABS worker population data for your suburb.' },
         { icon: '', color: '#0F766E', bg: '#F0FDFA', title: 'Residential density for delivery', body: 'Map your 3km delivery radius and count households. Under 3,000 households means delivery-only is very difficult to sustain. 6,000–10,000 is a strong delivery opportunity. 10,000+ with good cuisine positioning is excellent.' },
         { icon: '', color: '#7C3AED', bg: '#F5F3FF', title: 'Cuisine gap analysis', body: 'Open UberEats and search your cuisine category in your suburb. How many direct competitors are already serving that area? An underserved cuisine in a dense residential suburb is a genuine opportunity. An overcrowded category is not.' },
-        { icon: '🛵', color: '#B45309', bg: '#FFFBEB', title: 'Rider access and logistics', body: 'Easy access for delivery riders matters more than most takeaway owners realise. A side street with a loading zone or easy pull-in is better than a main road with no stopping. Rider frustration with difficult pickup locations leads to lower ratings and fewer orders.' },
+        { icon: 'Delivery', color: '#B45309', bg: '#FFFBEB', title: 'Rider access and logistics', body: 'Easy access for delivery riders matters more than most takeaway owners realise. A side street with a loading zone or easy pull-in is better than a main road with no stopping. Rider frustration with difficult pickup locations leads to lower ratings and fewer orders.' },
         { icon: '', color: '#DC2626', bg: '#FEF2F2', title: 'Rent vs delivery revenue ceiling', body: 'Unlike dine-in businesses, takeaway can operate from lower-rent premises. You do not need shopfront prestige. A premises at $2,000–$2,500/month with good kitchen infrastructure and strong delivery zone density often outperforms a premium $4,500/month location.' },
        ].map(f => (
                 <div key={f.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '22px' }}>
@@ -106,7 +106,7 @@ export default function Page() {
        <h3 style={{ fontSize: 16, fontWeight: 700, color: S.red, marginBottom: 16 }}> Red flags — walk away</h3>
               {['Under 3,000 households within 3km delivery radius', 'No office density for weekday lunch trade', 'Cuisine category with 5+ competitors in delivery zone', 'Difficult rider access on main road with no stopping', 'Rent above 15% of projected combined revenue', 'Suburb with low delivery platform ordering behaviour'].map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>✕</span>
+         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>X</span>
                   <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6 }}>{item}</p>
         </div>
               ))}

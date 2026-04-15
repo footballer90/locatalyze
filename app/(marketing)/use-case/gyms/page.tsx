@@ -106,7 +106,7 @@ export default function Page() {
        <h3 style={{ fontSize: 16, fontWeight: 700, color: S.red, marginBottom: 16 }}> Red flags — walk away</h3>
               {['More than 3 gyms within 1km of the same format', 'Under 4,000 households within 3km', 'Purely commercial area with no residential catchment', 'No parking during 6–8am and 5–7pm peak windows', 'Rent above $8,000/month without clear membership model', 'Basement or upper floor with no accessible lift'].map((item, i) => (
         <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>✕</span>
+         <span style={{ color: S.red, fontWeight: 800, flexShrink: 0 }}>X</span>
                   <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6 }}>{item}</p>
         </div>
               ))}

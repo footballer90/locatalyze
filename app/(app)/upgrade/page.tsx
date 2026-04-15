@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -62,6 +63,7 @@ export default function UpgradePage() {
   async function checkout(plan: Plan) {
     setLoading(plan)
     setError('')
+    posthog.capture('checkout_initiated', { plan })
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
@@ -114,7 +116,7 @@ export default function UpgradePage() {
           {[
             { stat: '1,200+', label: 'operators' },
             { stat: '40+', label: 'markets analysed' },
-            { stat: '4.8★', label: 'average rating' },
+            { stat: '4.8', label: 'average rating' },
           ].map(s => (
             <div key={s.label} style={{ textAlign: 'center' as const }}>
               <div style={{ fontSize: 20, fontWeight: 900, color: S.n900 }}>{s.stat}</div>
@@ -138,7 +140,7 @@ export default function UpgradePage() {
               {['GO / CAUTION / NO verdict','Competitor map (500m radius)','Basic suburb insights'].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <div style={{ width: 16, height: 16, borderRadius: '50%', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 8, color: S.emerald, fontWeight: 900 }}>✓</span>
+                    <span style={{ fontSize: 8, color: S.emerald, fontWeight: 900 }}>Check</span>
                   </div>
                   <span style={{ fontSize: 13, color: S.n700 }}>{f}</span>
                 </div>
@@ -182,7 +184,7 @@ export default function UpgradePage() {
               {pack.features.map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 9 }}>
                   <div style={{ width: 17, height: 17, borderRadius: '50%', background: pack.primary ? 'rgba(255,255,255,0.15)' : S.emeraldBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 9, color: pack.primary ? S.white : S.emerald, fontWeight: 900 }}>✓</span>
+                    <span style={{ fontSize: 9, color: pack.primary ? S.white : S.emerald, fontWeight: 900 }}>Check</span>
                   </div>
                   <span style={{ fontSize: 13, color: pack.primary ? 'rgba(255,255,255,0.85)' : S.n700 }}>{f}</span>
                 </div>
@@ -216,7 +218,7 @@ export default function UpgradePage() {
             ].map(item => (
               <div key={item.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '18px 16px' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: 11, color: S.brand, fontWeight: 900 }}>✓</span>
+                  <span style={{ fontSize: 11, color: S.brand, fontWeight: 900 }}>Check</span>
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 700, color: S.n800, marginBottom: 4 }}>{item.title}</p>
                 <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>{item.desc}</p>

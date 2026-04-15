@@ -12,7 +12,7 @@ const S = {
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
   red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  muted: '#64748B', border: '#E2E8F0',
+  muted: '#475569', border: '#E2E8F0',
   n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
@@ -57,14 +57,14 @@ function SuburbPoll({ suburb }: { suburb: string }) {
   const opts = ['Yes', 'Maybe', 'No']
   return (
     <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: '24px', marginBottom: 44 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Would you open a business in {suburb}?</h3>
+      <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Would you open a business in {suburb}?</h3>
       <p style={{ fontSize: 13, color: S.muted, marginBottom: 18 }}>{voted === null ? 'Based on this analysis — would you take the risk?' : `You voted. Here\'s how ${total} readers responded:`}</p>
       <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 10 }}>
         {opts.map((opt, i) => {
           const pct = Math.round((votes[i] / total) * 100)
           return (
             <button key={opt} onClick={() => handleVote(i)} disabled={voted !== null}
-              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: : "left' as const, fontFamily: 'inherit", overflow: 'hidden' }}>
+              style={{ position: 'relative', border: `1.5px solid ${voted === i ? S.emeraldBdr : S.border}`, borderRadius: 10, padding: '12px 16px', background: S.white, cursor: voted === null ? 'pointer' : 'default', textAlign: 'left' as const, fontFamily: 'inherit', overflow: 'hidden' }}>
               {voted !== null && <div style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: 'rgba(8,145,178,0.07)' }}/>}
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 14, fontWeight: 600 }}>{opt}</span>
@@ -174,7 +174,7 @@ export default function GranvillePage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ fontSize: 12, color: S.muted, margin: '0 0 8px 0', textTransform: 'uppercase', fontWeight: 600 }}>Business Verdict</p>
-              <h2 style={{ fontSize: 32, fontWeight: 800, margin: 0, marginBottom: 12 }}>Granville</h2>
+              <h2 style={{ color: '#1C1917', fontSize: 32, fontWeight: 800, margin: 0, marginBottom: 12 }}>Granville</h2>
               <p style={{ fontSize: 14, color: S.n900, margin: 0, lineHeight: 1.6, maxWidth: 480 }}>Granville scores CAUTION. The economics can work with the right model. Sits strategically between Parramatta (3km) and Merrylands (1.5km). Rents are 55–60% below Parramatta, but foot traffic is lower to match. The Bengali food scene is genuine and underappreciated.</p>
             </div>
             <div style={{ textAlign: 'center', minWidth: 120 }}>
@@ -185,13 +185,13 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 16, padding: 24, marginBottom: 40 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 20px 0' }}>Scores by Category</h3>
+          <h3 style={{ color: '#1C1917', fontSize: 16, fontWeight: 700, margin: '0 0 20px 0' }}>Scores by Category</h3>
           {SCORE_BARS.map(bar => <ScoreBar key={bar.label} label={bar.label} value={bar.value} />)}
           <p style={{ fontSize: 12, color: S.muted, marginTop: 20, marginBottom: 0 }}>Postcode 2142 • Median income $68,000 • Rent $1,400–$3,000/mo</p>
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Business Environment</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Business Environment</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Granville's commercial case is primarily a rent argument. At $1,400–$3,000/month, Granville offers commercial positions that are 55–60% below Parramatta Westfield pricing and 40% below Auburn Road equivalents. For an operator who draws the Parramatta professional overflow—workers living in Granville but working east—or the Merrylands residential overflow, this rent advantage creates compelling unit economics. The challenge is that foot traffic itself is genuinely lower than either Parramatta or Merrylands; the rent discount reflects a real difference, not perception alone.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The Bengali and Bangladeshi food culture of Granville is the suburb's most commercially significant and least externally recognised asset. South Street has developed Australia's most concentrated Bengali restaurant precinct outside Harris Park. These operators—established 10–15 years with loyal community and increasingly food-tourist customer bases—demonstrate that Granville can sustain quality food businesses at accessible price points. Any new food operator entering Granville should study these businesses carefully; they represent the market that actually works here.</p>
@@ -200,7 +200,7 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Competition Analysis</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Competition Analysis</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Competition is thin to moderate on main commercial strips. The Bengali food sector has established operators with community loyalty, but other categories—specialty café, Asian fusion, quick-service healthy food—have minimal quality representation. A specialty café targeting the professional commuter demographic at Granville Station (8,500 daily boardings, no quality café option) would face no direct competition for its specific customer.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The retail competition landscape is characterised by low vacancy but also low quality. Several convenience and variety stores serve the residential demographic; independent specialty retail faces no direct competition but also a limited customer base for premium products. The retail case in Granville is weaker than the food and services case.</p>
@@ -208,7 +208,7 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Demographics</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Demographics</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Granville's demographic is predominantly South Asian and Middle Eastern working-class families with median household income of $68,000. The Bangladeshi and Bengali-Australian community has particularly strong commercial presence relative to population size—culturally, this community has strong food entrepreneurship tradition and significant spending on cultural food. The demographic is not high-income but it is food-loyal.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The commuter component of Granville's population—residents who work in Parramatta and CBD—is growing as more affordable property prices draw younger households. These households earn $75,000–$95,000 and would be quality café customers on their commute. Currently, they stop at Parramatta Station because no quality option exists locally. This is the market available for capture.</p>
@@ -216,7 +216,7 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Works Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Works Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 12, padding: 16 }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: S.emerald, margin: '0 0 6px 0' }}>Authentic Bengali/South Asian Cuisine</h4>
@@ -234,7 +234,7 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Fails Here</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>What Fails Here</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 12, padding: 16 }}>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: S.red, margin: '0 0 6px 0' }}>Premium Dining</h4>
@@ -253,31 +253,31 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Foot Traffic Ceiling</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Foot Traffic Ceiling</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>8,500 daily station boardings is solid but not exceptional. A food operator needs 100+ daily transactions; achievable but requires execution precision.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Parramatta Leakage</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Parramatta Leakage</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Residents with options drive or train 3km to Parramatta for better choices. Granville operators fight this leakage constantly.</p>
             </div>
             <div style={{ paddingLeft: 16, borderLeft: `3px solid ${S.red}` }}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 4px 0' }}>Commercial Strip Condition</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', margin: '0 0 4px 0' }}>Commercial Strip Condition</h4>
               <p style={{ fontSize: 13, color: S.muted, margin: 0 }}>Some sections of South Street have vacancy and physical decline affecting perception. Location selection within Granville matters more than in Parramatta.</p>
             </div>
           </div>
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Compare Nearby</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Compare Nearby</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
             {NEARBY.map(suburb => (
               <Link key={suburb.slug} href={`/analyse/sydney/${suburb.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: 16, cursor: 'pointer', transition: 'all 0.2s', height: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                    <h4 style={{ fontSize: 14, fontWeight: 700, margin: 0 }}>{suburb.name}</h4>
+                    <h4 style={{ color: '#1C1917', fontSize: 14, fontWeight: 700, margin: 0 }}>{suburb.name}</h4>
                     <VerdictBadge v={suburb.verdict} />
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: S.brand }}>
@@ -292,7 +292,7 @@ export default function GranvillePage() {
         <SuburbPoll suburb="Granville" />
 
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Final Verdict</h2>
+          <h2 style={{ color: '#1C1917', fontSize: 22, fontWeight: 800, marginBottom: 16 }}>Final Verdict</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>Granville is CAUTION, not a universal recommendation. Success requires clear positioning: either Bengali food with community connection, specialty café targeting the commuter demographic, or NDIS-funded allied health. Generic positioning fails. The rent advantage (55–60% below Parramatta) only works if you can capture customers at the lower foot traffic volume.</p>
             <p style={{ fontSize: 14, color: S.n900, lineHeight: 1.7, margin: 0 }}>The commuter demographic is the growth opportunity. As Granville's property prices remain 30–40% below Strathfield and Parramatta, younger professionals are accumulating here. They currently leakage to Parramatta for café culture and quality food. An operator who establishes a quality specialty café now captures a demographic that will only grow. The Bengali food scene is also underappreciated—study these operators before dismissing Granville's food potential.</p>
@@ -300,7 +300,7 @@ export default function GranvillePage() {
         </div>
 
         <div style={{ background: S.brand, borderRadius: 16, padding: 32, marginBottom: 48, color: S.white }}>
-          <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 8px 0' }}>Ready to analyse your location?</h3>
+          <h3 style={{ color: '#1C1917', fontSize: 18, fontWeight: 800, margin: '0 0 8px 0' }}>Ready to analyse your location?</h3>
           <p style={{ fontSize: 14, margin: '0 0 16px 0', opacity: 0.9 }}>Get a detailed business analysis for your specific address—foot traffic, competition, demographics, and revenue potential.</p>
           <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: S.brand, padding: '12px 24px', borderRadius: 8, fontWeight: 700, textDecoration: 'none', fontSize: 14 }}>Analyse your address →</Link>
         </div>

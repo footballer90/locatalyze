@@ -174,7 +174,7 @@ const S = {
   red: '#DC2626',
   redBg: '#FEF2F2',
   redBdr: '#FECACA',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   n50: '#FAFAF9',
   n100: '#F5F5F4',
@@ -183,7 +183,7 @@ const S = {
 }
 
 // Components
-const VerdictBadge = ({ verdict }: { verdict: : "GO' | 'CAUTION' | 'NO" }) => {
+const VerdictBadge = ({ verdict }: { verdict: 'GO' | 'CAUTION' | 'NO' }) => {
   const colors = {
     GO: { bg: S.emeraldBg, border: S.emeraldBdr, text: S.emerald },
     CAUTION: { bg: S.amberBg, border: S.amberBdr, text: S.amber },
@@ -256,7 +256,7 @@ const SuburbPoll = () => {
 
   return (
     <div style={{ margin: '48px 0', padding: '32px', backgroundColor: S.n50, borderRadius: '12px' }}>
-      <h3 style={{ marginTop: 0, marginBottom: '24px', fontSize: '18px', fontWeight: '700' }}>
+      <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '24px', fontSize: '18px', fontWeight: '700' }}>
         Which suburb would you open a restaurant in?
       </h3>
       {POLL_OPTIONS.map((option, i) => (
@@ -421,7 +421,7 @@ export default function SunshineCoastRestaurantPage() {
       {/* Hero */}
       <div
         style={{
-          background: `linear-gradient(135deg, #0E7490 0%, #0891B2 50%, #06B6D4 100%)`,
+          background: `linear-gradient(135deg, #0E7490 0%, #0891B2 100%)`,
           color: S.white,
           padding: '64px 24px',
           textAlign: 'center',
@@ -483,7 +483,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* Market context section */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Sunshine Coast Restaurant Market Context</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Sunshine Coast Restaurant Market Context</h2>
           <p style={{ lineHeight: '1.8', color: '#374151', marginBottom: '24px' }}>
             The Sunshine Coast is Australia's fastest-growing premium dining market. Tourism recovery has been strong—Noosa Heads alone attracts 900k+ annual visitors with above-average discretionary spending ($78 avg dining spend per visit). Simultaneously, sea-change migration is driving residential growth and creating affluent local customer base. This dual-market opportunity (tourism plus affluent residents) is unique on the eastern seaboard.
           </p>
@@ -493,7 +493,7 @@ export default function SunshineCoastRestaurantPage() {
 
           {/* Scatter chart */}
           <div style={{ marginTop: '32px', backgroundColor: S.n50, padding: '24px', borderRadius: '8px' }}>
-            <h3 style={{ marginTop: 0, fontSize: '16px', fontWeight: '700' }}>Rent vs. Revenue Potential</h3>
+            <h3 style={{ color: '#1C1917', marginTop: 0, fontSize: '16px', fontWeight: '700' }}>Rent vs. Revenue Potential</h3>
             <ResponsiveContainer width="100%" height={300}>
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={S.border} />
@@ -513,7 +513,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* Bar chart */}
         <div style={{ margin: '48px 0', backgroundColor: S.n50, padding: '24px', borderRadius: '8px' }}>
-          <h2 style={{ marginTop: 0, fontSize: '20px', fontWeight: '700', marginBottom: '24px' }}>Suburb Scores</h2>
+          <h2 style={{ color: '#1C1917', marginTop: 0, fontSize: '20px', fontWeight: '700', marginBottom: '24px' }}>Suburb Scores</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={SUBURB_SCORES}>
               <CartesianGrid strokeDasharray="3 3" stroke={S.border} />
@@ -530,7 +530,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* Top suburbs */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>The Strong Markets</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '32px' }}>The Strong Markets</h2>
           {TOP_SUBURBS.map((suburb, i) => (
             <div
               key={i}
@@ -543,7 +543,7 @@ export default function SunshineCoastRestaurantPage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
                 <div>
-                  <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '22px', fontWeight: '700' }}>
+                  <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '8px', fontSize: '22px', fontWeight: '700' }}>
                     {suburb.name}
                   </h3>
                   <div style={{ fontSize: '13px', color: S.muted }}>Postcode {suburb.postcode}</div>
@@ -611,7 +611,7 @@ export default function SunshineCoastRestaurantPage() {
             color: S.white,
           }}
         >
-          <h3 style={{ marginTop: 0, fontSize: '20px', fontWeight: '700' }}>Ready to Scout Your Location?</h3>
+          <h3 style={{ color: '#1C1917', marginTop: 0, fontSize: '20px', fontWeight: '700' }}>Ready to Scout Your Location?</h3>
           <p style={{ marginBottom: '20px' }}>
             Start with interactive maps, rent data, and foot traffic heatmaps for any suburb.
           </p>
@@ -640,7 +640,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* Risk suburbs */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Markets to Avoid</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Markets to Avoid</h2>
           {RISK_SUBURBS.map((suburb, i) => (
             <div
               key={i}
@@ -654,7 +654,7 @@ export default function SunshineCoastRestaurantPage() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <div>
-                  <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '18px', fontWeight: '700' }}>
+                  <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '8px', fontSize: '18px', fontWeight: '700' }}>
                     {suburb.name}
                   </h3>
                   <div style={{ fontSize: '13px', color: S.muted, marginBottom: '8px' }}>Postcode {suburb.postcode} — Score {suburb.score}/100</div>
@@ -670,7 +670,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* Video placeholder */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Watch: Noosa Heads Restaurant Location Scout</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Watch: Noosa Heads Restaurant Location Scout</h2>
           <div
             style={{
               width: '100%',
@@ -702,7 +702,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* FAQ */}
         <div style={{ margin: '48px 0' }}>
-          <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Frequently Asked Questions</h2>
+          <h2 style={{ color: '#1C1917', fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>Frequently Asked Questions</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
               {
@@ -723,7 +723,7 @@ export default function SunshineCoastRestaurantPage() {
               },
             ].map((item, i) => (
               <div key={i} style={{ padding: '20px', border: `1px solid ${S.border}`, borderRadius: '8px' }}>
-                <h4 style={{ marginTop: 0, marginBottom: '12px', fontSize: '15px', fontWeight: '700' }}>
+                <h4 style={{ color: '#1C1917', marginTop: 0, marginBottom: '12px', fontSize: '15px', fontWeight: '700' }}>
                   {item.q}
                 </h4>
                 <p style={{ margin: '0', fontSize: '14px', color: S.muted, lineHeight: '1.6' }}>
@@ -736,7 +736,7 @@ export default function SunshineCoastRestaurantPage() {
 
         {/* City comparison */}
         <div style={{ margin: '48px 0', padding: '24px', backgroundColor: S.n50, borderRadius: '8px' }}>
-          <h2 style={{ marginTop: 0, fontSize: '24px', fontWeight: '700', marginBottom: '20px' }}>
+          <h2 style={{ color: '#1C1917', marginTop: 0, fontSize: '24px', fontWeight: '700', marginBottom: '20px' }}>
             Sunshine Coast vs. Gold Coast vs. Brisbane
           </h2>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>

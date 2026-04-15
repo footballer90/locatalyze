@@ -1318,7 +1318,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     // Core financials — always computed, never from agents
     revenue,
     totalCosts,
-    netProfit,         // INVARIANT: always === revenue - totalCosts ✓
+    netProfit,         // INVARIANT: always === revenue - totalCosts Check
     grossMarginPct,
 
     costBreakdown: { rent, staff, cogs, other },

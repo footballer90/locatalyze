@@ -141,9 +141,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Joondalup', postcode: '6027', score: 41, verdict: : "NO' as const, reason: 'Oversaturated with established chains (The Coffee Club, Dome, Gloria Jean\'s). Independent operators cannot compete on volume, and the income demographic does not support premium pricing. Rent-to-revenue for new entrants typically exceeds 22%." },
- { name: 'Midland', postcode: '6056', score: 38, verdict: : "NO' as const, reason: 'Commercial vacancy on Great Northern Highway exceeds 18% — a clear signal of foot traffic below the threshold for new hospitality entrants. A vacancy rate this high means the market has already rejected the economics of operating there." },
- { name: 'Armadale', postcode: '6112', score: 29, verdict: : "NO' as const, reason: 'Median household income of $58,000 — 26% below Perth median — makes standard café price points a stretch purchase rather than a habitual one. At these income levels, customers default to supermarket coffee under any financial pressure. Not viable for independent espresso bar operators." },
+  { name: 'Joondalup', postcode: '6027', score: 41, verdict: 'NO' as const, reason: 'Oversaturated with established chains (The Coffee Club, Dome, Gloria Jean\'s). Independent operators cannot compete on volume, and the income demographic does not support premium pricing. Rent-to-revenue for new entrants typically exceeds 22%.' },
+ { name: 'Midland', postcode: '6056', score: 38, verdict: 'NO' as const, reason: 'Commercial vacancy on Great Northern Highway exceeds 18% — a clear signal of foot traffic below the threshold for new hospitality entrants. A vacancy rate this high means the market has already rejected the economics of operating there.' },
+ { name: 'Armadale', postcode: '6112', score: 29, verdict: 'NO' as const, reason: 'Median household income of $58,000 — 26% below Perth median — makes standard café price points a stretch purchase rather than a habitual one. At these income levels, customers default to supermarket coffee under any financial pressure. Not viable for independent espresso bar operators.' },
 ]
 
 const S = {
@@ -151,11 +151,11 @@ const S = {
  emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
  amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
  red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
- muted: '#64748B', border: '#E2E8F0',
+ muted: '#475569', border: '#E2E8F0',
  n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF',
 }
 
-function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
+function VerdictBadge({ v }: { v: 'GO' | 'CAUTION' | 'NO' }) {
  const c = v === 'GO' ? { bg: S.emeraldBg, bdr: S.emeraldBdr, txt: S.emerald }
   : v === 'CAUTION' ? { bg: S.amberBg, bdr: S.amberBdr, txt: S.amber }
   : { bg: S.redBg, bdr: S.redBdr, txt: S.red }
@@ -164,7 +164,7 @@ function VerdictBadge({ v }: { v: : "GO' | 'CAUTION' | 'NO" }) {
     : v === 'CAUTION'
     ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: : "nowrap' as const, display: 'inline-flex", alignItems: 'center' }}>{icon}{v}</span>
+  return <span style={{ fontSize: 11, fontWeight: 700, color: c.txt, background: c.bg, border: `1px solid ${c.bdr}`, borderRadius: 6, padding: '2px 9px', whiteSpace: 'nowrap' as const, display: 'inline-flex', alignItems: 'center' }}>{icon}{v}</span>
 }
 
 function ScoreBar({ label, value, color = S.emerald }: { label: string; value: number; color?: string }) {
@@ -592,7 +592,7 @@ export default function PerthCafePage() {
       Watch: How to Choose a Café Location in Perth
           </h2>
           {/* Replace src with your actual YouTube embed URL when ready */}
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C1F1C', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: : "column' as const, gap: 12, cursor: 'pointer" }}
+          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#0C1F1C', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' as const, gap: 12, cursor: 'pointer' }}
       onClick={() => window.open('https://www.youtube.com/@locatalyze', '_blank')}>
       <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(52,211,153,0.15)', border: '2px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
        <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #34D399', marginLeft: 4 }}/>
@@ -605,7 +605,7 @@ export default function PerthCafePage() {
 
         {/* 4 Key factors */}
         <section style={{ marginBottom: 44 }}>
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 14 }}>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 14 }}>
       The 4 Factors That Determine Perth Café Success
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
@@ -617,7 +617,7 @@ export default function PerthCafePage() {
       ].map(f => (
               <div key={f.title} style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: '20px 22px' }}>
         <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F0FDFA', border: '1px solid #CCFBF1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>{f.icon}</div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 3 }}>{f.title}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 800, color: '#F8FAFC', marginBottom: 3 }}>{f.title}</h3>
                 <p style={{ fontSize: 11, fontWeight: 700, color: S.emerald, marginBottom: 10 }}>{f.weight}</p>
                 <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.75 }}>{f.detail}</p>
        </div>

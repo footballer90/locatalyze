@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createAdminClient } from '@/lib/supabase/server'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 export async function POST(req: NextRequest) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -68,6 +69,22 @@ export async function POST(req: NextRequest) {
         .from('profiles')
         .update({ plan, stripe_subscription_id: session.subscription as string })
         .eq('id', userId)
+    }
+
+    if (userId) {
+      const posthog = getPostHogClient()
+      posthog.capture({
+        distinctId: userId,
+        event: 'payment_completed',
+        properties: {
+          plan: meta.plan ?? null,
+          credits: parseInt(meta.credits ?? '0', 10),
+          report_id: meta.report_id ?? null,
+          payment_mode: session.mode,
+          amount_total: session.amount_total,
+          currency: session.currency,
+        },
+      })
     }
   }
 
