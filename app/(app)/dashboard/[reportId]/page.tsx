@@ -640,31 +640,94 @@ function ConfidencePanel({ confidence }: { confidence: { level: string; pct: num
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONTRADICTION BANNER — surfaces data conflicts caught by the trust layer
+// filterSections: optional — when provided, only shows warnings affecting those sections
+// Visual design: thick left border + labelled header = serious, not just informational
 // ═══════════════════════════════════════════════════════════════════════════════
-function ContradictionBanner({ computed }: { computed: import('@/types/computed').ComputedResult | null }) {
+function ContradictionBanner({
+  computed,
+  filterSections,
+}: {
+  computed: import('@/types/computed').ComputedResult | null
+  filterSections?: string[]
+}) {
   if (!computed?.contradictions || computed.contradictions.length === 0) return null
-  const errors   = computed.contradictions.filter(c => c.severity === 'error')
-  const warnings = computed.contradictions.filter(c => c.severity === 'warning')
+
+  const relevant = filterSections
+    ? computed.contradictions.filter(c => c.affectedSections.some(s => filterSections.includes(s)))
+    : computed.contradictions
+
+  const errors   = relevant.filter(c => c.severity === 'error')
+  const warnings = relevant.filter(c => c.severity === 'warning')
   if (errors.length === 0 && warnings.length === 0) return null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {errors.map((c, i) => (
-        <div key={i} style={{ padding: '12px 16px', background: S.redBg, border: `1.5px solid ${S.redBdr}`, borderRadius: 12, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={S.red} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <div>
-            <p style={{ fontSize: 12, fontWeight: 800, color: S.red, marginBottom: 2 }}>Data conflict detected</p>
-            <p style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.6 }}>{c.reason}</p>
+        <div key={i} style={{
+          background: S.white,
+          border: `1px solid ${S.redBdr}`,
+          borderLeft: `4px solid ${S.red}`,
+          borderRadius: 10,
+        }}>
+          {/* Header row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 14px',
+            background: S.redBg,
+            borderBottom: `1px solid ${S.redBdr}`,
+            borderRadius: '9px 9px 0 0',
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={S.red} strokeWidth="2.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span style={{ fontSize: 11, fontWeight: 800, color: S.red, textTransform: 'uppercase' as const, letterSpacing: '0.07em' }}>
+              Data Conflict
+            </span>
             {c.affectedSections.length > 0 && (
-              <p style={{ fontSize: 11, color: S.red, opacity: 0.7, marginTop: 4 }}>Affects: {c.affectedSections.join(', ')}</p>
+              <span style={{ fontSize: 11, color: '#991B1B', opacity: 0.7 }}>
+                — affects {c.affectedSections.join(', ')}
+              </span>
             )}
+          </div>
+          {/* Body */}
+          <div style={{ padding: '11px 14px' }}>
+            <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.65, margin: 0 }}>{c.reason}</p>
           </div>
         </div>
       ))}
       {warnings.map((c, i) => (
-        <div key={i} style={{ padding: '10px 14px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.amber} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>{c.reason}</p>
+        <div key={i} style={{
+          background: S.white,
+          border: `1px solid ${S.amberBdr}`,
+          borderLeft: `4px solid ${S.amber}`,
+          borderRadius: 10,
+        }}>
+          {/* Header row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '7px 14px',
+            background: S.amberBg,
+            borderBottom: `1px solid ${S.amberBdr}`,
+            borderRadius: '9px 9px 0 0',
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={S.amber} strokeWidth="2.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span style={{ fontSize: 11, fontWeight: 800, color: S.amber, textTransform: 'uppercase' as const, letterSpacing: '0.07em' }}>
+              Model Notice
+            </span>
+            {c.affectedSections.length > 0 && (
+              <span style={{ fontSize: 11, color: '#92400E', opacity: 0.75 }}>
+                — affects {c.affectedSections.join(', ')}
+              </span>
+            )}
+          </div>
+          {/* Body */}
+          <div style={{ padding: '11px 14px' }}>
+            <p style={{ fontSize: 13, color: '#78400D', lineHeight: 1.65, margin: 0 }}>{c.reason}</p>
+          </div>
         </div>
       ))}
     </div>
@@ -891,8 +954,8 @@ function DataQualityHeader({ computed, report }: {
   const valComp  = log.validatedCompetitorCount ?? 0
   const hasDemand = C.marketSignals.demandScore != null
 
-  const revLabel  = srcRev  === 'a5_live' ? 'A5 live' : srcRev  === 'a5_blended' ? 'A5 blended' : srcRev  === 'a4_fallback' ? 'A4 model' : 'industry avg'
-  const costLabel = srcCosts === 'a4_live' ? 'A4 live' : srcCosts === 'a4_blended' ? 'A4 blended' : 'industry avg'
+  const revLabel  = srcRev  === 'a5_live' ? 'live market data' : srcRev  === 'a5_blended' ? 'market data + estimate' : srcRev  === 'a4_fallback' ? 'financial model' : 'industry average'
+  const costLabel = srcCosts === 'a4_live' ? 'financial model' : srcCosts === 'a4_blended' ? 'financial model + est.' : 'industry average'
 
   const modeColor = isLive ? '#059669' : '#D97706'
   const modeBg    = isLive ? '#ECFDF5' : '#FFFBEB'
@@ -4446,6 +4509,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* Contradiction banner — ABOVE financial content so conflicts are unmissable */}
             <ContradictionBanner computed={C} />
 
+            {/* Confidence panel — data quality context BEFORE the numbers */}
+            <ConfidencePanel confidence={confidence} />
+
             {/* Big P&L hero + top risks */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {/* Monthly financials hero */}
@@ -4564,7 +4630,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* Value Perception — hidden risks, success patterns, common mistakes */}
             <ValuePerception computed={C} businessType={report.business_type ?? ''} locationName={report.location_name ?? ''} />
 
-            <ConfidencePanel confidence={confidence} />
             <RentRatioPanel rent={report.monthly_rent ?? areaContext?.medianRent?.monthly} revenue={displayRevenue} />
 
             {/* CTA to Map tab */}
@@ -4765,6 +4830,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         {/* ═══ SUBURB INTELLIGENCE TAB ═══ */}
         {activeTab === 'suburb' && (
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+            {/* Location and demand conflict warnings — show before suburb data */}
+            <ContradictionBanner computed={C} filterSections={['location', 'demand']} />
 
             {/* Suburb overview */}
             <Card style={{ padding: '28px 32px' }}>
@@ -5103,6 +5171,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
             {C?.sectionConfidence?.competition && <SectionConfBadge section={C.sectionConfidence.competition} />}
+            {/* Competition-specific conflict warnings — show before any competitor data */}
+            <ContradictionBanner computed={C} filterSections={['competition']} />
 
             {/* Live density reconciliation banner — shown when A1 agent data is missing
                 but the compute engine has confirmed live competitor density via Google/Geoapify.
@@ -5296,6 +5366,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
             {C?.sectionConfidence?.location && <SectionConfBadge section={C.sectionConfidence.location} />}
+            {/* Location-specific conflict warnings — shown before rent/footfall data */}
+            <ContradictionBanner computed={C} filterSections={['location', 'financials']} />
 
             {/* Median rent hero */}
             {areaContext?.medianRent && (
@@ -5387,6 +5459,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
             {C?.sectionConfidence?.demand && <SectionConfBadge section={C.sectionConfidence.demand} />}
+            {/* Demand-specific conflict warnings */}
+            <ContradictionBanner computed={C} filterSections={['demand', 'market']} />
 
             {/* Market signals */}
             {market && (
