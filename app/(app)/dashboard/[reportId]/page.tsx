@@ -4290,6 +4290,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         {/* ═══ DATA QUALITY HEADER — transparency strip ═══ */}
         <DataQualityHeader computed={C} report={report} />
 
+        {/* ═══ CALIBRATION DISCLAIMER — persistent, every report ═══ */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 14px', background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 8 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={S.n400} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.6, margin: 0 }}>
+            Financial projections are benchmark-derived estimates and have not been validated against actual trading outcomes at this location.
+            Use this report to structure your thinking — not as a substitute for independent due diligence or professional financial advice.
+          </p>
+        </div>
+
         {/* ═══ SECTION 3: TABS ═══ */}
         <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: 4, marginBottom: 20, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
           {tabs.map(t => (
@@ -5479,6 +5488,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <PaywallGate locked={userPlan.isFree} label="Full Financial Model" reportId={report.report_id ?? report.id}>
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
             {C?.sectionConfidence?.financials && <SectionConfBadge section={C.sectionConfidence.financials} />}
+            <ContradictionBanner computed={C} />
 
             {/* Agent-failure gate: if financials cannot be computed, show CTA instead of broken data */}
             {_financialsSuppressed.suppress ? (

@@ -186,6 +186,37 @@ export function detectContradictions(result: ComputedResult): ContradictionWarni
     })
   }
 
+  // ── C11: Payback period exceeds first lease term ─────────────────────────
+  // Most Australian small business leases are 3+3 years. If break-even in months
+  // exceeds 36, the business will not recoup its setup cost within the first term.
+  // This is a capital risk signal regardless of the GO/CAUTION verdict.
+  if (result.breakEvenMonths != null && result.breakEvenMonths > 36) {
+    warnings.push({
+      field: 'payback_exceeds_lease_term',
+      reason: `Payback period of ${result.breakEvenMonths} months exceeds 36 months — the business may not recoup setup costs within the first lease term. Lease renewal risk is significant.`,
+      severity: 'warning',
+      affectedSections: ['financials'],
+    })
+  }
+
+  // ── C12: Projected monthly profit too thin to sustain ramp-up ────────────
+  // A typical café/restaurant takes 3–6 months to reach full volume.
+  // If net profit is positive but less than $2,000/month, working capital will
+  // be exhausted during ramp-up unless the setup budget is very large.
+  // Threshold: netProfit > 0 && netProfit < 2000 is a false-positive GO signal.
+  if (
+    result.netProfit > 0 &&
+    result.netProfit < 2000 &&
+    verdict === 'GO'
+  ) {
+    warnings.push({
+      field: 'thin_margin_go_verdict',
+      reason: `GO verdict with net profit of ${formatMoney(result.netProfit)}/month — this margin is too thin to absorb the typical 3–6 month ramp-up period. Any revenue shortfall or unexpected cost will push to loss.`,
+      severity: 'warning',
+      affectedSections: ['financials', 'verdict'],
+    })
+  }
+
   return warnings
 }
 
