@@ -4290,12 +4290,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         {/* ═══ DATA QUALITY HEADER — transparency strip ═══ */}
         <DataQualityHeader computed={C} report={report} />
 
-        {/* ═══ CALIBRATION DISCLAIMER — persistent, every report ═══ */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 14px', background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 8 }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={S.n400} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.6, margin: 0 }}>
-            Financial projections are benchmark-derived estimates and have not been validated against actual trading outcomes at this location.
-            Use this report to structure your thinking — not as a substitute for independent due diligence or professional financial advice.
+        {/* ═══ CALIBRATION DISCLAIMER — persistent, amber-upgraded when benchmark_default ═══ */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '11px 14px', background: _confidenceTier === 'benchmark_default' ? S.amberBg : S.n50, border: `1px solid ${_confidenceTier === 'benchmark_default' ? S.amberBdr : S.n200}`, borderRadius: 8 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={_confidenceTier === 'benchmark_default' ? S.amber : S.n400} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p style={{ fontSize: 11, color: _confidenceTier === 'benchmark_default' ? '#92400E' : S.n500, lineHeight: 1.6, margin: 0 }}>
+            {_confidenceTier === 'benchmark_default'
+              ? <><strong>Benchmark estimates only —</strong> no live revenue data was returned for this location. All financial figures use Australian industry averages and have not been validated against actual trading at this address. Treat every number as directional until confirmed with local data or a professional adviser.</>
+              : <>Financial projections are model-derived estimates based on available agent data. Use this report to structure your thinking — not as a substitute for independent due diligence or professional financial advice.</>
+            }
           </p>
         </div>
 
@@ -4441,6 +4443,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* Executive Narrative — investor-style "why this result happened" prose */}
             <ExecutiveNarrative computed={C} report={report} />
 
+            {/* Contradiction banner — ABOVE financial content so conflicts are unmissable */}
+            <ContradictionBanner computed={C} />
+
             {/* Big P&L hero + top risks */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {/* Monthly financials hero */}
@@ -4506,6 +4511,22 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     <p style={{ fontSize: 16, fontWeight: 900, color: fin.roiTimeline?.roi36?.startsWith('+') ? S.emerald : fin.roiTimeline?.roi36 ? S.red : S.n400, fontFamily: S.mono }}>{fin.roiTimeline?.roi36 ?? 'N/A'}</p>
                   </div>
                 </div>
+                {/* Provenance badges — shows data source for revenue and costs at a glance */}
+                {C?.provenance && (C.provenance.revenue || C.provenance.costs) && (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${S.n100}`, display: 'flex', flexWrap: 'wrap' as const, gap: 5, alignItems: 'center' }}>
+                    <span style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginRight: 2 }}>Sources</span>
+                    {C.provenance.revenue && (
+                      <span style={{ fontSize: 10, padding: '2px 8px', background: C.provenance.revenue.isBenchmark ? S.amberBg : S.emeraldBg, border: `1px solid ${C.provenance.revenue.isBenchmark ? S.amberBdr : S.emeraldBdr}`, borderRadius: 20, color: C.provenance.revenue.isBenchmark ? S.amber : S.emerald, fontWeight: 700 }}>
+                        Revenue — {C.provenance.revenue.sourceLabel}
+                      </span>
+                    )}
+                    {C.provenance.costs && (
+                      <span style={{ fontSize: 10, padding: '2px 8px', background: C.provenance.costs.isBenchmark ? S.amberBg : S.emeraldBg, border: `1px solid ${C.provenance.costs.isBenchmark ? S.amberBdr : S.emeraldBdr}`, borderRadius: 20, color: C.provenance.costs.isBenchmark ? S.amber : S.emerald, fontWeight: 700 }}>
+                        Costs — {C.provenance.costs.sourceLabel}
+                      </span>
+                    )}
+                  </div>
+                )}
               </Card>
 
               {/* Top risks from A3 */}
@@ -4544,7 +4565,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             <ValuePerception computed={C} businessType={report.business_type ?? ''} locationName={report.location_name ?? ''} />
 
             <ConfidencePanel confidence={confidence} />
-            <ContradictionBanner computed={C} />
             <RentRatioPanel rent={report.monthly_rent ?? areaContext?.medianRent?.monthly} revenue={displayRevenue} />
 
             {/* CTA to Map tab */}
