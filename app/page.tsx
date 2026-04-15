@@ -1974,7 +1974,7 @@ export default function LandingPage() {
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Get 10-Pack — $149</a>
             </div>
           </div>
-          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report includes a free report — verdict, competitor map, and score. No card required.</p>
+          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report is free — includes verdict, competitor map, and score. No card required.</p>
 
           {/* FAQ */}
           <div style={{ maxWidth: 640, margin: '48px auto 0' }}>

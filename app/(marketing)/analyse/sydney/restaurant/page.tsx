@@ -280,7 +280,7 @@ export default function SydneyRestaurantPage() {
            <div style={{ fontSize: 36, fontWeight: 900, color: sub.verdict === 'NO' ? S.red : S.amber, lineHeight: 1 }}>{sub.score}</div>
            <div style={{ fontSize: 10, color: S.muted }}>/100</div>
          </div>
-         {([['Foot traffic', sub.footTraffic], ['Demographics', sub.demographics], ['Rent fit', sub.rentFit], ['Competition', sub.competitionScore]] as [string, number][]).map(([label, val]) => {
+         {([['Market Demand', sub.footTraffic], ['Demographics', sub.demographics], ['Rent Affordability', sub.rentFit], ['Competition', sub.competitionScore]] as [string, number][]).map(([label, val]) => {
            const barColor = val >= 70 ? S.emerald : val >= 45 ? S.amber : S.red
            return (
              <div key={label} style={{ marginBottom: 8 }}>
