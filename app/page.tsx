@@ -78,7 +78,7 @@ const RP_CASES = [
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
     metrics: [
       { l: 'Est. monthly revenue', v: '$78k–$88k',      highlight: false },
-      { l: 'Est. rent-to-revenue', v: '~4–5%',             highlight: false },
+      { l: 'Est. rent-to-revenue', v: '~9–11%',            highlight: false },
       { l: 'Break-even (est.)',     v: '35–50/day',        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
@@ -1225,7 +1225,7 @@ function CinematicWalkthrough() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 14 }}>
-                  {[{l:'Est. revenue range',v:'$78k–$88k/mo',hi:false},{l:'Break-even (est.)',v:'35–50/day',hi:false},{l:'Rent-to-revenue',v:'~4–5%',hi:false},{l:'Note',v:'Estimate only',hi:true}].map(m => (
+                  {[{l:'Est. revenue range',v:'$78k–$88k/mo',hi:false},{l:'Break-even (est.)',v:'35–50/day',hi:false},{l:'Rent-to-revenue',v:'~9–11%',hi:false},{l:'Note',v:'Estimate only',hi:true}].map(m => (
                     <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '8px 10px' }}>
                       <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.05em', marginBottom: 2 }}>{m.l}</p>
                       <p style={{ fontSize: 13, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>

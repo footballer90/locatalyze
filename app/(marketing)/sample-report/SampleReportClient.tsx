@@ -250,7 +250,7 @@ export default function SampleReportClient() {
             {[
               { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'benchmark est. ±20%' },
               { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'benchmark est. ±25% · excl. owner' },
-              { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'to cover costs' },
+              { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'zero-profit threshold · target: 150/day' },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
               <div key={m.l} style={{ padding: '14px 16px', background: '#161D27' }}>
@@ -675,7 +675,7 @@ export default function SampleReportClient() {
                 { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: 'benchmark est. ±20%' },
                 { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: 'benchmark est. ±25% · excl. owner salary' },
                 { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber,  sub: 'of revenue' },
-                { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900,   sub: 'fixed cost threshold' },
+                { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900,   sub: 'zero-profit threshold' },
                 { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900,   sub: 'excl. ramp-up' },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
