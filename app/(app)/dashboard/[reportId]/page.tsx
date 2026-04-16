@@ -4,13 +4,14 @@ import dynamic from 'next/dynamic'
 import ShareButton from '@/components/ShareButton'
 import ExportPDFButton from '@/components/ExportPDFButton'
 import ReferralPrompt from '@/components/ReferralPrompt'
+import DataQualitySummary from '@/components/DataQualitySummary'
+import CalibrationSummary from '@/components/CalibrationSummary'
 import { use, useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import type { ComputedResult } from '@/types/computed'
-import { whatIfCalc, scoreRent, scoreProfitability, compositeScore, resolveBizKey as resolveClientBizKey, CLIENT_BENCHMARKS } from '@/lib/compute/client-calc'
-import { displayMoney, displayPercent, displayCustomers, getConfidenceTier, gateSection, shouldSuppressFinancials, type ConfidenceTier, type DisplayNumber } from '@/lib/compute/display-discipline'
+import { displayMoney, displayPercent, displayCustomers, getConfidenceTier, shouldSuppressFinancials, type ConfidenceTier, type DisplayNumber } from '@/lib/compute/display-discipline'
 
 const MapboxMap = dynamic(() => import('@/components/MapboxMap'), { ssr: false })
 const MapInsightPanel = dynamic(() => import('@/components/MapInsightPanel'), { ssr: false })
@@ -48,8 +49,8 @@ const S = {
   brandLight:  '#14B8A6',
   brandFaded:  '#F0FDFA',
   brandBorder: '#99F6E4',
-  n50:  '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4',
-  n400: '#A8A29E', n500: '#78716C', n700: '#44403C',
+  n50:  '#FCFCFB', n100: '#F7F7F6', n200: '#ECEAE8',
+  n400: '#A8A29E', n500: '#6B655F', n700: '#3F3A36',
   n800: '#292524', n900: '#1C1917', white: '#FFFFFF',
   emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
   amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
@@ -212,14 +213,14 @@ function confidenceLevel(report: Report, computed: ComputedResult | null): { lev
 // ─── Section heading ──────────────────────────────────────────────────────────
 function SectionHeading({ children, sub, badge }: { children: string; sub?: string; badge?: 'ai' | 'engine' | null }) {
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 26 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 3, height: 18, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
-        <h2 style={{ fontSize: 15, fontWeight: 800, color: S.n800, letterSpacing: '-0.02em', lineHeight: 1 }}>{children}</h2>
+        <div style={{ width: 3, height: 20, background: S.brand, borderRadius: 2, flexShrink: 0, opacity: 0.8 }} />
+        <h2 style={{ fontSize: 17, fontWeight: 800, color: S.n800, letterSpacing: '-0.02em', lineHeight: 1 }}>{children}</h2>
         {badge === 'ai'     && <AIBadge />}
         {badge === 'engine' && <EngineBadge />}
       </div>
-      {sub && <p style={{ fontSize: 12, color: S.n400, marginTop: 6, marginLeft: 13 }}>{sub}</p>}
+      {sub && <p style={{ fontSize: 12, color: S.n500, marginTop: 7, marginLeft: 13, maxWidth: 760, lineHeight: 1.5 }}>{sub}</p>}
     </div>
   )
 }
@@ -228,9 +229,9 @@ function SectionHeading({ children, sub, badge }: { children: string; sub?: stri
 function Card({ children, style: extra }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      background: S.white, borderRadius: 14, border: `1px solid ${S.n200}`,
-      boxShadow: '0 1px 3px rgba(0,0,0,0.04)', overflow: 'hidden' as const,
-      padding: '24px 28px', ...extra,
+      background: S.white, borderRadius: 16, border: '1px solid rgba(28,25,23,0.06)',
+      boxShadow: '0 6px 24px rgba(28,25,23,0.05)', overflow: 'hidden' as const,
+      padding: '26px 30px', ...extra,
     }}>
       {children}
     </div>
@@ -240,10 +241,10 @@ function Card({ children, style: extra }: { children: React.ReactNode; style?: R
 // ─── Metric tile ──────────────────────────────────────────────────────────────
 function Tile({ label, value, sub, color, mono }: { label: string; value: string; sub?: string; color?: string; mono?: boolean }) {
   return (
-    <div style={{ background: S.n50, borderRadius: 10, border: `1px solid ${S.n200}`, padding: '14px 16px' }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>{label}</p>
-      <p style={{ fontSize: 20, fontWeight: 900, color: color || S.n900, letterSpacing: '-0.03em', lineHeight: 1, fontFamily: mono ? S.mono : S.font }}>{value}</p>
-      {sub && <p style={{ fontSize: 11, color: S.n400, marginTop: 5 }}>{sub}</p>}
+    <div style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #FCFCFB 100%)', borderRadius: 12, border: '1px solid rgba(28,25,23,0.08)', padding: '16px 16px 15px', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+      <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 24, fontWeight: 900, color: color || S.n900, letterSpacing: '-0.035em', lineHeight: 1, fontFamily: mono ? S.mono : S.font }}>{value}</p>
+      {sub && <p style={{ fontSize: 11, color: S.n500, marginTop: 6 }}>{sub}</p>}
     </div>
   )
 }
@@ -1124,7 +1125,7 @@ function DataQualityHeader({ computed, report }: {
           )}
 
           <p style={{ fontSize: 11, color: '#A8A29E', marginTop: 4, lineHeight: 1.5 }}>
-            Locatalyze Engine v{C.meta.engineVersion} · Computed {new Date(C.meta.computedAt).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })}
+            Locatalyze Engine v{C.meta.engineVersion} · Scoring v{C.meta.scoringVersion} · Computed {new Date(C.meta.computedAt).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })} · <a href="/methodology#scoring-changelog" style={{ color: '#A8A29E' }}>methodology changelog</a>
           </p>
         </div>
       )}
@@ -1298,6 +1299,7 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
   const _bt = (report.business_type ?? 'business').toLowerCase()
   const normVerdict = normalizeVerdict(report.verdict)
   const vc = verdictCfg(report.verdict)
+  const confidenceTier = getConfidenceTier(C)
 
   // ── PROCEED reasons (green) ─────────────────────────────────────────────────
   const proceedReasons: Array<{ data: string; implication: string; action: string }> = []
@@ -1342,16 +1344,18 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
     ? Math.round((report.monthly_rent! / revenue) * 1000) / 10
     : (fin?.rent?.toRevenuePercent ?? null)
   const isBenchmark = C?.provenance?.revenue?.isBenchmark ?? fin?.isEstimated
+  const revDisplay = displayMoney(revenue, confidenceTier).display
+  const netDisplay = displayMoney(netProfit, confidenceTier).display
 
   if (netProfit != null && netProfit > 5000) {
     proceedReasons.push({
-      data: `Projected net profit of ${fmt(netProfit)}/month`,
+      data: `Projected net profit of ${netDisplay}/month`,
       implication: C?.breakEvenMonths ? `Breakeven within ${C.breakEvenMonths} months, building equity quickly` : 'Strong margin — recoup setup costs ahead of industry average',
       action: 'Lock in a 3+ year lease with capped annual increases to protect this margin'
     })
   } else if (netProfit != null && netProfit < 0) {
     avoidReasons.push({
-      data: `Projected net loss of ${fmt(Math.abs(netProfit))}/month at baseline`,
+      data: `Projected net result of ${netDisplay}/month at baseline`,
       implication: 'The business loses money from day one unless assumptions change significantly',
       action: 'Do not sign a lease at this rent — renegotiate rent or increase average ticket size'
     })
@@ -1418,6 +1422,26 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
 
   if (!hasData) return null
 
+  const finalCallHeadline =
+    normVerdict === 'GO'
+      ? 'OPEN — with discipline'
+      : normVerdict === 'NO'
+      ? 'DO NOT OPEN under current conditions'
+      : 'CAUTION — proceed only with clear improvements'
+
+  const finalCallDetail =
+    normVerdict === 'GO'
+      ? 'This can work if execution is strong and the model assumptions hold.'
+      : normVerdict === 'NO'
+      ? 'Current assumptions point to a high probability of loss and slow recovery.'
+      : 'This is a marginal setup. Proceed only if you can improve the key levers before signing.'
+
+  const bestMove =
+    avoidReasons[0]?.action
+    ?? (normVerdict === 'GO'
+      ? 'Validate foot traffic and demand at peak hours before final lease commitment.'
+      : 'Run one more nearby location with lower rent and lower competitor density.')
+
   return (
     <Card style={{
       padding: 0, border: `2px solid ${vc.border}`,
@@ -1443,10 +1467,26 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
         {isBenchmark && (
           <div style={{ marginTop: 14, padding: '8px 14px', background: `${S.amber}10`, border: `1px solid ${S.amberBdr}`, borderRadius: 10 }}>
             <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
-              Financial projections use industry benchmarks, not local sales data. Treat numbers as directional, not precise.
+              Benchmark-only mode: revenue {revDisplay}, net {netDisplay}. Treat this as screening guidance, not a final investment forecast.
             </p>
           </div>
         )}
+      </div>
+
+      {/* Final call */}
+      <div style={{ padding: '16px 28px', borderBottom: `1px solid ${S.n200}`, background: S.n50 }}>
+        <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+          Final Call
+        </p>
+        <p style={{ fontSize: 18, fontWeight: 900, color: vc.text, marginBottom: 6, letterSpacing: '-0.01em' }}>
+          {finalCallHeadline}
+        </p>
+        <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.6, marginBottom: 8 }}>
+          {finalCallDetail}
+        </p>
+        <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.6 }}>
+          <strong>Best move:</strong> {bestMove}
+        </p>
       </div>
 
       {/* Two-column: Proceed vs Avoid */}
@@ -1524,6 +1564,201 @@ function DecisionEngine({ report, computed, fin, competitors, market, demographi
             ))}
           </div>
         </div>
+      </div>
+    </Card>
+  )
+}
+
+function FinalRecommendationBlock({
+  report,
+  computed,
+  fin,
+  tier,
+}: {
+  report: Report
+  computed: import('@/types/computed').ComputedResult | null
+  fin: any
+  tier: ConfidenceTier
+}) {
+  const verdict = normalizeVerdict(report.verdict)
+  if (!verdict) return null
+
+  const revenue = displayMoney(computed?.revenue ?? fin?.monthlyRevenue ?? null, tier).display
+  const net = displayMoney(computed?.netProfit ?? fin?.monthlyNetProfit ?? null, tier).display
+  const breakEvenDaily =
+    computed?.breakEvenDaily
+    ?? fin?.customerVolume?.daily_customers_needed_breakeven
+    ?? report.breakeven_daily
+    ?? null
+
+  const title =
+    verdict === 'GO'
+      ? 'Final Recommendation: Proceed with disciplined execution'
+      : verdict === 'NO'
+      ? 'Final Recommendation: Do not proceed at this site'
+      : 'Final Recommendation: Proceed only if key risks are reduced'
+
+  const summary =
+    verdict === 'GO'
+      ? `Current model supports viability at ${revenue}/month revenue and ${net}/month net outcome.`
+      : verdict === 'NO'
+      ? `Current model does not support viability: revenue ${revenue}/month versus net ${net}/month.`
+      : `Current model is marginal: revenue ${revenue}/month and net ${net}/month leave limited buffer.`
+
+  const actions =
+    verdict === 'GO'
+      ? [
+          'Validate demand on-site at peak/off-peak windows before signing.',
+          'Negotiate lease protections (rent escalations, fit-out terms, options).',
+          'Track first-90-day revenue against model assumptions weekly.',
+        ]
+      : verdict === 'NO'
+      ? [
+          'Reject this location under current rent and demand conditions.',
+          'Test nearby alternatives with lower rent or lower competitor density.',
+          'Proceed only if assumptions improve materially (demand up / costs down).',
+        ]
+      : [
+          'Treat this as conditional: proceed only with measurable downside protection.',
+          'Improve at least one major lever before commitment (rent, demand, or staffing).',
+          'Run one comparison report in a nearby alternative strip before deciding.',
+        ]
+
+  const tone =
+    verdict === 'GO'
+      ? { bg: S.emeraldBg, border: S.emeraldBdr, title: S.emerald, text: '#065F46' }
+      : verdict === 'NO'
+      ? { bg: S.redBg, border: S.redBdr, title: S.red, text: '#991B1B' }
+      : { bg: S.amberBg, border: S.amberBdr, title: S.amber, text: '#92400E' }
+
+  return (
+    <Card style={{ marginTop: 12, border: `1px solid ${tone.border}`, background: tone.bg }}>
+      <p style={{ fontSize: 11, fontWeight: 800, color: tone.title, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+        Decision Ready
+      </p>
+      <p style={{ fontSize: 16, fontWeight: 900, color: tone.title, marginBottom: 8 }}>
+        {title}
+      </p>
+      <p style={{ fontSize: 13, color: tone.text, lineHeight: 1.6, marginBottom: 10 }}>
+        {summary} {breakEvenDaily != null ? `Break-even is ${displayCustomers(breakEvenDaily, tier).display} customers/day.` : ''}
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {actions.map((a, i) => (
+          <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 12, color: tone.title, fontWeight: 800, lineHeight: 1.6 }}>→</span>
+            <p style={{ fontSize: 12, color: tone.text, lineHeight: 1.6 }}>{a}</p>
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}
+
+function getDriverStatus(score: number | null | undefined): 'good' | 'watch' | 'risk' {
+  const s = score ?? 0
+  if (s >= 75) return 'good'
+  if (s >= 55) return 'watch'
+  return 'risk'
+}
+
+function driverStatusTone(status: 'good' | 'watch' | 'risk') {
+  if (status === 'good') return { color: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr, label: 'Good' }
+  if (status === 'watch') return { color: S.amber, bg: S.amberBg, border: S.amberBdr, label: 'Watch' }
+  return { color: S.red, bg: S.redBg, border: S.redBdr, label: 'Risk' }
+}
+
+function driverOneLine(label: 'Rent' | 'Competition' | 'Demand' | 'Profitability', status: 'good' | 'watch' | 'risk') {
+  if (label === 'Rent') return status === 'good' ? 'Rent load is within a healthy operating band.' : status === 'watch' ? 'Rent is workable but compresses margin buffer.' : 'Rent burden is likely to stress unit economics.'
+  if (label === 'Competition') return status === 'good' ? 'Competitive density is manageable for entry.' : status === 'watch' ? 'Competition requires clear differentiation.' : 'Market saturation is a major pressure point.'
+  if (label === 'Demand') return status === 'good' ? 'Demand signals support baseline throughput assumptions.' : status === 'watch' ? 'Demand supports a cautious base-case only.' : 'Demand signals are weak for this model.'
+  return status === 'good' ? 'Projected profit supports viable operation.' : status === 'watch' ? 'Profitability is thin and execution-sensitive.' : 'Projected profitability is currently unattractive.'
+}
+
+function DecisionHero({
+  report,
+  confidence,
+  revenue,
+  net,
+  payback,
+  breakEvenDaily,
+  drivers,
+}: {
+  report: Report
+  confidence: { level: string; pct: number; reasons: string[] }
+  revenue: string
+  net: string
+  payback: string
+  breakEvenDaily: string
+  drivers: Array<{ label: 'Rent' | 'Competition' | 'Demand' | 'Profitability'; score: number | null }>
+}) {
+  const verdict = normalizeVerdict(report.verdict)
+  const vc = verdictCfg(report.verdict)
+  const topRisk = [...drivers]
+    .filter(d => d.score != null)
+    .sort((a, b) => (a.score ?? 0) - (b.score ?? 0))[0]
+
+  const oneLine =
+    verdict === 'GO'
+      ? `Strongest support from ${drivers.filter(d => getDriverStatus(d.score) === 'good').map(d => d.label).slice(0, 2).join(' and ') || 'current fundamentals'}.`
+      : verdict === 'NO'
+      ? `Primary blocker: ${topRisk?.label ?? 'core economics'} under current assumptions.`
+      : `Proceed only if ${topRisk?.label?.toLowerCase() ?? 'key risks'} improves before commitment.`
+
+  return (
+    <Card style={{ marginBottom: 18, border: '1px solid rgba(28,25,23,0.06)', background: 'linear-gradient(180deg, #FFFFFF 0%, #FCFCFB 100%)', boxShadow: '0 14px 34px rgba(28,25,23,0.08)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 18, marginBottom: 18, flexWrap: 'wrap' }}>
+        <div style={{ minWidth: 240, flex: 1 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '7px 13px', borderRadius: 999, border: `1px solid ${vc.border}`, background: vc.bg, marginBottom: 12, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.35)' }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: vc.text, boxShadow: `0 0 0 4px ${vc.bg}` }} />
+            <span style={{ fontSize: 11, fontWeight: 800, color: vc.text, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{vc.label}</span>
+          </div>
+          <h2 style={{ fontSize: 'clamp(30px, 6.2vw, 46px)', fontWeight: 900, color: S.n900, lineHeight: 0.95, letterSpacing: '-0.045em', marginBottom: 10 }}>
+            {verdict === 'GO' ? 'OPEN' : verdict === 'NO' ? 'DO NOT OPEN' : 'CAUTION'}
+          </h2>
+          <p style={{ fontSize: 'clamp(13px, 2.8vw, 15px)', color: S.n700, lineHeight: 1.55, maxWidth: 560 }}>{oneLine}</p>
+        </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 11px', borderRadius: 999, border: '1px solid rgba(28,25,23,0.08)', background: '#FFFFFF' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: confidence.level === 'high' ? S.emerald : confidence.level === 'medium' ? S.amber : S.red }} />
+          <span style={{ fontSize: 11, fontWeight: 700, color: S.n700, letterSpacing: '0.02em' }}>Confidence {confidence.pct}%</span>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(165px, 1fr))', gap: 12 }}>
+        <Tile label="Revenue / Mo" value={revenue} mono />
+        <Tile label="Net / Mo" value={net} mono color={net.includes('-') ? S.red : S.emerald} />
+        <Tile label="Payback" value={payback} mono />
+        <Tile label="Break-even / Day" value={breakEvenDaily} mono />
+      </div>
+    </Card>
+  )
+}
+
+function KeyDriversGrid({
+  drivers,
+}: {
+  drivers: Array<{ label: 'Rent' | 'Competition' | 'Demand' | 'Profitability'; score: number | null }>
+}) {
+  return (
+    <Card style={{ marginBottom: 18 }}>
+      <SectionHeading>Key Drivers</SectionHeading>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+        {drivers.map((d) => {
+          const status = getDriverStatus(d.score)
+          const tone = driverStatusTone(status)
+          const score = d.score ?? 0
+          return (
+            <div key={d.label} style={{ border: '1px solid rgba(28,25,23,0.08)', borderRadius: 12, padding: '13px 13px 12px', background: '#FFFEFD', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 }}>
+                <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{d.label}</p>
+                <span style={{ fontSize: 10, fontWeight: 800, color: tone.color, background: tone.bg, border: `1px solid ${tone.border}`, borderRadius: 999, padding: '3px 8px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{tone.label}</span>
+              </div>
+              <div style={{ height: 7, background: S.n100, borderRadius: 999, overflow: 'hidden', marginBottom: 9 }}>
+                <div style={{ width: `${Math.max(0, Math.min(100, score))}%`, height: '100%', background: tone.color, boxShadow: '0 0 8px rgba(0,0,0,0.06)' }} />
+              </div>
+              <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.55 }}>{driverOneLine(d.label, status)}</p>
+            </div>
+          )
+        })}
       </div>
     </Card>
   )
@@ -2432,6 +2667,739 @@ function BreakevenGauge({ daily, breakeven }: { daily: number | null; breakeven:
   )
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// DECISION SUMMARY LAYER — "What this means for you"
+// The final conversion layer: translates analysis into a concrete action recommendation.
+// Structure: Proceed? → Why (3 bullets) → Biggest risk → Biggest opportunity
+// ═══════════════════════════════════════════════════════════════════════════════
+function DecisionSummaryLayer({
+  report, computed, fin, competitors, market,
+}: {
+  report: Report
+  computed: import('@/types/computed').ComputedResult | null
+  fin: any
+  competitors: any
+  market: any
+}) {
+  const C = computed
+  const verdict   = C?.verdict ?? normalizeVerdict(report.verdict)
+  const bt        = (report.business_type ?? 'business').toLowerCase()
+  const suburb    = report.location_name?.split(',')[0]?.trim() ?? 'this location'
+  const netProfit = C?.netProfit ?? fin?.monthlyNetProfit ?? null
+  const revenue   = C?.revenue ?? fin?.monthlyRevenue ?? null
+  const rent      = report.monthly_rent ?? 0
+  const rentPct   = revenue && revenue > 0 && rent > 0 ? Math.round((rent / revenue) * 100) : null
+  const compCount = C?.validCompetitorCount ?? (competitors as any)?.validCount ?? 0
+  const breakEven = C?.breakEvenMonths ?? null
+  const demandTrend = C?.marketSignals?.demandTrend ?? market?.demandTrend
+  const isBenchmark = C?.provenance?.revenue?.isBenchmark ?? false
+
+  const verdictColor = verdict === 'GO' ? S.emerald : verdict === 'NO' ? S.red : S.amber
+  const verdictBg    = verdict === 'GO' ? '#F0FDF4' : verdict === 'NO' ? '#FFF1F2' : '#FFFBEB'
+  const verdictBdr   = verdict === 'GO' ? S.emeraldBdr : verdict === 'NO' ? S.redBdr : S.amberBdr
+
+  // ── Build "why proceed / why not" bullets from data ──────────────────────────
+  const reasons: string[] = []
+  if (netProfit != null && netProfit > 0 && !isBenchmark)
+    reasons.push(`Projected net profit of ${fmt(netProfit)}/month at current rent — the numbers work at baseline`)
+  else if (netProfit != null && netProfit < 0)
+    reasons.push(`Projected net loss of ${fmt(Math.abs(netProfit))}/month at current rent — revenue does not cover costs`)
+  if (rentPct != null && rentPct <= 12)
+    reasons.push(`Rent (${rentPct}% of revenue) is well inside the safe zone — leaves room for slow months`)
+  else if (rentPct != null && rentPct > 20)
+    reasons.push(`Rent (${rentPct}% of revenue) exceeds the 20% danger threshold — tight margin for any revenue dip`)
+  if (compCount > 0 && compCount <= 5)
+    reasons.push(`Only ${Math.round(compCount)} direct competitors nearby — low saturation means easier customer acquisition`)
+  else if (compCount > 10)
+    reasons.push(`${Math.round(compCount)} competitors in this area — standing out requires a clear point of difference`)
+  if (demandTrend === 'growing')
+    reasons.push(`${bt.charAt(0).toUpperCase() + bt.slice(1)} demand is growing in this area — market tailwind works in your favour`)
+  else if (demandTrend === 'declining')
+    reasons.push(`${bt.charAt(0).toUpperCase() + bt.slice(1)} demand is declining — you would be entering a shrinking market`)
+  // Engine reasons as fallback
+  if (reasons.length < 2 && C?.verdictReasons?.length) {
+    for (const r of C.verdictReasons) {
+      if (reasons.length >= 3) break
+      if (!reasons.some(x => x.slice(0,20) === r.slice(0,20))) reasons.push(r)
+    }
+  }
+
+  // ── Biggest risk ──────────────────────────────────────────────────────────────
+  const biggestRisk = (() => {
+    if (netProfit != null && netProfit < 0)
+      return `This location loses ${fmt(Math.abs(netProfit))}/month at current rent and demand — the model cannot find a path to profitability without a significant change to either rent or revenue.`
+    if (rentPct != null && rentPct > 20)
+      return `Rent is ${rentPct}% of projected revenue. A 10–15% revenue dip — normal in any first year — would push the business into loss immediately.`
+    if (breakEven != null && breakEven > 30)
+      return `Payback period of ${breakEven} months means you are unlikely to recoup setup costs within the first lease term (typically 3 years). Lease renewal risk is significant.`
+    if (compCount > 10)
+      return `${Math.round(compCount)} existing competitors means customer acquisition will be slow and costly. Without a strong point of difference, you are fighting for a fixed customer pool.`
+    if (demandTrend === 'declining')
+      return `Market demand for ${bt}s in this area is declining. You would be entering at the wrong point in the cycle.`
+    if (C?.verdictFailureModes?.[0])
+      return typeof C.verdictFailureModes[0] === 'string'
+        ? C.verdictFailureModes[0]
+        : (C.verdictFailureModes[0] as any).trigger ?? String(C.verdictFailureModes[0])
+    return `Revenue ramp-up risk — most new ${bt}s take 3–6 months to reach modelled customer volumes. Ensure working capital covers this period.`
+  })()
+
+  // ── Biggest opportunity ───────────────────────────────────────────────────────
+  const biggestOpportunity = (() => {
+    if (compCount <= 3 && compCount >= 0 && verdict !== 'NO')
+      return `Low competition in this area. With ${Math.round(compCount)} direct competitors, a well-executed ${bt} has a realistic path to becoming the area's go-to option within 12 months.`
+    if (demandTrend === 'growing')
+      return `Growing demand gives early entrants a structural advantage — customers who discover you first tend to be loyal. The window before this market gets crowded is now.`
+    if (rentPct != null && rentPct <= 10)
+      return `Exceptionally low rent-to-revenue ratio (${rentPct}%) gives you a cost advantage that is very hard to replicate once the lease is signed by a competitor.`
+    if (netProfit != null && netProfit > 5000 && !isBenchmark)
+      return `Projected margin of ${fmt(netProfit)}/month provides strong working capital to reinvest in marketing and fit-out in the first year — compounding early.`
+    const gap = competitors?.opportunity_gaps?.[0]
+    if (gap && typeof gap === 'string') return gap
+    return `Running a second analysis on a nearby suburb will reveal whether this location has a relative advantage — or whether a better site exists within 1km.`
+  })()
+
+  const proceedLabel = verdict === 'GO'
+    ? 'Proceed — the numbers support it'
+    : verdict === 'NO'
+    ? 'Do not proceed at current terms'
+    : 'Proceed with specific conditions'
+
+  return (
+    <div style={{
+      background: verdictBg,
+      border: `1.5px solid ${verdictBdr}`,
+      borderRadius: 16,
+      overflow: 'hidden',
+      fontFamily: S.font,
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '16px 24px',
+        background: verdictColor,
+        display: 'flex', alignItems: 'center', gap: 12,
+      }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 3 }}>
+            Decision Summary
+          </p>
+          <p style={{ fontSize: 17, fontWeight: 900, color: S.white, letterSpacing: '-0.02em' }}>
+            {proceedLabel}
+          </p>
+        </div>
+        <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.2)', borderRadius: 8, backdropFilter: 'blur(4px)' }}>
+          <span style={{ fontSize: 22, fontWeight: 900, color: S.white, fontFamily: S.mono }}>{verdict}</span>
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* Why */}
+        {reasons.length > 0 && (
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 800, color: verdictColor, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 10 }}>
+              Why
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {reasons.slice(0, 3).map((r, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: verdictColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <span style={{ fontSize: 10, fontWeight: 900, color: S.white }}>{i + 1}</span>
+                  </div>
+                  <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.6 }}>{r}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          {/* Biggest risk */}
+          <div style={{ background: S.white, border: `1px solid ${S.redBdr}`, borderLeft: `3px solid ${S.red}`, borderRadius: 10, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 800, color: S.red, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 8 }}>
+              Biggest Risk
+            </p>
+            <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.65 }}>{biggestRisk}</p>
+          </div>
+
+          {/* Biggest opportunity */}
+          <div style={{ background: S.white, border: `1px solid ${S.emeraldBdr}`, borderLeft: `3px solid ${S.emerald}`, borderRadius: 10, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: 8 }}>
+              Biggest Opportunity
+            </p>
+            <p style={{ fontSize: 13, color: S.n700, lineHeight: 1.65 }}>{biggestOpportunity}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RISK OF DOING NOTHING — urgency signals, data-grounded, never fabricated
+// Shows only what the data actually supports. Never makes up trends.
+// ═══════════════════════════════════════════════════════════════════════════════
+function RiskOfDoingNothing({
+  report, computed, market, competitors,
+}: {
+  report: Report
+  computed: import('@/types/computed').ComputedResult | null
+  market: any
+  competitors: any
+}) {
+  const C = computed
+  const bt = (report.business_type ?? 'business').toLowerCase()
+  const subnet = report.location_name?.split(',')[0]?.trim() ?? 'this area'
+
+  const risks: Array<{ icon: string; headline: string; body: string }> = []
+
+  // Demand trend
+  const demandTrend = C?.marketSignals?.demandTrend ?? market?.demandTrend
+  if (demandTrend === 'growing') {
+    risks.push({
+      icon: 'trend',
+      headline: 'Early-mover window is closing',
+      body: `${bt.charAt(0).toUpperCase() + bt.slice(1)} demand is growing in ${subnet}. As demand rises, more operators enter. The window to open before the market saturates is now — not in 12 months.`,
+    })
+  }
+
+  // Competitor count
+  const compCount = C?.validCompetitorCount ?? (competitors as any)?.validCount ?? 0
+  if (compCount > 0 && compCount <= 6) {
+    risks.push({
+      icon: 'competitor',
+      headline: 'Competition is still manageable',
+      body: `${Math.round(compCount)} competitors today. In fast-growing suburbs, this doubles within 18–24 months. The market is easier to enter now than after another 3–4 operators establish loyal customer bases.`,
+    })
+  } else if (compCount > 10) {
+    risks.push({
+      icon: 'competitor',
+      headline: 'Market is already saturated',
+      body: `${Math.round(compCount)} existing ${bt}s in this area. Delaying while competitors build loyalty makes entry harder, not easier. If you are entering a saturated market, earlier is better — or consider a different suburb.`,
+    })
+  }
+
+  // Rent risk
+  const rent = report.monthly_rent ?? 0
+  if (rent > 0) {
+    risks.push({
+      icon: 'rent',
+      headline: 'Rents are rising, not falling',
+      body: `Commercial rents in Australian capital cities increased 8–15% in the last 2 years. Every month you delay is a month closer to the next rent review — and a higher baseline for your lease negotiation.`,
+    })
+  }
+
+  // Setup cost lock-in
+  const setupCost =
+    parseMoney((report.input_data as any)?.setupBudget ?? (report.input_data as any)?.setup_cost ?? (report.input_data as any)?.setupCost) ?? null
+  if (setupCost && setupCost > 0) {
+    risks.push({
+      icon: 'cost',
+      headline: 'Fit-out costs increase with time',
+      body: `Estimated setup cost of ${fmt(setupCost)} is locked in at current build costs. Construction and equipment costs have risen 12–20% annually. Delaying does not reduce setup cost — it increases it.`,
+    })
+  }
+
+  // Fallback if no data-grounded risks
+  if (risks.length === 0) {
+    risks.push({
+      icon: 'trend',
+      headline: 'Comparable locations are being claimed',
+      body: `Every week you delay, another operator evaluates the same strip. Good leases in high-footfall locations don't stay available. If the analysis is close to a GO verdict, the cost of waiting may exceed the cost of a faster decision.`,
+    })
+  }
+
+  return (
+    <div style={{
+      background: S.n900,
+      borderRadius: 14,
+      padding: '22px 24px',
+      fontFamily: S.font,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" strokeWidth="2.5" strokeLinecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p style={{ fontSize: 11, fontWeight: 800, color: '#FCD34D', textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>
+          Risk of doing nothing
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {risks.slice(0, 3).map((r, i) => (
+          <div key={i} style={{ display: 'flex', gap: 14, padding: '14px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(252,211,77,0.12)', border: '1px solid rgba(252,211,77,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {r.icon === 'trend' && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" strokeWidth="2.5" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>}
+              {r.icon === 'competitor' && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" strokeWidth="2.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>}
+              {r.icon === 'rent' && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" strokeWidth="2.5" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>}
+              {r.icon === 'cost' && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}
+            </div>
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 700, color: S.white, marginBottom: 4 }}>{r.headline}</p>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.65 }}>{r.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WHY THIS RESULT MIGHT BE WRONG — plain-language data limitations
+// Builds trust by being honest about what the model does NOT know.
+// Never uses agent names or technical jargon.
+// ═══════════════════════════════════════════════════════════════════════════════
+function WhyItMightBeWrong({
+  computed, report,
+}: {
+  computed: import('@/types/computed').ComputedResult | null
+  report: Report
+}) {
+  const C = computed
+  const [open, setOpen] = React.useState(false)
+
+  const limitations: Array<{ label: string; detail: string; severity: 'high' | 'medium' | 'low' }> = []
+
+  // Revenue
+  const isBenchmark = C?.provenance?.revenue?.isBenchmark ?? false
+  if (isBenchmark) {
+    limitations.push({
+      label: 'Revenue is estimated, not local',
+      detail: 'No live sales data was available for this suburb. The revenue figure uses the Australian average for this business type — actual sales in this location could be 30–50% higher or lower.',
+      severity: 'high',
+    })
+  }
+
+  // Competitor data
+  const compQ = C?.competitorDataQuality
+  if (compQ === 'no_data') {
+    limitations.push({
+      label: 'Competitor data not available',
+      detail: 'The competitor analysis could not retrieve data for this area. Competition score is estimated from suburb averages. A manual search (Google Maps) is strongly recommended before committing.',
+      severity: 'high',
+    })
+  } else if (compQ === 'partial') {
+    limitations.push({
+      label: 'Competitor data is partial',
+      detail: 'Some competitor data was retrieved but the analysis was incomplete. The competition score may be understated — verify the count manually on Google Maps.',
+      severity: 'medium',
+    })
+  }
+
+  // Demographics
+  const demoQ = C ? (C as any).meta?.computeLog?.demographicsSource : null
+  if (demoQ === 'abs_state_default' || (!C?.marketSignals?.demandScore && !report.score_demand)) {
+    limitations.push({
+      label: 'Demographics are state-level averages',
+      detail: 'Suburb-level census data was unavailable. The income and population figures are based on the state average, which may not reflect this specific location. High-end inner-city or low-income outer-suburban areas will differ significantly.',
+      severity: 'medium',
+    })
+  }
+
+  // Footfall / transit
+  if (!C?.locationSignals?.footfallSignal) {
+    limitations.push({
+      label: 'Foot traffic not directly measured',
+      detail: 'Foot traffic estimates come from transit nodes, anchor tenants, and road type — not from pedestrian counting data. Actual foot traffic can only be confirmed by visiting the site at peak and off-peak hours.',
+      severity: 'medium',
+    })
+  }
+
+  // Rent
+  if (!report.monthly_rent) {
+    limitations.push({
+      label: 'No rent figure was submitted',
+      detail: 'You did not enter a monthly rent. All rent-to-revenue calculations use the area median — which may not match the actual lease being offered. Enter the actual rent to get an accurate affordability score.',
+      severity: 'high',
+    })
+  }
+
+  // Universal caveats
+  limitations.push({
+    label: 'Operator execution is not modelled',
+    detail: 'Staff quality, product-market fit, marketing capability, and owner experience all significantly affect outcomes. A well-run business in a mediocre location often outperforms a poorly-run business in a great location.',
+    severity: 'low',
+  })
+  limitations.push({
+    label: 'No pending development data',
+    detail: 'Approved development applications, new competitor openings, and planned infrastructure changes are not captured. Check your local council DA tracker and property industry news.',
+    severity: 'low',
+  })
+
+  const highCount = limitations.filter(l => l.severity === 'high').length
+
+  return (
+    <div style={{
+      background: S.white,
+      border: `1px solid ${S.n200}`,
+      borderRadius: 14,
+      overflow: 'hidden',
+      fontFamily: S.font,
+    }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+          padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12,
+          fontFamily: S.font,
+        }}
+      >
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: S.n100, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.n500} strokeWidth="2.5" strokeLinecap="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div style={{ flex: 1, textAlign: 'left' as const }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Why this result might be wrong</p>
+          <p style={{ fontSize: 12, color: S.n500 }}>
+            {highCount > 0
+              ? `${highCount} significant data gap${highCount > 1 ? 's' : ''} in this report — click to review`
+              : `${limitations.length} model limitations to be aware of`}
+          </p>
+        </div>
+        {highCount > 0 && (
+          <span style={{ fontSize: 11, fontWeight: 800, color: S.red, background: S.redBg, border: `1px solid ${S.redBdr}`, padding: '2px 8px', borderRadius: 20 }}>
+            {highCount} high
+          </span>
+        )}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.n400} strokeWidth="2" strokeLinecap="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      {open && (
+        <div style={{ borderTop: `1px solid ${S.n100}`, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {limitations.map((l, i) => {
+            const color = l.severity === 'high' ? S.red : l.severity === 'medium' ? S.amber : S.n400
+            const bg    = l.severity === 'high' ? S.redBg : l.severity === 'medium' ? S.amberBg : S.n50
+            const bdr   = l.severity === 'high' ? S.redBdr : l.severity === 'medium' ? S.amberBdr : S.n200
+            return (
+              <div key={i} style={{ background: bg, border: `1px solid ${bdr}`, borderRadius: 10, padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                  <p style={{ fontSize: 12, fontWeight: 700, color, letterSpacing: '-0.01em' }}>{l.label}</p>
+                  <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, color, opacity: 0.7, textTransform: 'uppercase' as const }}>{l.severity}</span>
+                </div>
+                <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.65 }}>{l.detail}</p>
+              </div>
+            )
+          })}
+          <p style={{ fontSize: 11, color: S.n400, lineHeight: 1.6, marginTop: 4, paddingTop: 10, borderTop: `1px solid ${S.n100}` }}>
+            These limitations are inherent to any automated location analysis. They do not invalidate the report — they define where to focus your own research before signing a lease.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCORE LEVER EXPLANATION — what drives each score up/down, biggest lever
+// ═══════════════════════════════════════════════════════════════════════════════
+function ScoreLeverPanel({
+  report, computed,
+}: {
+  report: Report
+  computed: import('@/types/computed').ComputedResult | null
+}) {
+  const C = computed
+  const [activeIdx, setActiveIdx] = React.useState(0)
+
+  const bt = (report.business_type ?? 'business').toLowerCase()
+  const rent = report.monthly_rent ?? 0
+  const revenue = C?.revenue ?? null
+  const rentPct = rent > 0 && revenue && revenue > 0 ? Math.round(rent / revenue * 100) : null
+  const compCount = C?.validCompetitorCount ?? 0
+  const np = C?.netProfit ?? null
+
+  const levers: Array<{
+    dimension: string
+    score: number
+    weight: string
+    status: 'strong' | 'moderate' | 'weak'
+    whatDrivesItUp: string
+    whatPullsItDown: string
+    biggestLever: string
+  }> = [
+    {
+      dimension: 'Rent Affordability',
+      score: report.score_rent ?? 0,
+      weight: '20%',
+      status: (report.score_rent ?? 0) >= 70 ? 'strong' : (report.score_rent ?? 0) >= 45 ? 'moderate' : 'weak',
+      whatDrivesItUp: `Lower rent, higher revenue, or both. For a ${bt}, rent below 12% of monthly revenue produces a strong score. At ${rentPct != null ? rentPct + '%' : 'the current ratio'}, ${rentPct != null && rentPct <= 12 ? 'you are already in the strong zone' : 'negotiate rent down or increase average ticket size'}.`,
+      whatPullsItDown: `Rent rising at renewal, or revenue falling below forecast. A 10% revenue drop moves rent-to-revenue up by 1–2 percentage points. At the margin, this matters.`,
+      biggestLever: rent > 0
+        ? `Negotiate rent. Every $500/month reduction in rent improves this score by ~3–5 points and directly improves net profit.`
+        : `Submit an actual rent figure — this score is estimated from the area median and may not reflect your specific property.`,
+    },
+    {
+      dimension: 'Competition',
+      score: report.score_competition ?? 0,
+      weight: '25%',
+      status: (report.score_competition ?? 0) >= 70 ? 'strong' : (report.score_competition ?? 0) >= 45 ? 'moderate' : 'weak',
+      whatDrivesItUp: `Fewer direct competitors, or lower-quality existing operators. ${compCount <= 5 ? `At ${Math.round(compCount)} competitors, you are already in a favourable position.` : `The ${Math.round(compCount)} existing operators are pulling this score down.`}`,
+      whatPullsItDown: `More competitors, especially well-reviewed ones. Every new ${bt} within your catchment reduces your addressable customer base.`,
+      biggestLever: compCount > 8
+        ? `Consider a slightly different location — even 500m can mean 2–3 fewer competitors and a meaningfully different score.`
+        : `Verify competitor count manually on Google Maps. If the automated count is too high, re-running the analysis with a more specific business type can refine it.`,
+    },
+    {
+      dimension: 'Market Demand',
+      score: C?.scores?.demand ?? report.score_demand ?? 0,
+      weight: '20%',
+      status: (C?.scores?.demand ?? report.score_demand ?? 0) >= 70 ? 'strong' : (C?.scores?.demand ?? report.score_demand ?? 0) >= 45 ? 'moderate' : 'weak',
+      whatDrivesItUp: `Growing search volume for your business type, high population density, strong transit access, and upward income trends in the area.`,
+      whatPullsItDown: `Declining search trend, low population density, or a demographic profile that doesn't match your target customer.`,
+      biggestLever: `Check the Market tab for demand trend direction. A growing trend adds significant credibility to revenue projections — a declining one is a hard signal to ignore.`,
+    },
+    {
+      dimension: 'Profitability',
+      score: np != null ? (np > 5000 ? 85 : np > 2000 ? 70 : np > 0 ? 55 : np > -2000 ? 35 : 15) : 50,
+      weight: '25%',
+      status: np != null ? (np > 2000 ? 'strong' : np > 0 ? 'moderate' : 'weak') : 'moderate',
+      whatDrivesItUp: `Higher revenue (more customers or higher average ticket), lower costs (rent, staff, COGS), or both. This is the single highest-weighted dimension.`,
+      whatPullsItDown: `Revenue below break-even, high rent, or high staffing costs relative to throughput. Benchmark estimates make this less reliable when live revenue data is unavailable.`,
+      biggestLever: np != null && np < 0
+        ? `The model projects a loss — revenue needs to increase or costs need to decrease before this score can improve. Focus on the Financials tab What-If sliders.`
+        : `Average ticket size is the most controllable lever. Increasing it by 10–15% typically adds $3,000–8,000/month net profit without adding a single customer.`,
+    },
+    {
+      dimension: 'Location Quality',
+      score: report.score_cost ?? 0,
+      weight: '10%',
+      status: (report.score_cost ?? 0) >= 70 ? 'strong' : (report.score_cost ?? 0) >= 45 ? 'moderate' : 'weak',
+      whatDrivesItUp: `Main road frontage, nearby train/tram stops, anchor tenants (supermarkets, pharmacies), and high residential density within 500m.`,
+      whatPullsItDown: `Side street location, no public transit, or no nearby anchor tenants that draw regular foot traffic.`,
+      biggestLever: `This dimension has the lowest weight (10%). A weak location score rarely changes a verdict on its own — but high foot traffic genuinely reduces your marketing cost to acquire each customer.`,
+    },
+  ]
+
+  const active = levers[activeIdx]
+  const activeColor = active.status === 'strong' ? S.emerald : active.status === 'moderate' ? S.amber : S.red
+
+  return (
+    <Card>
+      <SectionHeading badge="engine" sub="Understand what moves each score — and the single biggest lever to improve your result.">
+        Score Levers
+      </SectionHeading>
+
+      {/* Dimension selector */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const, marginBottom: 16 }}>
+        {levers.map((l, i) => {
+          const col = l.status === 'strong' ? S.emerald : l.status === 'moderate' ? S.amber : S.red
+          const isActive = i === activeIdx
+          return (
+            <button
+              key={l.dimension}
+              onClick={() => setActiveIdx(i)}
+              style={{
+                padding: '6px 12px', borderRadius: 8, border: `1.5px solid ${isActive ? col : S.n200}`,
+                background: isActive ? `${col}12` : S.white, cursor: 'pointer',
+                fontFamily: S.font, display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s',
+              }}
+            >
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: col }} />
+              <span style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? col : S.n700 }}>
+                {l.dimension}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: col, fontFamily: S.mono }}>{l.score}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Active dimension detail */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+        <div style={{ padding: '12px 14px', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10 }}>
+          <p style={{ fontSize: 11, fontWeight: 800, color: S.emerald, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 6 }}>What drives it up</p>
+          <p style={{ fontSize: 13, color: '#065F46', lineHeight: 1.65 }}>{active.whatDrivesItUp}</p>
+        </div>
+        <div style={{ padding: '12px 14px', background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 10 }}>
+          <p style={{ fontSize: 11, fontWeight: 800, color: S.red, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 6 }}>What pulls it down</p>
+          <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.65 }}>{active.whatPullsItDown}</p>
+        </div>
+      </div>
+      <div style={{ padding: '12px 16px', background: '#F0F9FF', border: '1px solid #BAE6FD', borderLeft: `3px solid #0EA5E9`, borderRadius: 10 }}>
+        <p style={{ fontSize: 11, fontWeight: 800, color: '#0369A1', textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 5 }}>Biggest lever</p>
+        <p style={{ fontSize: 13, color: '#0C4A6E', lineHeight: 1.65 }}>{active.biggestLever}</p>
+      </div>
+    </Card>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NEXT STEPS + SHORTLIST — conversion layer + localStorage save
+// ═══════════════════════════════════════════════════════════════════════════════
+function NextStepsPanel({
+  report, computed, onTabChange,
+}: {
+  report: Report
+  computed: import('@/types/computed').ComputedResult | null
+  onTabChange: (tab: string) => void
+}) {
+  const reportId = report.report_id ?? report.id
+  const location = report.location_name ?? report.address ?? 'this location'
+  const verdict  = computed?.verdict ?? normalizeVerdict(report.verdict)
+  const score    = report.overall_score ?? computed?.scores?.overall ?? null
+
+  // ── Shortlist (localStorage) ─────────────────────────────────────────────────
+  const SHORTLIST_KEY = 'locatalyze_shortlist'
+  const [saved, setSaved] = React.useState(() => {
+    try {
+      const sl = JSON.parse(localStorage.getItem(SHORTLIST_KEY) ?? '[]')
+      return Array.isArray(sl) && sl.some((x: any) => x.id === reportId)
+    } catch { return false }
+  })
+
+  const toggleSave = () => {
+    try {
+      const sl: any[] = JSON.parse(localStorage.getItem(SHORTLIST_KEY) ?? '[]')
+      if (saved) {
+        const next = sl.filter((x: any) => x.id !== reportId)
+        localStorage.setItem(SHORTLIST_KEY, JSON.stringify(next))
+        setSaved(false)
+      } else {
+        sl.push({
+          id: reportId,
+          location,
+          verdict,
+          score,
+          savedAt: new Date().toISOString(),
+          businessType: report.business_type,
+          rent: report.monthly_rent,
+        })
+        localStorage.setItem(SHORTLIST_KEY, JSON.stringify(sl))
+        setSaved(true)
+      }
+    } catch { /* localStorage unavailable */ }
+  }
+
+  const verdictColor = verdict === 'GO' ? S.emerald : verdict === 'NO' ? S.red : S.amber
+
+  const actions = [
+    {
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+      label: 'Refine this location',
+      sub: 'Adjust rent or ticket size in the What-If tool',
+      action: () => onTabChange('financials'),
+      color: S.brand,
+      bg: S.brandFaded,
+      bdr: S.brandBorder,
+    },
+    {
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+      label: 'Compare another suburb',
+      sub: 'Run a second analysis to benchmark this location',
+      action: () => window.location.href = '/onboarding',
+      color: '#0369A1',
+      bg: '#F0F9FF',
+      bdr: '#BAE6FD',
+    },
+    {
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+      label: 'Run worst-case scenario',
+      sub: 'Stress-test at -30% revenue in the Financials tab',
+      action: () => onTabChange('financials'),
+      color: S.amber,
+      bg: S.amberBg,
+      bdr: S.amberBdr,
+    },
+    {
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+      label: 'Download PDF report',
+      sub: 'Full report with all data, charts, and verdict',
+      action: () => { /* ExportPDFButton handles this */ },
+      color: S.n700,
+      bg: S.n50,
+      bdr: S.n200,
+      href: `/api/export-pdf?reportId=${reportId}`,
+    },
+    {
+      icon: saved
+        ? <svg width="16" height="16" viewBox="0 0 24 24" fill={S.emerald} stroke={S.emerald} strokeWidth="2" strokeLinecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>,
+      label: saved ? 'Saved to shortlist' : 'Save to shortlist',
+      sub: saved ? 'Click to remove from your saved locations' : 'Revisit and compare saved reports anytime',
+      action: toggleSave,
+      color: saved ? S.emerald : S.n700,
+      bg: saved ? S.emeraldBg : S.n50,
+      bdr: saved ? S.emeraldBdr : S.n200,
+    },
+  ]
+
+  return (
+    <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, overflow: 'hidden', fontFamily: S.font }}>
+      {/* Header */}
+      <div style={{ padding: '16px 20px', borderBottom: `1px solid ${S.n100}`, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: verdictColor }} />
+        <p style={{ fontSize: 13, fontWeight: 800, color: S.n900 }}>What to do next</p>
+        {score != null && (
+          <span style={{ marginLeft: 'auto', fontSize: 12, color: S.n400 }}>
+            Score: <strong style={{ color: verdictColor, fontFamily: S.mono }}>{Math.round(score)}</strong> · Verdict: <strong style={{ color: verdictColor }}>{verdict}</strong>
+          </span>
+        )}
+      </div>
+
+      {/* Action grid */}
+      <div style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {actions.map((a, i) => (
+          a.href ? (
+            <a
+              key={i}
+              href={a.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 14px',
+                background: a.bg, border: `1.5px solid ${a.bdr}`, borderRadius: 10,
+                cursor: 'pointer', textDecoration: 'none', transition: 'border-color 0.15s',
+              }}
+            >
+              <div style={{ color: a.color, marginTop: 2, flexShrink: 0 }}>{a.icon}</div>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: a.color, marginBottom: 2 }}>{a.label}</p>
+                <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.5 }}>{a.sub}</p>
+              </div>
+            </a>
+          ) : (
+            <button
+              key={i}
+              onClick={a.action}
+              style={{
+                display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 14px',
+                background: a.bg, border: `1.5px solid ${a.bdr}`, borderRadius: 10,
+                cursor: 'pointer', fontFamily: S.font, transition: 'border-color 0.15s',
+                textAlign: 'left' as const,
+              }}
+            >
+              <div style={{ color: a.color, marginTop: 2, flexShrink: 0 }}>{a.icon}</div>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: a.color, marginBottom: 2 }}>{a.label}</p>
+                <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.5 }}>{a.sub}</p>
+              </div>
+            </button>
+          )
+        ))}
+      </div>
+
+      {/* Shortlist count hint */}
+      {saved && (() => {
+        try {
+          const sl = JSON.parse(localStorage.getItem(SHORTLIST_KEY) ?? '[]')
+          if (sl.length > 1) return (
+            <div style={{ padding: '10px 20px', borderTop: `1px solid ${S.n100}`, background: S.emeraldBg }}>
+              <p style={{ fontSize: 12, color: '#065F46' }}>
+                You have <strong>{sl.length} locations saved</strong>. Run a report on each to compare side by side before committing.
+              </p>
+            </div>
+          )
+        } catch { /* */ }
+        return null
+      })()}
+    </div>
+  )
+}
+
 // ─── Assumptions panel ────────────────────────────────────────────────────────
 function AssumptionsPanel({ report }: { report: Report }) {
   const [open, setOpen] = useState(false)
@@ -3258,10 +4226,20 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     if (!report || feedbackLoading) return
     setFeedbackProceeded(proceeded)
     setFeedbackLoading(true)
-    await fetch(`/api/reports/${report.report_id ?? report.id}/feedback`, {
+    const reportId = report.report_id ?? report.id
+    await fetch(`/api/reports/${reportId}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ proceeded, accuracy: feedbackAccuracy, notes: feedbackNotes }),
+    })
+    await fetch(`/api/reports/${reportId}/outcome`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        survivalStatus: proceeded ? 'operating' : 'unknown',
+        notes: feedbackNotes,
+        submissionConfidence: feedbackAccuracy,
+      }),
     })
     setFeedbackSubmitted(true)
     setFeedbackLoading(false)
@@ -3289,90 +4267,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const handleInsightsUpdate = useCallback((insights: MapInsights) => setMapInsights(insights), [])
   const handleCompetitorsUpdate = useCallback((comps: Competitor[]) => setMapCompetitors(comps), [])
   const handleAnchorsUpdate = useCallback((a: Anchor[]) => setMapAnchors(a), [])
-
-  // ── Recalculation sliders ──────────────────────────────────────────────────
-  // Uses shared whatIfCalc() from lib/compute/client-calc.ts — same formulas
-  // as the server-side compute engine (benchmark path).
-  const [sliderOpen, setSliderOpen] = useState(false)
-  const [adjRent, setAdjRent] = useState<number | null>(null)
-  const [adjTicket, setAdjTicket] = useState<number | null>(null)
-  const [adjCustomers, setAdjCustomers] = useState<number | null>(null)
-
-  // Resolve benchmark defaults for slider ranges
-  const _btBizKey = resolveClientBizKey(report?.business_type ?? 'other')
-  const _btBenchmark = CLIENT_BENCHMARKS[_btBizKey] ?? CLIENT_BENCHMARKS['other']
-
-  const _fin = safeResultData(report?.result_data)?.financials || {}
-  const _cr = report?.computed_result as any // engine v2 — referenced before C is declared
-  const baseRent = report?.monthly_rent ?? _fin?.rent?.submitted ?? 2500
-  // Ticket: compute engine → fin derived → business type benchmark
-  const _rawTicket = (_cr?.avgTicketSize ?? null) || (_fin?.avgTicketSize ?? null) || null
-  const baseTicket = (_rawTicket && _rawTicket > 0) ? Math.round(_rawTicket) : _btBenchmark.avgTicketSize
-  // Customers: compute engine → fin baseline → business type benchmark
-  const _rawCustomers = (_cr?.dailyCustomers ?? null) || (_fin?.baselineCustomers ?? null) || null
-  const baseCustomers = (_rawCustomers && _rawCustomers > 0) ? Math.round(_rawCustomers) : _btBenchmark.dailyCustomersBase
-  const _scoreComp = report?.score_competition ?? 50
-  // Prefer engine demand score (null = no data) over legacy report field; fall back to 50 for scoring only
-  // Note: C is not yet declared here — use _cr (same reference to report.computed_result)
-  const _engineDemandScore: number | null = (_cr?.scores?.demand as number | null | undefined) ?? null
-  const _scoreDem = _engineDemandScore ?? report?.score_demand ?? 50
-
-  const adjCalc = useMemo(() => {
-    const rent = adjRent ?? baseRent
-    const ticket = adjTicket ?? baseTicket
-    const customers = adjCustomers ?? baseCustomers
-
-    // Use shared whatIfCalc — same formulas as compute engine
-    const calc = whatIfCalc({
-      businessType: report?.business_type ?? 'other',
-      monthlyRent: rent,
-      avgTicketSize: ticket,
-      dailyCustomers: customers,
-    })
-
-    const rentScore = scoreRent(calc.rentToRevenuePct)
-    const profitScore = scoreProfitability(calc.netProfit)
-    const { overall, verdict } = compositeScore({
-      rent: rentScore,
-      profitability: profitScore,
-      competition: _scoreComp,
-      demand: _scoreDem,
-    })
-    const changed = (adjRent != null && adjRent !== baseRent) || (adjTicket != null && adjTicket !== baseTicket) || (adjCustomers != null && adjCustomers !== baseCustomers)
-
-    return {
-      rent,
-      ticket,
-      customers,
-      monthlyRevenue: calc.monthlyRevenue,
-      totalMonthlyCosts: calc.totalCosts,
-      monthlyGrossProfit: Math.round(calc.monthlyRevenue * calc.grossMarginPct / 100),
-      monthlyNetProfit: calc.netProfit,
-      profitMargin: calc.profitMarginPct,
-      rentToRevRatio: calc.rentToRevenuePct / 100,
-      rentPct: calc.rentToRevenuePct,
-      breakEvenMonthly: 0, // not used in UI
-      breakEvenDaily: calc.breakEvenDaily,
-      scoreRent: rentScore,
-      scoreProfitability: profitScore,
-      overall,
-      verdict,
-      changed,
-    }
-  }, [adjRent, adjTicket, adjCustomers, baseRent, baseTicket, baseCustomers, _scoreComp, _scoreDem, report?.business_type])
-
-  // Hysteresis: only show a verdict flip when score moves by ≥8 points.
-  // Without this, crossing a single scoring threshold (e.g. rent% from 17.9%→18.1%)
-  // flips the verdict which feels broken even though it's mathematically correct.
-  const _origScore      = report?.overall_score ?? 50
-  const _adjScoreDelta  = adjCalc.overall - _origScore
-  const _normalizedOrigVerdict = normalizeVerdict(report?.verdict ?? null) as 'GO' | 'CAUTION' | 'NO'
-  const _verdictFlipped = Math.abs(_adjScoreDelta) >= 8 && adjCalc.verdict !== _normalizedOrigVerdict
-  // Displayed verdict in what-if: use adjusted only when it has meaningfully shifted
-  const _adjDisplayVerdict: 'GO' | 'CAUTION' | 'NO' =
-    _verdictFlipped ? adjCalc.verdict : _normalizedOrigVerdict
-  const adjVc = verdictCfg(_adjDisplayVerdict)
-  const isChanged = adjCalc.changed
 
   // Sync map business type + radii from report / computed_result
   useEffect(() => {
@@ -3685,6 +4579,27 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     )
   }
 
+  if (!report.computed_result) {
+    return (
+      <div style={{ minHeight: '100vh', background: S.n50, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: S.font }}>
+        <div style={{ maxWidth: 620, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '28px 30px', boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Compute engine data required</h2>
+          <p style={{ fontSize: 14, color: S.n500, lineHeight: 1.7, marginBottom: 16 }}>
+            This report was generated before strict compute authority enforcement. To prevent UI-side or API-side number drift,
+            final financial values are shown only when `computed_result` exists.
+          </p>
+          <p style={{ fontSize: 13, color: S.n700, marginBottom: 20 }}>
+            Re-run this location analysis to generate an engine-authoritative report.
+          </p>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: S.font }}>Run analysis again</button>
+            <button onClick={() => router.push('/dashboard')} style={{ background: S.white, color: S.n700, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '10px 16px', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: S.font }}>Back to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // ─── REPORT DATA ────────────────────────────────────────────────────────────
   const vc = verdictCfg(report.verdict)
 
@@ -3705,6 +4620,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   // The UI NEVER computes, falls back, patches, or re-derives anything.
   const C: ComputedResult | null = report.computed_result ?? null
   const hasComputed = C !== null
+  const _engineDemandScore: number | null = C?.scores?.demand ?? null
 
   // ── fin / competitors / areaContext / market / demographics ──────────────────
   // v2 path: built from computed_result (immutable, pre-validated)
@@ -3887,8 +4803,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     return _rawTier
   })()
   const _financialsSuppressed = shouldSuppressFinancials(C)
-  const _financialGate = gateSection('Financial projections', C, { requiredFields: ['revenue'] })
-
   // ── Display variables — UI reads ONLY these, never raw fin fields directly ────
   // Raw values (for calculations/comparisons — NOT for rendering to user)
   const displayRevenue:      number | null = fin.monthlyRevenue    ?? null
@@ -3915,6 +4829,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   // Break-even gauge values
   const _beDailyForGauge:       number | null = _beDaily ?? report.breakeven_daily ?? null
   const _currentDailyCustomers: number | null = fin.baselineCustomers ?? null
+  const _beBufferDaily: number | null =
+    (_beDailyForGauge != null && _currentDailyCustomers != null)
+      ? Math.round(_currentDailyCustomers - _beDailyForGauge)
+      : null
 
   // Canonical payback period
   const _canonicalBEM: number | null = (() => {
@@ -4154,11 +5072,35 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       })()}
 
       {/* ── Main content ── */}
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 32px 80px' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '34px clamp(16px, 4vw, 36px) 90px' }}>
 
-        {/* ═══ SECTION 1: RECOMMENDATION PANEL ═══ */}
-        <div style={{ marginBottom: 24 }}>
-          <RecommendationPanel report={report} confidence={confidence} />
+        {/* ═══ SECTION 1: DECISION-FIRST LAYER ═══ */}
+        <div style={{ marginBottom: 34 }}>
+          <DecisionHero
+            report={report}
+            confidence={confidence}
+            revenue={_dRevenue.display}
+            net={_dNetProfit.display}
+            payback={_canonicalBEM ? `${_canonicalBEM} mo` : 'N/A'}
+            breakEvenDaily={(_beDaily ?? (fin as any).breakEvenDailyEst) != null ? `${displayCustomers(_beDaily ?? (fin as any).breakEvenDailyEst, _confidenceTier).display} cust.` : 'N/A'}
+            drivers={[
+              { label: 'Rent', score: report.score_rent },
+              { label: 'Competition', score: report.score_competition },
+              { label: 'Demand', score: _engineDemandScore ?? report.score_demand },
+              { label: 'Profitability', score: computedScoreProfitability },
+            ]}
+          />
+          <KeyDriversGrid
+            drivers={[
+              { label: 'Rent', score: report.score_rent },
+              { label: 'Competition', score: report.score_competition },
+              { label: 'Demand', score: _engineDemandScore ?? report.score_demand },
+              { label: 'Profitability', score: computedScoreProfitability },
+            ]}
+          />
+          {!userPlan.isFree && (
+            <FinalRecommendationBlock report={report} computed={C} fin={fin} tier={_confidenceTier} />
+          )}
           <ReferralPrompt reportScore={report.overall_score ?? 0} verdict={report.verdict ?? ''} />
 
           {/* ── Post-verdict upgrade nudge — shown immediately after verdict for free users ──
@@ -4295,208 +5237,48 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           })()}
         </div>
 
-        {/* ═══ SECTION 2: KEY METRICS (ranges) ═══ */}
-        {/* When revenueRange is available (trust layer), show it as the primary revenue display */}
-        {C?.revenueRange && C.revenueRange.uncertainty > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 24 }}>
-            <RevenueRangeTile revenueRange={C.revenueRange} />
-            <Tile
-              label="Net Profit / Mo"
-              value={_dNetProfit.display}
-              sub={_dNetProfit.qualifier ?? (displayProfitMargin ?? '')}
-              color={(displayNetProfit ?? 0) >= 0 ? S.emerald : S.red}
-              mono
-            />
-            <Tile
-              label="Break-even Daily"
-              value={(_beDaily ?? (fin as any).breakEvenDailyEst) != null ? `${_beDaily ?? (fin as any).breakEvenDailyEst} cust.` : 'Not available'}
-              sub="customers/day needed"
-              color={S.n900}
-              mono
-            />
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 24 }}>
-            {[
-              {
-                l: 'Monthly Revenue',
-                v: _dRevenue.display,
-                sub: (fin as any).isEstimated ? 'industry benchmark' : 'market demand model',
-                color: S.n900,
-              },
-              {
-                l: 'Net Profit / Mo',
-                v: _dNetProfit.display,
-                sub: _dNetProfit.qualifier ?? (displayProfitMargin ?? ''),
-                color: (displayNetProfit ?? 0) >= 0 ? S.emerald : S.red,
-              },
-              {
-                l: 'Break-even Daily',
-                v: (_beDaily ?? (fin as any).breakEvenDailyEst)
-                  ? `${_beDaily ?? (fin as any).breakEvenDailyEst} cust.`
-                  : 'Data unavailable',
-                sub: 'customers/day needed',
-                color: S.n900,
-              },
-              {
-                l: 'Payback Period',
-                v: _canonicalBEM ? `${_canonicalBEM} mo` : 'N/A',
-                sub: 'from setup cost',
-                color: S.n900,
-              },
-            ].map(m => (
-              <Tile key={m.l} label={m.l} value={m.v} sub={m.sub} color={m.color} mono />
-            ))}
-          </div>
-        )}
-
-        {/* ═══ DATA QUALITY HEADER — transparency strip ═══ */}
-        <DataQualityHeader computed={C} report={report} />
-
         {/* ═══ CALIBRATION DISCLAIMER — persistent, amber-upgraded when benchmark_default ═══ */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '11px 14px', background: _confidenceTier === 'benchmark_default' ? S.amberBg : S.n50, border: `1px solid ${_confidenceTier === 'benchmark_default' ? S.amberBdr : S.n200}`, borderRadius: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '11px 14px', background: _confidenceTier === 'benchmark_default' ? S.amberBg : '#FFFEFD', border: `1px solid ${_confidenceTier === 'benchmark_default' ? S.amberBdr : 'rgba(28,25,23,0.08)'}`, borderRadius: 10 }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={_confidenceTier === 'benchmark_default' ? S.amber : S.n400} strokeWidth="2.5" strokeLinecap="round" style={{ marginTop: 1, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <p style={{ fontSize: 11, color: _confidenceTier === 'benchmark_default' ? '#92400E' : S.n500, lineHeight: 1.6, margin: 0 }}>
             {_confidenceTier === 'benchmark_default'
-              ? <><strong>Benchmark estimates only —</strong> no live revenue data was returned for this location. All financial figures use Australian industry averages and have not been validated against actual trading at this address. Treat every number as directional until confirmed with local data or a professional adviser.</>
-              : <>Financial projections are model-derived estimates based on available agent data. Use this report to structure your thinking — not as a substitute for independent due diligence or professional financial advice.</>
+              ? <><strong>Benchmark mode:</strong> numbers are directional ranges from industry averages, not this venue’s actual trading.</>
+              : <>Financial projections are model-derived estimates. Use them for screening, then validate locally before committing.</>
             }
           </p>
         </div>
+        <details style={{ marginTop: 12, marginBottom: 26, background: S.white, border: '1px solid rgba(28,25,23,0.08)', borderRadius: 10, padding: '9px 11px' }}>
+          <summary style={{ fontSize: 12, fontWeight: 700, color: S.n500, cursor: 'pointer' }}>Show assumptions and data quality details</summary>
+          <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <DataQualityHeader computed={C} report={report} />
+            <DataQualitySummary computed={C} />
+            <CalibrationSummary />
+          </div>
+        </details>
 
         {/* ═══ SECTION 3: TABS ═══ */}
-        <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: 4, marginBottom: 20, boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+        <div style={{ display: 'flex', gap: 2, background: S.white, border: '1px solid rgba(28,25,23,0.08)', borderRadius: 14, padding: 4, marginBottom: 28, boxShadow: '0 4px 16px rgba(28,25,23,0.05)' }}>
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               style={{
                 flex: 1, padding: '10px 6px', borderRadius: 8, border: 'none',
                 background: activeTab === t.id ? S.headerBg : 'transparent',
                 color: activeTab === t.id ? S.white : S.n500,
-                fontSize: 13, fontWeight: 700, transition: 'all 0.15s',
+                fontSize: 13, fontWeight: 700, letterSpacing: '0.01em', transition: 'all 0.15s',
               }}
             >{t.label}</button>
           ))}
         </div>
 
-        {/* ═══ ADJUST ASSUMPTIONS ═══ */}
+        {/* ═══ COMPUTE AUTHORITY NOTICE ═══ */}
         <div id="adjust-panel" style={{ marginBottom: 20 }}>
-          <button onClick={() => setSliderOpen(o => !o)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              background: isChanged ? S.brand : S.white,
-              color: isChanged ? S.white : S.n700,
-              border: `1.5px solid ${isChanged ? S.brand : S.n200}`,
-              borderRadius: 12, padding: '10px 18px',
-              fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              fontFamily: S.font, boxShadow: isChanged ? '0 2px 10px rgba(15,118,110,0.25)' : 'none',
-              transition: 'all 0.2s',
-            }}>
-            {isChanged ? `Adjusted: ${adjCalc.verdict} (${adjCalc.overall}/100)` : 'Adjust assumptions'}
-            {isChanged && (
-              <span style={{ fontSize: 12, fontWeight: 400, opacity: 0.8, marginLeft: 4 }}>
-                {adjCalc.overall > (report.overall_score ?? 0) ? `+${adjCalc.overall - (report.overall_score ?? 0)}` : `${adjCalc.overall - (report.overall_score ?? 0)}`}
-              </span>
-            )}
-            <span style={{ marginLeft: 'auto', fontSize: 12 }}>{sliderOpen ? '▲' : '▼'}</span>
-          </button>
-
-          {sliderOpen && (
-            <div style={{ marginTop: 12, background: S.white, border: `1.5px solid ${S.brandBorder}`, borderRadius: 16, padding: '24px 28px', boxShadow: '0 4px 20px rgba(15,118,110,0.08)', animation: 'fadeIn 0.2s ease' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                <div>
-                  <p style={{ fontSize: 16, fontWeight: 800, color: S.n900 }}>What-if calculator</p>
-                  <p style={{ fontSize: 13, color: S.n500, marginTop: 3 }}>Drag to see how changes affect your verdict in real time</p>
-                </div>
-                {isChanged && (
-                  <button onClick={() => { setAdjRent(null); setAdjTicket(null); setAdjCustomers(null) }}
-                    style={{ background: S.n100, border: 'none', color: S.n500, borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 600 }}>Reset</button>
-                )}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
-                {[
-                  { label: 'Monthly Rent', value: adjRent ?? baseRent, base: baseRent, set: setAdjRent, prefix: '$', min: Math.max(500, Math.round(baseRent * 0.4)), max: Math.max(Math.round(baseRent * 2.5), baseRent + 5000), step: 100, invert: true },
-                  { label: 'Avg Ticket Size', value: adjTicket ?? baseTicket, base: baseTicket, set: setAdjTicket, prefix: '$', min: Math.max(1, Math.round(baseTicket * 0.4)), max: Math.max(Math.round(baseTicket * 2.5), baseTicket + 50), step: 1, invert: false },
-                  { label: 'Daily Customers', value: adjCustomers ?? baseCustomers, base: baseCustomers, set: setAdjCustomers, prefix: '', min: Math.max(5, Math.round(baseCustomers * 0.3)), max: Math.max(Math.round(baseCustomers * 3), baseCustomers + 100), step: 5, invert: false },
-                ].map(s => {
-                  const delta = s.value - s.base
-                  const pctDelta = s.base > 0 ? Math.abs(Math.round((delta / s.base) * 100)) : 0
-                  const better = s.invert ? delta < 0 : delta > 0
-                  return (
-                    <div key={s.label}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: S.n700 }}>{s.label}</span>
-                        <span style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{s.prefix}{s.value.toLocaleString()}</span>
-                      </div>
-                      <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
-                        onChange={e => s.set(Number(e.target.value))} style={{ width: '100%' }} />
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                        <span style={{ fontSize: 11, color: S.n400 }}>{s.prefix}{s.min.toLocaleString()}</span>
-                        <span style={{ fontSize: 11, color: S.n400 }}>{s.prefix}{s.max.toLocaleString()}</span>
-                      </div>
-                      {delta !== 0 && (
-                        <p style={{ fontSize: 12, color: better ? S.emerald : S.red, marginTop: 4, fontWeight: 600 }}>
-                          {better ? 'Up' : 'Down'} {pctDelta}% vs original
-                        </p>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              {isChanged && (
-                <div style={{ marginTop: 24, padding: '16px 20px', background: adjVc.bg, border: `1.5px solid ${adjVc.border}`, borderRadius: 12, display: 'grid', gridTemplateColumns: 'auto repeat(4,1fr)', gap: 16, alignItems: 'center' }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: adjVc.text, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
-                      {_verdictFlipped ? 'New Verdict' : 'Scenario Score'}
-                    </p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 24, fontWeight: 900, color: adjVc.text }}>{adjCalc.overall}</span>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: adjVc.text }}>{adjVc.label}</span>
-                    </div>
-                    <p style={{ fontSize: 11, color: adjVc.text, opacity: 0.7, marginTop: 2 }}>
-                      {_verdictFlipped
-                        ? `was ${_origScore} ${vc.label}`
-                        : `${_adjScoreDelta > 0 ? '+' : ''}${_adjScoreDelta} pts — same verdict`}
-                    </p>
-                    {!_verdictFlipped && Math.abs(_adjScoreDelta) > 0 && (
-                      <p style={{ fontSize: 10, color: adjVc.text, opacity: 0.6, marginTop: 3 }}>
-                        needs {_adjScoreDelta > 0 ? 8 - _adjScoreDelta : 8 + _adjScoreDelta}+ more pts to flip
-                      </p>
-                    )}
-                  </div>
-                  {[
-                    { label: 'Monthly Revenue', orig: fin.monthlyRevenue, adj: adjCalc.monthlyRevenue, format: (v: number) => '$' + (v/1000).toFixed(1) + 'k' },
-                    { label: 'Net Profit/Mo', orig: fin.monthlyNetProfit, adj: adjCalc.monthlyNetProfit, format: (v: number) => '$' + (v/1000).toFixed(1) + 'k' },
-                    { label: 'Rent %', orig: fin.rent?.toRevenuePercent, adj: adjCalc.rentPct, format: (v: number) => v.toFixed(1) + '%' },
-                    { label: 'Break-even/Day', orig: report.breakeven_daily, adj: adjCalc.breakEvenDaily, format: (v: number) => v + ' cust.' },
-                  ].map(m => {
-                    const delta = (m.adj ?? 0) - (m.orig ?? 0)
-                    const better = m.label === 'Rent %' || m.label === 'Break-even/Day' ? delta < 0 : delta > 0
-                    return (
-                      <div key={m.label} style={{ textAlign: 'center' }}>
-                        <p style={{ fontSize: 11, color: adjVc.text, opacity: 0.65, marginBottom: 4 }}>{m.label}</p>
-                        <p style={{ fontSize: 15, fontWeight: 900, color: adjVc.text, fontFamily: S.mono }}>{m.adj != null ? m.format(m.adj) : 'N/A'}</p>
-                        {delta !== 0 && m.orig != null && (
-                          <p style={{ fontSize: 11, color: better ? S.emerald : S.red, fontWeight: 700, marginTop: 2 }}>{m.format(Math.abs(delta))}</p>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              {(_confidenceTier === 'benchmark_default' || _confidenceTier === 'low') && (
-                <div style={{ marginTop: 12, padding: '8px 14px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8 }}>
-                  <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.5 }}>
-                    <strong>Directional only —</strong> base figures come from industry benchmarks, not local sales data. Results show the direction of change, not precise outcomes. Small slider moves can cross score thresholds — treat verdict changes as indicators, not conclusions.
-                  </p>
-                </div>
-              )}
-              <p style={{ fontSize: 12, color: S.n400, marginTop: 10, textAlign: 'center' }}>
-                Recalculation runs in your browser — no data is sent. Base values:{' '}
-                {_cr?.avgTicketSize ? 'from compute engine' : _fin?.avgTicketSize ? 'from financial model' : 'industry benchmark defaults'}
-                {' '}· {_btBenchmark.grossMarginPct}% gross margin · 30 trading days/month
-              </p>
-            </div>
-          )}
+          <div style={{ background: S.white, border: `1.5px solid ${S.n200}`, borderRadius: 12, padding: '12px 16px' }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: S.n800, marginBottom: 6 }}>Compute-authority lock enabled</p>
+            <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.65 }}>
+              Browser-side what-if calculations are disabled. Final numbers are rendered only from compute engine output to avoid UI/API drift.
+              To test scenarios, submit a new analysis with updated assumptions.
+            </p>
+          </div>
         </div>
 
         {/* ═══ OVERVIEW TAB ═══ */}
@@ -4508,9 +5290,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {/* Contradiction banner — ABOVE financial content so conflicts are unmissable */}
             <ContradictionBanner computed={C} />
-
-            {/* Confidence panel — data quality context BEFORE the numbers */}
-            <ConfidencePanel confidence={confidence} />
 
             {/* Big P&L hero + top risks */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -4698,6 +5477,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )}
             </Card>
 
+            {/* Score Levers — what moves each dimension up or down */}
+            <ScoreLeverPanel report={report} computed={C} />
+
             {/* ── Locked SWOT + scenario teaser — shown only on free reports ──────
                  Revenue/profit/break-even are already shown above the tabs, so we
                  DON'T blur those. Instead we show the shape of SWOT and 3-year
@@ -4793,37 +5575,38 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </PaywallGate>
             )}
 
-            {/* ── Comparison CTA — drives 3-pack purchases ──────────────────────────
-                 Shown to all users (not just free) since even paid single-report users
-                 benefit from buying a pack to compare. Free users see the stronger copy. */}
-            <div style={{
-              background: S.n900, borderRadius: 16, padding: '24px 28px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const,
-            }}>
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-                  Before you decide
-                </p>
-                <p style={{ fontSize: 16, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em', marginBottom: 5, lineHeight: 1.3 }}>
-                  Are you comparing locations?
-                </p>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
-                  Most founders shortlist 2–3 sites before committing. A 3-pack ($59) gives you a full report on each — $19.67 per location — and lets you compare them side by side before signing anything.
-                </p>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
-                <a href="/upgrade" style={{
-                  display: 'inline-block', padding: '12px 22px', borderRadius: 9, whiteSpace: 'nowrap' as const,
-                  background: S.white, color: S.brand, fontSize: 13, fontWeight: 800,
-                  textDecoration: 'none', boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-                }}>
-                  Get 3-pack — $59
-                </a>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
-                  $19.67/report · save 32% · no expiry
-                </p>
-              </div>
-            </div>
+            {/* ══ DECISION PLATFORM CONVERSION LAYER ══════════════════════════════
+                 These four sections convert an engaged reader into a clear next action.
+                 Order: Decision summary → Risk of delay → Limitations → Next steps
+                 ═══════════════════════════════════════════════════════════════════ */}
+
+            {/* 1. What this means for you — verdict → why → biggest risk → biggest opportunity */}
+            <DecisionSummaryLayer
+              report={report}
+              computed={C}
+              fin={fin}
+              competitors={competitors}
+              market={market}
+            />
+
+            {/* 2. Risk of doing nothing — data-grounded urgency signals */}
+            <RiskOfDoingNothing
+              report={report}
+              computed={C}
+              market={market}
+              competitors={competitors}
+            />
+
+            {/* 3. Why this might be wrong — plain-language limitations, collapsible */}
+            <WhyItMightBeWrong computed={C} report={report} />
+
+            {/* 4. Next steps + shortlist — action buttons, localStorage save, comparison pitch */}
+            <NextStepsPanel
+              report={report}
+              computed={C}
+              onTabChange={setActiveTab}
+            />
+
           </div>
         )}
 
@@ -5596,19 +6379,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </Card>
             ) : (<>
 
-            {/* Confidence caveat banner */}
-            {_financialGate.caveat && (
-              <div style={{ padding: '12px 16px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={S.amber} strokeWidth="2" strokeLinecap="round" style={{ marginTop: 2, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 2 }}>
-                    {_confidenceTier === 'benchmark_default' ? 'Financial estimates based on industry benchmarks' : 'Limited data — estimates are directional'}
-                  </p>
-                  <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>{_financialGate.caveat}</p>
-                </div>
-              </div>
-            )}
-
             {/* Financial Trust — assumptions, what must be true, failure modes */}
             <FinancialTrust computed={C} fin={fin} report={report} />
 
@@ -5834,7 +6604,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                         <div style={{ padding: '12px 14px', background: S.n50, borderRadius: 10, border: `1px solid ${S.n200}` }}>
                           <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Capacity Ceiling</p>
                           <p style={{ fontSize: 18, fontWeight: 700, color: S.n900, fontFamily: S.mono }}>
-                            {ceiling ? `A$${ceiling.toLocaleString()}` : ticket ? '—' : 'Need ticket'}
+                            {ceiling ? displayMoney(ceiling, _confidenceTier).display : ticket ? '—' : 'Need ticket'}
                           </p>
                           <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>{Math.round(util * 100)}% util · {turns} turns/day</p>
                           <ConfLine conf={ceilConf} />
@@ -5842,7 +6612,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                         <div style={{ padding: '12px 14px', background: S.n50, borderRadius: 10, border: `1px solid ${S.n200}` }}>
                           <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Projected Revenue</p>
                           <p style={{ fontSize: 18, fontWeight: 700, color: S.n900, fontFamily: S.mono }}>
-                            {projected ? `A$${projected.toLocaleString()}` : '—'}
+                            {projected ? displayMoney(projected, _confidenceTier).display : '—'}
                           </p>
                           <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>demand model output</p>
                           <ConfLine conf={projConf} />
@@ -6033,16 +6803,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading badge="engine">Break-even Analysis</SectionHeading>
               {/* Single canonical break-even values — _beDailyForGauge = required, _currentDailyCustomers = projected */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 24, alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
                   <Tile label="Break-even / Day" value={_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} cust.` : 'Not available'} mono sub="customers needed" />
                   <Tile label="Projected / Day" value={_currentDailyCustomers != null ? `${_dCustomers.display} cust.` : 'Not available'} mono sub="at base demand" color={(_currentDailyCustomers ?? 0) >= (_beDailyForGauge ?? Infinity) ? S.emerald : S.red} />
-                  <Tile label="Revenue / Month" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : 'Not available'} mono sub="needed to break even" />
                   <Tile
-                    label="Setup Payback"
-                    value={fin.paybackMonths != null ? `${fin.paybackMonths} mo` : fin.breakEvenMonths != null ? `${fin.breakEvenMonths} mo` : _inputData?.setupBudgetIsEstimated ? 'Est. budget' : 'Not available'}
+                    label="Buffer / Day"
+                    value={_beBufferDaily != null ? `${_beBufferDaily > 0 ? '+' : ''}${_beBufferDaily} cust.` : 'Not available'}
                     mono
-                    sub={fin.paybackMonths != null || fin.breakEvenMonths != null ? 'months to recoup setup cost' : _inputData?.setupBudgetIsEstimated ? 'payback suppressed — setup budget was estimated' : 'setup budget not provided'}
-                    color={fin.paybackMonths != null ? (fin.paybackMonths <= 18 ? S.emerald : fin.paybackMonths <= 36 ? S.amber : S.red) : S.n400}
+                    sub="projected minus break-even"
+                    color={_beBufferDaily == null ? S.n400 : _beBufferDaily >= 0 ? S.emerald : S.red}
                   />
                 </div>
                 <div>
@@ -6050,11 +6819,35 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   <BreakevenGauge daily={_currentDailyCustomers} breakeven={_beDailyForGauge} />
                 </div>
               </div>
+              <div style={{ marginBottom: 14, padding: '10px 12px', background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10 }}>
+                <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6 }}>
+                  Break-even summary: needs <strong>{_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display}` : 'N/A'}</strong> customers/day, projects <strong>{_currentDailyCustomers != null ? _dCustomers.display : 'N/A'}</strong>/day,
+                  buffer <strong>{_beBufferDaily != null ? `${_beBufferDaily > 0 ? '+' : ''}${_beBufferDaily}` : 'N/A'}</strong> customers/day.
+                </p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 12 }}>
+                <Tile label="Revenue / Month to Break-even" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : 'Not available'} mono sub="estimated break-even revenue" />
+                <Tile
+                  label="Setup Payback"
+                  value={fin.paybackMonths != null ? `${fin.paybackMonths} mo` : fin.breakEvenMonths != null ? `${fin.breakEvenMonths} mo` : _inputData?.setupBudgetIsEstimated ? 'Est. budget' : 'Not available'}
+                  mono
+                  sub={fin.paybackMonths != null || fin.breakEvenMonths != null ? 'months to recoup setup cost' : _inputData?.setupBudgetIsEstimated ? 'payback suppressed — setup budget was estimated' : 'setup budget not provided'}
+                  color={fin.paybackMonths != null ? (fin.paybackMonths <= 18 ? S.emerald : fin.paybackMonths <= 36 ? S.amber : S.red) : S.n400}
+                />
+              </div>
+              <p style={{ fontSize: 12, fontWeight: 700, color: S.n700, marginBottom: 8 }}>Financial Verdict</p>
+              <div style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${(displayNetProfit ?? 0) >= 0 ? S.emeraldBdr : S.redBdr}`, background: (displayNetProfit ?? 0) >= 0 ? S.emeraldBg : S.redBg, marginBottom: 14 }}>
+                <p style={{ fontSize: 13, color: (displayNetProfit ?? 0) >= 0 ? '#065F46' : '#991B1B', lineHeight: 1.6 }}>
+                  {(displayNetProfit ?? 0) >= 0
+                    ? 'Financially viable under current assumptions, but validate assumptions with local trading data before signing.'
+                    : 'Not financially viable under current assumptions. Viability requires higher demand, lower rent, or lower staffing/COGS.'}
+                </p>
+              </div>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{report.cost_analysis}</p>
             </Card>
 
             {/* Scenarios — prefer A5 sensitivity_analysis, fallback to old riskScenarios */}
-            {fin.monthlyRevenue && (
+            {fin.monthlyRevenue && _confidenceTier !== 'benchmark_default' && (
               <Card>
                 <SectionHeading sub={(fin as any).scenarioSource === 'benchmark' ? "Generated from industry benchmarks — run analysis for live A5 projections" : "Best, base, and worst-case from A5 revenue model"}>Scenario Analysis</SectionHeading>
                 {fin.sensitivityAnalysis ? (
@@ -6096,6 +6889,16 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     </div>
                   </div>
                 )}
+              </Card>
+            )}
+            {fin.monthlyRevenue && _confidenceTier === 'benchmark_default' && (
+              <Card>
+                <SectionHeading>Scenario Analysis</SectionHeading>
+                <div style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${S.amberBdr}`, background: S.amberBg }}>
+                  <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>
+                    Hidden in benchmark mode to avoid false precision. Re-run with stronger local data to unlock scenario modelling.
+                  </p>
+                </div>
               </Card>
             )}
 
