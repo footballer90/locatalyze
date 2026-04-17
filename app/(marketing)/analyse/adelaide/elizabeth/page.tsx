@@ -81,7 +81,7 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Opening a Business in Elizabeth, Adelaide: 2026 Location Guide',
-    description: 'Elizabeth is South Australia's most challenged commercial market — a large but low-income northern catchment with intense chain competition. Only specific concept types are viable for independent operators.',
+    description: "Elizabeth is South Australia\'s most challenged commercial market — a large but low-income northern catchment with intense chain competition. Only specific concept types are viable for independent operators.",
     author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
@@ -91,9 +91,9 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
-    { '@type': 'Question', name: 'Can a café succeed in Elizabeth?', acceptedAnswer: { '@type': 'Answer', text: 'It can, but only with a model specifically calibrated to the market. A café that prices aggressively, offers strong value, and builds genuine community relationships can generate volume from the large resident population. A café priced and positioned for an inner-suburb demographic will not find its market. The business case depends on whether you can generate sufficient volume at low price points given the rent advantage.' } },
-    { '@type': 'Question', name: 'What are the rents like in Elizabeth?', acceptedAnswer: { '@type': 'Answer', text: 'Among the lowest in metropolitan Australia — $1,200–$2,500 per month for most commercial tenancies. This is the primary commercial attraction of the location. The question is whether the demographic generates enough revenue at its price point tolerance to make the overall economics work.' } },
-    { '@type': 'Question', name: 'Is Elizabeth improving commercially?', acceptedAnswer: { '@type': 'Answer', text: 'There are government-funded urban renewal investments in the Playford area, and some new residential development is occurring. However, the demographic transformation required to substantially change the commercial landscape is a very long-term proposition. The income base that defines the current commercial environment will not change quickly.' } }
+    { '@type': 'Question', name: "Can a café succeed in Elizabeth?", acceptedAnswer: { '@type': 'Answer', text: "It can, but only with a model specifically calibrated to the market. A café that prices aggressively, offers strong value, and builds genuine community relationships can generate volume from the large resident population. A café priced and positioned for an inner-suburb demographic will not find its market. The business case depends on whether you can generate sufficient volume at low price points given the rent advantage." } },
+    { '@type': 'Question', name: "What are the rents like in Elizabeth?", acceptedAnswer: { '@type': 'Answer', text: "Among the lowest in metropolitan Australia — $1,200–$2,500 per month for most commercial tenancies. This is the primary commercial attraction of the location. The question is whether the demographic generates enough revenue at its price point tolerance to make the overall economics work." } },
+    { '@type': 'Question', name: "Is Elizabeth improving commercially?", acceptedAnswer: { '@type': 'Answer', text: "There are government-funded urban renewal investments in the Playford area, and some new residential development is occurring. However, the demographic transformation required to substantially change the commercial landscape is a very long-term proposition. The income base that defines the current commercial environment will not change quickly." } }
     ],
   },
 ]
