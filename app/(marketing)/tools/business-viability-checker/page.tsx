@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   title: 'Business Viability Checker — Will Your Café, Restaurant or Shop Work in This Suburb?',
   description:
     'Free Australian business viability checker. Enter your business type, suburb, rent and budget and get an instant GO / CAUTION / NO verdict with estimated monthly revenue, profit and break-even — before you sign a lease.',
-  alternates: { canonical: 'https://www.locatalyze.com.au/tools/business-viability-checker' },
+  alternates: { canonical: 'https://www.locatalyze.com/tools/business-viability-checker' },
   openGraph: {
     title: 'Business Viability Checker — Locatalyze',
     description:
       'Free tool. Will your café, restaurant, gym or retail shop actually work in that suburb? Get a 10-second verdict with revenue, profit and break-even estimates.',
     type: 'website',
-    url: 'https://www.locatalyze.com.au/tools/business-viability-checker',
+    url: 'https://www.locatalyze.com/tools/business-viability-checker',
   },
   twitter: {
     card: 'summary_large_image',
@@ -54,11 +54,11 @@ const FAQ: { q: string; a: string }[] = [
 
 export default function Page() {
   return (
-    <>
+    <main className="bvc-page bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900">
       {/* ── HERO ────────────────────────────────────────────────────── */}
-      <section className="border-b border-gray-100 bg-gradient-to-b from-white to-gray-50/60">
+      <section className="border-b border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80">
         <div className="max-w-6xl mx-auto px-6 pt-16 pb-10 md:pt-24 md:pb-14">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 font-semibold text-[12px] tracking-wide px-3 py-1 rounded-full w-fit mb-5">
+          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 font-semibold text-[12px] tracking-wide px-3 py-1 rounded-full w-fit mb-5 border border-blue-100">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" />
             Free tool · No signup
           </div>
@@ -80,14 +80,14 @@ export default function Page() {
       </section>
 
       {/* ── TOOL ────────────────────────────────────────────────────── */}
-      <section className="bg-gray-50/60 border-b border-gray-100">
+      <section className="bg-slate-50/60 border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
           <ViabilityChecker />
         </div>
       </section>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-gray-100">
+      <section className="bg-white border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <div className="max-w-2xl mb-12">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 mb-3">How it works</div>
@@ -122,7 +122,7 @@ export default function Page() {
       </section>
 
       {/* ── WHY THIS MATTERS ────────────────────────────────────────── */}
-      <section className="bg-gray-50/60 border-b border-gray-100">
+      <section className="bg-slate-50/70 border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
@@ -161,7 +161,7 @@ export default function Page() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-gray-100">
+      <section className="bg-white border-b border-slate-200/70">
         <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
           <h2 className="text-[28px] md:text-[34px] font-bold text-gray-900 tracking-[-0.02em] mb-10">
             Questions operators ask before they trust the number
@@ -181,7 +181,7 @@ export default function Page() {
       </section>
 
       {/* ── FINAL CTA ───────────────────────────────────────────────── */}
-      <section className="bg-gray-50/60">
+      <section className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-28 text-center">
           <h2 className="text-[30px] md:text-[44px] font-bold tracking-[-0.02em] text-gray-900 leading-[1.1] mb-5 max-w-3xl mx-auto">
             The suburb looks good. Now check the <span className="text-blue-600">exact address</span>.
@@ -210,7 +210,7 @@ export default function Page() {
               {
                 '@type': 'WebApplication',
                 name: 'Locatalyze Business Viability Checker',
-                url: 'https://www.locatalyze.com.au/tools/business-viability-checker',
+                url: 'https://www.locatalyze.com/tools/business-viability-checker',
                 applicationCategory: 'BusinessApplication',
                 operatingSystem: 'Any',
                 offers: { '@type': 'Offer', price: '0', priceCurrency: 'AUD' },
@@ -229,7 +229,124 @@ export default function Page() {
           }),
         }}
       />
-    </>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+          /* ── ISOLATION LAYER ────────────────────────────────────────────────────
+             globals.css has unscoped element rules (input, select, label, body)
+             that sit outside @layer and therefore beat Tailwind v4 layered utilities.
+             All overrides here use !important + class+element specificity to win.
+             ViabilityChecker.tsx uses inline styles (highest author specificity)
+             so this CSS is belt-and-suspenders for everything else on the page.
+          ───────────────────────────────────────────────────────────────────────── */
+
+          .bvc-page {
+            font-family: "DM Sans", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            color: #0f172a !important;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff, #f8fafc) !important;
+          }
+          .bvc-page * {
+            box-sizing: border-box;
+          }
+
+          /* Text resets — prevent body color:#e8e8f0 from bleeding through  */
+          .bvc-page h1, .bvc-page h2, .bvc-page h3, .bvc-page h4,
+          .bvc-page p, .bvc-page li, .bvc-page span, .bvc-page div,
+          .bvc-page summary, .bvc-page details {
+            font-family: inherit !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
+          }
+
+          /* Label: globals sets color:#7070a0 and margin-bottom:8px */
+          .bvc-page label {
+            font-family: inherit !important;
+            color: inherit !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
+            margin: 0 !important;
+          }
+
+          /* Button reset */
+          .bvc-page button {
+            font-family: inherit !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
+          }
+
+          /* Form elements: globals sets dark bg (#1c1c2b), dark border (#2a2a3d),
+             light text (#e8e8f0), and 13px 16px padding — all must be overridden. */
+          .bvc-page input[type="text"],
+          .bvc-page input[type="number"],
+          .bvc-page input[type="email"],
+          .bvc-page input[type="search"],
+          .bvc-page select,
+          .bvc-page textarea {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            font-family: inherit !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            box-shadow: none !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+          }
+
+          /* Select: globals adds a dark SVG chevron via background-image */
+          .bvc-page select {
+            background-image: none !important;
+            padding-right: 40px !important;
+            cursor: pointer !important;
+          }
+
+          /* Focus: globals sets purple ring rgba(108,99,255,0.15) */
+          .bvc-page input:focus,
+          .bvc-page select:focus,
+          .bvc-page textarea:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+            outline: none !important;
+          }
+
+          /* Placeholder */
+          .bvc-page input::placeholder,
+          .bvc-page textarea::placeholder {
+            color: #94a3b8 !important;
+          }
+
+          /* ── Responsive grid for ViabilityChecker ── */
+          .vc-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            align-items: start;
+          }
+          @media (min-width: 1024px) {
+            .vc-grid {
+              grid-template-columns: 360px 1fr;
+            }
+            .vc-form-card {
+              position: sticky;
+              top: 24px;
+            }
+          }
+
+          /* ── Spinner animation ── */
+          @keyframes vc-spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+          }
+          .vc-spin {
+            animation: vc-spin 0.7s linear infinite;
+          }
+        `,
+        }}
+      />
+    </main>
   )
 }
 

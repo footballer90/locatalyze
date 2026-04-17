@@ -80,8 +80,8 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Opening a Business in Modbury, Adelaide: 2026 Location Guide',
-    description: 'Modbury's Tea Tree Plaza precinct serves the largest north-eastern metropolitan catchment — but chain dominance, moderate demographics, and car-dependent access create a challenging environment for independent operators.',
+    headline: "Opening a Business in Modbury, Adelaide: 2026 Location Guide",
+    description: "Modbury's Tea Tree Plaza precinct serves the largest north-eastern metropolitan catchment — but chain dominance, moderate demographics, and car-dependent access create a challenging environment for independent operators.",
     author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
@@ -91,9 +91,9 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
-    { '@type': 'Question', name: 'Can a café compete with Tea Tree Plaza's food court in Modbury?', acceptedAnswer: { '@type': 'Answer', text: 'Directly competing on price and convenience is difficult — the food court has scale advantages. The opportunity is in offering something the food court cannot: genuine specialty quality, atmosphere, a specific cuisine identity, or a community-oriented experience. A café that is clearly superior in product quality and offers a reason to make a specific visit can build a loyal following from the large north-eastern catchment.' } },
-    { '@type': 'Question', name: 'What are rents like outside Tea Tree Plaza in Modbury?', acceptedAnswer: { '@type': 'Answer', text: 'Street-level commercial tenancies in the Modbury Triangle and surrounding precinct run $1,800–$3,800/month — meaningfully below the centre's tenancy costs and among the more affordable options in metro Adelaide. The challenge is generating volume without the centre's pedestrian flow.' } },
-    { '@type': 'Question', name: 'What is the best type of business to open in Modbury?', acceptedAnswer: { '@type': 'Answer', text: 'Allied health and specialist services that serve the large north-eastern catchment are consistently successful here. They benefit from the area's population density without being directly affected by Tea Tree Plaza's retail dominance. For hospitality, a concept with clear differentiation from the food court and strong local community positioning has the best chance.' } }
+    { '@type': 'Question', name: "Can a cafe compete with Tea Tree Plaza food court in Modbury?", acceptedAnswer: { '@type': 'Answer', text: "Directly competing on price and convenience is difficult — the food court has scale advantages. The opportunity is in offering something the food court cannot: genuine specialty quality, atmosphere, a specific cuisine identity, or a community-oriented experience. A cafe that is clearly superior in product quality and offers a reason to make a specific visit can build a loyal following from the large north-eastern catchment." } },
+    { '@type': 'Question', name: "What are rents like outside Tea Tree Plaza in Modbury?", acceptedAnswer: { '@type': 'Answer', text: "Street-level commercial tenancies in the Modbury Triangle and surrounding precinct run $1,800–$3,800 per month — meaningfully below the centre's tenancy costs and among the more affordable options in metro Adelaide. The challenge is generating volume without the centre's pedestrian flow." } },
+    { '@type': 'Question', name: "What is the best type of business to open in Modbury?", acceptedAnswer: { '@type': 'Answer', text: "Allied health and specialist services that serve the large north-eastern catchment are consistently successful here. They benefit from the area's population density without being directly affected by Tea Tree Plaza's retail dominance. For hospitality, a concept with clear differentiation from the food court and strong local community positioning has the best chance." } }
     ],
   },
 ]
@@ -103,13 +103,11 @@ export default function ModburyPage() {
     <div style={{ minHeight: '100vh', background: '#FAFAF9', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: '#1C1917' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMAS) }} />
 
-      {/* Sticky nav */}
       <nav style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <Link href="/analyse/adelaide" style={{ fontSize: 13, fontWeight: 700, color: '#0891B2', textDecoration: 'none' }}>← Adelaide</Link>
         <Link href="/onboarding" style={{ background: '#0891B2', color: '#FFFFFF', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
       </nav>
 
-      {/* Hero */}
       <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '52px 24px 44px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
@@ -135,7 +133,6 @@ export default function ModburyPage() {
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}>
 
-        {/* Score card */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 20 }}>Location Scorecard</h2>
           <ScoreBar label="Foot Traffic" value={69} />
@@ -145,7 +142,6 @@ export default function ModburyPage() {
           <p style={{ fontSize: 11, color: '#64748B', marginTop: 8 }}>Scores reflect foot traffic patterns, demographic alignment, rent viability, and competition gap for Modbury.</p>
         </section>
 
-        {/* Business environment */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Business Environment</h2>
           <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Modbury is the commercial hub of Adelaide's north-eastern suburbs, anchored by Tea Tree Plaza — one of Adelaide's major regional shopping centres. The precinct draws from a large north-eastern catchment covering Modbury, Tea Tree Gully, Golden Grove, Ridgewood, and surrounding suburbs — approximately 100,000–120,000 residents. This volume is genuine but the spending profile is markedly different from inner-suburb markets.</p>
@@ -153,13 +149,11 @@ export default function ModburyPage() {
           <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Rents outside Tea Tree Plaza are in the $1,800–$3,800 per month range for street commercial tenancies in the surrounding Modbury Triangle precinct. Inside the centre, rents are higher and subject to centre management terms. Street-level operators who can be adjacent to but distinct from the centre's offer are best positioned — they capture overflow traffic without competing directly with the centre's tenants.</p>
         </section>
 
-        {/* Competition */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 12 }}>Competition Analysis</h2>
           <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7 }}>The competitive landscape in Modbury is dominated by Tea Tree Plaza's national chain tenants. The independent segment is thin — a handful of ethnic restaurants and service businesses operate in the surrounding streets. There are genuine gaps in quality independent hospitality, specialty retail, and wellness services, but the chain competition for attention and spending is significant.</p>
         </section>
 
-        {/* What works */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>What Works Here</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 14 }}>
@@ -168,14 +162,14 @@ export default function ModburyPage() {
                   <span style={{ fontSize: 11, fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.08em' }}>GO</span>
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Allied health and specialist services</p>
-                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>Medical, dental, physio, and allied health services adjacent to or near Tea Tree Plaza benefit from the centre's foot traffic driver while serving the large north-eastern catchment. Several successful practices have operated in the Modbury area for many years.</p>
+                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>Medical, dental, physio, and allied health services adjacent to or near Tea Tree Plaza benefit from the centre traffic driver while serving the large north-eastern catchment. Several successful practices have operated in the Modbury area for many years.</p>
               </div>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 12, padding: '16px 18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.08em' }}>CAUTION</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Independent café or casual dining</p>
-                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>An independent café or restaurant outside Tea Tree Plaza must offer something the centre's food court does not — genuine quality, atmosphere, or a specific cuisine identity. Without clear differentiation, the centre's convenience factor wins.</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Independent cafe or casual dining</p>
+                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>An independent cafe or restaurant outside Tea Tree Plaza must offer something the centre's food court does not — genuine quality, atmosphere, or a specific cuisine identity. Without clear differentiation, the centre's convenience factor wins.</p>
               </div>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 12, padding: '16px 18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -187,13 +181,12 @@ export default function ModburyPage() {
           </div>
         </section>
 
-        {/* Key risks */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '13px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Tea Tree Plaza dominates spending</p>
-                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>The regional shopping centre captures the majority of retail and food spending in the north-eastern corridor. Independent operators must have a compelling reason for a specific visit or benefit from the centre's overflow.</p>
+                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>The regional shopping centre captures the majority of retail and food spending in the north-eastern corridor. Independent operators must have a compelling reason for a specific visit or benefit from the centre overflow.</p>
               </div>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '13px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Car-dependent and pedestrian-poor environment</p>
@@ -206,7 +199,6 @@ export default function ModburyPage() {
           </div>
         </section>
 
-        {/* Compare nearby */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
@@ -243,10 +235,8 @@ export default function ModburyPage() {
           </div>
         </section>
 
-        {/* Poll */}
         <SuburbPoll suburb="Modbury" votes={[33, 26, 21, 13, 7]} />
 
-        {/* Final verdict */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <VerdictBadge v="CAUTION" />
@@ -256,20 +246,19 @@ export default function ModburyPage() {
           <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>The operators who succeed in Modbury understand the market clearly: allied health with specific expertise, or hospitality with strong differentiation from the centre's offer. Operators who enter with inner-suburb expectations and concepts will find the structural barriers difficult to overcome.</p>
         </section>
 
-        {/* FAQ */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 20 }}>Frequently Asked Questions</h2>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  Can a café compete with Tea Tree Plaza's food court in Modbury? <span style={{ color: '#0891B2' }}>+</span>
+                  Can a cafe compete with Tea Tree Plaza food court in Modbury? <span style={{ color: '#0891B2' }}>+</span>
                 </summary>
-                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Directly competing on price and convenience is difficult — the food court has scale advantages. The opportunity is in offering something the food court cannot: genuine specialty quality, atmosphere, a specific cuisine identity, or a community-oriented experience. A café that is clearly superior in product quality and offers a reason to make a specific visit can build a loyal following from the large north-eastern catchment.</p>
+                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Directly competing on price and convenience is difficult — the food court has scale advantages. The opportunity is in offering something the food court cannot: genuine specialty quality, atmosphere, a specific cuisine identity, or a community-oriented experience. A cafe that is clearly superior in product quality and offers a reason to make a specific visit can build a loyal following from the large north-eastern catchment.</p>
               </details>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   What are rents like outside Tea Tree Plaza in Modbury? <span style={{ color: '#0891B2' }}>+</span>
                 </summary>
-                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Street-level commercial tenancies in the Modbury Triangle and surrounding precinct run $1,800–$3,800/month — meaningfully below the centre's tenancy costs and among the more affordable options in metro Adelaide. The challenge is generating volume without the centre's pedestrian flow.</p>
+                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Street-level commercial tenancies in the Modbury Triangle and surrounding precinct run $1,800–$3,800 per month — meaningfully below the centre's tenancy costs and among the more affordable options in metro Adelaide. The challenge is generating volume without the centre's pedestrian flow.</p>
               </details>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -279,7 +268,6 @@ export default function ModburyPage() {
               </details>
         </section>
 
-        {/* CTA */}
         <div style={{ background: 'linear-gradient(135deg, #0F766E 0%, #0B5E57 100%)', borderRadius: 14, padding: '44px 40px', textAlign: 'center', marginBottom: 44 }}>
           <h2 style={{ fontSize: 22, fontWeight: 900, color: '#FFFFFF', marginBottom: 10 }}>Analyse Your Modbury Address</h2>
           <p style={{ fontSize: 14, color: 'rgba(167,243,208,0.8)', marginBottom: 24, maxWidth: 440, margin: '0 auto 24px', lineHeight: 1.7 }}>
@@ -290,7 +278,6 @@ export default function ModburyPage() {
           </Link>
         </div>
 
-        {/* Footer nav */}
         <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 24, display: 'flex', gap: 12, justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Link href="/analyse/adelaide" style={{ fontSize: 13, fontWeight: 700, color: '#0891B2', textDecoration: 'none' }}>← Back to Adelaide</Link>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

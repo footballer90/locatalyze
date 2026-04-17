@@ -80,8 +80,8 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Opening a Business in Hyde Park, Adelaide: 2026 Location Guide',
-    description: 'Hyde Park's King William Road section is one of Adelaide's quietest premium opportunities — strong demographics, growing foot traffic, and a residential community that actively supports quality independents.',
+    headline: "Opening a Business in Hyde Park, Adelaide: 2026 Location Guide",
+    description: "Hyde Park's King William Road section is one of Adelaide's quietest premium opportunities — strong demographics, growing foot traffic, and a residential community that actively supports quality independents.",
     author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
@@ -91,9 +91,9 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
-    { '@type': 'Question', name: 'Is Hyde Park better or worse than Unley for a new café?', acceptedAnswer: { '@type': 'Answer', text: 'Hyde Park offers lower rents and less competition at the cost of lower established foot traffic. For a specialty café with a clear concept and a loyalty-building strategy, Hyde Park can produce better margin economics than Unley while still benefiting from the corridor's overall strength. For an operator who needs immediate walk-in volume, Unley has a more established base.' } },
-    { '@type': 'Question', name: 'What is the demographic profile of Hyde Park?', acceptedAnswer: { '@type': 'Answer', text: 'Median household income approaching $99,000, age skew 30–50, very high owner-occupier rates. Predominantly professional households, many with families. A consumer base that is financially comfortable, quality-conscious, and loyal to independents who earn their trust.' } },
-    { '@type': 'Question', name: 'What types of businesses have done well in Hyde Park?', acceptedAnswer: { '@type': 'Answer', text: 'Quality cafés and brunch concepts, allied health practices (particularly physio and pilates), and specialty retail with a clear identity. The demographic responds well to operators who engage with the local community and maintain consistent quality standards.' } }
+    { '@type': 'Question', name: "Is Hyde Park better or worse than Unley for a new cafe?", acceptedAnswer: { '@type': 'Answer', text: "Hyde Park offers lower rents and less competition at the cost of lower established foot traffic. For a specialty cafe with a clear concept and a loyalty-building strategy, Hyde Park can produce better margin economics than Unley while still benefiting from the corridor strength. For an operator who needs immediate walk-in volume, Unley has a more established base." } },
+    { '@type': 'Question', name: "What is the demographic profile of Hyde Park?", acceptedAnswer: { '@type': 'Answer', text: "Median household income approaching $99,000, age skew 30–50, very high owner-occupier rates. Predominantly professional households, many with families. A consumer base that is financially comfortable, quality-conscious, and loyal to independents who earn their trust." } },
+    { '@type': 'Question', name: "What types of businesses have done well in Hyde Park?", acceptedAnswer: { '@type': 'Answer', text: "Quality cafes and brunch concepts, allied health practices (particularly physio and pilates), and specialty retail with a clear identity. The demographic responds well to operators who engage with the local community and maintain consistent quality standards." } }
     ],
   },
 ]
@@ -103,13 +103,11 @@ export default function HydeParkPage() {
     <div style={{ minHeight: '100vh', background: '#FAFAF9', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: '#1C1917' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMAS) }} />
 
-      {/* Sticky nav */}
       <nav style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <Link href="/analyse/adelaide" style={{ fontSize: 13, fontWeight: 700, color: '#0891B2', textDecoration: 'none' }}>← Adelaide</Link>
         <Link href="/onboarding" style={{ background: '#0891B2', color: '#FFFFFF', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
       </nav>
 
-      {/* Hero */}
       <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '52px 24px 44px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
@@ -135,7 +133,6 @@ export default function HydeParkPage() {
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}>
 
-        {/* Score card */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 20 }}>Location Scorecard</h2>
           <ScoreBar label="Foot Traffic" value={73} />
@@ -145,7 +142,6 @@ export default function HydeParkPage() {
           <p style={{ fontSize: 11, color: '#64748B', marginTop: 8 }}>Scores reflect foot traffic patterns, demographic alignment, rent viability, and competition gap for Hyde Park.</p>
         </section>
 
-        {/* Business environment */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Business Environment</h2>
           <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Hyde Park sits on the southern section of King William Road, between Unley and the suburb of Goodwood. The commercial strip here is a continuation of the King William Road corridor — the same high-income residential demographic, the same pedestrian culture, and a similar mix of hospitality, health, and lifestyle retail. The key difference from the Unley section is that Hyde Park is slightly less established commercially, with more opportunity for new concepts to define the strip's character.</p>
@@ -153,13 +149,11 @@ export default function HydeParkPage() {
           <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Rents on the Hyde Park section of King William Road sit slightly below the Unley peak: $4,000–$7,000 per month for prime ground-floor commercial. This reflects the strip's slightly lower established foot traffic rather than any demographic weakness. As the strip continues to strengthen — driven by the overall King William Road corridor momentum — these rents will rise.</p>
         </section>
 
-        {/* Competition */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 12 }}>Competition Analysis</h2>
-          <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7 }}>Hyde Park's café and dining market has strengthened over the last 3 years but has genuine gaps at the premium end. There is no dominant specialty coffee operator, and the evening dining market has limited quality representation given the income profile. Wellness and allied health are growing but not yet fully developed. The strip is at an earlier stage than Unley — which is both the opportunity and the risk.</p>
+          <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7 }}>Hyde Park's cafe and dining market has strengthened over the last 3 years but has genuine gaps at the premium end. There is no dominant specialty coffee operator, and the evening dining market has limited quality representation given the income profile. Wellness and allied health are growing but not yet fully developed. The strip is at an earlier stage than Unley — which is both the opportunity and the risk.</p>
         </section>
 
-        {/* What works */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>What Works Here</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 14 }}>
@@ -167,8 +161,8 @@ export default function HydeParkPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.08em' }}>GO</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Specialty café with premium positioning</p>
-                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>The demographic supports and actively seeks quality specialty coffee. The current field has no clear category leader on the Hyde Park section. First-mover advantage in specialty coffee is still available at rents that don't yet reflect the demographic quality.</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Specialty cafe with premium positioning</p>
+                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>The demographic supports and actively seeks quality specialty coffee. The current field has no clear category leader on the Hyde Park section. First-mover advantage in specialty coffee is still available at rents that do not yet reflect the demographic quality.</p>
               </div>
               <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 12, padding: '16px 18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -187,13 +181,12 @@ export default function HydeParkPage() {
           </div>
         </section>
 
-        {/* Key risks */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '13px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Strip still maturing</p>
-                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>Hyde Park is 3–5 years behind Unley's commercial maturity. Foot traffic is growing but hasn't reached the level that supports walk-in volume for a new concept without a deliberate loyalty-building strategy.</p>
+                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>Hyde Park is 3–5 years behind Unley in commercial maturity. Foot traffic is growing but has not reached the level that supports walk-in volume for a new concept without a deliberate loyalty-building strategy.</p>
               </div>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '13px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Parking on weekends</p>
@@ -201,12 +194,11 @@ export default function HydeParkPage() {
               </div>
               <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '13px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Proximity to stronger strips</p>
-                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>Both Norwood's Parade and the Unley section of King William Road are within 2km. Some Hyde Park residents default to these established strips for dining and retail rather than the local option.</p>
+                <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>Both Norwood Parade and the Unley section of King William Road are within 2km. Some Hyde Park residents default to these established strips for dining and retail rather than the local option.</p>
               </div>
           </div>
         </section>
 
-        {/* Compare nearby */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
@@ -243,27 +235,24 @@ export default function HydeParkPage() {
           </div>
         </section>
 
-        {/* Poll */}
         <SuburbPoll suburb="Hyde Park" votes={[43, 27, 15, 11, 4]} />
 
-        {/* Final verdict */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <VerdictBadge v="GO" />
             <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917' }}>Final Verdict: Hyde Park</h2>
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>Hyde Park is a solid GO — a premium demographic on an improving strip at rents that don't yet fully reflect the catchment quality. The opportunity window for first-mover positioning in specialty coffee and wellness is real and won't remain open indefinitely as the corridor continues to mature.</p>
+          <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>Hyde Park is a solid GO — a premium demographic on an improving strip at rents that do not yet fully reflect the catchment quality. The opportunity window for first-mover positioning in specialty coffee and wellness is real and will not remain open indefinitely as the corridor continues to mature.</p>
           <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>The success playbook is the same as Unley and Norwood: clear concept, genuine quality, community engagement, and patience for a 6–9 month loyalty-building phase. Hyde Park rewards that approach with one of the best demographic bases in South Australia.</p>
         </section>
 
-        {/* FAQ */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 20 }}>Frequently Asked Questions</h2>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  Is Hyde Park better or worse than Unley for a new café? <span style={{ color: '#0891B2' }}>+</span>
+                  Is Hyde Park better or worse than Unley for a new cafe? <span style={{ color: '#0891B2' }}>+</span>
                 </summary>
-                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Hyde Park offers lower rents and less competition at the cost of lower established foot traffic. For a specialty café with a clear concept and a loyalty-building strategy, Hyde Park can produce better margin economics than Unley while still benefiting from the corridor's overall strength. For an operator who needs immediate walk-in volume, Unley has a more established base.</p>
+                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Hyde Park offers lower rents and less competition at the cost of lower established foot traffic. For a specialty cafe with a clear concept and a loyalty-building strategy, Hyde Park can produce better margin economics than Unley while still benefiting from the corridor strength. For an operator who needs immediate walk-in volume, Unley has a more established base.</p>
               </details>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -275,11 +264,10 @@ export default function HydeParkPage() {
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   What types of businesses have done well in Hyde Park? <span style={{ color: '#0891B2' }}>+</span>
                 </summary>
-                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Quality cafés and brunch concepts, allied health practices (particularly physio and pilates), and specialty retail with a clear identity. The demographic responds well to operators who engage with the local community and maintain consistent quality standards.</p>
+                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Quality cafes and brunch concepts, allied health practices (particularly physio and pilates), and specialty retail with a clear identity. The demographic responds well to operators who engage with the local community and maintain consistent quality standards.</p>
               </details>
         </section>
 
-        {/* CTA */}
         <div style={{ background: 'linear-gradient(135deg, #0F766E 0%, #0B5E57 100%)', borderRadius: 14, padding: '44px 40px', textAlign: 'center', marginBottom: 44 }}>
           <h2 style={{ fontSize: 22, fontWeight: 900, color: '#FFFFFF', marginBottom: 10 }}>Analyse Your Hyde Park Address</h2>
           <p style={{ fontSize: 14, color: 'rgba(167,243,208,0.8)', marginBottom: 24, maxWidth: 440, margin: '0 auto 24px', lineHeight: 1.7 }}>
@@ -290,7 +278,6 @@ export default function HydeParkPage() {
           </Link>
         </div>
 
-        {/* Footer nav */}
         <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 24, display: 'flex', gap: 12, justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Link href="/analyse/adelaide" style={{ fontSize: 13, fontWeight: 700, color: '#0891B2', textDecoration: 'none' }}>← Back to Adelaide</Link>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

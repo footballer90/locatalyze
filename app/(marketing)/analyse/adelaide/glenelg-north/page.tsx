@@ -80,8 +80,8 @@ const SCHEMAS = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Opening a Business in Glenelg North, Adelaide: 2026 Location Guide',
-    description: 'Glenelg North offers coastal proximity without Jetty Road rents — a lower-cost entry into the southern coastal corridor with a solid residential base and genuine competition gaps.',
+    headline: "Opening a Business in Glenelg North, Adelaide: 2026 Location Guide",
+    description: "Glenelg North offers coastal proximity without Jetty Road rents — a lower-cost entry into the southern coastal corridor with a solid residential base and genuine competition gaps.",
     author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
@@ -91,9 +91,9 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
-    { '@type': 'Question', name: 'Is Glenelg North a good alternative to Glenelg for opening a café?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, for operators who want coastal proximity without Jetty Road rents and competition. Glenelg North rents are 30–40% lower. The trade-off is lower foot traffic — you're building a neighbourhood loyalty business rather than capturing tourist and strip walk-in trade. For a first-time operator with capital constraints, it can be a better entry point.' } },
-    { '@type': 'Question', name: 'What is the difference between Glenelg and Glenelg North commercially?', acceptedAnswer: { '@type': 'Answer', text: 'Glenelg has Jetty Road — a mature, high-foot-traffic destination strip with tourist uplift. Glenelg North has neighbourhood commercial nodes serving residential catchments. Glenelg has higher volume potential and higher rents. Glenelg North has better margin economics at lower volumes and less competition.' } },
-    { '@type': 'Question', name: 'What demographics does Glenelg North attract?', acceptedAnswer: { '@type': 'Answer', text: 'Predominantly families and professional couples, median household income around $84,000, high owner-occupier rates. Similar to the broader Glenelg demographic but slightly more family-oriented and less tourist-influenced.' } }
+    { '@type': 'Question', name: "Is Glenelg North a good alternative to Glenelg for opening a cafe?", acceptedAnswer: { '@type': 'Answer', text: "Yes, for operators who want coastal proximity without Jetty Road rents and competition. Glenelg North rents are 30-40% lower. The trade-off is lower foot traffic — you are building a neighbourhood loyalty business rather than capturing tourist and strip walk-in trade. For a first-time operator with capital constraints, it can be a better entry point." } },
+    { '@type': 'Question', name: "What is the difference between Glenelg and Glenelg North commercially?", acceptedAnswer: { '@type': 'Answer', text: "Glenelg has Jetty Road — a mature, high-foot-traffic destination strip with tourist uplift. Glenelg North has neighbourhood commercial nodes serving residential catchments. Glenelg has higher volume potential and higher rents. Glenelg North has better margin economics at lower volumes and less competition." } },
+    { '@type': 'Question', name: "What demographics does Glenelg North attract?", acceptedAnswer: { '@type': 'Answer', text: "Predominantly families and professional couples, median household income around $84,000, high owner-occupier rates. Similar to the broader Glenelg demographic but slightly more family-oriented and less tourist-influenced." } }
     ],
   },
 ]
@@ -103,13 +103,11 @@ export default function GlenelgNorthPage() {
     <div style={{ minHeight: '100vh', background: '#FAFAF9', fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: '#1C1917' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMAS) }} />
 
-      {/* Sticky nav */}
       <nav style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <Link href="/analyse/adelaide" style={{ fontSize: 13, fontWeight: 700, color: '#0891B2', textDecoration: 'none' }}>← Adelaide</Link>
         <Link href="/onboarding" style={{ background: '#0891B2', color: '#FFFFFF', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
       </nav>
 
-      {/* Hero */}
       <div style={{ background: 'linear-gradient(135deg, #0E7490 0%, #0891B2 100%)', padding: '52px 24px 44px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
@@ -135,7 +133,6 @@ export default function GlenelgNorthPage() {
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}>
 
-        {/* Score card */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 20 }}>Location Scorecard</h2>
           <ScoreBar label="Foot Traffic" value={66} />
@@ -145,21 +142,18 @@ export default function GlenelgNorthPage() {
           <p style={{ fontSize: 11, color: '#64748B', marginTop: 8 }}>Scores reflect foot traffic patterns, demographic alignment, rent viability, and competition gap for Glenelg North.</p>
         </section>
 
-        {/* Business environment */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Business Environment</h2>
           <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Glenelg North sits immediately north of Glenelg proper — close enough to benefit from the coastal demographic and lifestyle pull but without the rent premiums that prime Jetty Road commands. The suburb's commercial activity is spread across Brighton Road and a few secondary nodes, serving the surrounding residential catchment of Glenelg North, Novar Gardens, and Oaklands Park.</p>
           <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>The demographic is strong relative to the rents. Median household income around $84,000, an age profile that skews toward families and professional couples, and high owner-occupier rates create a stable consumer base. These are residents who regularly use the Glenelg precinct for dining and retail but would prefer quality options closer to home — a gap that a well-positioned independent can fill.</p>
-          <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Rents are 30–40% below Glenelg prime: commercial tenancies on Brighton Road run $2,800–$5,000 per month, with some quality positions available in the $3,000–$4,000 range. For operators who don't need the Jetty Road foot traffic and can build a local loyal following, these rents produce significantly better margin economics than the main Glenelg strip.</p>
+          <p style={{ fontSize: 15, lineHeight: 1.75, marginBottom: 14, color: '#64748B' }}>Rents are 30–40% below Glenelg prime: commercial tenancies on Brighton Road run $2,800–$5,000 per month, with some quality positions available in the $3,000–$4,000 range. For operators who do not need the Jetty Road foot traffic and can build a local loyal following, these rents produce significantly better margin economics than the main Glenelg strip.</p>
         </section>
 
-        {/* Competition */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 12 }}>Competition Analysis</h2>
-          <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7 }}>The competition in Glenelg North is thin — there is no established quality café, no premium casual dining, and wellness services are limited. The field is populated by legacy local operators and a handful of service businesses. For an independent concept that offers genuine quality, the competitive barriers are low and the local demographic is receptive.</p>
+          <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7 }}>The competition in Glenelg North is thin — there is no established quality cafe, no premium casual dining, and wellness services are limited. The field is populated by legacy local operators and a handful of service businesses. For an independent concept that offers genuine quality, the competitive barriers are low and the local demographic is receptive.</p>
         </section>
 
-        {/* What works */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>What Works Here</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 14 }}>
@@ -167,8 +161,8 @@ export default function GlenelgNorthPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.08em' }}>GO</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Neighbourhood café with local loyalty focus</p>
-                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>The residential catchment supports a daily-habit café that serves the morning commuter and weekend brunch market. Without Jetty Road's tourist noise, building genuine local loyalty is faster — regulars drive volume consistently.</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>Neighbourhood cafe with local loyalty focus</p>
+                <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.6 }}>The residential catchment supports a daily-habit cafe that serves the morning commuter and weekend brunch market. Without Jetty Road's tourist noise, building genuine local loyalty is faster — regulars drive volume consistently.</p>
               </div>
               <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 12, padding: '16px 18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -187,7 +181,6 @@ export default function GlenelgNorthPage() {
           </div>
         </section>
 
-        {/* Key risks */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Key Risks</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -206,7 +199,6 @@ export default function GlenelgNorthPage() {
           </div>
         </section>
 
-        {/* Compare nearby */}
         <section style={{ marginBottom: 32 }}>
           <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 16, color: '#1C1917' }}>Compare Nearby Suburbs</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
@@ -243,27 +235,24 @@ export default function GlenelgNorthPage() {
           </div>
         </section>
 
-        {/* Poll */}
         <SuburbPoll suburb="Glenelg North" votes={[40, 27, 17, 11, 5]} />
 
-        {/* Final verdict */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <VerdictBadge v="GO" />
             <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917' }}>Final Verdict: Glenelg North</h2>
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>Glenelg North earns a GO as a lower-cost entry point into the southern coastal market. The demographics justify quality independent businesses — the income and lifestyle profile support café culture, wellness, and casual dining. The rents are genuinely attractive relative to the catchment quality.</p>
+          <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>Glenelg North earns a GO as a lower-cost entry point into the southern coastal market. The demographics justify quality independent businesses — the income and lifestyle profile support cafe culture, wellness, and casual dining. The rents are genuinely attractive relative to the catchment quality.</p>
           <p style={{ fontSize: 14, lineHeight: 1.75, color: '#64748B', marginBottom: 10 }}>The formula for success is neighbourhood loyalty, not destination traffic. Operators who build genuine local relationships and earn regular visits from the residential catchment create sustainable businesses here at economics that are genuinely difficult to replicate on Jetty Road.</p>
         </section>
 
-        {/* FAQ */}
         <section style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, marginBottom: 32 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1C1917', marginBottom: 20 }}>Frequently Asked Questions</h2>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  Is Glenelg North a good alternative to Glenelg for opening a café? <span style={{ color: '#0891B2' }}>+</span>
+                  Is Glenelg North a good alternative to Glenelg for opening a cafe? <span style={{ color: '#0891B2' }}>+</span>
                 </summary>
-                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Yes, for operators who want coastal proximity without Jetty Road rents and competition. Glenelg North rents are 30–40% lower. The trade-off is lower foot traffic — you're building a neighbourhood loyalty business rather than capturing tourist and strip walk-in trade. For a first-time operator with capital constraints, it can be a better entry point.</p>
+                <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginTop: 10 }}>Yes, for operators who want coastal proximity without Jetty Road rents and competition. Glenelg North rents are 30-40% lower. The trade-off is lower foot traffic — you are building a neighbourhood loyalty business rather than capturing tourist and strip walk-in trade. For a first-time operator with capital constraints, it can be a better entry point.</p>
               </details>
               <details style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: 12, marginBottom: 12 }}>
                 <summary style={{ fontSize: 13, fontWeight: 700, color: '#1C1917', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -279,7 +268,6 @@ export default function GlenelgNorthPage() {
               </details>
         </section>
 
-        {/* CTA */}
         <div style={{ background: 'linear-gradient(135deg, #0F766E 0%, #0B5E57 100%)', borderRadius: 14, padding: '44px 40px', textAlign: 'center', marginBottom: 44 }}>
           <h2 style={{ fontSize: 22, fontWeight: 900, color: '#FFFFFF', marginBottom: 10 }}>Analyse Your Glenelg North Address</h2>
           <p style={{ fontSize: 14, color: 'rgba(167,243,208,0.8)', marginBottom: 24, maxWidth: 440, margin: '0 auto 24px', lineHeight: 1.7 }}>
@@ -290,7 +278,6 @@ export default function GlenelgNorthPage() {
           </Link>
         </div>
 
-        {/* Footer nav */}
         <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 24, display: 'flex', gap: 12, justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Link href="/analyse/adelaide" style={{ fontSize: 13, fontWeight: 700, color: '#0891B2', textDecoration: 'none' }}>← Back to Adelaide</Link>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
