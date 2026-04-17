@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -12,6 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/contact`,                 lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE}/changelog`,               lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.5 },
     { url: `${BASE}/help`,                    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+
+    // ── Free tools (SEO entry points) ───────────────────────────────────────────
+    { url: `${BASE}/tools/business-viability-checker`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
 
     // ── Analyse hub pages ───────────────────────────────────────────────────────
     { url: `${BASE}/analyse`,                 lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },

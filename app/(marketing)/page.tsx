@@ -34,6 +34,22 @@ const S = {
   ctaTitle: { fontSize: 32, fontWeight: 700, color: '#FFFFFF', marginBottom: 12 },
   ctaSub: { fontSize: 17, color: '#A7F3D0', marginBottom: 32 },
   ctaBtn: { display: 'inline-block', background: '#FFFFFF', color: '#059669', fontWeight: 700, fontSize: 16, padding: '14px 36px', borderRadius: 100, textDecoration: 'none' },
+
+  // Free-tool promo row
+  toolSection: { background: '#0F172A', padding: '64px 24px', borderTop: '1px solid #E2E8F0' },
+  toolInner: { maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 48, alignItems: 'center' },
+  toolBadge: { display: 'inline-flex', alignItems: 'center' as const, gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 100, padding: '6px 14px', fontSize: 12, color: '#A7F3D0', fontWeight: 600, marginBottom: 16 },
+  toolTitle: { fontSize: 'clamp(26px,3.4vw,40px)', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.15, marginBottom: 14, letterSpacing: '-0.01em' },
+  toolSub: { fontSize: 16, color: '#94A3B8', lineHeight: 1.65, marginBottom: 24, maxWidth: 520 },
+  toolBtns: { display: 'flex', gap: 12, flexWrap: 'wrap' as const },
+  toolPrimary: { background: '#059669', color: '#FFFFFF', fontWeight: 700, fontSize: 15, padding: '13px 26px', borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' as const, gap: 8 },
+  toolGhost: { color: '#CBD5E1', fontSize: 14, fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: 4, alignSelf: 'center' as const },
+  toolPreview: { background: '#0B1220', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, color: '#FFFFFF' },
+  toolPreviewLabel: { fontSize: 11, color: '#64748B', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, marginBottom: 6 },
+  toolPreviewVerdict: { fontSize: 36, fontWeight: 800, color: '#34D399', lineHeight: 1, marginBottom: 14 },
+  toolPreviewRow: { display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: 13 },
+  toolPreviewLbl: { color: '#94A3B8' },
+  toolPreviewVal: { color: '#FFFFFF', fontWeight: 600 },
 }
 
 export default function LocationIndexPage() {
@@ -90,6 +106,53 @@ export default function LocationIndexPage() {
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Free tool CTA — links to /tools/business-viability-checker */}
+      <section style={S.toolSection}>
+        <div style={S.toolInner} className="homepage-tool-row">
+          <div>
+            <div style={S.toolBadge}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34D399', display: 'inline-block' }} />
+              Free tool · No signup
+            </div>
+            <h2 style={S.toolTitle}>
+              Before you sign a lease —<br />check if the business will actually work.
+            </h2>
+            <p style={S.toolSub}>
+              Pick your business type and suburb. Get an instant GO / CAUTION / NO verdict with
+              estimated revenue, profit and break-even — in 10 seconds, no signup.
+            </p>
+            <div style={S.toolBtns}>
+              <Link href="/tools/business-viability-checker" style={S.toolPrimary}>
+                Check viability — free
+                <span style={{ fontSize: 16 }}>→</span>
+              </Link>
+              <Link href="/sample-report" style={S.toolGhost}>See a paid sample report</Link>
+            </div>
+          </div>
+
+          <div style={S.toolPreview}>
+            <div style={S.toolPreviewLabel}>Preview · Café · Surry Hills</div>
+            <div style={S.toolPreviewVerdict}>GO</div>
+            <div style={S.toolPreviewRow}>
+              <span style={S.toolPreviewLbl}>Demand score</span>
+              <span style={S.toolPreviewVal}>87/100</span>
+            </div>
+            <div style={S.toolPreviewRow}>
+              <span style={S.toolPreviewLbl}>Base revenue / mo</span>
+              <span style={S.toolPreviewVal}>$72k</span>
+            </div>
+            <div style={S.toolPreviewRow}>
+              <span style={S.toolPreviewLbl}>Base net profit / mo</span>
+              <span style={{ ...S.toolPreviewVal, color: '#34D399' }}>$14k</span>
+            </div>
+            <div style={S.toolPreviewRow}>
+              <span style={S.toolPreviewLbl}>Break-even</span>
+              <span style={S.toolPreviewVal}>13 months</span>
+            </div>
           </div>
         </div>
       </section>
