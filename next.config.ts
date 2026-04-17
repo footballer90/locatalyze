@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next'
-import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
@@ -56,9 +55,20 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withSentryConfig(nextConfig, {
-  org: 'locatalyze',
-  project: 'javascript-nextjs',
-  silent: !process.env.CI,
-  widenClientFileUpload: true,
-})
+// Wrap with Sentry only if the package is installed (graceful degradation)
+function applyOptionalSentry(config: NextConfig): NextConfig {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { withSentryConfig } = require('@sentry/nextjs')
+    return withSentryConfig(config, {
+      org: 'locatalyze',
+      project: 'javascript-nextjs',
+      silent: !process.env.CI,
+      widenClientFileUpload: true,
+    })
+  } catch {
+    return config
+  }
+}
+
+export default applyOptionalSentry(nextConfig)
