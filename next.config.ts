@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
@@ -17,11 +18,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/sydney',     destination: '/analyse/sydney',     permanent: true },
-      { source: '/perth',      destination: '/analyse/perth',      permanent: false },
-      { source: '/melbourne',  destination: '/analyse/melbourne',  permanent: false },
-      { source: '/brisbane',   destination: '/analyse/brisbane',   permanent: false },
-      { source: '/adelaide',   destination: '/analyse/adelaide',   permanent: false },
-      { source: '/gold-coast', destination: '/analyse/gold-coast', permanent: false },
+      { source: '/perth',      destination: '/analyse/perth',      permanent: true },
+      { source: '/melbourne',  destination: '/analyse/melbourne',  permanent: true },
+      { source: '/brisbane',   destination: '/analyse/brisbane',   permanent: true },
+      { source: '/adelaide',   destination: '/analyse/adelaide',   permanent: true },
+      { source: '/gold-coast', destination: '/analyse/gold-coast', permanent: true },
     ]
   },
   async headers() {
@@ -43,7 +44,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https: https://*.mapbox.com",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://challenges.cloudflare.com https://*.upstash.io https://plausible.io https://api.mapbox.com https://events.mapbox.com https://us1.locationiq.com https://api.locationiq.com https://nominatim.openstreetmap.org https://api.geoapify.com",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://challenges.cloudflare.com https://*.upstash.io https://plausible.io https://api.mapbox.com https://events.mapbox.com https://us1.locationiq.com https://api.locationiq.com https://nominatim.openstreetmap.org https://api.geoapify.com https://*.ingest.sentry.io https://*.sentry.io",
               "worker-src blob:",
               "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com",
               "frame-ancestors 'none'",
@@ -55,4 +56,9 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  org: 'locatalyze',
+  project: 'javascript-nextjs',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+})

@@ -1,12 +1,11 @@
 import { MetadataRoute } from 'next'
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     // ── Core pages ─────────────────────────────────────────────────────────────
     { url: BASE,                              lastModified: new Date(), changeFrequency: 'weekly',  priority: 1   },
-    { url: `${BASE}/onboarding`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE}/sample-report`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/methodology`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE}/about`,                   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
@@ -143,10 +142,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ── Suburb hub ──────────────────────────────────────────────────────────────
     { url: `${BASE}/suburb`,               lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.70 },
-
-    // ── Auth pages ──────────────────────────────────────────────────────────────
-    { url: `${BASE}/auth/login`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.30 },
-    { url: `${BASE}/auth/signup`,          lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.40 },
 
     // ── Legal pages ─────────────────────────────────────────────────────────────
     { url: `${BASE}/privacy`,              lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.20 },
