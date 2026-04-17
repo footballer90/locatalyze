@@ -1,3 +1,4 @@
+import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -6,6 +7,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
     // All marketing pages use light backgrounds with dark text by default.
     // Individual sections that need white text (hero gradients etc.) set it explicitly via inline styles.
     <div style={{ color: '#1C1917' }}>
+      <Navbar />
       {children}
       <Footer />
     </div>

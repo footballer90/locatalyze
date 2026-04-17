@@ -2,18 +2,20 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { L, font, LI } from './tokens'
+import { DEMO_SCENARIOS } from '@/lib/marketing/demo-scenarios'
 
 const PR_DATA = {
  go: {
-    biz: 'Specialty Coffee Shop', location: 'Subiaco, WA', suburb: 'High-income inner suburb', verdict: 'GO', score: 82,
+    biz: DEMO_SCENARIOS.go.biz, location: DEMO_SCENARIOS.go.location, suburb: 'High-income inner suburb', verdict: 'GO', score: DEMO_SCENARIOS.go.score,
   verdictColor: '#059669', verdictBg: '#ECFDF5', verdictBorder: '#A7F3D0',
   accentGrad: 'linear-gradient(135deg,#059669 0%,#10B981 100%)',
   kpis: [
-      { label: 'Est. monthly revenue', value: '$78k–$88k',  sub: 'range estimate',   up: true },
-      { label: 'Monthly Profit',       value: '$27,200',    sub: '~33% margin',       up: true },
-      { label: 'Est. annual revenue',  value: '$936k–$1.06m', sub: 'range estimate',  up: true },
-      { label: 'Break-even (est.)',    value: '35–50/day',  sub: 'assumptions-based', up: true },
+      { label: 'Est. monthly revenue', value: DEMO_SCENARIOS.go.monthlyRevenue,  sub: 'range estimate',   up: true },
+      { label: 'Monthly Profit',       value: DEMO_SCENARIOS.go.monthlyProfit,    sub: '~33% margin',       up: true },
+      { label: 'Est. annual revenue',  value: DEMO_SCENARIOS.go.annualRevenue, sub: 'range estimate',  up: true },
+      { label: 'Break-even (est.)',    value: DEMO_SCENARIOS.go.breakEven,  sub: 'assumptions-based', up: true },
   ],
+    context: 'At this range, rent stays in a healthy zone and the model leaves room for staffing, COGS, and owner profit.',
     revenue: [58, 67, 74, 80, 86, 91],
     profit:  [10, 14, 17, 21, 23, 25],
     scores: [
@@ -32,15 +34,16 @@ const PR_DATA = {
     rec: 'Strong directional signal. Low competitor density and above-average income demographics. Warrants in-person validation before committing to a lease.',
  },
   caution: {
-    biz: 'Casual Dining Restaurant', location: 'Fremantle, WA', suburb: 'Tourist & mixed-use precinct', verdict: 'CAUTION', score: 61,
+    biz: DEMO_SCENARIOS.caution.biz, location: DEMO_SCENARIOS.caution.location, suburb: 'Tourist & mixed-use precinct', verdict: 'CAUTION', score: DEMO_SCENARIOS.caution.score,
   verdictColor: '#D97706', verdictBg: '#FFFBEB', verdictBorder: '#FDE68A',
   accentGrad: 'linear-gradient(135deg,#B45309 0%,#D97706 100%)',
   kpis: [
-      { label: 'Monthly Revenue', value: '$74,400', sub: '-8% vs benchmark', up: false },
-      { label: 'Monthly Profit',  value: '$11,200', sub: '15% margin',    up: false },
-      { label: 'Est. annual revenue', value: '$480k–$720k', sub: 'range estimate', up: false },
-   { label: 'Break-even (est.)',  value: '60–80/day',  sub: 'higher risk', up: false },
+      { label: 'Monthly Revenue', value: DEMO_SCENARIOS.caution.monthlyRevenue, sub: '-8% vs benchmark', up: false },
+      { label: 'Monthly Profit',  value: DEMO_SCENARIOS.caution.monthlyProfit, sub: '15% margin',    up: false },
+      { label: 'Est. annual revenue', value: DEMO_SCENARIOS.caution.annualRevenue, sub: 'range estimate', up: false },
+   { label: 'Break-even (est.)',  value: DEMO_SCENARIOS.caution.breakEven,  sub: 'higher risk', up: false },
   ],
+    context: 'This is viable only with tight execution. Small demand drops or rent pressure can quickly compress margins.',
     revenue: [42, 55, 68, 74, 70, 74],
     profit:  [4,  8,  12, 11, 9,  11],
     scores: [
@@ -59,15 +62,16 @@ const PR_DATA = {
     rec: 'Proceed with caution. Strong peak-season potential is undermined by significant seasonal dependency. Consider a lean operating model to protect against off-season periods.',
  },
   no: {
-    biz: 'Boutique Gym', location: 'Joondalup, WA', suburb: 'Outer suburban residential', verdict: 'NO', score: 44,
+    biz: DEMO_SCENARIOS.no.biz, location: DEMO_SCENARIOS.no.location, suburb: 'Outer suburban residential', verdict: 'NO', score: DEMO_SCENARIOS.no.score,
   verdictColor: '#DC2626', verdictBg: '#FEF2F2', verdictBorder: '#FECACA',
   accentGrad: 'linear-gradient(135deg,#991B1B 0%,#DC2626 100%)',
   kpis: [
-      { label: 'Monthly Revenue', value: '$51,000', sub: '-38% vs benchmark', up: false },
-      { label: 'Monthly Profit',  value: '$3,200',  sub: '6% margin',     up: false },
-      { label: 'Est. annual revenue', value: '$300k–$480k', sub: 'range estimate', up: false },
-   { label: 'Break-even (est.)',  value: '80–100/day', sub: 'very high risk', up: false },
+      { label: 'Monthly Revenue', value: DEMO_SCENARIOS.no.monthlyRevenue, sub: '-38% vs benchmark', up: false },
+      { label: 'Monthly Profit',  value: DEMO_SCENARIOS.no.monthlyProfit,  sub: '6% margin',     up: false },
+      { label: 'Est. annual revenue', value: DEMO_SCENARIOS.no.annualRevenue, sub: 'range estimate', up: false },
+   { label: 'Break-even (est.)',  value: DEMO_SCENARIOS.no.breakEven, sub: 'very high risk', up: false },
   ],
+    context: 'At this demand and cost profile, downside risk dominates unless the concept is materially differentiated.',
     revenue: [38, 42, 46, 50, 51, 51],
     profit:  [1,  1,  2,  3,  3,  3],
     scores: [
@@ -81,7 +85,7 @@ const PR_DATA = {
       strengths:     ['Large 15km residential catchment', 'No specialist CrossFit within 2km'],
    weaknesses:    ['4 established gyms already within 1km', 'Rent at $6,800/mo consumes 34% revenue'],
    opportunities: ['Underserved women-only fitness niche', 'Corporate wellness contracts potential'],
-   threats:       ['Planet Fitness opening 800m away Q3', 'Membership churn risk in saturated market'],
+   threats:       ['Planet Fitness opening 500m away Q3', 'Membership churn risk in saturated market'],
   },
     rec: 'Not recommended. The location is oversaturated with established fitness competitors and rent far exceeds safe thresholds. Without a highly differentiated concept, financial viability is unlikely.',
  },
@@ -363,6 +367,11 @@ export default function PremiumReport({ verdict, isMobile }: { verdict: 'go' | '
      <LI n="lightbulb" size={14} color="#fff"/>
     </div>
         <p style={{ fontSize: 13, color: d.verdictColor, lineHeight: 1.65 }}><strong>AI Analysis:</strong> {d.rec}</p>
+      </div>
+      <div style={{ margin: '10px 24px 0', background: '#F8FAFC', border: `1px solid ${L.border}`, borderRadius: 12, padding: '10px 14px' }}>
+        <p style={{ fontSize: 12, color: L.slate, lineHeight: 1.6 }}>
+          <strong>What this means:</strong> {d.context}
+        </p>
       </div>
 
       <div style={{ padding: isMobile ? '20px 16px' : '24px 24px 32px' }}>

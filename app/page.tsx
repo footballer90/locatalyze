@@ -1,9 +1,20 @@
 'use client'
-import Footer from '@/components/Footer'
-import ReportDemoSection from '@/components/ReportDemoSection'
 import { useState, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, FileText, Unlock, Package, Briefcase } from 'lucide-react'
+import { DEMO_SCENARIOS } from '@/lib/marketing/demo-scenarios'
+
+const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ minHeight: 920, background: '#030C0B', borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+  ),
+})
+
+const Footer = dynamic(() => import('@/components/Footer'), {
+  loading: () => <div style={{ minHeight: 520, background: '#080F0E' }} />,
+})
 
 // ── Design tokens ──────────────────────────────────────────────────
 const L = {
@@ -58,28 +69,47 @@ function LI({ n, size = 18, color = 'currentColor', sw = 2 }: { n: string; size?
 
 // ── Hooks ─────────────────────────────────────────────────────────
 function useIsMobile() {
-  const [v, setV] = useState(false)
+  const [v, setV] = useState(() =>
+    typeof window === 'undefined' ? true : window.matchMedia('(max-width: 767px)').matches
+  )
   useEffect(() => {
-    const c = () => setV(window.innerWidth < 768)
-    c(); window.addEventListener('resize', c)
-    return () => window.removeEventListener('resize', c)
+    const media = window.matchMedia('(max-width: 767px)')
+    const onChange = () => setV(media.matches)
+    onChange()
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
   }, [])
   return v
+}
+
+function useInView<T extends HTMLElement>(threshold = 0.15, rootMargin = '200px 0px') {
+  const ref = useRef<T | null>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    const obs = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold, rootMargin })
+    obs.observe(node)
+    return () => obs.disconnect()
+  }, [threshold, rootMargin])
+
+  return { ref, inView }
 }
 
 // ── ReportPreview — hero widget ───────────────────────────────────
 const RP_CASES = [
   {
     id: 0,
-    biz: 'Specialty Coffee Shop', icon: 'coffee', location: 'Subiaco WA 6008',
+    biz: DEMO_SCENARIOS.go.biz, icon: 'coffee', location: 'Subiaco WA 6008',
     verdict: 'GO', verdictSub: 'Low Risk',
-    score: 82, scoreLabel: 'Feasibility Score',
+    score: DEMO_SCENARIOS.go.score, scoreLabel: 'Feasibility Score',
     color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
     metrics: [
-      { l: 'Est. monthly revenue', v: '$78k–$88k',      highlight: false },
+      { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.go.monthlyRevenue,      highlight: false },
       { l: 'Est. rent-to-revenue', v: '~9–11%',            highlight: false },
-      { l: 'Break-even (est.)',     v: '35–50/day',        highlight: false },
+      { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.go.breakEven,        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
     tags: ['High Income Area', 'Low Competition', '500m Radius Checked'],
@@ -87,15 +117,15 @@ const RP_CASES = [
   },
   {
     id: 1,
-    biz: 'Casual Dining Restaurant', icon: 'restaurant', location: 'Fremantle WA 6160',
+    biz: DEMO_SCENARIOS.caution.biz, icon: 'restaurant', location: 'Fremantle WA 6160',
     verdict: 'CAUTION', verdictSub: 'Proceed Carefully',
-    score: 61, scoreLabel: 'Feasibility Score',
+    score: DEMO_SCENARIOS.caution.score, scoreLabel: 'Feasibility Score',
     color: '#D97706', colorLight: '#FFFBEB', colorMid: '#FDE68A',
     gradHeader: 'linear-gradient(135deg, #451A03 0%, #78350F 40%, #B45309 100%)',
     metrics: [
-      { l: 'Est. monthly revenue', v: '$22k–$34k',      highlight: false },
+      { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.caution.monthlyRevenue,      highlight: false },
       { l: 'Est. rent-to-revenue', v: '~18–22%',          highlight: false },
-      { l: 'Break-even (est.)',     v: '50–70/day',        highlight: false },
+      { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.caution.breakEven,        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
     tags: ['Seasonal Risk', 'High Competition', 'Review Financials'],
@@ -103,15 +133,15 @@ const RP_CASES = [
   },
   {
     id: 2,
-    biz: 'Boutique Gym', icon: 'gym', location: 'Joondalup WA 6027',
+    biz: DEMO_SCENARIOS.no.biz, icon: 'gym', location: 'Joondalup WA 6027',
     verdict: 'NO', verdictSub: 'Not Recommended',
-    score: 44, scoreLabel: 'Feasibility Score',
+    score: DEMO_SCENARIOS.no.score, scoreLabel: 'Feasibility Score',
     color: '#DC2626', colorLight: '#FEF2F2', colorMid: '#FECACA',
     gradHeader: 'linear-gradient(135deg, #2D0000 0%, #7F1D1D 40%, #991B1B 100%)',
     metrics: [
-      { l: 'Est. monthly revenue', v: '$14k–$20k',      highlight: false },
+      { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.no.monthlyRevenue,      highlight: false },
       { l: 'Est. rent-to-revenue', v: '~30%+',            highlight: false },
-      { l: 'Break-even (est.)',     v: '70–90/day',        highlight: false },
+      { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.no.breakEven,        highlight: false },
       { l: 'Note',                  v: 'High risk',        highlight: true },
     ],
     tags: ['Oversaturated', 'Rent Too High', 'Not Viable'],
@@ -119,7 +149,7 @@ const RP_CASES = [
   },
 ]
 
-function ReportPreview() {
+function ReportPreview({ isMobile }: { isMobile: boolean }) {
   const [caseIdx, setCaseIdx]   = useState(0)
   const [animKey, setAnimKey]   = useState(0)
   const [score, setScore]       = useState(0)          // start at 0 — animate to real value after mount
@@ -161,21 +191,21 @@ function ReportPreview() {
   }
 
   useEffect(() => {
-    if (!visible) return
+    if (!visible || isMobile) return
     const t = setInterval(() => switchTo((caseIdx + 1) % RP_CASES.length), 4800)
     return () => clearInterval(t)
-  }, [caseIdx, visible])
+  }, [caseIdx, visible, isMobile])
 
   const c   = RP_CASES[caseIdx]
   const r   = 34
   const cir = 2 * Math.PI * r
   return (
-    <div ref={rpRef} style={{ width: '100%', maxWidth: 460, fontFamily: font }}>
+    <div ref={rpRef} style={{ width: '100%', maxWidth: 460, minHeight: 560, fontFamily: font }}>
 
       {/* Switcher dots */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
         {RP_CASES.map((cs, i) => (
-          <button key={i} onClick={() => switchTo(i)} style={{
+          <button key={i} aria-label={`Show ${cs.verdict} example`} onClick={() => switchTo(i)} style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px 5px 8px', borderRadius: 100, border: 'none', cursor: 'pointer',
             fontFamily: font, fontSize: 11, fontWeight: i === caseIdx ? 700 : 500,
@@ -208,7 +238,7 @@ function ReportPreview() {
           <div style={{ position:'relative', zIndex:2 }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
               <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(255,255,255,.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:900, color:'#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
+                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(255,255,255,.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:900, color:'#fff' }}><img src="/logo-mark.svg" alt="" width={13} height={13} style={{ width: '13px', height: '13px' }} /></div>
                 <span style={{ fontSize:11, fontWeight:800, color:'rgba(255,255,255,.7)', letterSpacing:'.03em' }}>Locatalyze Report</span>
               </div>
               <span style={{ fontSize:10, color:'rgba(255,255,255,.35)', background:'rgba(255,255,255,.08)', borderRadius:6, padding:'2px 8px' }}>
@@ -216,7 +246,7 @@ function ReportPreview() {
               </span>
             </div>
 
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, minHeight: 34 }}>
               <div style={{ width: 14, height: 14, borderRadius: 4, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.7)' }} /></div>
               <div>
                 <p style={{ fontSize:16, fontWeight:900, color:'#fff', letterSpacing:'-.02em', lineHeight:1.1 }}>{c.biz}</p>
@@ -231,7 +261,7 @@ function ReportPreview() {
                   <p style={{ fontSize:9.5, color:c.color, opacity:.75, marginTop:1 }}>{c.verdictSub}</p>
                 </div>
               </div>
-              <div style={{ textAlign:'center' as const }}>
+              <div style={{ textAlign:'center' as const, opacity: score > 0 ? 1 : 0, transition: 'opacity 0.2s' }}>
                 <div style={{ position:'relative', width:74, height:74 }}>
                   <svg width="74" height="74" style={{ transform:'rotate(-90deg)' }}>
                     <circle cx="37" cy="37" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth="6"/>
@@ -253,7 +283,7 @@ function ReportPreview() {
 
         {/* White body */}
         <div style={{ background:'#fff' }}>
-          <div style={{ padding:'12px 20px 0', display:'flex', gap:6, flexWrap:'wrap' as const }}>
+          <div style={{ padding:'12px 20px 0', display:'flex', gap:6, flexWrap:'wrap' as const, minHeight: 36 }}>
             {c.tags.map(t => (
               <span key={t} style={{ fontSize:10, fontWeight:700, color:c.color, background:c.colorLight, border:`1px solid ${c.colorMid}`, borderRadius:6, padding:'2px 8px' }}>{t}</span>
             ))}
@@ -292,7 +322,7 @@ function ReportPreview() {
 
       {/* Progress bar under card */}
       <div style={{ height:2, background:L.border, borderRadius:100, marginTop:12, overflow:'hidden' }}>
-        <div key={animKey} style={{ height:'100%', background:c.color, borderRadius:100, animation:'rp-bar 4.8s linear both' }}/>
+        <div key={animKey} style={{ height:'100%', background:c.color, borderRadius:100, width: isMobile ? '100%' : undefined, animation: isMobile ? 'none' : 'rp-bar 4.8s linear both' }}/>
       </div>
 
       <style>{`
@@ -443,17 +473,19 @@ function DarkShowcase() {
   const [idx, setIdx] = useState(0)
   const [ak, setAk]   = useState(0)
   const paused = useRef(false)
+  const { ref: showcaseRef, inView } = useInView<HTMLDivElement>(0.15, '200px 0px')
   const tab = SHOWCASE_TABS[idx]
 
   useEffect(() => {
+    if (!inView) return
     const t = setInterval(() => { if (!paused.current) { setIdx(i=>(i+1)%SHOWCASE_TABS.length); setAk(k=>k+1) } }, 4500)
     return () => clearInterval(t)
-  }, [])
+  }, [inView])
 
   function go(i: number) { setIdx(i); setAk(k=>k+1); paused.current=true; setTimeout(()=>{ paused.current=false },10000) }
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', fontFamily: font }}
+    <div ref={showcaseRef} style={{ position: 'relative', overflow: 'hidden', fontFamily: font }}
       onMouseEnter={()=>{ paused.current=true }} onMouseLeave={()=>{ paused.current=false }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 10% 20%, rgba(15,118,110,.2) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 90% 80%, rgba(6,95,70,.18) 0%, transparent 55%), linear-gradient(160deg, #061412 0%, #030C0B 50%, #071814 100%)' }}/>
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(20,184,166,.5) 50%, transparent)', zIndex: 5 }}/>
@@ -463,7 +495,7 @@ function DarkShowcase() {
       <div style={{ position: 'relative', zIndex: 5, borderBottom: '1px solid rgba(255,255,255,.05)' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', overflowX: 'auto', padding: '0 40px', scrollbarWidth: 'none' as const }}>
           {SHOWCASE_TABS.map((t,i)=>(
-            <button key={t.id} onClick={()=>go(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '16px 22px 14px', fontFamily: font, fontSize: 13.5, fontWeight: i===idx?700:400, color: i===idx?D.text1:D.text3, whiteSpace: 'nowrap' as const, position: 'relative', transition: 'color .2s' }}>
+            <button key={t.id} aria-label={`Show ${t.label}`} onClick={()=>go(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '16px 22px 14px', fontFamily: font, fontSize: 13.5, fontWeight: i===idx?700:400, color: i===idx?D.text1:D.text3, whiteSpace: 'nowrap' as const, position: 'relative', transition: 'color .2s' }}>
               {t.label}
               <div style={{ position: 'absolute', bottom: -1, left: '50%', transform: 'translateX(-50%)', height: 2, background: `linear-gradient(90deg,${D.brand},${D.glow})`, borderRadius: 2, width: i===idx?'80%':'0%', transition: 'width .35s ease' }}/>
             </button>
@@ -495,7 +527,7 @@ function DarkShowcase() {
               <div style={{ background: 'rgba(255,255,255,.035)', borderBottom: '1px solid rgba(255,255,255,.06)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ display: 'flex', gap: 4 }}>{['#FF5F57','#FFBD2E','#28CA41'].map(c=><div key={c} style={{ width: 8, height: 8, borderRadius: '50%', background: c }}/>)}</div>
                 <div style={{ flex: 1, background: 'rgba(255,255,255,.05)', borderRadius: 5, padding: '4px 10px', fontSize: 10, color: '#4B5563' }}>locatalyze.com/analyse</div>
-                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#fff' }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: `linear-gradient(135deg,${D.brand},${D.bl})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#fff' }}><img src="/logo-mark.svg" alt="" width={13} height={13} style={{ width: '13px', height: '13px' }} /></div>
               </div>
               <div style={{ background: '#0A1210', minHeight: 280 }}>
                 <ShowcaseDeviceUI ui={tab.ui} ak={ak}/>
@@ -603,7 +635,7 @@ const PR_DATA = {
       strengths:     ['Large 15km residential catchment', 'No specialist CrossFit within 2km'],
       weaknesses:    ['4 established gyms already within 500m', 'Rent at $6,800/mo consumes 34% revenue'],
       opportunities: ['Underserved women-only fitness niche', 'Corporate wellness contracts potential'],
-      threats:       ['Planet Fitness opening 800m away Q3', 'Membership churn risk in saturated market'],
+      threats:       ['Planet Fitness opening 500m away Q3', 'Membership churn risk in saturated market'],
     },
     rec: 'Data does not support this location. Rent consumes 34% of projected revenue — well above the viable threshold — and the area already has four established gyms within 500m. A differentiated concept may help, but the numbers are structurally difficult.',
   },
@@ -1055,9 +1087,11 @@ function CinematicWalkthrough() {
   const [scoreAnim, setScoreAnim]= useState(82)
   const [barsFired, setBarsFired]= useState(true)
   const [replay, setReplay]      = useState(0)
+  const { ref: cinematicRef, inView } = useInView<HTMLDivElement>(0.15, '200px 0px')
   const addr = '45 King St, Newtown NSW'
 
   useEffect(() => {
+    if (!inView) return
     let dead = false
     setPhase(0); setTyped(''); setProgress(0); setSteps(0)
     setScanLine(0); setPins([]); setScoreAnim(0); setBarsFired(false)
@@ -1106,13 +1140,13 @@ function CinematicWalkthrough() {
 
     const rp = setTimeout(() => { if (!dead) setReplay(r => r + 1) }, 17000)
     return () => { dead = true; clearTimeout(t1); clearTimeout(rp) }
-  }, [replay])
+  }, [replay, inView])
 
   const circ = 2 * Math.PI * 30
   const phaseIdx = phase === 0 || phase === 1 ? 0 : phase === 2 ? 1 : 2
 
   return (
-    <div style={{ width: '100%', fontFamily: font }}>
+    <div ref={cinematicRef} style={{ width: '100%', fontFamily: font }}>
       {/* Phase stepper */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 32 }}>
         {CW_PHASE_META.map((p, i) => (
@@ -1386,7 +1420,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', fn)
+    window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
@@ -1397,8 +1431,7 @@ export default function LandingPage() {
   const W   = { maxWidth: 1240, margin: '0 auto' }
 
   return (
-    <div style={{ minHeight: '100vh', background: L.white, fontFamily: font, color: L.slate }}>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <main style={{ minHeight: '100vh', background: L.white, fontFamily: font, color: L.slate }}>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
@@ -1420,7 +1453,7 @@ export default function LandingPage() {
         transition: 'all .3s',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/locatalyze-without-BG.svg" alt="Locatalyze" style={{ height: 32, width: 'auto' }}/>
+          <img src="/locatalyze-without-BG.svg" alt="Locatalyze" width={152} height={32} style={{ width: 152, height: 32 }} />
         </Link>
 
         {!isMobile && (
@@ -1436,7 +1469,7 @@ export default function LandingPage() {
         )}
 
         {isMobile && (
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', padding: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
+          <button aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', padding: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
             <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none' }}/>
             <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', opacity: menuOpen ? 0 : 1 }}/>
             <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none' }}/>
@@ -1509,7 +1542,7 @@ export default function LandingPage() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <ReportPreview/>
+              <ReportPreview isMobile={isMobile}/>
             </div>
           </div>
         </div>
@@ -1553,7 +1586,7 @@ export default function LandingPage() {
       )}
 
       {/* HOW IT WORKS */}
-      <section id="how-it-works" style={{ padding: sp, background: L.mint }}>
+      <section id="how-it-works" style={{ padding: sp, background: L.mint, contentVisibility: 'auto', containIntrinsicSize: '900px' }}>
         <div style={{ ...W, padding: pad }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>How it works</div>
@@ -1578,7 +1611,7 @@ export default function LandingPage() {
       </section>
 
       {/* AFTER YOUR REPORT — conversion funnel transparency */}
-      <section style={{ padding: isMobile ? '64px 16px' : '80px 40px', background: L.white, borderTop: `1px solid ${L.border}` }}>
+      <section style={{ padding: isMobile ? '64px 16px' : '80px 40px', background: L.white, borderTop: `1px solid ${L.border}`, contentVisibility: 'auto', containIntrinsicSize: '700px' }}>
         <div style={{ ...W, padding: pad }}>
           <div style={{ textAlign:'center', marginBottom: isMobile ? 36 : 48 }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:L.emeraldXlt, border:`1px solid ${L.emeraldLt}`, borderRadius:20, padding:'5px 14px', fontSize:11, fontWeight:700, color:L.emerald, textTransform:'uppercase' as const, letterSpacing:'.08em', marginBottom:14 }}>
@@ -1645,12 +1678,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <div id="sample-report">
+      <div id="sample-report" style={{ minHeight: 920 }}>
         <ReportDemoSection />
       </div>
 
       {/* DATA SOURCES — Dark premium — Lucide icons throughout */}
-      <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: '#0B1512', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: isMobile ? '72px 16px' : '100px 40px', background: '#0B1512', position: 'relative', overflow: 'hidden', contentVisibility: 'auto', containIntrinsicSize: '1200px' }}>
         <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:800, height:600, background:'radial-gradient(ellipse, rgba(16,185,129,.07) 0%, transparent 70%)', pointerEvents:'none' }}/>
 
         <div style={{ ...W, position:'relative', zIndex:2 }}>
@@ -1688,7 +1721,7 @@ export default function LandingPage() {
                   </div>
                   {i < 3 && (
                     <div style={{ width:60, height:1, margin:'0 8px', marginBottom:20, background:'linear-gradient(90deg, rgba(52,211,153,.3), rgba(52,211,153,.1))' }}>
-                      <div style={{ width:'100%', height:'100%', background:'linear-gradient(90deg, rgba(52,211,153,.6), transparent)', animation:'pipe-flow 2s linear infinite' }}/>
+                      <div style={{ width:'100%', height:'100%', background:'linear-gradient(90deg, rgba(52,211,153,.6), transparent)' }}/>
                     </div>
                   )}
                 </div>
@@ -1808,7 +1841,7 @@ export default function LandingPage() {
       </section>
 
       {/* ORIGIN + TRUST */}
-      <section style={{ padding: isMobile ? '72px 16px' : '96px 40px', background: '#FAFBFC', borderTop:`1px solid ${L.border}` }}>
+      <section style={{ padding: isMobile ? '72px 16px' : '96px 40px', background: '#FAFBFC', borderTop:`1px solid ${L.border}`, contentVisibility: 'auto', containIntrinsicSize: '700px' }}>
         <div style={{ ...W }}>
           <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 40 : 64, alignItems:'center' }}>
 
@@ -1875,7 +1908,7 @@ export default function LandingPage() {
       </section>
 
       {/* SOCIAL PROOF — data-backed trust strip */}
-      <section style={{ padding: '36px 24px', background: '#0C1F1C', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <section style={{ padding: '36px 24px', background: '#0C1F1C', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', contentVisibility: 'auto', containIntrinsicSize: '320px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 28 }}>
             What the data shows across analysed locations
@@ -1900,7 +1933,7 @@ export default function LandingPage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" style={{ padding: sp, background: L.mint }}>
+      <section id="pricing" style={{ padding: sp, background: L.mint, contentVisibility: 'auto', containIntrinsicSize: '900px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: pad }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>Pricing</div>
@@ -2015,7 +2048,7 @@ export default function LandingPage() {
       </section>
 
             {/* FINAL CTA */}
-      <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}` }}>
+      <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}`, contentVisibility: 'auto', containIntrinsicSize: '520px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', padding: pad }}>
           <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 14, lineHeight: 1.1 }}>
             Know before you sign.
@@ -2036,6 +2069,6 @@ export default function LandingPage() {
       </section>
 
       <Footer/>
-    </div>
+    </main>
   )
 }

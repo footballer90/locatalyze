@@ -340,7 +340,7 @@ export default function SampleReportClient() {
                       <ScoreBar label="Profitability"       score={80} weight="25%" />
                       <ScoreBar label="Location Quality"    score={88} weight="10%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (88) — high footfall and excellent transit access. Sub-scores rounded to nearest 5 (±5pt model accuracy). Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 88×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (88) — high footfall and excellent transit access. Model accuracy: ±5pt per dimension. Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 88×0.10 = 83.8 → rounded to <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
                     <div style={{ textAlign: 'center' }}>
