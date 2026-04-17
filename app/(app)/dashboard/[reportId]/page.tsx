@@ -690,7 +690,7 @@ function DataQualityHeader({ computed, report }: {
           )}
 
           <p style={{ fontSize: 11, color: '#A8A29E', marginTop: 4, lineHeight: 1.5 }}>
-            Locatalyze Engine v{C.meta.engineVersion} · Scoring v{C.meta.scoringVersion} · Computed {new Date(C.meta.computedAt).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })} · <a href="/methodology#scoring-changelog" style={{ color: '#A8A29E' }}>methodology changelog</a>
+            Locatalyze Engine v{C.meta.engineVersion} · Scoring v{(C.meta as { scoringVersion?: string }).scoringVersion ?? 'n/a'} · Computed {new Date(C.meta.computedAt).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })} · <a href="/methodology#scoring-changelog" style={{ color: '#A8A29E' }}>methodology changelog</a>
           </p>
         </div>
       )}
