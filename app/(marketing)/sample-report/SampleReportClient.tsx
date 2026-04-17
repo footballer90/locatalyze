@@ -176,7 +176,7 @@ export default function SampleReportClient() {
       {/* Sample banner */}
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-          SAMPLE REPORT — Illustrative data only. Address "214 Oxford Street, Leederville WA 6007" is fictional. These numbers must not be used for investment or leasing decisions.{' '}
+          SAMPLE REPORT — Illustrative data. Address is fictional, numbers are for demonstration only. Your live report uses your actual address and live market data.{' '}
           <Link href="/onboarding" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
             Run yours free →
           </Link>
@@ -248,8 +248,8 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'benchmark est. ±20%' },
-              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'benchmark est. ±25% · excl. owner' },
+              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'industry benchmark estimate' },
+              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'excl. owner salary' },
               { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'zero-profit threshold · target: 150/day' },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
@@ -261,7 +261,7 @@ export default function SampleReportClient() {
             ))}
           </div>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4, fontStyle: 'italic' }}>
-            Revenue (±20%) and profit (±25%) are model estimates from industry benchmarks — not financial forecasts. Actual results will vary.
+            Numbers are benchmark estimates calibrated to your business type and location — use them to shortlist and pressure-test the economics, then validate on site.
           </p>
         </div>
       </div>
@@ -414,10 +414,10 @@ export default function SampleReportClient() {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     {[
-                      { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold', 'Demographics align strongly: 25–44, $96K median income'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
-                      { key: 'Weaknesses', items: ['4 existing café competitors require clear positioning', 'Parking on Oxford Street is limited', 'Weekend foot traffic lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
-                      { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Apartment development expanding catchment', 'Wholesale supply to nearby offices is adjacent revenue'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
-                      { key: 'Threats', items: ['Rent review clause could push costs above 12% at renewal', 'New entrant risk if concept succeeds', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
+                      { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
+                      { key: 'Weaknesses', items: ['4 existing café competitors — clear positioning required', 'Weekend foot traffic noticeably lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
+                      { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Nearby apartment development expanding the residential catchment'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
+                      { key: 'Threats', items: ['Rent review clause could push costs above the 12% threshold at renewal', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
                     ].map(s => (
                       <div key={s.key} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: '13px 15px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
@@ -438,16 +438,11 @@ export default function SampleReportClient() {
             {activeTab === 'financials' && <>
               <Card>
                 <SectionLabel>Monthly P&L</SectionLabel>
-                <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
-                  <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>
-                    Warning These figures are model estimates derived from industry benchmarks — not real trading data. Actual revenue, costs and profit will vary. Revenue carries ±20% uncertainty (the input); net profit carries ±25% (the output after fixed costs). Higher revenue uncertainty does not imply lower profit uncertainty — operating leverage compounds both.
-                  </p>
-                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
-                  <Tile label="Revenue"         value="~$68,000" sub="±20% benchmark est." mono />
+                  <Tile label="Revenue"         value="~$68,000" sub="industry benchmark" mono />
                   <Tile label="Operating Costs" value="~$56,000" color={S.red}     sub="rent + labour + COGS" mono />
                   <Tile label="Gross Profit"    value="~$42,200" color={S.blue}    sub="62% gross margin" mono />
-                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="±25% benchmark est. · excl. owner salary" mono />
+                  <Tile label="Net Profit"      value={`~$${M.netProfit.toLocaleString()}`} color={S.emerald} sub="excl. owner salary" mono />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
                   <Tile label="Monthly Rent"    value="$7,600"    mono />
