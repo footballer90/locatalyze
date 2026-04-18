@@ -21,34 +21,38 @@ export function generateStaticParams() {
   return getAllSlugs()
 }
 
+type RouteParams = { type: string; city: string; suburb: string }
+
 export async function generateMetadata({
   params,
 }: {
-  params: { type: string; city: string; suburb: string }
+  params: Promise<RouteParams>
 }): Promise<Metadata> {
-  const data = getSuburbData(params.type, params.city, params.suburb)
+  const { type, city, suburb } = await params
+  const data = getSuburbData(type, city, suburb)
   if (!data) return {}
   return {
     title      : data.metaTitle,
     description: data.metaDescription,
-    alternates : { canonical: `https://www.locatalyze.com/${params.type}/${params.city}/${params.suburb}` },
+    alternates : { canonical: `https://www.locatalyze.com/${type}/${city}/${suburb}` },
     openGraph  : {
       title      : data.metaTitle,
       description: data.metaDescription,
       type       : 'article',
-      url        : `https://www.locatalyze.com/${params.type}/${params.city}/${params.suburb}`,
+      url        : `https://www.locatalyze.com/${type}/${city}/${suburb}`,
     },
   }
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function SuburbIntelPage({
+export default async function SuburbIntelPage({
   params,
 }: {
-  params: { type: string; city: string; suburb: string }
+  params: Promise<RouteParams>
 }) {
-  const data = getSuburbData(params.type, params.city, params.suburb)
+  const { type, city, suburb } = await params
+  const data = getSuburbData(type, city, suburb)
   if (!data) notFound()
 
   const vc       = VERDICT_CONFIG[data.verdict]
@@ -515,18 +519,18 @@ export default function SuburbIntelPage({
     description: data.metaDescription,
     author: { '@type': 'Organization', name: 'Locatalyze' },
     publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-    url: `https://www.locatalyze.com/${params.type}/${params.city}/${params.suburb}`,
+    url: `https://www.locatalyze.com/${type}/${city}/${suburb}`,
     dateModified: '2025-03-01',
   }
 
   return (
     <main className="si-page">
       <SuburbIntelCapture
-        business_type={params.type}
-        city_slug={params.city}
-        suburb_slug={params.suburb}
-        path={`/${params.type}/${params.city}/${params.suburb}`}
-        source={isHandCraftedIntelKey(params.type, params.city, params.suburb) ? 'hand_crafted' : 'generated'}
+        business_type={type}
+        city_slug={city}
+        suburb_slug={suburb}
+        path={`/${type}/${city}/${suburb}`}
+        source={isHandCraftedIntelKey(type, city, suburb) ? 'hand_crafted' : 'generated'}
       />
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -537,7 +541,7 @@ export default function SuburbIntelPage({
           <div className="si-breadcrumb-inner">
             <Link href="/">Locatalyze</Link>
             <span className="si-breadcrumb-sep">›</span>
-            <Link href={`/${params.type}/${params.city}`} style={{ textTransform: 'capitalize' }}>
+            <Link href={`/${type}/${city}`} style={{ textTransform: 'capitalize' }}>
               {data.city}
             </Link>
             <span className="si-breadcrumb-sep">›</span>
