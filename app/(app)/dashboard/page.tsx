@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Logo } from '@/components/Logo'
 
 const S = {
   font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -246,7 +247,7 @@ function Sidebar({ user, stats, reports, plan, onNewAnalysis, onSignOut }: {
       {/*  Logo  */}
       <div style={{ padding: '20px 20px 0', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+          <Logo variant="dark" size="md" />
         </div>
       </div>
 

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Logo } from '@/components/Logo'
 
 // ── Your admin email — change this to your email ──────────────────────────────
 const ADMIN_EMAILS = ['pg4441@gmail.com']
@@ -194,9 +195,8 @@ export default function AdminDashboard() {
    {/* ── Top nav ── */}
       <nav style={{ background: S.n900, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 28, height: 28, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 13 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-      <span style={{ fontWeight: 800, fontSize: 15, color: S.white, letterSpacing: '-0.02em' }}>Locatalyze</span>
+     <div style={{ display: 'flex', alignItems: 'center' }}>
+      <Logo variant="dark" size="sm" />
      </div>
           <span style={{ fontSize: 11, color: S.n500, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '3px 8px', fontWeight: 600 }}>ADMIN</span>
     </div>

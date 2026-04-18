@@ -7,6 +7,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Logo } from '@/components/Logo'
 
 // ── Style constants (matches rest of app) ────────────────────────────────────
 const S = {
@@ -348,7 +349,7 @@ export default function ComparePage() {
       <nav style={{ background: S.headerBg, borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button onClick={() => router.push('/dashboard')} style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto' }} />
+            <Logo variant="dark" size="md" />
           </button>
           <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14 }}>›</span>
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Compare Locations</span>

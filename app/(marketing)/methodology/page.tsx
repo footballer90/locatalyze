@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { Logo } from '@/components/Logo'
 
 export const metadata: Metadata = {
  title: 'How It Works — Data Methodology',
@@ -67,7 +68,7 @@ export default function MethodologyPage() {
    {/* Nav */}
       <nav style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
     <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-     <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+     <Logo variant="light" size="md" />
     </Link>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
      <Link href="/" style={{ fontSize: 13, color: S.n500, fontWeight: 500, padding: '6px 12px' }}>← Back to home</Link>
@@ -247,7 +248,7 @@ export default function MethodologyPage() {
       <footer style={{ background: S.n900, padding: '28px 24px' }}>
     <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+      <Logo variant="dark" size="md" />
      </Link>
           <p style={{ fontSize: 12, color: S.n500 }}>© 2026 Locatalyze. Built for Australian business owners.</p>
           <div style={{ display: 'flex', gap: 20 }}>

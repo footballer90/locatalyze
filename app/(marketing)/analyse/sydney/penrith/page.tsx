@@ -6,6 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { Logo } from '@/components/Logo'
 
 const S = {
   brand: '#0891B2', brandLight: '#06B6D4',
@@ -151,7 +152,9 @@ export default function PenrithPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_FAQ) }} />
 
       <nav style={{ background: S.white, borderBottom: `1px solid ${S.border}`, padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link href="/" style={{ fontSize: 18, fontWeight: 800, color: S.brand, textDecoration: 'none' }}>Locatalyze</Link>
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Logo variant="light" size="sm" />
+        </Link>
         <Link href="/onboarding" style={{ fontSize: 14, fontWeight: 600, color: S.brand, textDecoration: 'none', padding: '8px 16px', border: `1px solid ${S.brand}`, borderRadius: 8 }}>Analyse your location</Link>
       </nav>
 

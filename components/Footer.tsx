@@ -1,28 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-
-// ── Inline SVG logo (dark variant — white text + teal accent) ──
-function Logo() {
- return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" width="160" height="36">
-   <defs>
-        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-     <stop offset="0%" stopColor="#0F766E"/>
-     <stop offset="100%" stopColor="#14B8A6"/>
-    </linearGradient>
-      </defs>
-      {/* Icon — brand water drop */}
-      <rect x="2" y="2" width="32" height="32" rx="8" fill="url(#logoGrad)"/>
-      <path d="M18 7C18 7 11 13.5 11 18.2C11 21.5 14.1 24 18 24C21.9 24 25 21.5 25 18.2C25 13.5 18 7 18 7Z" fill="white" opacity="0.95"/>
-      <circle cx="18" cy="18.5" r="3.8" fill="rgba(255,255,255,0.3)"/>
-   {/* Wordmark */}
-      <text x="44" y="27" fontFamily="DM Sans, Helvetica Neue, Arial, sans-serif" fontSize="19" fontWeight="800" letterSpacing="-0.04em">
-    <tspan fill="#FFFFFF">Loca</tspan><tspan fill="#14B8A6">talyze</tspan>
-   </text>
-    </svg>
-  )
-}
+import { Logo } from '@/components/Logo'
 
 // ── Social icons ──────────────────────────────────────────────
 function TwitterIcon() {
@@ -386,7 +365,7 @@ export default function Footer() {
           {/* Brand column */}
           <div style={S.brand}>
             <Link href="/" style={{ textDecoration: 'none' }}>
-       <Logo />
+       <Logo variant="dark" size="lg" />
             </Link>
             <p style={S.tagline}>
               Evaluate whether a business location is worth pursuing before you sign a lease.<br />

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import posthog from 'posthog-js'
+import { Logo } from '@/components/Logo'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -89,7 +90,7 @@ export default function UpgradePage() {
 
       <nav style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 32px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button onClick={() => router.push('/dashboard')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
-          <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+          <Logo variant="light" size="md" />
         </button>
         <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: 'none', fontSize: 13, color: S.n500, cursor: 'pointer', fontFamily: S.font }}>
           ← Back to dashboard

@@ -1,11 +1,11 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { onboardingRef } from '@/lib/funnel-links'
+import { Logo } from '@/components/Logo'
 
 /** Max 3 centre links — premium SaaS density */
 const CENTER_NAV = [
@@ -65,7 +65,7 @@ export default function Navbar() {
           style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
           aria-label="Locatalyze home"
         >
-          <Image src="/logo.svg" alt="Locatalyze" width={148} height={28} priority />
+          <Logo variant="light" size="md" />
         </Link>
 
         {/* Centre — desktop only */}

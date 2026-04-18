@@ -7,6 +7,7 @@ import type { MapInsights, Competitor } from '@/components/MapboxMap'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { whatIfCalc, breakEvenMonthsCalc } from '@/lib/compute/client-calc'
+import { Logo } from '@/components/Logo'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -371,7 +372,7 @@ export default function OnboardingPage() {
       {/* Nav */}
       <nav style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
     <button onClick={() => router.push('/dashboard')} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', fontFamily: S.font }}>
-     <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+     <Logo variant="light" size="md" />
     </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
      {['Business', 'Location', 'Details'].map((label, i) => {

@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import type { ComputedResult } from '@/types/computed'
 import { displayMoney, displayPercent, displayCustomers, getConfidenceTier, shouldSuppressFinancials, type ConfidenceTier, type DisplayNumber } from '@/lib/compute/display-discipline'
+import { Logo } from '@/components/Logo'
 
 const MapboxMap = dynamic(() => import('@/components/MapboxMap'), { ssr: false })
 const MapInsightPanel = dynamic(() => import('@/components/MapInsightPanel'), { ssr: false })
@@ -3277,7 +3278,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button onClick={() => router.push('/dashboard')} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', padding: 0 }}>
-              <img src="/logo.svg" alt="Locatalyze" style={{ height: 28, width: 'auto', display: 'block' }} />
+              <Logo variant="dark" size="md" />
             </button>
             <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>&#8250;</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Location Report</span>

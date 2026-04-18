@@ -4,6 +4,7 @@
 // No external dependencies needed — uses built-in ImageResponse
 
 import { ImageResponse } from 'next/og'
+import { LogoMark } from '@/components/Logo'
 
 export const runtime = 'edge'
 export const alt = 'Locatalyze — AI Location Feasibility for Australian Businesses'
@@ -58,7 +59,7 @@ export default async function Image() {
               background: 'linear-gradient(135deg, #0F766E, #14B8A6)',
        display: 'flex', alignItems: 'center', justifyContent: 'center',
        fontSize: 20, fontWeight: 900, color: 'white',
-      }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
+      }}><LogoMark size="md" /></div>
             <span style={{ fontSize: 22, fontWeight: 800, color: '#F0FDF9', letterSpacing: '-0.03em' }}>
        Locatalyze
             </span>

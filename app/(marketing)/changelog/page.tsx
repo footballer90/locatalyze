@@ -3,6 +3,7 @@
 // Updated with v2.5 entries covering March 2026 work
 
 import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 
 const D = {
   bg: '#090E1C', surface: '#101720', border: 'rgba(255,255,255,0.07)',
@@ -138,7 +139,9 @@ export default function ChangelogPage() {
 
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
-          <Link href="/" style={{ fontSize: 13, color: D.t3, textDecoration: 'none' }}>Locatalyze</Link>
+          <Link href="/" style={{ textDecoration: 'none', opacity: 0.92 }}>
+            <Logo variant="dark" size="sm" />
+          </Link>
           <span style={{ color: D.t3 }}>/</span>
           <span style={{ fontSize: 13, color: D.t2 }}>Changelog</span>
         </div>

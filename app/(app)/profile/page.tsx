@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Logo } from '@/components/Logo'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -111,7 +112,7 @@ export default function ProfilePage() {
     {/* Logo */}
         <div style={{ padding: '20px 16px 12px' }}>
      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+      <Logo variant="dark" size="md" />
       <div>
               <p style={{ fontSize: 14, fontWeight: 800, color: S.white, letterSpacing: '-0.02em' }}>Locatalyze</p>
        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Location Intelligence</p>

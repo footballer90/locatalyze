@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import posthog from 'posthog-js'
+import { Logo } from '@/components/Logo'
 
 const S = {
   brand: '#0F766E', brandLight: '#14B8A6',
@@ -66,7 +67,7 @@ function LoginForm() {
       {/* Nav */}
       <nav style={{ background: S.white, borderBottom: `1px solid ${S.n100}`, padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto', display: 'block' }} />
+          <Logo variant="light" size="md" />
         </Link>
         <Link href="/auth/signup" style={{ fontSize: 13, background: S.brand, color: S.white, borderRadius: 9, padding: '7px 16px', fontWeight: 700 }}>
           Sign up free
@@ -79,7 +80,7 @@ function LoginForm() {
 
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <img src="/logo.svg" alt="Locatalyze" style={{ height: 40, width: 'auto', display: 'block', margin: '0 auto 16px' }} />
+            <Logo variant="light" size="lg" style={{ margin: '0 auto 16px' }} />
             <h1 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 6 }}>Welcome back</h1>
             <p style={{ fontSize: 14, color: S.n500 }}>Sign in to access your reports</p>
           </div>

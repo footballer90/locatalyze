@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, Store } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 const S = {
  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
@@ -123,9 +124,8 @@ export function UseCasePage({ type }: { type: string }) {
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
     <div style={{ background: S.headerBg, padding: '60px 24px 48px', textAlign: 'center' }}>
-     <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 32 }}>
-      <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 13 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-      <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>Locatalyze</span>
+     <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', marginBottom: 32 }}>
+      <Logo variant="dark" size="sm" />
      </Link>
           <span style={{ fontSize: 52, display: 'block', marginBottom: 12 }}>{ICON_MAP[config.icon] ?? config.icon}</span>
      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.15)', border: '1px solid rgba(15,118,110,0.3)', borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, color: S.brandLight, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 14 }}>{config.subtitle}</div>

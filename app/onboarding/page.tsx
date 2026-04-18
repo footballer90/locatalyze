@@ -10,6 +10,7 @@ import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { OnboardingCapture } from '@/components/analytics/FunnelCapture'
+import { Logo } from '@/components/Logo'
 
 const S = {
   font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -427,7 +428,7 @@ export default function OnboardingPage() {
 
       <nav style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 24, paddingRight: 24, borderBottom: `1px solid ${S.n200}`, backgroundColor: S.white }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <img src="/logo.svg" alt="Locatalyze" style={{ height: 26 }} />
+          <Logo variant="light" size="md" />
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 13, color: S.n700 }}>
