@@ -5,6 +5,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { onboardingRef } from '@/lib/funnel-links'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SINGLE SOURCE OF TRUTH — all financial figures for this sample report
@@ -177,7 +178,7 @@ export default function SampleReportClient() {
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
           SAMPLE REPORT — Illustrative data. Address is fictional, numbers are for demonstration only. Your live report uses your actual address and live market data.{' '}
-          <Link href="/onboarding" style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
+          <Link href={onboardingRef('sample_report_banner')} style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
             Run yours free →
           </Link>
         </p>
@@ -186,20 +187,15 @@ export default function SampleReportClient() {
       {/* Dark header */}
       <div style={{ background: S.headerBg, borderBottom: '1px solid #1F2937' }}>
 
-        {/* Nav */}
-        <nav style={{ padding: '0 24px', height: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1F2937' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none' }}>
-              <div style={{ width: 26, height: 26, borderRadius: 7, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 12 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-              <span style={{ fontWeight: 800, fontSize: 14, color: '#fff', letterSpacing: '-0.02em' }}>Locatalyze</span>
+        <div style={{ padding: '12px 24px', borderBottom: '1px solid #1F2937', maxWidth: 1200, margin: '0 auto' }}>
+          <nav aria-label="Breadcrumb" style={{ fontSize: 12, fontWeight: 600, color: '#9ca3af' }}>
+            <Link href="/" style={{ color: '#9ca3af', textDecoration: 'none' }}>
+              Home
             </Link>
-            <span style={{ color: '#374151' }}>›</span>
-            <span style={{ fontSize: 12, color: '#6B7280' }}>Sample Report</span>
-          </div>
-          <Link href="/onboarding" style={{ background: S.brand, color: '#fff', borderRadius: 8, padding: '7px 16px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
-            Run my report free →
-          </Link>
-        </nav>
+            <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+            <span style={{ color: '#e5e7eb' }}>Sample report</span>
+          </nav>
+        </div>
 
         {/* Verdict hero */}
         <div style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
@@ -529,7 +525,7 @@ export default function SampleReportClient() {
                 </p>
                 <div style={{ marginTop: 12, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' as const }}>
                   <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.5 }}>Year 2 &amp; 3 growth model — including compounding revenue, reinvestment scenarios and break-even trajectory — unlocks when you run a full report on your actual address.</p>
-                  <a href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: S.brand, color: S.white, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' as const }}>Run my report →</a>
+                  <a href={onboardingRef('sample_report_inline')} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: S.brand, color: S.white, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' as const }}>Run my report →</a>
                 </div>
               </Card>
             </>}
@@ -701,7 +697,7 @@ export default function SampleReportClient() {
             <div style={{ background: S.headerBg, borderRadius: 14, padding: '18px' }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB', marginBottom: 8, lineHeight: 1.4 }}>Ready to analyse your address?</p>
               <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>Your report is generated live from real data. First report free, no credit card.</p>
-              <Link href="/onboarding" style={{ display: 'block', textAlign: 'center', background: S.brand, color: '#fff', borderRadius: 8, padding: '11px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+              <Link href={onboardingRef('sample_report_sidebar')} style={{ display: 'block', textAlign: 'center', background: S.brand, color: '#fff', borderRadius: 8, padding: '11px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
                 Run my free report →
               </Link>
             </div>
@@ -724,7 +720,7 @@ export default function SampleReportClient() {
           <p style={{ fontSize: 15, color: 'rgba(167,243,208,0.65)', maxWidth: 480, margin: '0 auto 28px', lineHeight: 1.75 }}>
             Paste any Australian address. Choose your business type. Get a full GO/CAUTION/NO verdict with competitor map, financial model and 3-year projection in about 90 seconds.
           </p>
-          <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
+          <Link href={onboardingRef('sample_report_footer')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#34D399', color: '#064E3B', borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none' }}>
             Run my free analysis →
           </Link>
           <p style={{ fontSize: 12, color: 'rgba(167,243,208,0.35)', marginTop: 10 }}>No credit card · first report free · ~90 seconds</p>

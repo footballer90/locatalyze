@@ -64,37 +64,7 @@ export default function UltimoPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }}
       />
-
-      {/* Sticky Nav */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: C.white,
-          borderBottom: `1px solid ${C.border}`,
-          zIndex: 40,
-          padding: '12px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '6px', fontSize: '13px', color: C.muted, alignItems: 'center' }}>
-          <Link href="/analyse" style={{ color: C.brand, textDecoration: 'none' }}>Analyse</Link>
-          <span>›</span>
-          <Link href="/analyse/sydney" style={{ color: C.brand, textDecoration: 'none' }}>Sydney</Link>
-          <span>›</span>
-          <span style={{ fontWeight: 600, color: C.n900 }}>Ultimo</span>
-        </div>
-        <Link
-          href="/onboarding"
-          style={{ padding: '8px 18px', backgroundColor: C.emerald, color: C.white, borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}
-        >
-          Analyse free →
-        </Link>
-      </nav>
-
-      {/* Hero */}
+{/* Hero */}
       <section style={{ padding: '56px 24px', backgroundColor: C.white, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '16px' }}>

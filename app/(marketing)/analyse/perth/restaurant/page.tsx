@@ -220,21 +220,7 @@ export default function PerthRestaurantPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMAS) }} />
-
-      {/* ── Breadcrumb nav ──────────────────────────────────────────────────── */}
-      <nav style={{ padding: '12px 24px', borderBottom: `1px solid ${S.border}`, backgroundColor: S.white, position: 'sticky', top: 0, zIndex: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 13, color: S.muted, fontFamily: S.font }}>
-          <Link href="/analyse" style={{ color: S.brand, textDecoration: 'none' }}>Analyse</Link>
-          {' › '}
-          <Link href="/analyse/perth" style={{ color: S.brand, textDecoration: 'none' }}>Perth</Link>
-          {' › Restaurants'}
-        </div>
-        <Link href="/onboarding" style={{ padding: '8px 16px', background: S.emerald, color: S.white, borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none', fontFamily: S.font }}>
-          Analyse free →
-        </Link>
-      </nav>
-
-      {/* ── Hero ────────────────────────────────────────────────────────────── */}
+{/* ── Hero ────────────────────────────────────────────────────────────── */}
       <section style={{ background: `linear-gradient(135deg, #0E7490 0%, ${S.brand} 50%, ${S.brandLight} 100%)`, color: S.white, padding: '48px 24px 40px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', borderRadius: 20, padding: '4px 12px', fontSize: 12, fontWeight: 600, marginBottom: 16, fontFamily: S.font }}>

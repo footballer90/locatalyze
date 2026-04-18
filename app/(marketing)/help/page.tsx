@@ -190,15 +190,21 @@ export default function HelpPage() {
 
         {/* Header */}
         <div style={{ background: S.headerBg, padding: '52px 24px 44px', textAlign: 'center' }}>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 28 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: 8,
-              background: `linear-gradient(135deg,${S.brand},${S.brandLight})`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: 900, fontSize: 13,
-            }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-            <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>Locatalyze</span>
-          </Link>
+          <nav
+            aria-label="Breadcrumb"
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'rgba(248,250,252,0.55)',
+              marginBottom: 24,
+            }}
+          >
+            <Link href="/" style={{ color: 'rgba(248,250,252,0.65)', textDecoration: 'none' }}>
+              Home
+            </Link>
+            <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+            <span style={{ color: '#F9FAFB' }}>Help</span>
+          </nav>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: 'rgba(15,118,110,0.15)', border: '1px solid rgba(15,118,110,0.3)',

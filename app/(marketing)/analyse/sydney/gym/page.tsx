@@ -70,11 +70,7 @@ export default function SydneyGymPage() {
     <div style={{ minHeight:'100vh',background:S.n50,fontFamily:"'DM Sans','Helvetica Neue',Arial,sans-serif",color:S.n900}}>
    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
    {SCHEMAS.map((s,i)=><script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html:JSON.stringify(s)}}/>)}
-   <nav style={{ background:S.white,borderBottom:`1px solid ${S.border}`,padding:'0 24px',height:56,display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50}}>
-    <Link href="/" style={{ display:'flex',alignItems:'center',gap:8,textDecoration:'none'}}><div style={{ width:30,height:30,borderRadius:9,background:`linear-gradient(135deg,${S.brand},${S.brandLight})`,display:'flex',alignItems:'center',justifyContent:'center',color:S.white,fontWeight:800,fontSize:14}}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div><span style={{ fontWeight:800,fontSize:15,color:S.n900,letterSpacing:'-0.02em'}}>Locatalyze</span></Link>
-    <Link href="/onboarding" style={{ background:S.brand,color:S.white,borderRadius:10,padding:'8px 18px',fontSize:13,fontWeight:700,textDecoration:'none'}}>Analyse free →</Link>
-   </nav>
-      <div style={{ background:'linear-gradient(135deg,#0F172A 0%,#1E3A5F 50%,#0369A1 100%)',padding:'60px 24px 52px'}}>
+<div style={{ background:'linear-gradient(135deg,#0F172A 0%,#1E3A5F 50%,#0369A1 100%)',padding:'60px 24px 52px'}}>
     <div style={{ maxWidth:900,margin:'0 auto'}}>
      <div style={{ display:'inline-flex',alignItems:'center',gap:6,background:'rgba(14,165,233,0.15)',border:'1px solid rgba(14,165,233,0.3)',borderRadius:100,padding:'5px 14px',fontSize:11,fontWeight:700,color:'#7DD3FC',letterSpacing:'0.1em',textTransform:'uppercase' as const,marginBottom:18}}> Sydney Gym Location Guide · March 2026</div>
      <h1 style={{ fontSize:'clamp(28px,5vw,50px)',fontWeight:900,color:'#F0F9FF',letterSpacing:'-0.04em',lineHeight:1.08,marginBottom:16,maxWidth:700}}>Best Suburbs to Open a Gym in Sydney (2026)</h1>

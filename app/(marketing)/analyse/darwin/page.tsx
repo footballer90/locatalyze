@@ -30,18 +30,7 @@ export default function DarwinAnalysePage() {
           .full-mobile { width: 100% !important; }
         }
       `}</style>
-
-      {/* NAV */}
-      <nav style={{ background: S.white, borderBottom: `1px solid ${S.n200}`, padding: '0 32px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <img src="/logo.svg" alt="Locatalyze" style={{ height: 26, width: 'auto' }} />
-        </Link>
-        <Link href="/auth/signup" style={{ background: S.brand, color: S.white, borderRadius: 9, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
-          Analyse your location
-        </Link>
-      </nav>
-
-      {/* HERO */}
+{/* HERO */}
       <div style={{ background: S.n900, padding: '64px 32px', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.2)', border: '1px solid rgba(20,184,166,0.3)', borderRadius: 20, padding: '4px 14px', fontSize: 11, fontWeight: 700, color: S.brandLight, marginBottom: 20, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
           Darwin Location Intelligence

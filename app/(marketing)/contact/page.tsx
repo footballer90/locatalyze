@@ -79,19 +79,17 @@ export default function ContactPage() {
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}>
    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 
-   {/* Nav */}
-      <nav style={{ background: S.white, borderBottom: `1px solid ${S.border}`, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-     <div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 14 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-     <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
-    </Link>
-        <Link href="/onboarding" style={{ background: S.brand, color: S.white, borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Get started free →</Link>
-   </nav>
-
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '52px 24px 80px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 48, alignItems: 'start' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '40px 24px 80px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 48, alignItems: 'start' }}>
 
     {/* Left — info */}
         <div>
+          <nav aria-label="Breadcrumb" style={{ fontSize: 12, fontWeight: 600, color: S.muted, marginBottom: 20 }}>
+            <Link href="/" style={{ color: S.muted, textDecoration: 'none' }}>
+              Home
+            </Link>
+            <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+            <span style={{ color: S.n700 }}>Contact</span>
+          </nav>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: S.emerald, letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginBottom: 20 }}>
       Get in touch
           </div>

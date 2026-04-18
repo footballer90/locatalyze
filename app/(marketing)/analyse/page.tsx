@@ -251,47 +251,6 @@ export default function AnalysePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
       />
 
-      {/* ── STICKY NAV ── */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          backgroundColor: S.white,
-          borderBottom: `1px solid ${S.border}`,
-          padding: '14px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Link
-          href="/"
-          style={{ fontSize: '17px', fontWeight: 800, color: S.brand, textDecoration: 'none', letterSpacing: '-0.3px' }}
-        >
-          Locatalyze
-        </Link>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <Link href="/analyse" style={{ fontSize: '13px', color: S.muted, textDecoration: 'none' }}>
-            Guides
-          </Link>
-          <Link
-            href="/onboarding"
-            style={{
-              padding: '9px 18px',
-              backgroundColor: S.emerald,
-              color: S.white,
-              borderRadius: '7px',
-              textDecoration: 'none',
-              fontSize: '13px',
-              fontWeight: 700,
-            }}
-          >
-            Analyse free →
-          </Link>
-        </div>
-      </nav>
-
       {/* ── HERO ── */}
       <section
         style={{

@@ -1,56 +1,222 @@
-// Components/Navbar.tsx
-import Link from "next/link";
+'use client'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
+import { onboardingRef } from '@/lib/funnel-links'
+
+/** Max 3 centre links — premium SaaS density */
+const CENTER_NAV = [
+  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Sample report', href: '/sample-report' },
+] as const
+
+const linkRest = {
+  textDecoration: 'none' as const,
+  color: '#64748b',
+  fontSize: 14,
+  fontWeight: 600,
+  padding: '10px 12px',
+  borderRadius: 10,
+  transition: 'color 0.15s ease, background 0.15s ease',
+}
 
 export default function Navbar() {
-  return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-6 h-[60px] flex items-center justify-between gap-6">
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <span style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg,#0F766E,#14B8A6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 26 26" fill="none">
-              <path d="M13 2C13 2 5.5 9 5.5 14.2C5.5 18.5 8.8 22 13 22C17.2 22 20.5 18.5 20.5 14.2C20.5 9 13 2 13 2Z" fill="white" opacity="0.95"/>
-              <circle cx="13" cy="14.5" r="4" fill="rgba(0,0,0,0.22)"/>
-            </svg>
-          </span>
-          <span className="font-semibold text-[15px] text-gray-900 tracking-tight">
-            Loca<span style={{ color: '#0F766E' }}>talyze</span>
-          </span>
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
+
+  const ctaHref = onboardingRef('navbar_primary')
+
+  return (
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 60,
+        background: 'rgba(255, 255, 255, 0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(226, 232, 240, 0.95)',
+        boxShadow: '0 1px 0 rgba(15, 23, 42, 0.04)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1160,
+          margin: '0 auto',
+          minHeight: 64,
+          padding: '0 20px',
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr auto',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        {/* Left — logo */}
+        <Link
+          href="/"
+          style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
+          aria-label="Locatalyze home"
+        >
+          <Image src="/logo.svg" alt="Locatalyze" width={148} height={28} priority />
         </Link>
 
-        {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-0.5">
-          {["Features", "How it works", "Pricing"].map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="px-3.5 py-1.5 rounded-xl text-[13.5px] text-gray-500 font-medium
-                         hover:text-gray-900 hover:bg-gray-50 transition-all"
+        {/* Centre — desktop only */}
+        <nav
+          aria-label="Primary"
+          className="hidden md:flex"
+          style={{
+            justifySelf: 'center',
+            alignItems: 'center',
+            display: 'flex',
+            gap: 2,
+            minWidth: 0,
+          }}
+        >
+          {CENTER_NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              style={linkRest}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f8fafc'
+                e.currentTarget.style.color = '#0f172a'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.color = '#64748b'
+              }}
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
-          <Link
-            href="/sample-report"
-            className="px-3.5 py-1.5 rounded-xl text-[13.5px] text-gray-500 font-medium
-                       hover:text-gray-900 hover:bg-gray-50 transition-all"
-            style={{ textDecoration: 'none' }}
-          >
-            Sample report
-          </Link>
         </nav>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          <Link href="/dashboard" className="ui-btn-secondary ui-btn-sm hidden sm:inline-flex">
-            Dashboard
+        {/* Right — sign in + primary CTA + mobile menu */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: 10,
+            flexShrink: 0,
+            minWidth: 0,
+          }}
+        >
+          <Link
+            href="/auth/login"
+            className="hidden sm:inline-flex"
+            style={{
+              textDecoration: 'none',
+              fontSize: 14,
+              fontWeight: 600,
+              color: '#94a3b8',
+              padding: '8px 6px',
+              borderRadius: 8,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#475569'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#94a3b8'
+            }}
+          >
+            Sign in
           </Link>
-          <Link href="/onboarding" className="ui-btn-primary ui-btn-sm">
-            Get started
+          <Link
+            href={ctaHref}
+            style={{
+              textDecoration: 'none',
+              background: '#0f766e',
+              color: '#ffffff',
+              fontSize: 14,
+              fontWeight: 700,
+              padding: '10px 16px',
+              borderRadius: 10,
+              boxShadow: '0 10px 24px -12px rgba(15, 118, 110, 0.55)',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.filter = 'brightness(1.05)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.filter = 'none'
+            }}
+          >
+            Check location
           </Link>
+          <button
+            type="button"
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen((v) => !v)}
+            className="md:hidden"
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              border: '1px solid #e2e8f0',
+              background: '#ffffff',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#334155',
+            }}
+          >
+            {isOpen ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
+          </button>
         </div>
       </div>
+
+      {isOpen ? (
+        <div
+          className="md:hidden"
+          style={{
+            borderTop: '1px solid #e2e8f0',
+            background: '#ffffff',
+            padding: '12px 20px 16px',
+          }}
+        >
+          <nav aria-label="Mobile" style={{ display: 'grid', gap: 4 }}>
+            {CENTER_NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  textDecoration: 'none',
+                  color: '#334155',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  padding: '12px 10px',
+                  borderRadius: 10,
+                }}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <Link
+              href="/auth/login"
+              style={{
+                textDecoration: 'none',
+                color: '#64748b',
+                fontSize: 15,
+                fontWeight: 600,
+                padding: '12px 10px',
+                borderRadius: 10,
+              }}
+            >
+              Sign in
+            </Link>
+          </nav>
+        </div>
+      ) : null}
     </header>
-  );
+  )
 }

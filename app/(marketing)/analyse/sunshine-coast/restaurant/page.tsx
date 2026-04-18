@@ -390,33 +390,7 @@ const ChecklistUnlock = () => {
 export default function SunshineCoastRestaurantPage() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: S.white }}>
-      {/* Sticky nav */}
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: S.white,
-          borderBottom: `1px solid ${S.border}`,
-          padding: '12px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          zIndex: 100,
-        }}
-      >
-        <div style={{ fontSize: '16px', fontWeight: '700', color: S.brand }}>Locatalyze</div>
-        <Link
-          href="/analyse"
-          style={{
-            fontSize: '14px',
-            color: S.brand,
-            textDecoration: 'none',
-            fontWeight: '600',
-          }}
-        >
-          Analyse free →
-        </Link>
-      </div>
+
 
       {/* Hero */}
       <div

@@ -187,48 +187,24 @@ export default function BlogPageClient() {
 
     {/* Header */}
         <div style={{ background: S.headerBg, borderBottom: `1px solid ${S.headerBdr}` }}>
-          <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 24px 48px' }}>
+            <div style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 24px 48px' }}>
 
-      {/* Nav */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 48 }}>
-       <Link href="/" className="blog-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-        <div style={{
-                  width: 28, height: 28, borderRadius: 8,
-                  background: 'linear-gradient(135deg,#0F766E,#14B8A6)',
-         display: 'flex', alignItems: 'center', justifyContent: 'center',
-         color: '#fff', fontWeight: 900, fontSize: 13,
-        }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-                <span style={{ fontWeight: 800, fontSize: 15, color: S.headerText, letterSpacing: '-0.02em' }}>
-         Locatalyze
-                </span>
+            <nav
+              aria-label="Breadcrumb"
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: S.headerMuted,
+                marginBottom: 20,
+                letterSpacing: '0.02em',
+              }}
+            >
+              <Link href="/" className="blog-link" style={{ color: S.headerMuted }}>
+                Home
               </Link>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-                <Link
-                  href={toolsHubRef('blog_index_nav')}
-                  className="blog-link"
-                  style={{
-                    fontSize: 13, fontWeight: 700, color: S.headerText,
-                    textDecoration: 'none', border: '1px solid rgba(255,255,255,0.35)',
-                    borderRadius: 8, padding: '7px 16px',
-                    background: 'rgba(255,255,255,0.08)',
-                  }}
-                >
-                  Free tools
-                </Link>
-                <Link
-                  href={onboardingRef('blog_index_nav')}
-                  className="blog-link"
-                  style={{
-                    fontSize: 13, fontWeight: 700, color: S.brandLight,
-                    textDecoration: 'none', border: `1px solid ${S.brand}40`,
-                    borderRadius: 8, padding: '7px 16px',
-                    background: `${S.brand}15`,
-                  }}
-                >
-                  Full report
-                </Link>
-              </div>
-            </div>
+              <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+              <span style={{ color: S.headerText }}>Blog</span>
+            </nav>
 
             {/* Page heading */}
             <div style={{ maxWidth: 640 }}>
@@ -246,6 +222,15 @@ export default function BlogPageClient() {
               </h1>
               <p style={{ fontSize: 14, color: S.headerMuted, lineHeight: 1.7 }}>
         {POST_LIST.length} articles covering location strategy, market analysis and business planning.
+              </p>
+              <p style={{ fontSize: 13, color: S.headerMuted, marginTop: 18, lineHeight: 1.6 }}>
+                <Link href={toolsHubRef('blog_index_nav')} className="blog-link" style={{ color: S.brandLight, fontWeight: 600 }}>
+                  Free tools
+                </Link>
+                <span style={{ opacity: 0.35, margin: '0 10px' }}>·</span>
+                <Link href={onboardingRef('blog_index_nav')} className="blog-link" style={{ color: S.brandLight, fontWeight: 600 }}>
+                  Run full address analysis →
+                </Link>
               </p>
             </div>
           </div>

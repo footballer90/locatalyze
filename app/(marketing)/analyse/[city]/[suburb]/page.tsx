@@ -72,43 +72,6 @@ export default async function SuburbPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
 
-      {/* Sticky Nav */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: C.white,
-          borderBottom: `1px solid ${C.border}`,
-          zIndex: 40,
-          padding: '12px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '6px', fontSize: '13px', color: C.muted, alignItems: 'center' }}>
-          <Link href="/analyse" style={{ color: C.brand, textDecoration: 'none' }}>Analyse</Link>
-          <span>›</span>
-          <Link href={`/analyse/${city}`} style={{ color: C.brand, textDecoration: 'none' }}>{data.city}</Link>
-          <span>›</span>
-          <span style={{ fontWeight: 600, color: C.n900 }}>{data.name}</span>
-        </div>
-        <Link
-          href="/onboarding"
-          style={{
-            padding: '8px 18px',
-            backgroundColor: C.emerald,
-            color: C.white,
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontSize: '13px',
-            fontWeight: 700,
-          }}
-        >
-          Analyse free →
-        </Link>
-      </nav>
-
       {/* Hero */}
       <section
         style={{
@@ -118,6 +81,26 @@ export default async function SuburbPage({ params }: Props) {
         }}
       >
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '6px',
+              fontSize: '13px',
+              color: C.muted,
+              alignItems: 'center',
+              marginBottom: '14px',
+            }}
+          >
+            <Link href="/analyse" style={{ color: C.brand, textDecoration: 'none' }}>
+              Analyse
+            </Link>
+            <span>›</span>
+            <Link href={`/analyse/${city}`} style={{ color: C.brand, textDecoration: 'none' }}>
+              {data.city}
+            </Link>
+            <span>›</span>
+            <span style={{ fontWeight: 600, color: C.n900 }}>{data.name}</span>
+          </div>
           <div
             style={{
               display: 'flex',

@@ -64,39 +64,6 @@ export default async function CityPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
 
-      {/* Sticky Nav */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: C.white,
-          borderBottom: `1px solid ${C.border}`,
-          zIndex: 40,
-          padding: '12px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Link href="/analyse" style={{ fontSize: '14px', fontWeight: 600, color: C.brand, textDecoration: 'none' }}>
-          ← All Cities
-        </Link>
-        <Link
-          href="/onboarding"
-          style={{
-            padding: '8px 18px',
-            backgroundColor: C.emerald,
-            color: C.white,
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontSize: '13px',
-            fontWeight: 700,
-          }}
-        >
-          Analyse free →
-        </Link>
-      </nav>
-
       {/* Hero */}
       <CityHero
         cityName={data.name}

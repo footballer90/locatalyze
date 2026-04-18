@@ -115,18 +115,6 @@ export default function PerthHubPage() {
  return (
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}>
    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-
-   <nav style={{ background: S.white, borderBottom: `1px solid ${S.border}`, padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-     <div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.white, fontWeight: 800, fontSize: 14 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-     <span style={{ fontWeight: 800, fontSize: 15, color: S.n900, letterSpacing: '-0.02em' }}>Locatalyze</span>
-    </Link>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-     <Link href="/analyse" style={{ fontSize: 13, color: S.muted, textDecoration: 'none' }}>All cities</Link>
-     <Link href="/onboarding" style={{ background: S.brand, color: S.white, borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Analyse free →</Link>
-    </div>
-      </nav>
-
       {/* Hero — green, distinct from Sydney's indigo */}
    <div style={{ background: 'linear-gradient(135deg, #022C22 0%, #064E3B 40%, #0F766E 80%, #0891B2 100%)', padding: '60px 24px 52px' }}>
     <div style={{ maxWidth: 960, margin: '0 auto' }}>

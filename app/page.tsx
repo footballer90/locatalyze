@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import Navbar from '@/components/Navbar'
 import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, FileText, Unlock, Package, Briefcase } from 'lucide-react'
 import { DEMO_SCENARIOS } from '@/lib/marketing/demo-scenarios'
 
@@ -1414,17 +1415,7 @@ function CinematicWalkthrough() {
 // ── Page ──────────────────────────────────────────────────────────
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<'go'|'caution'|'no'>('go')
-  const [scrolled, setScrolled]   = useState(false)
-  const [menuOpen, setMenuOpen]   = useState(false)
   const isMobile = useIsMobile()
-
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
-
-  useEffect(() => { if (scrolled && menuOpen) setMenuOpen(false) }, [scrolled])
 
   const pad = isMobile ? '0 16px' : '0 40px'
   const sp  = isMobile ? '64px 16px' : '96px 40px'
@@ -1432,6 +1423,7 @@ export default function LandingPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: L.white, fontFamily: font, color: L.slate }}>
+      <Navbar />
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none;color:inherit}
@@ -1442,55 +1434,8 @@ export default function LandingPage() {
         @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
       `}</style>
 
-      {/* NAV */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: scrolled || menuOpen ? 'rgba(255,255,255,.97)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled || menuOpen ? `1px solid ${L.border}` : 'none',
-        padding: `0 ${isMobile ? 16 : 40}px`, height: 60,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        transition: 'all .3s',
-      }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/locatalyze-without-BG.svg" alt="Locatalyze" width={152} height={32} style={{ width: 152, height: 32 }} />
-        </Link>
-
-        {!isMobile && (
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <a href="#how-it-works" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>How it works</a>
-            <a href="#pricing" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>Pricing</a>
-            <Link href="/methodology" style={{ fontSize: 13, color: L.muted, fontWeight: 500, padding: '6px 12px' }}>Methodology</Link>
-            <Link href="/auth/login" style={{ fontSize: 13, color: L.slate, fontWeight: 600, padding: '6px 12px' }}>Sign in</Link>
-            <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: L.emerald, color: '#fff', borderRadius: 10, padding: '8px 18px', fontWeight: 700, fontSize: 13, boxShadow: '0 2px 10px rgba(16,185,129,.25)' }}>
-              Check location →
-            </Link>
-          </div>
-        )}
-
-        {isMobile && (
-          <button aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', padding: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none' }}/>
-            <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', opacity: menuOpen ? 0 : 1 }}/>
-            <span style={{ display: 'block', width: 22, height: 2, background: L.slate, borderRadius: 2, transition: 'all .2s', transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none' }}/>
-          </button>
-        )}
-      </nav>
-
-      {isMobile && menuOpen && (
-        <div style={{ position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99, background: L.white, borderBottom: `1px solid ${L.border}`, padding: 16, boxShadow: '0 8px 24px rgba(0,0,0,.08)' }}>
-          {[{l:'How it works',h:'#how-it-works'},{l:'Pricing',h:'#pricing'},{l:'Methodology',h:'/methodology'}].map(item => (
-            <a key={item.l} href={item.h} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '12px 8px', fontSize: 15, fontWeight: 600, color: L.slate, borderBottom: `1px solid ${L.border}` }}>{item.l}</a>
-          ))}
-          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-            <Link href="/auth/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: 12, border: `1.5px solid ${L.border}`, borderRadius: 10, fontSize: 14, fontWeight: 700, color: L.slate }}>Sign in</Link>
-            <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ flex: 2, textAlign: 'center', padding: 12, background: L.emerald, borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff' }}>Check location →</Link>
-          </div>
-        </div>
-      )}
-
       {/* HERO */}
-      <section style={{ paddingTop: isMobile ? 80 : 100, paddingBottom: isMobile ? 56 : 80, background: L.white, position: 'relative', overflow: 'hidden' }}>
+      <section style={{ paddingTop: isMobile ? 28 : 36, paddingBottom: isMobile ? 56 : 80, background: L.white, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 160, background: `linear-gradient(to top, ${L.mint}, transparent)`, pointerEvents: 'none' }}/>
         <div style={{ ...W, padding: pad, position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 36 : 60, alignItems: 'center' }}>

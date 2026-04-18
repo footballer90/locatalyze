@@ -205,38 +205,6 @@ export default function SydneyCBDPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
 
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: S.white,
-          borderBottom: `1px solid ${S.border}`,
-          zIndex: 40,
-          padding: '12px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ fontSize: '16px', fontWeight: '700', color: S.brand }}>
-          Locatalyze
-        </div>
-        <Link
-          href="/onboarding"
-          style={{
-            padding: '8px 16px',
-            backgroundColor: S.emerald,
-            color: S.white,
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontSize: '14px',
-            fontWeight: '600',
-          }}
-        >
-          Analyse free →
-        </Link>
-      </nav>
-
       <section
         style={{
           background: `linear-gradient(135deg, #0E7490 0%, ${S.brand} 50%, ${S.brandLight} 100%)`,

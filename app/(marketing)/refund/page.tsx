@@ -15,10 +15,21 @@ export default function RefundPage() {
    <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
 
     <div style={{ background: S.headerBg, padding: '60px 24px 48px', textAlign: 'center' }}>
-     <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 32 }}>
-      <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 13 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-      <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>Locatalyze</span>
-     </Link>
+          <nav
+            aria-label="Breadcrumb"
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'rgba(248,250,252,0.55)',
+              marginBottom: 24,
+            }}
+          >
+            <Link href="/" style={{ color: 'rgba(248,250,252,0.65)', textDecoration: 'none' }}>
+              Home
+            </Link>
+            <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+            <span style={{ color: '#F9FAFB' }}>Refund policy</span>
+          </nav>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.15)', border: '1px solid rgba(15,118,110,0.3)', borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, color: S.brandLight, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 16 }}>Legal</div>
      <h1 style={{ fontSize: '36px', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.5px', marginBottom: 12 }}>Refund Policy</h1>
      <p style={{ fontSize: 13, color: '#6B7280' }}>Last updated: 1 March 2026</p>

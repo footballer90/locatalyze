@@ -380,47 +380,34 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       <div style={{ minHeight: '100vh', background: S.white, fontFamily: S.font }}>
 
-        {/* Nav */}
-        <div style={{
-          background: S.headerBg, padding: '0 24px', height: 52,
-          display: 'flex', alignItems: 'center', gap: 10,
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-        }}>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              width: 26, height: 26, borderRadius: 7,
-              background: 'linear-gradient(135deg,#0F766E,#14B8A6)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: 900, fontSize: 12,
-            }}>
-              <img src="/logo-mark.svg" alt="" style={{ width: '12px', height: '12px' }} />
-            </div>
-            <span style={{ fontWeight: 800, fontSize: 14, color: S.headerText, letterSpacing: '-0.02em' }}>
-              Locatalyze
-            </span>
-          </Link>
-          <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 14 }}>/</span>
-          <Link href="/blog" className="blog-link" style={{ fontSize: 13, color: S.headerMuted }}>Blog</Link>
-          <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 14 }}>/</span>
-          <span style={{ fontSize: 13, color: S.headerMuted }}>{post.category}</span>
-          <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginLeft: 'auto', justifyContent: 'flex-end' }}>
-            <Link href={toolsHubRef('blog_nav')} style={{
-              fontSize: 12, fontWeight: 700, color: '#FFFFFF',
-              textDecoration: 'none', border: '1px solid rgba(255,255,255,0.35)',
-              borderRadius: 7, padding: '6px 14px',
-              background: 'rgba(255,255,255,0.08)',
-            }}>
-              Free tools
-            </Link>
-            <Link href={onboardingRef('blog_nav')} style={{
-              fontSize: 12, fontWeight: 700, color: S.brandLight,
-              textDecoration: 'none', border: `1px solid ${S.brand}50`,
-              borderRadius: 7, padding: '6px 14px',
-              background: `${S.brand}18`,
-            }}>
-              Full report
-            </Link>
+        <div
+          style={{
+            background: S.n50,
+            borderBottom: `1px solid ${S.n200}`,
+            padding: '12px 24px',
+          }}
+        >
+          <div style={{ maxWidth: 1040, margin: '0 auto' }}>
+            <nav aria-label="Breadcrumb" style={{ fontSize: 12, fontWeight: 600, color: S.n500, marginBottom: 8 }}>
+              <Link href="/" className="blog-link" style={{ color: S.n500 }}>
+                Home
+              </Link>
+              <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+              <Link href="/blog" className="blog-link" style={{ color: S.n500 }}>
+                Blog
+              </Link>
+              <span style={{ opacity: 0.35, margin: '0 8px' }}>/</span>
+              <span style={{ color: S.n700 }}>{post.category}</span>
+            </nav>
+            <p style={{ fontSize: 12, color: S.n500, margin: 0, lineHeight: 1.5 }}>
+              <Link href={toolsHubRef('blog_nav')} className="blog-link" style={{ color: S.brand, fontWeight: 600 }}>
+                Free tools
+              </Link>
+              <span style={{ opacity: 0.35, margin: '0 8px' }}>·</span>
+              <Link href={onboardingRef('blog_nav')} className="blog-link" style={{ color: S.brand, fontWeight: 600 }}>
+                Run full address analysis →
+              </Link>
+            </p>
           </div>
         </div>
 
