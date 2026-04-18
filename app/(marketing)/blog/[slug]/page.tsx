@@ -692,6 +692,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               {[
                 { href: '/analyse/sydney', label: 'Sydney' },
                 { href: '/analyse/perth', label: 'Perth' },
+                { href: '/analyse/newcastle', label: 'Best suburbs in Newcastle' },
                 { href: '/analyse/perth/cafe', label: 'Perth cafes' },
                 { href: '/analyse/sydney/cafe', label: 'Sydney cafes' },
                 { href: '/analyse/sydney/restaurant', label: 'Sydney restaurants' },

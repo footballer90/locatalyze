@@ -115,6 +115,18 @@ const CITIES = [
     color: '#0891B2',
     bgColor: '#EFF6FF',
   },
+  {
+    name: 'Newcastle',
+    slug: 'newcastle',
+    state: 'NSW',
+    tagline: 'Mid-transformation coastal city — strong café culture, harbour renewal, improving demographics',
+    topSuburbs: ['Merewether', 'Hamilton', 'Cooks Hill'],
+    rentFrom: '$1,000/mo',
+    score: 72,
+    highlight: 'Best suburbs in Newcastle: Merewether, Hamilton, Cooks Hill',
+    color: '#059669',
+    bgColor: '#ECFDF5',
+  },
 ]
 
 const POPULAR_SEARCHES = [
@@ -122,6 +134,8 @@ const POPULAR_SEARCHES = [
   { label: 'Where to open a restaurant in Melbourne', href: '/analyse/melbourne', tag: 'Restaurants' },
   { label: 'Brisbane business suburbs 2026', href: '/analyse/brisbane', tag: 'Brisbane' },
   { label: 'Perth café locations rent vs foot traffic', href: '/analyse/perth', tag: 'Perth' },
+  { label: 'Best suburbs in Newcastle to open a business', href: '/analyse/newcastle', tag: 'Newcastle' },
+  { label: 'Newcastle commercial rent benchmarks 2026', href: '/analyse/newcastle', tag: 'Newcastle' },
   { label: 'Parramatta vs Sydney CBD — rent & revenue', href: '/analyse/sydney/parramatta', tag: 'Comparison' },
   { label: 'Ultimo Sydney business analysis — UTS precinct', href: '/analyse/sydney/ultimo', tag: 'Suburb' },
   { label: 'Western Sydney business suburb guide', href: '/analyse/sydney', tag: 'Western Sydney' },

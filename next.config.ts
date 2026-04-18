@@ -17,12 +17,15 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // City shortcut redirects
       { source: '/sydney',     destination: '/analyse/sydney',     permanent: true },
       { source: '/perth',      destination: '/analyse/perth',      permanent: true },
       { source: '/melbourne',  destination: '/analyse/melbourne',  permanent: true },
       { source: '/brisbane',   destination: '/analyse/brisbane',   permanent: true },
       { source: '/adelaide',   destination: '/analyse/adelaide',   permanent: true },
       { source: '/gold-coast', destination: '/analyse/gold-coast', permanent: true },
+      // Newcastle best-suburbs → city hub (301 preserves SEO equity)
+      { source: '/analyse/newcastle/best-suburbs', destination: '/analyse/newcastle', permanent: true },
     ]
   },
   async headers() {

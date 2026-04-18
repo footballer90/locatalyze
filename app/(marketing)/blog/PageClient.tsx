@@ -484,6 +484,7 @@ export default function BlogPageClient() {
         { href: '/analyse/sydney', label: 'Sydney' },
         { href: '/analyse/melbourne', label: 'Melbourne' },
         { href: '/analyse/brisbane', label: 'Brisbane' },
+        { href: '/analyse/newcastle', label: 'Newcastle' },
         { href: '/analyse/perth/cafe', label: 'Perth Cafes' },
         { href: '/analyse/sydney/cafe', label: 'Sydney Cafes' },
         { href: '/analyse/sydney/restaurant', label: 'Sydney Restaurants' },
