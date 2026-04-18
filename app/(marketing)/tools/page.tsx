@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ToolsHubCapture } from '@/components/analytics/FunnelCapture'
 
 export const metadata: Metadata = {
   title: 'Locatalyze Tools | Free Location Intelligence Tools',
@@ -150,6 +151,7 @@ const HUB_CSS = `
 export default function ToolsHubPage() {
   return (
     <main className="lv-tools-hub">
+      <ToolsHubCapture />
       <style dangerouslySetInnerHTML={{ __html: HUB_CSS }} />
 
       <section className="lth-hero">

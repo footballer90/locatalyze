@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import BreakEvenCalculator from './BreakEvenCalculator'
 import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
+import { ToolPageCapture } from '@/components/analytics/FunnelCapture'
 
 export const metadata: Metadata = {
   title: 'How Many Customers Do You Need to Survive? | Break-Even Calculator',
@@ -558,6 +559,7 @@ const WHY_CARDS = [
 export default function BreakEvenPage() {
   return (
     <main className="bet-page">
+      <ToolPageCapture toolId="break_even_foot_traffic" />
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
       <script
         type="application/ld+json"

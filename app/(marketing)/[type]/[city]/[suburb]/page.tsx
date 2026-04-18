@@ -8,9 +8,11 @@ import {
   COMPETITION_LABELS,
   RENT_LABELS,
   CONFIDENCE_LABELS,
+  isHandCraftedIntelKey,
   type SuburbIntelData,
   type VerdictType,
 } from '@/lib/suburb-intel'
+import { SuburbIntelCapture } from '@/components/analytics/FunnelCapture'
 import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
 
 // ── Static generation ─────────────────────────────────────────────────────────
@@ -519,6 +521,13 @@ export default function SuburbIntelPage({
 
   return (
     <main className="si-page">
+      <SuburbIntelCapture
+        business_type={params.type}
+        city_slug={params.city}
+        suburb_slug={params.suburb}
+        path={`/${params.type}/${params.city}/${params.suburb}`}
+        source={isHandCraftedIntelKey(params.type, params.city, params.suburb) ? 'hand_crafted' : 'generated'}
+      />
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 

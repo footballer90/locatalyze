@@ -9,6 +9,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { OnboardingCapture } from '@/components/analytics/FunnelCapture'
 
 const S = {
   font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -416,6 +417,7 @@ export default function OnboardingPage() {
 
   return (
     <div style={{ fontFamily: S.font, backgroundColor: S.n50, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <OnboardingCapture />
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

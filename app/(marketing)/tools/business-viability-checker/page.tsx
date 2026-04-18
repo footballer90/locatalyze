@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import ViabilityChecker from './ViabilityChecker'
 import { onboardingRef } from '@/lib/funnel-links'
+import { ToolPageCapture } from '@/components/analytics/FunnelCapture'
 
 export const metadata: Metadata = {
   title: 'Business Viability Checker — Will Your Café, Restaurant or Shop Work in This Suburb?',
@@ -352,6 +353,7 @@ details[open] .lv-faq-icon { transform: rotate(45deg); }
 export default function Page() {
   return (
     <main className="lv-tool-container">
+      <ToolPageCapture toolId="business_viability" />
       <style dangerouslySetInnerHTML={{ __html: LV_CSS }} />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}

@@ -1,6 +1,9 @@
 // lib/suburb-intel.ts
 // Data layer for programmatic suburb × business-type SEO pages.
 // Each entry is fully self-contained — add new entries to SUBURB_DATA to scale.
+// Additional routes are generated from lib/suburb-data (SUBURBS × core types) for scale.
+
+import { SUBURBS, type SuburbData } from './suburb-data'
 
 export type BusinessTypeIntel = 'cafe' | 'restaurant' | 'retail' | 'gym' | 'salon'
 export type VerdictType       = 'GO' | 'CAUTION' | 'NO'
@@ -902,6 +905,160 @@ const SUBURB_DATA: Record<string, SuburbIntelData> = {
 
 }
 
+// ── Generated pages (SUBURBS × cafe | restaurant | retail | gym) ─────────────
+const GENERATED_TYPES: BusinessTypeIntel[] = ['cafe', 'restaurant', 'retail', 'gym']
+
+const GENERATED_INTEL_CACHE: Record<string, SuburbIntelData> = {}
+
+function demandScoreFromSuburb(sd: SuburbData, bt: BusinessTypeIntel): number {
+  const map: Record<BusinessTypeIntel, keyof SuburbData['demandScores']> = {
+    cafe: 'cafes',
+    restaurant: 'restaurants',
+    retail: 'retail',
+    gym: 'gyms',
+    salon: 'retail',
+  }
+  const k = map[bt]
+  return sd.demandScores[k]
+}
+
+function verdictFromScore(score: number): VerdictType {
+  if (score >= 72) return 'GO'
+  if (score >= 52) return 'CAUTION'
+  return 'NO'
+}
+
+function competitionFromFootTraffic(
+  ft: SuburbData['footTraffic'],
+): CompetitionLevel {
+  if (ft === 'Very High') return 'saturated'
+  if (ft === 'High') return 'high'
+  if (ft === 'Moderate') return 'medium'
+  return 'low'
+}
+
+function buildGeneratedIntel(type: string, city: string, suburb: string): SuburbIntelData | null {
+  if (!GENERATED_TYPES.includes(type as BusinessTypeIntel)) return null
+  const sd = SUBURBS.find(s => s.citySlug === city && s.slug === suburb)
+  if (!sd) return null
+  const bt = type as BusinessTypeIntel
+  const key = `${type}/${city}/${suburb}`
+  if (SUBURB_DATA[key]) return null
+
+  const score = demandScoreFromSuburb(sd, bt)
+  const verdict = verdictFromScore(score)
+
+  const labels: Record<BusinessTypeIntel, string> = {
+    cafe: 'Café / Coffee Shop',
+    restaurant: 'Restaurant / Bistro',
+    retail: 'Retail Store',
+    gym: 'Gym / Fitness',
+    salon: 'Hair / Beauty Salon',
+  }
+
+  const monthlyRevenue = {
+    low: Math.round(score * 320 + (bt === 'gym' ? 8000 : 0)),
+    high: Math.round(score * 620 + (bt === 'gym' ? 22000 : 0)),
+  }
+  const monthlyRent = {
+    low: Math.round(2500 + score * 35),
+    high: Math.round(4500 + score * 55),
+  }
+  const monthlyProfit = {
+    low: Math.round((monthlyRevenue.low - monthlyRent.high) * 0.08),
+    high: Math.round((monthlyRevenue.high - monthlyRent.low) * 0.22),
+  }
+
+  const rentLevel: RentLevel =
+    score >= 78 ? 'premium' : score >= 65 ? 'above-market' : score >= 50 ? 'at-market' : 'below-market'
+
+  const avgTicket =
+    bt === 'cafe' ? 18 : bt === 'restaurant' ? 48 : bt === 'retail' ? 42 : bt === 'gym' ? 18 : 45
+
+  const dailyCustomersNeeded = Math.max(18, Math.min(95, Math.round(72 - score * 0.45)))
+
+  const shortLabel = labels[bt].split('/')[0].trim()
+  const sameCityOthers = SUBURBS.filter(s => s.citySlug === sd.citySlug && s.slug !== sd.slug)
+  const pool = sameCityOthers.length >= 1 ? sameCityOthers : SUBURBS.filter(s => s.slug !== sd.slug)
+  const related: RelatedSuburb[] = pool.slice(0, 3).map(s => ({
+    label: `${shortLabel} in ${s.name}`,
+    suburbSlug: s.slug,
+    citySlug: s.citySlug,
+    type: bt,
+  }))
+
+  const name = sd.name
+  const cityName = sd.city
+
+  return {
+    suburb: name,
+    suburbSlug: sd.slug,
+    city: cityName,
+    citySlug: sd.citySlug,
+    state: sd.state,
+    businessType: bt,
+    businessLabel: labels[bt],
+
+    verdict,
+    verdictSummary: `${name} scores ${score}/100 for ${labels[bt]} demand in our model — verdict ${verdict}. ${sd.keyInsight.slice(0, 220)}${sd.keyInsight.length > 220 ? '…' : ''}`,
+
+    monthlyRevenue,
+    monthlyProfit,
+    monthlyRent,
+    rentLevel,
+    avgTicket,
+    dailyCustomersNeeded,
+    competitionLevel: competitionFromFootTraffic(sd.footTraffic),
+    demandScore: Math.max(1, Math.min(10, Math.round(score / 10))),
+    confidenceLevel: score >= 60 ? 'medium' : 'low',
+    confidenceNote:
+      'This page is generated from suburb benchmarks in our dataset plus industry assumptions. For a decision-grade report, run a full Locatalyze analysis on your exact address.',
+
+    suburbProfile: `${sd.description} ${sd.demographics}`,
+
+    demandAnalysis: `${name} (${cityName}) shows a demand score of ${score}/100 for ${labels[bt].toLowerCase()} based on local foot traffic (${sd.footTraffic}), income (${sd.avgIncome}), and catchment size (${sd.population}). ${sd.vibe}. Operators who align concept with ${sd.bestFor.slice(0, 2).join(' and ')} categories tend to perform best here.`,
+
+    competitionAnalysis: `Foot traffic is rated ${sd.footTraffic.toLowerCase()} — ${competitionFromFootTraffic(sd.footTraffic) === 'saturated' ? 'expect crowded trade areas and fight for share of wallet.' : 'there is still room for differentiated concepts if rent and positioning are right.'} ${sd.keyInsight}`,
+
+    rentAnalysis: `Typical asking rents in ${name} sit around ${sd.rentRange} for visible positions — treat quotes above this band as requiring stronger revenue proof. Parking is ${sd.parkingEase.toLowerCase()}, which shapes how far customers will travel and how long they stay.`,
+
+    customerBehavior: `Locals skew toward ${sd.vibe}. Spending power aligns with ${sd.avgIncome} median income signals. Anchor traffic drivers include ${sd.nearbyAnchors.slice(0, 2).join(' and ')}.`,
+
+    successConditions: [
+      `Secure rent at or below the typical ${sd.rentRange} band for your format size.`,
+      `Match your concept to what ${name} rewards: ${sd.bestFor.slice(0, 3).join(', ')}.`,
+      `Plan staffing and hours around ${sd.footTraffic.toLowerCase()} foot-traffic reality — do not assume CBD-style throughput.`,
+      `Use ${name}'s anchors (${sd.nearbyAnchors[0] ?? 'local catchment'}) in marketing and positioning.`,
+    ],
+
+    failureScenarios: [
+      `Paying top-quartile rent without a proven daily customer engine — ${name} punishes loose economics quickly.`,
+      `Launching a format ${name} is known to struggle with: ${sd.notBestFor.slice(0, 2).join(', ')}.`,
+      `Underestimating fit-out and working capital — especially where ${sd.parkingEase === 'Difficult' || sd.parkingEase === 'Very Difficult' ? 'access and parking add friction' : 'local competition is active'}.`,
+      `Generic offer in a market where locals already have strong habitual choices.`,
+    ],
+
+    whatWouldMakeItBetter: [
+      `Negotiate incentives (rent-free period, fit-out contribution) given ${sd.footTraffic} foot traffic profile.`,
+      `Build a loyalty loop early — ${name}'s repeat trade drives most sustainable operators.`,
+    ],
+
+    metaTitle: `Is ${name} Good for a ${labels[bt].split('/')[0].trim()}? ${cityName} Location Intel | Locatalyze`,
+    metaDescription: `Thinking of opening a ${labels[bt].toLowerCase()} in ${name}, ${cityName}? Demand score ${score}/100, verdict-style read, rent band ${sd.rentRange}, and local risk notes — before you sign.`,
+
+    relatedSuburbs: related,
+
+    dataAssumptions:
+      'Generated page: scores derived from suburb demand indices in Locatalyze suburb data. Financial ranges are illustrative benchmarks, not a substitute for address-level modelling. Updated quarterly.',
+    lastUpdated: 'Q2 2026',
+  }
+}
+
+/** True when this route uses the long-form hand-crafted copy (not generated). */
+export function isHandCraftedIntelKey(type: string, city: string, suburb: string): boolean {
+  return Boolean(SUBURB_DATA[`${type}/${city}/${suburb}`])
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 export function getSuburbData(
@@ -909,13 +1066,25 @@ export function getSuburbData(
   city   : string,
   suburb : string,
 ): SuburbIntelData | null {
-  return SUBURB_DATA[`${type}/${city}/${suburb}`] ?? null
+  const key = `${type}/${city}/${suburb}`
+  if (SUBURB_DATA[key]) return SUBURB_DATA[key]
+  if (GENERATED_INTEL_CACHE[key]) return GENERATED_INTEL_CACHE[key]
+  const built = buildGeneratedIntel(type, city, suburb)
+  if (built) GENERATED_INTEL_CACHE[key] = built
+  return built ?? null
 }
 
 export function getAllSlugs(): { type: string; city: string; suburb: string }[] {
-  return Object.keys(SUBURB_DATA).map(key => {
-    const [type, city, suburb] = key.split('/')
-    return { type, city, suburb }
+  const keys = new Set<string>()
+  Object.keys(SUBURB_DATA).forEach(k => keys.add(k))
+  for (const sd of SUBURBS) {
+    for (const bt of GENERATED_TYPES) {
+      keys.add(`${bt}/${sd.citySlug}/${sd.slug}`)
+    }
+  }
+  return Array.from(keys).map(k => {
+    const [t, c, s] = k.split('/')
+    return { type: t, city: c, suburb: s }
   })
 }
 

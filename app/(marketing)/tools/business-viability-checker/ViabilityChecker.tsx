@@ -1,6 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import posthog from 'posthog-js'
+import { FUNNEL_EVENTS } from '@/lib/analytics/funnel'
 import Link from 'next/link'
 import {
   calculateViability,
@@ -81,6 +83,22 @@ export default function ViabilityChecker() {
     () => suburbOptions.find((s) => s.value === suburbSlug),
     [suburbOptions, suburbSlug]
   )
+
+  useEffect(() => {
+    if (!result) return
+    try {
+      posthog.capture(FUNNEL_EVENTS.toolEngagement, {
+        tool_id: 'business_viability',
+        step: 'result_viewed',
+        verdict: result.verdict,
+        suburb_slug: result.suburb.slug,
+        city_slug: result.suburb.citySlug,
+        business_type: businessType,
+      })
+    } catch {
+      /* ignore */
+    }
+  }, [result, businessType])
 
   const f = (id: string): React.CSSProperties => ({
     ...INPUT,

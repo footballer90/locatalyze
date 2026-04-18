@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import posthog from 'posthog-js'
+import { FUNNEL_EVENTS } from '@/lib/analytics/funnel'
 import Link from 'next/link'
 import { onboardingRef } from '@/lib/funnel-links'
 import {
@@ -82,6 +84,21 @@ export default function BreakEvenCalculator() {
     ...INPUT,
     ...(focused === id ? INPUT_FOCUS : {}),
   })
+
+  useEffect(() => {
+    if (!result) return
+    try {
+      posthog.capture(FUNNEL_EVENTS.toolEngagement, {
+        tool_id: 'break_even_foot_traffic',
+        step: 'result_viewed',
+        risk_level: result.riskLevel,
+        daily_customers_needed: result.dailyCustomersNeeded,
+        business_type: bizType,
+      })
+    } catch {
+      /* ignore */
+    }
+  }, [result, bizType])
 
   // When business type changes, reset ticket + cogs to sensible defaults
   const onBizTypeChange = (v: BusinessTypeBE) => {
