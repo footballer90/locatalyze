@@ -2,6 +2,8 @@
 // Canonical suburb data for /analyse/[city]/[suburb] pages
 // Each suburb has: full content, scores, rent data, case scenario, FAQs
 
+import { SUBURBS } from '@/lib/suburb-data'
+
 export type Verdict = 'GO' | 'CAUTION' | 'NO'
 export type CompetitionLevel = 'Low' | 'Medium' | 'High' | 'Very High'
 
@@ -314,13 +316,131 @@ export const SUBURB_PAGE_DATA: Record<string, SuburbPageData> = {
   },
 }
 
+const GENERATED_SUBURB_CACHE: Record<string, SuburbPageData> = {}
+
+function mapCompetitionLevel(footTraffic: string): CompetitionLevel {
+  if (footTraffic === 'Very High') return 'Very High'
+  if (footTraffic === 'High') return 'High'
+  if (footTraffic === 'Moderate') return 'Medium'
+  return 'Low'
+}
+
+function toVerdict(score: number): Verdict {
+  if (score >= 78) return 'GO'
+  if (score >= 62) return 'CAUTION'
+  return 'NO'
+}
+
+function buildGeneratedSuburbPageData(citySlug: string, suburbSlug: string): SuburbPageData | null {
+  const suburb = SUBURBS.find((s) => s.citySlug === citySlug && s.slug === suburbSlug)
+  if (!suburb) return null
+
+  const score = Math.round(
+    (suburb.demandScores.cafes +
+      suburb.demandScores.restaurants +
+      suburb.demandScores.retail +
+      suburb.demandScores.gyms) / 4
+  )
+  const verdict = toVerdict(score)
+
+  const peers = SUBURBS.filter((s) => s.citySlug === citySlug && s.slug !== suburbSlug).slice(0, 3)
+  const nearbySuburbs: NearbySuburb[] = peers.map((s) => {
+    const peerScore = Math.round(
+      (s.demandScores.cafes + s.demandScores.restaurants + s.demandScores.retail + s.demandScores.gyms) / 4
+    )
+    return { name: s.name, slug: s.slug, score: peerScore, verdict: toVerdict(peerScore) }
+  })
+
+  return {
+    slug: suburb.slug,
+    city: suburb.city,
+    citySlug: suburb.citySlug,
+    name: suburb.name,
+    postcode: 'N/A',
+    state: suburb.state,
+    verdict,
+    overallScore: score,
+    scores: {
+      footTraffic: suburb.demandScores.cafes,
+      demographics: suburb.demandScores.restaurants,
+      rentViability: suburb.demandScores.retail,
+      competitionGap: Math.max(45, 100 - suburb.demandScores.gyms + 10),
+      accessibility: suburb.footTraffic === 'Very High' ? 90 : suburb.footTraffic === 'High' ? 80 : 68,
+    },
+    tagline: `${suburb.name}, ${suburb.city} — practical location viability snapshot`,
+    summary: `${suburb.description} ${suburb.keyInsight}`,
+    metaTitle: `${suburb.name} Business Analysis: Score ${score}, ${verdict} Verdict | Locatalyze`,
+    metaDescription: `Suburb-level feasibility read for ${suburb.name}, ${suburb.city}: demand, rent context, competition signals, and practical go/no-go guidance.`,
+    rentRanges: [
+      { label: suburb.topStreets[0] ?? 'Prime strip', range: suburb.rentRange, note: 'Primary visibility corridor.' },
+      { label: suburb.topStreets[1] ?? 'Secondary strip', range: suburb.rentRange, note: 'Balanced cost and demand profile.' },
+      { label: suburb.topStreets[2] ?? 'Local pocket', range: suburb.rentRange, note: 'Lower overhead, demand-dependent.' },
+    ],
+    medianIncome: suburb.avgIncome,
+    population: suburb.population,
+    targetCustomer: suburb.demographics,
+    competitionLevel: mapCompetitionLevel(suburb.footTraffic),
+    sections: [
+      { heading: 'Market Fundamentals', body: `${suburb.vibe}. ${suburb.keyInsight}` },
+      { heading: 'Rent and Street Context', body: `Typical asking rent range is ${suburb.rentRange}. Core demand streets include ${suburb.topStreets.join(', ')}.` },
+      { heading: 'Who wins here', body: `Best-fit formats in ${suburb.name}: ${suburb.bestFor.join(', ')}. Higher-risk formats: ${suburb.notBestFor.join(', ')}.` },
+    ],
+    advantages: [
+      `Demand profile supports ${suburb.bestFor.slice(0, 2).join(' and ')} concepts.`,
+      `Anchor drivers include ${suburb.nearbyAnchors.slice(0, 2).join(' and ')}.`,
+      `City-level access context: ${suburb.footTraffic} movement intensity.`,
+    ],
+    disadvantages: [
+      `Formats that commonly struggle here: ${suburb.notBestFor.join(', ')}.`,
+      `Parking ease is ${suburb.parkingEase.toLowerCase()}, which can cap destination trade.`,
+      'Site-level execution still determines outcomes; use address-level analysis before lease signature.',
+    ],
+    caseScenario: {
+      concept: `Local-service concept optimized for ${suburb.name}`,
+      monthlyRent: 5000,
+      dailyCoversRequired: 70,
+      avgSpend: 22,
+      breakEvenTimeline: '4–8 months',
+      keyAssumptions: [
+        'Rent inside stated suburb range',
+        'Offer aligned with local demand profile',
+        'Conservative staffing plan in first quarter',
+      ],
+      verdict: `${suburb.name} is a ${verdict} on suburb-level signals. Validate the exact address before committing.`,
+    },
+    nearbySuburbs,
+    faqs: [
+      {
+        question: `Is ${suburb.name} good for opening a business?`,
+        answer: `${suburb.name} currently scores ${score}/100 with a ${verdict} verdict on suburb-level demand and rent signals.`,
+      },
+      {
+        question: `What rent range should I expect in ${suburb.name}?`,
+        answer: `Most visible positions sit around ${suburb.rentRange}, depending on frontage and fit-out condition.`,
+      },
+      {
+        question: `What business types suit ${suburb.name} best?`,
+        answer: `Higher-fit categories are ${suburb.bestFor.join(', ')} based on local demand and movement patterns.`,
+      },
+    ],
+  }
+}
+
 export function getSuburbPageData(citySlug: string, suburbSlug: string): SuburbPageData | null {
   const key = `${citySlug}/${suburbSlug}`
-  return SUBURB_PAGE_DATA[key] ?? null
+  if (SUBURB_PAGE_DATA[key]) return SUBURB_PAGE_DATA[key]
+  if (GENERATED_SUBURB_CACHE[key]) return GENERATED_SUBURB_CACHE[key]
+  const built = buildGeneratedSuburbPageData(citySlug, suburbSlug)
+  if (built) GENERATED_SUBURB_CACHE[key] = built
+  return built
 }
 
 export function getAllSuburbKeys(): { citySlug: string; suburbSlug: string }[] {
-  return Object.keys(SUBURB_PAGE_DATA).map((key) => {
+  const keys = new Set<string>(Object.keys(SUBURB_PAGE_DATA))
+  for (const suburb of SUBURBS) {
+    keys.add(`${suburb.citySlug}/${suburb.slug}`)
+  }
+  return Array.from(keys).map((key) => {
     const [citySlug, suburbSlug] = key.split('/')
     return { citySlug, suburbSlug }
   })

@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      { source: '/:type(cafe|restaurant|retail|gym|salon)/:city/:suburb', destination: '/analyse/:city/:suburb' },
       { source: '/ingest/static/:path*', destination: 'https://us-assets.i.posthog.com/static/:path*' },
       { source: '/ingest/:path*',        destination: 'https://us.i.posthog.com/:path*' },
     ]
