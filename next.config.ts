@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
@@ -59,20 +60,17 @@ const nextConfig: NextConfig = {
   },
 }
 
-// Wrap with Sentry only if the package is installed (graceful degradation)
-function applyOptionalSentry(config: NextConfig): NextConfig {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { withSentryConfig } = require('@sentry/nextjs')
-    return withSentryConfig(config, {
-      org: 'locatalyze',
-      project: 'javascript-nextjs',
-      silent: !process.env.CI,
-      widenClientFileUpload: true,
-    })
-  } catch {
-    return config
-  }
-}
-
-export default applyOptionalSentry(nextConfig)
+export default withSentryConfig(nextConfig, {
+  org: 'locatalyze',
+  project: 'javascript-nextjs',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // tunnelRoute: "/monitoring",
+  webpack: {
+    automaticVercelMonitors: true,
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+})
