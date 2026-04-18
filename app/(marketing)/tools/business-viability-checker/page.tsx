@@ -1,6 +1,7 @@
 // app/(marketing)/tools/business-viability-checker/page.tsx
-// Free SEO tool — suburb-level viability preview.
-// Server component: owns metadata + the content that ranks.
+// Fully scoped under .lv-tool-container — zero Tailwind dependency for visuals.
+// globals.css has unscoped element rules outside @layer that beat Tailwind
+// layered utilities. All layout/colour/type here uses !important in scoped CSS.
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
 const FAQ: { q: string; a: string }[] = [
   {
     q: 'How accurate is the free viability checker?',
-    a: 'The free checker is a suburb-level preview. It uses Locatalyze\'s demand scores, rent ranges, parking signals and suburb fit data — the same base layer that powers our paid reports. It\'s designed to tell you whether a format works in a suburb at all. It can\'t see your exact address, your specific competitors or live foot traffic — that\'s what the full address-level report unlocks.',
+    a: "The free checker is a suburb-level preview. It uses Locatalyze's demand scores, rent ranges, parking signals and suburb fit data — the same base layer that powers our paid reports. It's designed to tell you whether a format works in a suburb at all. It can't see your exact address, your specific competitors or live foot traffic — that's what the full address-level report unlocks.",
   },
   {
     q: 'What does the GO / CAUTION / NO verdict actually mean?',
@@ -36,171 +37,480 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Where do the revenue and profit numbers come from?',
-    a: 'Revenue is modelled as customers/day × average ticket × 30, scaled by the suburb\'s demand score for your business type. Costs combine staffing (calibrated to business type and size), rent you entered, COGS as a % of revenue, and a utilities/insurance overhead. We show worst, base and best cases, not a single false-precision number.',
+    a: "Revenue is modelled as customers/day × average ticket × 30, scaled by the suburb's demand score for your business type. Costs combine staffing (calibrated to business type and size), rent you entered, COGS as a % of revenue, and a utilities/insurance overhead. We show worst, base and best cases, not a single false-precision number.",
   },
   {
     q: 'Is this financial advice?',
-    a: 'No. It\'s a decision-support preview. Numbers are indicative, based on suburb demand models and typical operating ratios for each business type. Before signing a lease or spending capital, run the full address-level report and review it with your accountant.',
+    a: "No. It's a decision-support preview. Numbers are indicative, based on suburb demand models and typical operating ratios for each business type. Before signing a lease or spending capital, run the full address-level report and review it with your accountant.",
   },
   {
     q: 'Which suburbs and cities are covered?',
-    a: 'Perth, Sydney, Melbourne, Brisbane, Adelaide, Gold Coast, Canberra and Newcastle — with the highest-demand inner suburbs in each. If the suburb you want isn\'t in the list, the full Locatalyze report can still analyse any address in Australia.',
+    a: "Perth, Sydney, Melbourne, Brisbane, Adelaide, Gold Coast, Canberra and Newcastle — with the highest-demand inner suburbs in each. If the suburb you want isn't in the list, the full Locatalyze report can still analyse any address in Australia.",
   },
   {
     q: 'Why do I need the paid report if this is free?',
-    a: 'The free tool uses suburb averages. But most leases fail or succeed on variables an average can\'t see: the specific competitors within 500m, hour-by-hour foot traffic on your block, the exact demographic mix of your 500m catchment, and whether the rent you\'ve been quoted is above or below real comparable listings. The paid report resolves all of that for your exact address.',
+    a: "The free tool uses suburb averages. But most leases fail or succeed on variables an average can't see: the specific competitors within 500m, hour-by-hour foot traffic on your block, the exact demographic mix of your 500m catchment, and whether the rent you've been quoted is above or below real comparable listings. The paid report resolves all of that for your exact address.",
   },
 ]
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Scoped CSS — everything under .lv-tool-container wins over globals.css dark theme.
+// Rule: !important on colour/bg/font; NO !important on padding (would break
+// ViabilityChecker's inline paddingLeft:28 on dollar-prefix inputs).
+// ─────────────────────────────────────────────────────────────────────────────
+const LV_CSS = `
+/* ── RESET & FONT ─────────────────────────────────────────────────────────── */
+.lv-tool-container {
+  font-family: "DM Sans","Geist","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important;
+  color: #0F172A !important;
+  background: #ffffff !important;
+  -webkit-font-smoothing: antialiased;
+}
+.lv-tool-container * { box-sizing: border-box; }
+.lv-tool-container h1,.lv-tool-container h2,.lv-tool-container h3,.lv-tool-container h4,
+.lv-tool-container p,.lv-tool-container span,.lv-tool-container div,.lv-tool-container li,
+.lv-tool-container a,.lv-tool-container summary,.lv-tool-container details {
+  font-family: inherit !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+.lv-tool-container label {
+  font-family: inherit !important;
+  color: inherit !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  margin: 0 !important;
+}
+.lv-tool-container button { font-family: inherit !important; text-transform: none !important; letter-spacing: normal !important; }
+
+/* ── INPUT / SELECT — beat globals dark theme ─────────────────────────────── */
+.lv-tool-container input[type="text"],.lv-tool-container input[type="number"],
+.lv-tool-container input[type="email"],.lv-tool-container input[type="search"],
+.lv-tool-container select,.lv-tool-container textarea {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #0F172A !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  box-shadow: none !important;
+  /* NO padding !important — ViabilityChecker inline paddingLeft:28 must win */
+}
+.lv-tool-container select { background-image: none !important; cursor: pointer !important; }
+.lv-tool-container input:focus,.lv-tool-container select:focus,.lv-tool-container textarea:focus {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12) !important;
+  outline: none !important;
+}
+.lv-tool-container input::placeholder,.lv-tool-container textarea::placeholder { color: #94A3B8 !important; }
+
+/* ── LAYOUT SHELL ─────────────────────────────────────────────────────────── */
+.lv-inner { max-width: 1152px; margin: 0 auto; padding: 0 24px; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.lv-hero {
+  background: linear-gradient(180deg,#ffffff 0%,#F8FAFC 100%) !important;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 80px 0 56px;
+}
+.lv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #EFF6FF !important;
+  border: 1px solid #BFDBFE;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1D4ED8 !important;
+  letter-spacing: 0.07em;
+  text-transform: uppercase !important;
+  margin-bottom: 24px;
+  width: fit-content;
+}
+.lv-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #3B82F6 !important;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.lv-h1 {
+  font-size: clamp(34px, 5vw, 54px) !important;
+  font-weight: 800 !important;
+  line-height: 1.06 !important;
+  letter-spacing: -0.025em !important;
+  color: #0F172A !important;
+  margin: 0 0 20px !important;
+  max-width: 820px;
+}
+.lv-h1 em { font-style: normal !important; color: #2563EB !important; }
+.lv-lead {
+  font-size: clamp(15px, 2vw, 17px) !important;
+  color: #475569 !important;
+  line-height: 1.65 !important;
+  max-width: 620px;
+  margin: 0 0 24px !important;
+}
+.lv-trust { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.lv-trust-item {
+  font-size: 13px !important;
+  color: #64748B !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lv-trust-check { color: #059669 !important; font-weight: 700 !important; flex-shrink: 0; }
+
+/* ── TOOL SECTION ─────────────────────────────────────────────────────────── */
+.lv-tool-section {
+  background: #F1F5F9 !important;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 56px 0 64px;
+}
+
+/* ── VC GRID (form | result) — owned here, referenced by ViabilityChecker ── */
+.vc-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+@media (min-width: 1024px) {
+  .vc-grid { grid-template-columns: 400px 1fr; }
+  .vc-form-card { position: sticky; top: 24px; }
+}
+@keyframes vc-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.vc-spin { animation: vc-spin 0.7s linear infinite; }
+
+/* ── CONTENT SECTIONS ─────────────────────────────────────────────────────── */
+.lv-section { padding: 72px 0; }
+.lv-section--white { background: #ffffff !important; border-bottom: 1px solid #E2E8F0; }
+.lv-section--gray  { background: #F8FAFC !important; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; }
+
+.lv-overline {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  color: #2563EB !important;
+  margin-bottom: 12px;
+}
+.lv-h2 {
+  font-size: clamp(26px, 4vw, 38px) !important;
+  font-weight: 800 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.02em !important;
+  color: #0F172A !important;
+  margin: 0 0 8px !important;
+}
+.lv-body-lg { font-size: 16px !important; color: #475569 !important; line-height: 1.7 !important; margin: 0 0 16px !important; }
+
+/* ── STEP CARDS ───────────────────────────────────────────────────────────── */
+.lv-steps { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 40px; }
+@media (min-width: 768px) { .lv-steps { grid-template-columns: 1fr 1fr; } }
+
+.lv-step {
+  background: #ffffff !important;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 24px 24px 26px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.05);
+}
+.lv-step-num {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: #EFF6FF !important;
+  color: #1D4ED8 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.lv-step h3 { font-size: 16px !important; font-weight: 700 !important; color: #0F172A !important; margin: 0 0 8px !important; }
+.lv-step p  { font-size: 14px !important; color: #64748B !important; line-height: 1.65 !important; margin: 0 !important; }
+
+/* ── 2-COL LAYOUT ─────────────────────────────────────────────────────────── */
+.lv-2col { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
+@media (min-width: 1024px) { .lv-2col { grid-template-columns: 1fr 1fr; } }
+
+.lv-check-card {
+  background: #ffffff !important;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.05);
+}
+.lv-check-card h3 { font-size: 17px !important; font-weight: 700 !important; color: #0F172A !important; margin: 0 0 14px !important; }
+.lv-check-divider { margin-top: 20px; }
+.lv-check-row {
+  display: flex; gap: 10px;
+  font-size: 14px !important; color: #374151 !important;
+  line-height: 1.55 !important;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+.lv-ck-yes { color: #059669 !important; margin-top: 1px; flex-shrink: 0; font-weight: 700; }
+.lv-ck-no  { color: #94A3B8 !important; margin-top: 1px; flex-shrink: 0; }
+
+/* ── FAQ ──────────────────────────────────────────────────────────────────── */
+.lv-faq-wrap { max-width: 720px; margin: 0 auto; }
+.lv-faq details {
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s, background 0.15s;
+  background: #ffffff !important;
+}
+.lv-faq details[open] { border-color: #BFDBFE !important; background: rgba(239,246,255,0.5) !important; }
+.lv-faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.lv-faq summary::-webkit-details-marker { display: none; }
+.lv-faq-q { font-size: 15px !important; font-weight: 600 !important; color: #0F172A !important; line-height: 1.45 !important; }
+.lv-faq-icon {
+  font-size: 20px !important;
+  color: #94A3B8 !important;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+details[open] .lv-faq-icon { transform: rotate(45deg); }
+.lv-faq p { margin: 14px 0 0 !important; font-size: 14px !important; color: #64748B !important; line-height: 1.7 !important; }
+
+/* ── FINAL CTA ────────────────────────────────────────────────────────────── */
+.lv-cta-section { background: #ffffff !important; padding: 80px 0 100px; }
+.lv-cta-box { text-align: center; max-width: 660px; margin: 0 auto; }
+.lv-cta-h2 {
+  font-size: clamp(28px, 4vw, 44px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.022em !important;
+  color: #0F172A !important;
+  line-height: 1.1 !important;
+  margin: 0 0 16px !important;
+}
+.lv-cta-h2 em { font-style: normal !important; color: #2563EB !important; }
+.lv-cta-p { font-size: 16px !important; color: #64748B !important; line-height: 1.65 !important; margin: 0 0 28px !important; }
+
+.lv-btn-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.lv-btn-primary {
+  background: #0F172A !important;
+  color: #ffffff !important;
+  border-radius: 12px;
+  padding: 13px 26px;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lv-btn-primary:hover { background: #1E293B !important; }
+.lv-btn-secondary {
+  background: #ffffff !important;
+  color: #0F172A !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 12px;
+  padding: 13px 26px;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lv-btn-secondary:hover { background: #F8FAFC !important; }
+
+/* ── MOBILE ───────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .lv-hero         { padding: 52px 0 40px; }
+  .lv-tool-section { padding: 40px 0; }
+  .lv-section      { padding: 52px 0; }
+  .lv-inner        { padding: 0 16px; }
+  .lv-btn-primary,
+  .lv-btn-secondary { width: 100%; justify-content: center; }
+}
+`
+
 export default function Page() {
   return (
-    <main className="bvc-page bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900">
-      {/* ── HERO ────────────────────────────────────────────────────── */}
-      <section className="border-b border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80">
-        <div className="max-w-6xl mx-auto px-6 pt-16 pb-10 md:pt-24 md:pb-14">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 font-semibold text-[12px] tracking-wide px-3 py-1 rounded-full w-fit mb-5 border border-blue-100">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" />
+    <main className="lv-tool-container">
+      <style dangerouslySetInnerHTML={{ __html: LV_CSS }} />
+
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section className="lv-hero">
+        <div className="lv-inner">
+          <div className="lv-badge">
+            <span className="lv-badge-dot" />
             Free tool · No signup
           </div>
-          <h1 className="text-[40px] md:text-[56px] font-bold leading-[1.05] tracking-[-0.02em] text-gray-900 max-w-4xl mb-5">
-            Will your business <span className="text-blue-600">actually work</span> in that suburb?
+
+          <h1 className="lv-h1">
+            Will your business <em>actually work</em> in that suburb?
           </h1>
-          <p className="text-[17px] md:text-[18px] text-gray-600 leading-[1.6] max-w-2xl">
+
+          <p className="lv-lead">
             Check the viability of a café, restaurant, gym, takeaway or retail shop in any major
             Australian suburb in 10 seconds. Get a GO / CAUTION / NO verdict, estimated monthly
-            revenue, net profit, break-even, and the specific conditions that have to hold for it to
-            work — before you sign a lease.
+            revenue, net profit, break-even, and the specific conditions that have to hold for it
+            to work — before you sign a lease.
           </p>
-          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-gray-500">
-            <span>✓ Covers Perth, Sydney, Melbourne, Brisbane, Adelaide, Gold Coast</span>
-            <span>✓ Revenue + profit estimates</span>
-            <span>✓ Break-even timeline</span>
+
+          <div className="lv-trust">
+            {[
+              'Covers Perth, Sydney, Melbourne, Brisbane, Adelaide, Gold Coast',
+              'Revenue + profit estimates',
+              'Break-even timeline',
+            ].map((t) => (
+              <span key={t} className="lv-trust-item">
+                <span className="lv-trust-check">✓</span>
+                {t}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── TOOL ────────────────────────────────────────────────────── */}
-      <section className="bg-slate-50/60 border-b border-slate-200/70">
-        <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+      {/* ── TOOL ──────────────────────────────────────────────────────────── */}
+      <section className="lv-tool-section">
+        <div className="lv-inner">
           <ViabilityChecker />
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-slate-200/70">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <div className="max-w-2xl mb-12">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 mb-3">How it works</div>
-            <h2 className="text-[32px] md:text-[40px] font-bold tracking-[-0.02em] text-gray-900 leading-[1.15]">
-              Four variables decide whether a location works.
-            </h2>
-          </div>
+      {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
+      <section className="lv-section lv-section--white">
+        <div className="lv-inner">
+          <div className="lv-overline">How it works</div>
+          <h2 className="lv-h2">Four variables decide whether a location works.</h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Step n={1} title="Demand fit for your format">
+          <div className="lv-steps">
+            <LVStep n={1} title="Demand fit for your format">
               Every suburb has a different demand profile. Fitzroy over-indexes for cafés and indie
               retail; Chatswood over-indexes for restaurants and service retail; Subiaco for
               health-conscious formats. We score the suburb against your specific business type.
-            </Step>
-            <Step n={2} title="Rent-to-revenue ratio">
+            </LVStep>
+            <LVStep n={2} title="Rent-to-revenue ratio">
               Rent above 10% of revenue is the #1 silent killer of hospitality and retail. We
               compare the rent you entered against the suburb median so you can see whether your
               lease is already eating your margin before day one.
-            </Step>
-            <Step n={3} title="Capital adequacy">
+            </LVStep>
+            <LVStep n={3} title="Capital adequacy">
               Under-capitalised openings are the second most common failure driver. Each business
               type has a minimum setup threshold — if your budget is below it, we flag it and show
               you the failure mode before you commit.
-            </Step>
-            <Step n={4} title="Suburb-type match">
+            </LVStep>
+            <LVStep n={4} title="Suburb-type match">
               Some suburbs are great for cafés and terrible for gyms. Some are excellent for
               restaurants but poor for takeaway. We use on-the-ground suburb profiles (demographics,
               vibe, anchors, parking, foot traffic) to score the match.
-            </Step>
+            </LVStep>
           </div>
         </div>
       </section>
 
-      {/* ── WHY THIS MATTERS ────────────────────────────────────────── */}
-      <section className="bg-slate-50/70 border-b border-slate-200/70">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+      {/* ── WHY THIS MATTERS ──────────────────────────────────────────────── */}
+      <section className="lv-section lv-section--gray">
+        <div className="lv-inner">
+          <div className="lv-2col">
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 mb-3">Why this matters</div>
-              <h2 className="text-[30px] md:text-[36px] font-bold tracking-[-0.02em] text-gray-900 leading-[1.15] mb-5">
-                Most failed locations were predictable.
-              </h2>
-              <p className="text-[16px] text-gray-600 leading-[1.7] mb-4">
+              <div className="lv-overline">Why this matters</div>
+              <h2 className="lv-h2">Most failed locations were predictable.</h2>
+              <p className="lv-body-lg">
                 Operators don't fail because they're bad operators — most fail because the location
                 maths never worked in the first place. Rent was 3% too high, demand was 15% below
                 what they assumed, a direct competitor opened 150 metres away, or the catchment had
                 the wrong demographics for their format.
               </p>
-              <p className="text-[16px] text-gray-600 leading-[1.7]">
+              <p className="lv-body-lg">
                 This checker exists to catch those signals before you sign a 5-year lease. The free
                 suburb-level preview gets you 60% of the way there. The full Locatalyze report
                 resolves the rest at your exact address.
               </p>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-7">
-              <h3 className="text-[18px] font-bold text-gray-900 mb-4">The checker is good at:</h3>
-              <Good>Telling you whether the <strong>format fits the suburb</strong> at all.</Good>
-              <Good>Showing whether your <strong>rent is sane</strong> vs suburb benchmarks.</Good>
-              <Good>Flagging <strong>under-capitalisation</strong> before you spend money.</Good>
-              <Good>Giving you a <strong>defensible first estimate</strong> of revenue and profit.</Good>
+            <div className="lv-check-card">
+              <h3>The checker is good at:</h3>
+              <LVCheckRow good>Telling you whether the <strong>format fits the suburb</strong> at all.</LVCheckRow>
+              <LVCheckRow good>Showing whether your <strong>rent is sane</strong> vs suburb benchmarks.</LVCheckRow>
+              <LVCheckRow good>Flagging <strong>under-capitalisation</strong> before you spend money.</LVCheckRow>
+              <LVCheckRow good>Giving you a <strong>defensible first estimate</strong> of revenue and profit.</LVCheckRow>
 
-              <h3 className="text-[18px] font-bold text-gray-900 mt-6 mb-4">What only the paid report sees:</h3>
-              <Bad>The <strong>specific competitors</strong> within 500m of your door.</Bad>
-              <Bad><strong>Hour-by-hour foot traffic</strong> for your exact block.</Bad>
-              <Bad>The <strong>demographic mix</strong> of your 500m catchment.</Bad>
-              <Bad>Whether the rent you've been quoted is <strong>above comparable listings</strong>.</Bad>
+              <h3 className="lv-check-divider">What only the paid report sees:</h3>
+              <LVCheckRow>The <strong>specific competitors</strong> within 500m of your door.</LVCheckRow>
+              <LVCheckRow><strong>Hour-by-hour foot traffic</strong> for your exact block.</LVCheckRow>
+              <LVCheckRow>The <strong>demographic mix</strong> of your 500m catchment.</LVCheckRow>
+              <LVCheckRow>Whether the rent you've been quoted is <strong>above comparable listings</strong>.</LVCheckRow>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ─────────────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-slate-200/70">
-        <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
-          <h2 className="text-[28px] md:text-[34px] font-bold text-gray-900 tracking-[-0.02em] mb-10">
-            Questions operators ask before they trust the number
-          </h2>
-          <div className="space-y-5">
-            {FAQ.map((f, i) => (
-              <details key={i} className="group border border-gray-200 rounded-xl p-5 open:border-blue-200 open:bg-blue-50/30 transition">
-                <summary className="list-none cursor-pointer flex items-start justify-between gap-4">
-                  <span className="text-[16px] font-semibold text-gray-900 leading-snug">{f.q}</span>
-                  <span className="text-gray-400 text-lg group-open:rotate-45 transition-transform leading-none mt-0.5">+</span>
-                </summary>
-                <p className="mt-4 text-[15px] text-gray-600 leading-[1.7]">{f.a}</p>
-              </details>
-            ))}
+      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      <section className="lv-section lv-section--white">
+        <div className="lv-inner">
+          <div className="lv-faq-wrap">
+            <h2 className="lv-h2" style={{ marginBottom: 32 }}>
+              Questions operators ask before they trust the number
+            </h2>
+            <div className="lv-faq">
+              {FAQ.map((f, i) => (
+                <details key={i}>
+                  <summary>
+                    <span className="lv-faq-q">{f.q}</span>
+                    <span className="lv-faq-icon">+</span>
+                  </summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── FINAL CTA ───────────────────────────────────────────────── */}
-      <section className="bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-20 md:py-28 text-center">
-          <h2 className="text-[30px] md:text-[44px] font-bold tracking-[-0.02em] text-gray-900 leading-[1.1] mb-5 max-w-3xl mx-auto">
-            The suburb looks good. Now check the <span className="text-blue-600">exact address</span>.
-          </h2>
-          <p className="text-[17px] text-gray-600 leading-[1.6] max-w-2xl mx-auto mb-8">
-            Run a full Locatalyze report with live competitor data, foot traffic, demographics and a
-            12-month financial model. Delivered in under 5 minutes.
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/onboarding" className="bg-gray-900 hover:bg-gray-800 text-white font-semibold text-[15px] px-5 py-3 rounded-xl inline-flex items-center gap-2 transition">
-              Run full analysis — from $49
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </Link>
-            <Link href="/sample-report" className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 font-semibold text-[15px] px-5 py-3 rounded-xl inline-flex items-center transition">See a sample report</Link>
+      {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
+      <section className="lv-cta-section">
+        <div className="lv-inner">
+          <div className="lv-cta-box">
+            <h2 className="lv-cta-h2">
+              The suburb looks good. Now check the <em>exact address</em>.
+            </h2>
+            <p className="lv-cta-p">
+              Run a full Locatalyze report with live competitor data, foot traffic, demographics
+              and a 12-month financial model. Delivered in under 5 minutes.
+            </p>
+            <div className="lv-btn-row">
+              <Link href="/onboarding" className="lv-btn-primary">
+                Run full analysis — from $49
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </Link>
+              <Link href="/sample-report" className="lv-btn-secondary">
+                See a sample report
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── JSON-LD structured data ─────────────────────────────────── */}
+      {/* ── JSON-LD ───────────────────────────────────────────────────────── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -229,149 +539,27 @@ export default function Page() {
           }),
         }}
       />
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-          /* ── ISOLATION LAYER ────────────────────────────────────────────────────
-             globals.css has unscoped element rules (input, select, label, body)
-             that sit outside @layer and therefore beat Tailwind v4 layered utilities.
-             All overrides here use !important + class+element specificity to win.
-             ViabilityChecker.tsx uses inline styles (highest author specificity)
-             so this CSS is belt-and-suspenders for everything else on the page.
-          ───────────────────────────────────────────────────────────────────────── */
-
-          .bvc-page {
-            font-family: "DM Sans", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-            color: #0f172a !important;
-            background: linear-gradient(to bottom, #f8fafc, #ffffff, #f8fafc) !important;
-          }
-          .bvc-page * {
-            box-sizing: border-box;
-          }
-
-          /* Text resets — prevent body color:#e8e8f0 from bleeding through  */
-          .bvc-page h1, .bvc-page h2, .bvc-page h3, .bvc-page h4,
-          .bvc-page p, .bvc-page li, .bvc-page span, .bvc-page div,
-          .bvc-page summary, .bvc-page details {
-            font-family: inherit !important;
-            text-transform: none !important;
-            letter-spacing: normal !important;
-          }
-
-          /* Label: globals sets color:#7070a0 and margin-bottom:8px */
-          .bvc-page label {
-            font-family: inherit !important;
-            color: inherit !important;
-            text-transform: none !important;
-            letter-spacing: normal !important;
-            margin: 0 !important;
-          }
-
-          /* Button reset */
-          .bvc-page button {
-            font-family: inherit !important;
-            text-transform: none !important;
-            letter-spacing: normal !important;
-          }
-
-          /* Form elements: globals sets dark bg (#1c1c2b), dark border (#2a2a3d),
-             light text (#e8e8f0), and 13px 16px padding — all must be overridden. */
-          .bvc-page input[type="text"],
-          .bvc-page input[type="number"],
-          .bvc-page input[type="email"],
-          .bvc-page input[type="search"],
-          .bvc-page select,
-          .bvc-page textarea {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-            border: 1.5px solid #e2e8f0 !important;
-            border-radius: 10px !important;
-            padding: 10px 14px !important;
-            font-family: inherit !important;
-            font-size: 14px !important;
-            line-height: 1.5 !important;
-            box-shadow: none !important;
-            -webkit-appearance: none !important;
-            appearance: none !important;
-          }
-
-          /* Select: globals adds a dark SVG chevron via background-image */
-          .bvc-page select {
-            background-image: none !important;
-            padding-right: 40px !important;
-            cursor: pointer !important;
-          }
-
-          /* Focus: globals sets purple ring rgba(108,99,255,0.15) */
-          .bvc-page input:focus,
-          .bvc-page select:focus,
-          .bvc-page textarea:focus {
-            border-color: #2563eb !important;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
-            outline: none !important;
-          }
-
-          /* Placeholder */
-          .bvc-page input::placeholder,
-          .bvc-page textarea::placeholder {
-            color: #94a3b8 !important;
-          }
-
-          /* ── Responsive grid for ViabilityChecker ── */
-          .vc-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            align-items: start;
-          }
-          @media (min-width: 1024px) {
-            .vc-grid {
-              grid-template-columns: 360px 1fr;
-            }
-            .vc-form-card {
-              position: sticky;
-              top: 24px;
-            }
-          }
-
-          /* ── Spinner animation ── */
-          @keyframes vc-spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-          }
-          .vc-spin {
-            animation: vc-spin 0.7s linear infinite;
-          }
-        `,
-        }}
-      />
     </main>
   )
 }
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function LVStep({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-      <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-[14px] font-bold mb-4">{n}</div>
-      <h3 className="text-[17px] font-bold text-gray-900 mb-2">{title}</h3>
-      <p className="text-[14.5px] text-gray-600 leading-[1.65]">{children}</p>
+    <div className="lv-step">
+      <div className="lv-step-num">{n}</div>
+      <h3>{title}</h3>
+      <p>{children}</p>
     </div>
   )
 }
 
-function Good({ children }: { children: React.ReactNode }) {
+function LVCheckRow({ good, children }: { good?: boolean; children: React.ReactNode }) {
   return (
-    <div className="flex gap-2.5 text-[14px] text-gray-700 mb-2.5 leading-[1.55]">
-      <span className="text-emerald-600 mt-0.5">✓</span><span>{children}</span>
-    </div>
-  )
-}
-
-function Bad({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex gap-2.5 text-[14px] text-gray-700 mb-2.5 leading-[1.55]">
-      <span className="text-gray-400 mt-0.5">◯</span><span>{children}</span>
+    <div className="lv-check-row">
+      <span className={good ? 'lv-ck-yes' : 'lv-ck-no'}>{good ? '✓' : '◯'}</span>
+      <span>{children}</span>
     </div>
   )
 }
