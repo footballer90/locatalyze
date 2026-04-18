@@ -196,9 +196,9 @@ export function calculateBreakEven(input: BreakEvenInput): BreakEvenResult {
     `That's $${weeklyRevenueRequired.toLocaleString()} per week before you make a single dollar of profit.`
 
   const ctaNote =
-    riskLevel === 'low'
+    riskEntry.level === 'low'
       ? 'The maths work — but does your suburb actually see this foot traffic?'
-      : riskLevel === 'medium'
+      : riskEntry.level === 'medium'
       ? 'This is achievable in the right street. Verify actual foot traffic before signing.'
       : `${dailyCustomersNeeded} customers/day is a high bar. Most locations won't hit this without strong anchors or a destination concept.`
 
