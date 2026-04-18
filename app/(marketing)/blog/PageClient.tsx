@@ -5,6 +5,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { POST_LIST } from '@/lib/blog-posts'
+import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
 import { BLOG_CATEGORY_COLORS, BLOG_THEME } from '@/lib/blog-theme'
 
 const S = {
@@ -201,18 +202,32 @@ export default function BlogPageClient() {
          Locatalyze
                 </span>
               </Link>
-              <Link
-                href="/onboarding"
-                className="blog-link"
-        style={{
-                  fontSize: 13, fontWeight: 700, color: S.brandLight,
-                  textDecoration: 'none', border: `1px solid ${S.brand}40`,
-         borderRadius: 8, padding: '7px 16px',
-         background: `${S.brand}15`,
-                }}
-              >
-                Check your location
-              </Link>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+                <Link
+                  href={toolsHubRef('blog_index_nav')}
+                  className="blog-link"
+                  style={{
+                    fontSize: 13, fontWeight: 700, color: S.headerText,
+                    textDecoration: 'none', border: '1px solid rgba(255,255,255,0.35)',
+                    borderRadius: 8, padding: '7px 16px',
+                    background: 'rgba(255,255,255,0.08)',
+                  }}
+                >
+                  Free tools
+                </Link>
+                <Link
+                  href={onboardingRef('blog_index_nav')}
+                  className="blog-link"
+                  style={{
+                    fontSize: 13, fontWeight: 700, color: S.brandLight,
+                    textDecoration: 'none', border: `1px solid ${S.brand}40`,
+                    borderRadius: 8, padding: '7px 16px',
+                    background: `${S.brand}15`,
+                  }}
+                >
+                  Full report
+                </Link>
+              </div>
             </div>
 
             {/* Page heading */}

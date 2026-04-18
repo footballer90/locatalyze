@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import BreakEvenCalculator from './BreakEvenCalculator'
+import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
 
 export const metadata: Metadata = {
   title: 'How Many Customers Do You Need to Survive? | Break-Even Calculator',
@@ -704,9 +705,9 @@ export default function BreakEvenPage() {
 
           <div className="bet-link-strip">
             {[
-              { href: '/tools/business-viability-checker', label: 'Business Viability Checker' },
-              { href: '/tools/rent-overpriced-checker',    label: 'Is This Rent Overpriced?' },
-              { href: '/onboarding',                       label: 'Full location report' },
+              { href: '/tools/business-viability-checker?ref=cross_breakeven', label: 'Business Viability Checker' },
+              { href: '/tools/rent-overpriced-checker?ref=cross_breakeven', label: 'Is This Rent Overpriced?' },
+              { href: onboardingRef('tool_breakeven_strip'), label: 'Full location report' },
             ].map(l => (
               <a key={l.href} href={l.href} className="bet-link-pill">
                 {Icon.arrowRight}
@@ -770,11 +771,11 @@ export default function BreakEvenPage() {
               deliver your survival number — before you commit to a lease.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-              <a href="/onboarding" className="bet-cta-btn">
+              <a href={onboardingRef('tool_breakeven_footer')} className="bet-cta-btn">
                 Analyse my location
                 {Icon.arrowRight}
               </a>
-              <a href="/tools" className="bet-cta-secondary">
+              <a href={toolsHubRef('tool_breakeven_footer')} className="bet-cta-secondary">
                 See all free tools
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>

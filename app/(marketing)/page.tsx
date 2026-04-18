@@ -1,6 +1,7 @@
 // app/(marketing)/location/page.tsx
 import Link from 'next/link'
 import { CITIES, BUSINESS_TYPES, getScoreColor } from '@/lib/location-data'
+import { toolsHubRef } from '@/lib/funnel-links'
 
 export const metadata = {
   title: 'Business Location Analysis — Australian Cities | Locatalyze',
@@ -110,13 +111,13 @@ export default function LocationIndexPage() {
         </div>
       </section>
 
-      {/* Free tool CTA — links to /tools/business-viability-checker */}
+      {/* Free tools funnel — hub + viability */}
       <section style={S.toolSection}>
         <div style={S.toolInner} className="homepage-tool-row">
           <div>
             <div style={S.toolBadge}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34D399', display: 'inline-block' }} />
-              Free tool · No signup
+              Free tools · No signup
             </div>
             <h2 style={S.toolTitle}>
               Before you sign a lease —<br />check if the business will actually work.
@@ -126,8 +127,12 @@ export default function LocationIndexPage() {
               estimated revenue, profit and break-even — in 10 seconds, no signup.
             </p>
             <div style={S.toolBtns}>
-              <Link href="/tools/business-viability-checker" style={S.toolPrimary}>
-                Check viability — free
+              <Link href={toolsHubRef('home_hero')} style={S.toolPrimary}>
+                Free tools hub
+                <span style={{ fontSize: 16 }}>→</span>
+              </Link>
+              <Link href="/tools/business-viability-checker?ref=home_viability" style={{ ...S.toolPrimary, background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.28)' }}>
+                Viability checker
                 <span style={{ fontSize: 16 }}>→</span>
               </Link>
               <Link href="/sample-report" style={S.toolGhost}>See a paid sample report</Link>
@@ -160,7 +165,20 @@ export default function LocationIndexPage() {
       <section style={S.cta}>
         <div style={S.ctaTitle}>Need a Specific Address Analysed?</div>
         <div style={S.ctaSub}>Enter any suburb in Australia and get a full feasibility report in minutes</div>
-        <Link href="/analyse" style={S.ctaBtn}>Start a Location Analysis →</Link>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', alignItems: 'center' }}>
+          <Link href={toolsHubRef('home_footer')} style={{
+            ...S.ctaBtn,
+            background: 'transparent',
+            color: '#FFFFFF',
+            border: '2px solid rgba(255,255,255,0.55)',
+          }}>
+            Try free tools first →
+          </Link>
+          <Link href="/analyse" style={S.ctaBtn}>Start a Location Analysis →</Link>
+        </div>
+        <p style={{ fontSize: 13, color: 'rgba(167,243,208,0.85)', marginTop: 16, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.55 }}>
+          Free tools validate the idea; a full analysis is for when you have a real address.
+        </p>
       </section>
     </div>
   )

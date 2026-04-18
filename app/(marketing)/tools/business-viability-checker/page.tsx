@@ -6,6 +6,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import ViabilityChecker from './ViabilityChecker'
+import { onboardingRef } from '@/lib/funnel-links'
 
 export const metadata: Metadata = {
   title: 'Business Viability Checker — Will Your Café, Restaurant or Shop Work in This Suburb?',
@@ -496,7 +497,7 @@ export default function Page() {
               and a 12-month financial model. Delivered in under 5 minutes.
             </p>
             <div className="lv-btn-row">
-              <Link href="/onboarding" className="lv-btn-primary">
+              <Link href={onboardingRef('tool_viability_footer')} className="lv-btn-primary">
                 Run full analysis — from $49
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>

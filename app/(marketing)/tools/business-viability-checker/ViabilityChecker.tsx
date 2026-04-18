@@ -11,6 +11,7 @@ import {
   type BudgetBand,
   type ViabilityResult,
 } from '@/lib/viability-calc'
+import { onboardingRef } from '@/lib/funnel-links'
 
 // ── Design tokens — all styles are inline so globals.css dark theme can't bleed in ──
 const S = {
@@ -652,7 +653,10 @@ function ResultPanel({ result }: { result: ViabilityResult }) {
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           <Link
-            href={`/onboarding?suburb=${result.suburb.slug}&city=${result.suburb.citySlug}`}
+            href={onboardingRef('tool_viability', {
+              suburb: result.suburb.slug,
+              city: result.suburb.citySlug,
+            })}
             style={{
               background: '#FFFFFF', color: '#0F172A',
               borderRadius: 12, padding: '12px 24px',

@@ -11,6 +11,7 @@ import {
   type SuburbIntelData,
   type VerdictType,
 } from '@/lib/suburb-intel'
+import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
 
 // ── Static generation ─────────────────────────────────────────────────────────
 
@@ -445,6 +446,27 @@ export default function SuburbIntelPage({
   transition: color 0.15s !important;
 }
 .si-cta-btn-secondary:hover { color: rgba(255,255,255,0.6) !important; }
+.si-cta-btn-tools {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
+  border-radius: 12px !important;
+  padding: 13px 24px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  transition: background 0.15s, border-color 0.15s !important;
+}
+.si-cta-btn-tools:hover {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.75) !important;
+  color: #ffffff !important;
+}
+.si-card-btn--brand { background: #0f766e !important; }
+.si-card-btn--brand:hover { background: #0d9488 !important; }
 `
 
   const ArrowRight = () => (
@@ -602,6 +624,57 @@ export default function SuburbIntelPage({
         </div>
       </section>
 
+      {/* Funnel: free tools hub (tools → full report) */}
+      <div style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
+        <div className="si-shell" style={{ paddingTop: 16, paddingBottom: 16 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 16,
+              padding: '16px 20px',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 14,
+            }}
+          >
+            <div style={{ minWidth: 0, maxWidth: 720 }}>
+              <div style={{
+                fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase',
+                color: '#0f766e', marginBottom: 6, fontFamily: 'inherit',
+              }}>
+                Free tools · Same intelligence layer as paid reports
+              </div>
+              <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a', lineHeight: 1.45, fontFamily: 'inherit' }}>
+                Validate rent, viability, and break-even for {data.suburb} — then run a full report for your exact address.
+              </p>
+            </div>
+            <Link
+              href={toolsHubRef('suburb_banner')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                flexShrink: 0,
+                background: '#0f766e',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: 14,
+                padding: '12px 18px',
+                borderRadius: 10,
+                textDecoration: 'none',
+                fontFamily: 'inherit',
+              }}
+            >
+              Open free tools hub
+              <ArrowRight />
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* Body */}
       <div className="si-shell">
         <div className="si-layout">
@@ -642,7 +715,7 @@ export default function SuburbIntelPage({
               <h2 className="si-section-h2">What does rent actually cost — and what does it demand from you?</h2>
               <p className="si-prose">{data.rentAnalysis}</p>
               <div style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <Link href="/tools/rent-overpriced-checker" style={{
+                <Link href={`/tools/rent-overpriced-checker?ref=${encodeURIComponent('suburb_rent')}`} style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   fontSize: 13, fontWeight: 600, color: '#2563EB',
                   border: '1px solid #BFDBFE', background: '#EFF6FF',
@@ -650,13 +723,21 @@ export default function SuburbIntelPage({
                 }}>
                   Check if this rent is overpriced →
                 </Link>
-                <Link href="/tools/break-even-foot-traffic" style={{
+                <Link href={`/tools/break-even-foot-traffic?ref=${encodeURIComponent('suburb_rent')}`} style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   fontSize: 13, fontWeight: 600, color: '#0f172a',
                   border: '1px solid #e2e8f0', background: '#f8fafc',
                   borderRadius: 999, padding: '6px 14px',
                 }}>
                   Calculate your break-even →
+                </Link>
+                <Link href={toolsHubRef('suburb_rent')} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  fontSize: 13, fontWeight: 600, color: '#0f766e',
+                  border: '1px solid #99f6e4', background: '#ecfdf5',
+                  borderRadius: 999, padding: '6px 14px',
+                }}>
+                  All free tools →
                 </Link>
               </div>
             </div>
@@ -738,6 +819,24 @@ export default function SuburbIntelPage({
           {/* ── Sidebar ── */}
           <div className="si-sidebar">
 
+            {/* Tools hub — primary funnel entry */}
+            <div className="si-card" style={{
+              border: '2px solid #99f6e4',
+              background: 'linear-gradient(180deg,#ecfdf5 0%,#ffffff 55%) !important',
+            }}>
+              <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.09em', color: '#0f766e', marginBottom: 8, fontFamily: 'inherit' }}>
+                Free tools hub
+              </div>
+              <div className="si-card-title" style={{ marginTop: 0 }}>Rent, viability &amp; break-even</div>
+              <div className="si-card-desc">
+                Run free checks first — same intelligence layer as full reports — then upgrade when you have a site.
+              </div>
+              <Link href={toolsHubRef('suburb_sidebar')} className="si-card-btn si-card-btn--brand">
+                <span>Open free tools hub</span>
+                <ArrowRight />
+              </Link>
+            </div>
+
             {/* Full report CTA */}
             <div className="si-card" style={{
               background: 'linear-gradient(135deg,#0F172A 0%,#1E3A5F 100%) !important',
@@ -756,7 +855,7 @@ export default function SuburbIntelPage({
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 16, fontFamily: 'inherit' }}>
                   Competitor locations, foot traffic estimate, demographic breakdown, and 12-month P&amp;L model for your exact address.
                 </p>
-                <Link href="/onboarding" style={{
+                <Link href={onboardingRef('suburb_intel_report')} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   background: '#fff', color: '#0f172a', borderRadius: 10,
                   padding: '11px 14px', fontSize: 13, fontWeight: 700,
@@ -775,7 +874,7 @@ export default function SuburbIntelPage({
                 Get a GO / CAUTION / NO signal with revenue, break-even, and market fit indicators
                 for any {data.city} suburb.
               </div>
-              <Link href="/tools/business-viability-checker" className="si-card-btn">
+              <Link href="/tools/business-viability-checker?ref=suburb_card" className="si-card-btn">
                 <span>Check viability</span>
                 <ArrowRight />
               </Link>
@@ -788,11 +887,11 @@ export default function SuburbIntelPage({
                 Enter your rent and staff setup to see exactly how many customers you need per day
                 to break even — with a risk rating.
               </div>
-              <Link href="/tools/break-even-foot-traffic" className="si-card-btn">
+              <Link href="/tools/break-even-foot-traffic?ref=suburb_card" className="si-card-btn">
                 <span>Calculate break-even</span>
                 <ArrowRight />
               </Link>
-              <Link href="/tools/rent-overpriced-checker" className="si-card-btn-outline">
+              <Link href="/tools/rent-overpriced-checker?ref=suburb_card" className="si-card-btn-outline">
                 <span>Check rent →</span>
                 <ArrowRight />
               </Link>
@@ -846,12 +945,12 @@ export default function SuburbIntelPage({
               ))}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <Link href="/onboarding" className="si-cta-btn-primary">
+              <Link href={onboardingRef('suburb_footer_report')} className="si-cta-btn-primary">
                 Get the {data.suburb} report
                 <ArrowRight />
               </Link>
-              <Link href="/tools" className="si-cta-btn-secondary">
-                Browse free tools
+              <Link href={toolsHubRef('suburb_footer')} className="si-cta-btn-tools">
+                Free tools hub
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>

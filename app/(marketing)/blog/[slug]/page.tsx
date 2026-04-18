@@ -3,6 +3,7 @@
 
 import Link from 'next/link'
 import { POSTS, POST_LIST, type Section } from '@/lib/blog-posts'
+import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
 import { BLOG_CATEGORY_COLORS, BLOG_THEME } from '@/lib/blog-theme'
 
 const S = {
@@ -403,15 +404,24 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 14 }}>/</span>
           <span style={{ fontSize: 13, color: S.headerMuted }}>{post.category}</span>
           <div style={{ flex: 1 }} />
-          <Link href="/onboarding" style={{
-            fontSize: 12, fontWeight: 700, color: S.brandLight,
-            textDecoration: 'none', border: `1px solid ${S.brand}50`,
-            borderRadius: 7, padding: '6px 14px',
-            background: `${S.brand}18`,
-            marginLeft: 'auto',
-          }}>
-            Check your location
-          </Link>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginLeft: 'auto', justifyContent: 'flex-end' }}>
+            <Link href={toolsHubRef('blog_nav')} style={{
+              fontSize: 12, fontWeight: 700, color: '#FFFFFF',
+              textDecoration: 'none', border: '1px solid rgba(255,255,255,0.35)',
+              borderRadius: 7, padding: '6px 14px',
+              background: 'rgba(255,255,255,0.08)',
+            }}>
+              Free tools
+            </Link>
+            <Link href={onboardingRef('blog_nav')} style={{
+              fontSize: 12, fontWeight: 700, color: S.brandLight,
+              textDecoration: 'none', border: `1px solid ${S.brand}50`,
+              borderRadius: 7, padding: '6px 14px',
+              background: `${S.brand}18`,
+            }}>
+              Full report
+            </Link>
+          </div>
         </div>
 
         {/* Hero */}
@@ -529,20 +539,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               textAlign: 'center', marginTop: 52, marginBottom: 16,
             }}>
               <h3 style={{ fontSize: 19, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>
-                Check if your location is worth it
+                Tools first — then a full report for your address
               </h3>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 6, lineHeight: 1.6 }}>
-                See competition, demand, and risk before committing to a lease.
+                Free rent, viability, and break-even checks. Upgrade when you are ready for competitors, map, and numbers for a specific site.
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginBottom: 20 }}>No signup required to start</p>
-              <Link href="/onboarding" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: '#fff', color: S.brand,
-                borderRadius: 10, padding: '11px 24px',
-                fontSize: 14, fontWeight: 800,
-              }}>
-                Check your location →
-              </Link>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginBottom: 20 }}>No signup required for tools</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
+                <Link href={toolsHubRef('blog_article_cta')} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: '#fff', color: S.brand,
+                  borderRadius: 10, padding: '11px 24px',
+                  fontSize: 14, fontWeight: 800,
+                }}>
+                  Open free tools hub →
+                </Link>
+                <Link href={onboardingRef('blog_article_cta')} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: 'transparent', color: '#FFFFFF',
+                  borderRadius: 10, padding: '11px 24px',
+                  fontSize: 14, fontWeight: 700,
+                  border: '2px solid rgba(255,255,255,0.45)',
+                }}>
+                  Run full analysis
+                </Link>
+              </div>
             </div>
 
             {/* Related articles */}
@@ -645,19 +666,28 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 fontSize: 13, fontWeight: 700, color: '#F9FAFB',
                 marginBottom: 8, lineHeight: 1.4,
               }}>
-                Check your location
+                Free tools — then full report
               </p>
               <p style={{ fontSize: 12, color: '#CBD5E1', marginBottom: 6, lineHeight: 1.6 }}>
-                See competition and risk instantly.
+                Run viability, rent, and break-even checks first.
               </p>
-              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 14 }}>No signup required to start</p>
-              <Link href="/onboarding" style={{
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 14 }}>No signup required for tools</p>
+              <Link href={toolsHubRef('blog_sidebar')} style={{
+                display: 'block', textAlign: 'center',
+                background: '#fff', color: S.brand,
+                borderRadius: 8, padding: '10px',
+                fontSize: 13, fontWeight: 700,
+                marginBottom: 8,
+              }}>
+                Open free tools hub →
+              </Link>
+              <Link href={onboardingRef('blog_sidebar')} style={{
                 display: 'block', textAlign: 'center',
                 background: S.brand, color: '#fff',
                 borderRadius: 8, padding: '10px',
                 fontSize: 13, fontWeight: 700,
               }}>
-                Check your location →
+                Full location report →
               </Link>
             </div>
 

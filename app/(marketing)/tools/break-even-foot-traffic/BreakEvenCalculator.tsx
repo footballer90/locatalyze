@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { onboardingRef } from '@/lib/funnel-links'
 import {
   calculateBreakEven,
   getDefaultTicket,
@@ -561,7 +562,7 @@ function ResultPanel({ result }: { result: BreakEvenResult }) {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-          <Link href="/onboarding" style={{
+          <Link href={onboardingRef('tool_breakeven_result')} style={{
             background: '#FFFFFF', color: '#0F172A',
             borderRadius: 12, padding: '12px 22px',
             fontSize: 14, fontWeight: 700, textDecoration: 'none',
