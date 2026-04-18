@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https: https://*.mapbox.com",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://challenges.cloudflare.com https://*.upstash.io https://plausible.io https://api.mapbox.com https://events.mapbox.com https://us1.locationiq.com https://api.locationiq.com https://nominatim.openstreetmap.org https://api.geoapify.com https://*.ingest.sentry.io https://*.sentry.io",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://challenges.cloudflare.com https://*.upstash.io https://plausible.io https://api.mapbox.com https://events.mapbox.com https://us1.locationiq.com https://api.locationiq.com https://nominatim.openstreetmap.org https://api.geoapify.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.sentry.io",
               "worker-src blob:",
               "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com",
               "frame-ancestors 'none'",
@@ -66,7 +66,7 @@ export default withSentryConfig(nextConfig, {
   silent: !process.env.CI,
   widenClientFileUpload: true,
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  // tunnelRoute: "/monitoring",
+  tunnelRoute: '/sentry-tunnel',
   webpack: {
     automaticVercelMonitors: true,
     treeshake: {
