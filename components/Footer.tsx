@@ -307,6 +307,7 @@ export default function Footer() {
         { label: 'Methodology',    href: '/methodology' },
     { label: 'Location insights', href: '/analyse' },
     { label: 'Blog',       href: '/blog' },
+    { label: 'Tools',      href: '/tools' },
     { label: 'Help Centre',    href: '/help' },
     { label: 'Contact',      href: '/contact' },
    ],

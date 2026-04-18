@@ -1,190 +1,259 @@
 'use client'
-import Link from 'next/link'
-import { useState } from 'react'
 
-const S = {
- brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
- n50: '#FAFAF9', n200: '#E7E5E4', n500: '#78716C', n700: '#44403C', n900: '#1C1917', white: '#FFFFFF',
- emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
- red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
- amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
- headerBg: '#0C1F1C', font: "'DM Sans', sans-serif",
+import Link from 'next/link'
+import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
+
+type UseCase = {
+  id: string
+  title: string
+  problem: string
+  solution: string
+  benefits: string[]
+  metrics: { label: string; value: string }[]
+  primaryHref: string
+  toolHref: string
+  reportHref: string
+  reportLabel: string
 }
 
-const TYPES = [
- { icon: '', label: 'Cafes & Coffee', href: '/use-case/cafes', color: '#92400E', bg: '#FFFBEB', desc: 'Morning foot traffic, rent-to-revenue and competition analysis for café owners.' },
- { icon: '', label: 'Restaurants', href: '/use-case/restaurants', color: '#1D4ED8', bg: '#EFF6FF', desc: 'Evening trade, parking access and dining precinct analysis for restaurant operators.' },
- { icon: '', label: 'Retail Stores', href: '/use-case/retail', color: '#7C3AED', bg: '#F5F3FF', desc: 'Pedestrian volume, anchor store proximity and demographic matching for retailers.' },
- { icon: '', label: 'Gyms & Fitness', href: '/use-case/gyms', color: '#059669', bg: '#ECFDF5', desc: 'Residential catchment, format gap analysis and membership modelling for fitness businesses.' },
- { icon: '', label: 'Takeaway', href: '/use-case/takeaway', color: '#DC2626', bg: '#FEF2F2', desc: 'Delivery zone density, cuisine gap and office proximity analysis for takeaway operators.' },
+const USE_CASES: UseCase[] = [
+  {
+    id: 'cafe',
+    title: 'Cafe location analysis',
+    problem:
+      'Cafe operators often sign leases before validating commuter flow, competitor density, and realistic rent-to-revenue fit.',
+    solution:
+      'Locatalyze models foot traffic, trade-area demographics, and local saturation to show whether the site can sustain your daily transaction target.',
+    benefits: [
+      'Estimate viable daily covers before lease commitment',
+      'Benchmark nearby competitor intensity within 500m',
+      'Stress-test rent against conservative revenue assumptions',
+    ],
+    metrics: [
+      { label: 'Peak window', value: '7:00-10:00 AM' },
+      { label: 'Typical risk flag', value: 'Rent > 12% revenue' },
+      { label: 'Coverage radius', value: '500m competitor map' },
+    ],
+    primaryHref: onboardingRef('usecase_cafe_run'),
+    toolHref: '/tools/business-viability-checker?ref=usecase_cafe_tool',
+    reportHref: '/cafe/perth/subiaco',
+    reportLabel: 'View suburb report',
+  },
+  {
+    id: 'restaurant',
+    title: 'Restaurant viability check',
+    problem:
+      'Restaurants fail when evening demand and spend-per-visit assumptions are too optimistic for the local catchment.',
+    solution:
+      'Use suburb-level demand and affordability signals to validate whether dinner trade can support staffing and occupancy targets.',
+    benefits: [
+      'Validate realistic evening demand and spend profile',
+      'Identify market overcrowding versus true concept gaps',
+      'Pressure-test setup risk before capex decisions',
+    ],
+    metrics: [
+      { label: 'Decision output', value: 'GO / CAUTION / NO' },
+      { label: 'Demand confidence', value: 'Data-backed signal' },
+      { label: 'Scenario view', value: 'Base / downside framing' },
+    ],
+    primaryHref: onboardingRef('usecase_restaurant_run'),
+    toolHref: '/tools/business-viability-checker?ref=usecase_restaurant_tool',
+    reportHref: '/restaurant/perth/fremantle',
+    reportLabel: 'View suburb report',
+  },
+  {
+    id: 'retail',
+    title: 'Retail site selection',
+    problem:
+      'Retail launches struggle when pedestrian intent and anchor draw do not match the product category or ticket size.',
+    solution:
+      'Evaluate corridor strength, demand fit, and competitive pressure before committing to a high fixed-cost tenancy.',
+    benefits: [
+      'Match suburb demographics to your retail category',
+      'Avoid low-intent footfall locations',
+      'Benchmark lease risk against expected conversion volume',
+    ],
+    metrics: [
+      { label: 'Site fit', value: 'Category-aligned demand' },
+      { label: 'Competitor view', value: 'Nearby overlap scan' },
+      { label: 'Lease risk', value: 'Affordability signal' },
+    ],
+    primaryHref: onboardingRef('usecase_retail_run'),
+    toolHref: '/tools/break-even-foot-traffic?ref=usecase_retail_tool',
+    reportHref: '/retail/melbourne/richmond',
+    reportLabel: 'View suburb report',
+  },
+  {
+    id: 'gym',
+    title: 'Gym demand analysis',
+    problem:
+      'Fitness operators overestimate local membership depth and underestimate the impact of nearby premium chains.',
+    solution:
+      'Map true catchment demand against existing fitness supply to test whether your membership model has enough room.',
+    benefits: [
+      'Estimate local demand depth by suburb profile',
+      'Surface saturation risk before fit-out spend',
+      'Validate membership economics against fixed rent',
+    ],
+    metrics: [
+      { label: 'Catchment lens', value: 'Suburb demand profile' },
+      { label: 'Risk scan', value: 'Saturation + affordability' },
+      { label: 'Decision speed', value: 'Minutes, not weeks' },
+    ],
+    primaryHref: onboardingRef('usecase_gym_run'),
+    toolHref: '/tools/business-viability-checker?ref=usecase_gym_tool',
+    reportHref: '/gym/sydney/bondi',
+    reportLabel: 'View suburb report',
+  },
+  {
+    id: 'rent',
+    title: 'Rent affordability analysis',
+    problem:
+      'Many operators accept quoted rent without validating required foot traffic and break-even pressure under conservative assumptions.',
+    solution:
+      'Use break-even modelling to convert rent into a clear daily customer requirement and risk band before signing.',
+    benefits: [
+      'Translate rent into required daily customer volume',
+      'Spot fragile economics before negotiation',
+      'Use downside scenarios to negotiate with confidence',
+    ],
+    metrics: [
+      { label: 'Primary output', value: 'Daily customers needed' },
+      { label: 'Risk label', value: 'Healthy / Caution / High risk' },
+      { label: 'Use case fit', value: 'Lease negotiation prep' },
+    ],
+    primaryHref: onboardingRef('usecase_rent_run'),
+    toolHref: '/tools/break-even-foot-traffic?ref=usecase_rent_tool',
+    reportHref: '/cafe/sydney/newtown',
+    reportLabel: 'View suburb report',
+  },
 ]
 
-const STEPS = [
- { n: '01', title: 'Enter your address', body: 'Paste any Australian street address. Works for any suburb in any state.' },
- { n: '02', title: 'Choose your business type', body: 'Select from café, restaurant, retail, gym, takeaway or general business.' },
- { n: '03', title: 'Add your financial inputs', body: 'Enter your expected rent, average transaction value and trading days.' },
- { n: '04', title: 'Get your report', body: 'Receive a full feasibility report with GO / CAUTION / NO verdict in about 90 seconds.' },
-]
+const PAGE_CSS = `
+.ucx-page { background:#f8fafc; color:#0f172a; font-family:"DM Sans","Inter","Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.ucx-page * { box-sizing:border-box; }
+.ucx-shell { max-width:1120px; margin:0 auto; padding:0 24px; }
+.ucx-hero { padding:72px 0 52px; background:linear-gradient(180deg,#0b1220 0%,#111827 100%); color:#f8fafc; border-bottom:1px solid rgba(255,255,255,.08); }
+.ucx-eyebrow { margin:0 0 10px; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#5eead4; }
+.ucx-hero h1 { margin:0 0 14px; font-size:clamp(30px,4.4vw,52px); line-height:1.08; letter-spacing:-.03em; }
+.ucx-hero p { margin:0 0 26px; font-size:17px; line-height:1.7; color:#cbd5e1; max-width:760px; }
+.ucx-btn-primary { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 22px; border-radius:12px; text-decoration:none; background:#0f766e; color:#fff; font-size:14px; font-weight:700; box-shadow:0 8px 20px -10px rgba(15,118,110,.55); }
+.ucx-main { padding:56px 0 30px; }
+.ucx-section { display:grid; grid-template-columns:1.08fr .92fr; gap:28px; margin-bottom:24px; border:1px solid #e2e8f0; border-radius:20px; background:#fff; box-shadow:0 14px 34px -26px rgba(15,23,42,.35); padding:28px; }
+.ucx-section--reverse { grid-template-columns:.92fr 1.08fr; }
+.ucx-content h2 { margin:0 0 10px; font-size:clamp(24px,2.8vw,32px); line-height:1.2; letter-spacing:-.02em; }
+.ucx-kicker { margin:0 0 10px; font-size:11px; text-transform:uppercase; letter-spacing:.08em; font-weight:800; color:#0f766e; }
+.ucx-problem, .ucx-solution { margin:0 0 10px; color:#475569; line-height:1.7; font-size:14px; }
+.ucx-list { margin:12px 0 16px; padding:0; list-style:none; }
+.ucx-list li { margin:0 0 8px; padding-left:18px; position:relative; color:#334155; font-size:13px; line-height:1.55; }
+.ucx-list li:before { content:""; position:absolute; left:0; top:7px; width:8px; height:8px; border-radius:999px; background:#14b8a6; }
+.ucx-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:8px; }
+.ucx-btn-secondary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 16px; border-radius:10px; text-decoration:none; border:1px solid #d1d5db; color:#0f172a; font-size:13px; font-weight:700; background:#fff; }
+.ucx-link-inline { font-size:13px; color:#0f766e; font-weight:700; text-decoration:none; }
+.ucx-visual { border:1px solid #e2e8f0; border-radius:16px; padding:16px; background:linear-gradient(160deg,#f8fafc 0%,#ffffff 100%); }
+.ucx-visual-top { display:flex; justify-content:space-between; gap:8px; margin-bottom:10px; align-items:flex-start; }
+.ucx-visual-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:#64748b; margin:0; }
+.ucx-chip { font-size:11px; font-weight:700; color:#0f766e; border:1px solid #99f6e4; background:#ecfeff; border-radius:999px; padding:4px 10px; }
+.ucx-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.ucx-metric { border:1px solid #e2e8f0; border-radius:10px; padding:10px; background:#fff; }
+.ucx-metric .v { display:block; font-size:13px; font-weight:800; color:#0f172a; margin-bottom:2px; }
+.ucx-metric .l { display:block; font-size:11px; color:#64748b; line-height:1.4; }
+.ucx-bars { display:grid; gap:8px; }
+.ucx-bar-row { display:grid; grid-template-columns:88px 1fr; align-items:center; gap:8px; }
+.ucx-bar-row span { font-size:11px; color:#64748b; }
+.ucx-bar { height:8px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
+.ucx-bar i { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#0f766e,#14b8a6); }
+.ucx-final { margin:12px 0 66px; border-radius:20px; padding:34px 28px; background:linear-gradient(135deg,#0f172a 0%,#0f766e 110%); color:#fff; text-align:center; }
+.ucx-final h3 { margin:0 0 10px; font-size:clamp(24px,2.8vw,34px); letter-spacing:-.02em; }
+.ucx-final p { margin:0 auto 22px; max-width:640px; color:#d1d5db; line-height:1.65; font-size:15px; }
+@media (max-width: 920px) {
+  .ucx-shell { padding:0 16px; }
+  .ucx-main { padding-top:34px; }
+  .ucx-section, .ucx-section--reverse { grid-template-columns:1fr; padding:20px; gap:16px; }
+  .ucx-metrics { grid-template-columns:1fr; }
+}
+`
 
-export default function Page() {
- const [poll, setPoll] = useState<string | null>(null)
-
+function UseCaseVisual({ item }: { item: UseCase }) {
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-   <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
-
-    {/* Hero */}
-        <div style={{ background: S.headerBg, position: 'relative', overflow: 'hidden' }}>
-     <div style={{ position: 'absolute', top: -100, right: -100, width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle,${S.brand}20,transparent 70%)` }} />
-     <div style={{ position: 'absolute', bottom: -80, left: -80, width: 400, height: 400, borderRadius: '50%', background: `radial-gradient(circle,${S.brandLight}10,transparent 70%)` }} />
-     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '60px 24px 64px', position: 'relative', textAlign: 'center' }}>
-      <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 36 }}>
-       <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 13 }}><img src="/logo-mark.svg" alt="" style={{ width: '13px', height: '13px' }} /></div>
-       <span style={{ fontWeight: 800, fontSize: 15, color: '#F9FAFB', letterSpacing: '-0.02em' }}>Locatalyze</span>
-      </Link>
-            <div style={{ display: 'inline-flex', background: 'rgba(15,118,110,0.18)', border: '1px solid rgba(15,118,110,0.35)', borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: S.brandLight, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 18 }}>Location Analysis for Every Business Type</div>
-      <h1 style={{ fontSize: 'clamp(28px,5vw,48px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.04em', lineHeight: 1.12, marginBottom: 18 }}>Find the right location for<br />your Australian business</h1>
-      <p style={{ fontSize: 16, color: '#9CA3AF', lineHeight: 1.75, marginBottom: 36, maxWidth: 560, margin: '0 auto 36px' }}>Locatalyze analyses demographics, competition, foot traffic and rent affordability for any Australian address — and delivers a GO / CAUTION / NO verdict in about 90 seconds.</p>
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-       <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.brand, color: '#fff', borderRadius: 10, padding: '14px 28px', fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 20px rgba(15,118,110,0.4)' }}>
-        Analyse my location free →
-              </Link>
-              <a href="#business-types" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.07)', color: '#E5E7EB', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '14px 22px', fontSize: 15, fontWeight: 600, textDecoration: 'none' }}>
-        Browse by business type ↓
-              </a>
-            </div>
-            {/* Stats row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginTop: 56, maxWidth: 800, margin: '56px auto 0' }}>
-       {[['$287K', 'Average cost of a bad location decision'], ['60%', 'Of failures linked to poor location'], ['30s', 'Time to get your analysis'], ['500m', 'Competition radius we analyse']].map(([v, l]) => (
-        <div key={v} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '18px 12px', textAlign: 'center' }}>
-         <p style={{ fontSize: 26, fontWeight: 900, color: S.brandLight, letterSpacing: '-0.04em', lineHeight: 1 }}>{v}</p>
-         <p style={{ fontSize: 11, color: '#6B7280', marginTop: 5, lineHeight: 1.4 }}>{l}</p>
-        </div>
-              ))}
-            </div>
+    <div className="ucx-visual" aria-hidden>
+      <div className="ucx-visual-top">
+        <p className="ucx-visual-title">Use case preview</p>
+        <span className="ucx-chip">Live signal</span>
+      </div>
+      <div className="ucx-metrics">
+        {item.metrics.map((m) => (
+          <div className="ucx-metric" key={m.label}>
+            <span className="v">{m.value}</span>
+            <span className="l">{m.label}</span>
           </div>
-        </div>
+        ))}
+      </div>
+      <div className="ucx-bars">
+        <div className="ucx-bar-row"><span>Demand fit</span><div className="ucx-bar"><i style={{ width: '76%' }} /></div></div>
+        <div className="ucx-bar-row"><span>Rent fit</span><div className="ucx-bar"><i style={{ width: '68%' }} /></div></div>
+        <div className="ucx-bar-row"><span>Competition</span><div className="ucx-bar"><i style={{ width: '61%' }} /></div></div>
+      </div>
+    </div>
+  )
+}
 
-        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '64px 20px 80px' }}>
-
-     {/* Business type cards */}
-          <div id="business-types" style={{ marginBottom: 72 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, textAlign: 'center' }}>Guides by business type</p>
-      <h2 style={{ fontSize: 'clamp(24px,4vw,34px)', fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 8 }}>What type of business are you opening?</h2>
-      <p style={{ fontSize: 15, color: S.n500, textAlign: 'center', marginBottom: 36 }}>Each guide covers the specific factors that determine success for that business type.</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 18 }}>
-       {TYPES.map(t => (
-                <Link key={t.href} href={t.href} style={{ textDecoration: 'none' }}>
-         <div style={{ background: S.white, border: `1.5px solid ${S.n200}`, borderRadius: 18, padding: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', transition: 'transform 0.15s', height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, background: t.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, marginBottom: 16 }}>{t.icon}</div>
-          <h3 style={{ fontSize: 17, fontWeight: 800, color: S.n900, marginBottom: 8 }}>{t.label}</h3>
-                    <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.7, flex: 1 }}>{t.desc}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 18 }}>
-           <span style={{ fontSize: 13, color: t.color, fontWeight: 700 }}>Read location guide →</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* How it works */}
-          <div style={{ background: S.n900, borderRadius: 24, padding: '48px', marginBottom: 72 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, textAlign: 'center' }}>How it works</p>
-      <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 36 }}>From address to verdict in about 90 seconds</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 16 }}>
-       {STEPS.map((step, i) => (
-                <div key={step.n} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 14, padding: '22px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: S.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{i + 1}</div>
-          <p style={{ fontSize: 14, fontWeight: 700, color: '#F9FAFB' }}>{step.title}</p>
-         </div>
-                  <p style={{ fontSize: 13, color: '#9CA3AF', lineHeight: 1.65 }}>{step.body}</p>
-        </div>
-              ))}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 32 }}>
-       <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.brand, color: '#fff', borderRadius: 10, padding: '14px 28px', fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 16px rgba(15,118,110,0.3)' }}>
-        Start my free analysis →
-              </Link>
-            </div>
-          </div>
-
-          {/* What we analyse */}
-          <div style={{ marginBottom: 72 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, textAlign: 'center' }}>What we analyse</p>
-      <h2 style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 36 }}>Every factor that determines profitability</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16 }}>
-       {[
-                { icon: '', title: 'Foot traffic & daytime population', body: 'We combine ABS daytime worker data with commuter density to estimate the real population that passes your site daily — not just residents.' },
-        { icon: '', title: 'Suburb demographics', body: 'Median household income, age profile and household type from the ABS Census tell us whether the local population matches your business model.' },
-        { icon: '', title: 'Competition mapping', body: 'We identify every direct competitor within your relevant radius, score them by proximity and category overlap, and calculate a competition index.' },
-        { icon: '', title: 'Rent affordability', body: 'Input your rent and average transaction value. We calculate the daily transactions required to keep rent below 12% of revenue.' },
-        { icon: '', title: 'Revenue projection', body: 'Based on foot traffic, capture rates and your pricing, we model a realistic revenue range for the site at 3, 6 and 12 months.' },
-        { icon: '', title: 'GO / CAUTION / NO verdict', body: 'A final composite score across all variables gives you a clear, justified verdict — with the supporting data to understand every factor.' },
-       ].map(f => (
-                <div key={f.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '22px' }}>
-         <span style={{ fontSize: 28, display: 'block', marginBottom: 12 }}>{f.icon}</span>
-         <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 8 }}>{f.title}</h3>
-                  <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{f.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Rent guide */}
-          <div style={{ marginBottom: 72 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>The rent affordability guide</p>
-      <h2 style={{ fontSize: 'clamp(22px,4vw,30px)', fontWeight: 800, color: S.n900, letterSpacing: '-0.03em', marginBottom: 20 }}>The rent-to-revenue ratio every business owner must know</h2>
-      <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, overflow: 'hidden' }}>
-       {[
-                { pct: 'Under 10%', label: 'Excellent', body: 'Healthy buffer for slow periods, marketing spend and unexpected costs. Your location economics are working strongly in your favour.', color: S.emerald, bg: S.emeraldBg },
-        { pct: '10–12%', label: 'Healthy', body: 'Industry standard for most categories. Manageable with solid execution. This is the target range for most well-run businesses.', color: '#16A34A', bg: '#F0FDF4' },
-        { pct: '13–15%', label: 'Caution', body: 'Viable but limited buffer. Any shortfall in projected revenue puts cashflow under pressure. Negotiate hard before signing.', color: S.amber, bg: S.amberBg },
-        { pct: '16–20%', label: 'High Risk', body: 'Statistically difficult to sustain. Requires exceptional execution and above-projection revenue to survive long-term.', color: '#EA580C', bg: '#FFF7ED' },
-        { pct: 'Over 20%', label: 'Avoid', body: 'Almost universally unsustainable for independent operators. Unless your revenue model has been proven at this location, walk away.', color: S.red, bg: S.redBg },
-       ].map(row => (
-                <div key={row.pct} style={{ display: 'flex', gap: 16, padding: '16px 22px', borderBottom: `1px solid ${S.n200}`, background: S.white, alignItems: 'center', flexWrap: 'wrap' }}>
-         <div style={{ background: row.bg, borderRadius: 8, padding: '6px 14px', minWidth: 90, textAlign: 'center' }}>
-          <p style={{ fontSize: 14, fontWeight: 800, color: row.color }}>{row.pct}</p>
-                  </div>
-                  <div style={{ width: 80 }}><span style={{ fontSize: 12, fontWeight: 700, color: row.color }}>{row.label}</span></div>
-                  <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.65, flex: 1, minWidth: 200 }}>{row.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Poll */}
-          <div style={{ background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 16, padding: '32px', marginBottom: 72 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Quick poll</p>
-      <h3 style={{ fontSize: 20, fontWeight: 700, color: S.n900, marginBottom: 20 }}>What is the biggest challenge you face when choosing a business location?</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 10 }}>
-       {['Understanding local competition', 'Knowing if rent is affordable', 'Finding the right demographics', 'Estimating realistic revenue'].map(o => (
-        <button key={o} onClick={() => setPoll(o)} style={{ padding: '14px 16px', borderRadius: 10, border: `2px solid ${poll === o ? S.brand : S.brandBorder}`, background: poll === o ? S.brand : S.white, color: poll === o ? '#fff' : S.n700, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: S.font, textAlign: 'left' }}>
-         {poll === o ? ' ' : ''}{o}
-        </button>
-              ))}
-            </div>
-            {poll && (
-              <div style={{ marginTop: 16, background: S.white, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '14px 18px' }}>
-        <p style={{ fontSize: 14, color: S.brand, fontWeight: 700 }}>Locatalyze is built to solve exactly that. <Link href="/onboarding" style={{ textDecoration: 'underline', color: S.brand }}>Run a free analysis →</Link></p>
-       </div>
-            )}
-          </div>
-
-          {/* Final CTA */}
-          <div style={{ background: `linear-gradient(135deg,${S.headerBg},#0F2E2A)`, borderRadius: 24, padding: '56px 40px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.06)' }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: S.brandLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>Start for free today</p>
-      <h2 style={{ fontSize: 'clamp(24px,4vw,36px)', fontWeight: 800, color: '#F9FAFB', letterSpacing: '-0.03em', marginBottom: 14 }}>Stop guessing. Start with data.</h2>
-      <p style={{ fontSize: 16, color: '#9CA3AF', marginBottom: 32, maxWidth: 520, margin: '0 auto 32px' }}>Paste any Australian address. Get a full location feasibility report with competition analysis, demographic scoring and a GO / CAUTION / NO verdict in about 90 seconds. Free to start.</p>
-      <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: S.brand, color: '#fff', borderRadius: 12, padding: '16px 32px', fontSize: 16, fontWeight: 800, textDecoration: 'none', boxShadow: '0 6px 24px rgba(15,118,110,0.4)' }}>
-       Analyse my location free — no credit card →
-            </Link>
-          </div>
+function UseCaseSection({ item, reverse }: { item: UseCase; reverse: boolean }) {
+  return (
+    <section className={`ucx-section ${reverse ? 'ucx-section--reverse' : ''}`}>
+      <div className="ucx-content">
+        <p className="ucx-kicker">Use case</p>
+        <h2>{item.title}</h2>
+        <p className="ucx-problem"><strong>Problem:</strong> {item.problem}</p>
+        <p className="ucx-solution"><strong>How Locatalyze solves it:</strong> {item.solution}</p>
+        <ul className="ucx-list">
+          {item.benefits.map((b) => <li key={b}>{b}</li>)}
+        </ul>
+        <div className="ucx-actions">
+          <Link href={item.primaryHref} className="ucx-btn-primary">Run analysis</Link>
+          <Link href={item.toolHref} className="ucx-btn-secondary">Try tool</Link>
+          <Link href={item.reportHref} className="ucx-link-inline">{item.reportLabel}</Link>
         </div>
       </div>
-    </>
+      <UseCaseVisual item={item} />
+    </section>
+  )
+}
+
+export default function Page() {
+  return (
+    <main className="ucx-page">
+      <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
+
+      <section className="ucx-hero">
+        <div className="ucx-shell">
+          <p className="ucx-eyebrow">Use Cases</p>
+          <h1>Real-world location intelligence use cases</h1>
+          <p>
+            See how operators use Locatalyze to de-risk leases, validate demand, and choose locations with stronger downside protection.
+          </p>
+          <a href="#use-cases" className="ucx-btn-primary">Explore use cases</a>
+        </div>
+      </section>
+
+      <div id="use-cases" className="ucx-main">
+        <div className="ucx-shell">
+          {USE_CASES.map((item, i) => (
+            <UseCaseSection key={item.id} item={item} reverse={i % 2 === 1} />
+          ))}
+
+          <section className="ucx-final">
+            <h3>Move from guesswork to decision-grade location planning</h3>
+            <p>
+              Start with free tools, then run a full analysis when you have a real address. Keep one clear path from exploration to confident lease decisions.
+            </p>
+            <div className="ucx-actions" style={{ justifyContent: 'center' }}>
+              <Link href={onboardingRef('usecase_final_run')} className="ucx-btn-primary">Run analysis</Link>
+              <Link href={toolsHubRef('usecase_final_tools')} className="ucx-btn-secondary">Try tool</Link>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
   )
 }
