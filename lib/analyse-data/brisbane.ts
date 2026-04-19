@@ -438,20 +438,34 @@ export function getSunshineCoastSuburbs(): QldSuburb[] {
 }
 
 /**
- * Look up a Brisbane suburb by name (case-insensitive).
- * Returns undefined if not found (pages should handle this gracefully).
+ * Look up a Brisbane suburb by name or slug (case-insensitive).
  */
-export function getBrisbaneSuburb(name: string): QldSuburb | undefined {
-  const key = name.toLowerCase().trim()
-  return BRISBANE_SUBURBS.find((s) => s.name.toLowerCase() === key)
+export function getBrisbaneSuburb(nameOrSlug: string): QldSuburb | undefined {
+  const key = nameOrSlug.toLowerCase().trim()
+  return BRISBANE_SUBURBS.find(
+    (s) => s.name.toLowerCase() === key || s.slug === key,
+  )
 }
 
-export function getBundabergSuburb(name: string): QldSuburb | undefined {
-  const key = name.toLowerCase().trim()
-  return BUNDABERG_SUBURBS.find((s) => s.name.toLowerCase() === key)
+export function getBundabergSuburb(nameOrSlug: string): QldSuburb | undefined {
+  const key = nameOrSlug.toLowerCase().trim()
+  return BUNDABERG_SUBURBS.find(
+    (s) => s.name.toLowerCase() === key || s.slug === key,
+  )
 }
 
-export function getSunshineCoastSuburb(name: string): QldSuburb | undefined {
-  const key = name.toLowerCase().trim()
-  return SUNSHINE_COAST_SUBURBS.find((s) => s.name.toLowerCase() === key)
+export function getSunshineCoastSuburb(nameOrSlug: string): QldSuburb | undefined {
+  const key = nameOrSlug.toLowerCase().trim()
+  return SUNSHINE_COAST_SUBURBS.find(
+    (s) => s.name.toLowerCase() === key || s.slug === key,
+  )
+}
+
+export function getBrisbaneSuburbSlugs(): string[] {
+  return BRISBANE_SUBURBS.map((s) => s.slug)
+}
+
+export function getBrisbaneNearbySuburbs(currentSlug: string, limit = 3): QldSuburb[] {
+  const sorted = [...BRISBANE_SUBURBS].sort((a, b) => b.compositeScore - a.compositeScore)
+  return sorted.filter((s) => s.slug !== currentSlug).slice(0, limit)
 }

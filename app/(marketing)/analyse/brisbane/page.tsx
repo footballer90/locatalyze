@@ -11,7 +11,8 @@ import { FAQSection } from '@/components/analyse/FAQSection'
 import { CTASection } from '@/components/analyse/CTASection'
 import { PollSection } from '@/components/analyse/PollSection'
 import { C } from '@/components/analyse/AnalyseTheme'
-import { getBrisbaneSuburb } from '@/lib/analyse-data/brisbane'
+import { FactorGrid } from '@/components/analyse/FactorGrid'
+import { getBrisbaneSuburb, getBrisbaneSuburbs } from '@/lib/analyse-data/brisbane'
 
 // Engine-derived score helpers
 function bScore(name: string): number {
@@ -135,6 +136,59 @@ const SCHEMA = {
   })),
 }
 
+function BrisbaneFactorDirectory() {
+  const suburbs = getBrisbaneSuburbs().slice().sort((a, b) => b.compositeScore - a.compositeScore)
+  return (
+    <div style={{ display: 'grid', gap: '20px' }}>
+      {suburbs.map((s) => {
+        const verdictColor = s.verdict === 'GO' ? C.emerald : s.verdict === 'CAUTION' ? C.amber : C.red
+        const verdictBg = s.verdict === 'GO' ? C.emeraldBg : s.verdict === 'CAUTION' ? C.amberBg : C.redBg
+        const verdictBdr = s.verdict === 'GO' ? C.emeraldBdr : s.verdict === 'CAUTION' ? C.amberBdr : C.redBdr
+        return (
+          <Link
+            key={s.slug}
+            href={`/analyse/brisbane/${s.slug}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <div style={{ backgroundColor: C.white, border: `1px solid ${C.border}`, borderRadius: '14px', padding: '24px' }}>
+              {/* Header row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: C.n900, margin: 0 }}>{s.name}</h3>
+                <span style={{
+                  fontSize: '11px', fontWeight: 800, padding: '3px 10px', borderRadius: '999px',
+                  backgroundColor: verdictBg, color: verdictColor, border: `1px solid ${verdictBdr}`, letterSpacing: '0.05em',
+                }}>
+                  {s.verdict === 'RISKY' ? 'NO' : s.verdict}
+                </span>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {[
+                    { label: 'Café', value: s.cafe },
+                    { label: 'Restaurant', value: s.restaurant },
+                    { label: 'Retail', value: s.retail },
+                  ].map(({ label, value }) => (
+                    <div key={label} style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>{label}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 800, color: C.brand }}>{value}</div>
+                    </div>
+                  ))}
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Composite</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>{s.compositeScore}</div>
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '0 0 14px 0', maxWidth: '760px' }}>
+                {s.why[0]}
+              </p>
+              <FactorGrid factors={s.locationFactors} />
+            </div>
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function BrisbanePage() {
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
@@ -172,6 +226,7 @@ export default function BrisbanePage() {
             { label: 'Suburb Directory', href: '#suburbs' },
             { label: 'Comparisons', href: '#comparisons' },
             { label: 'High-Risk Zones', href: '#high-risk' },
+            { label: 'Factor Breakdown', href: '#factor-directory' },
             { label: 'FAQ', href: '#faq' },
           ].map((link) => (
             <a
@@ -473,6 +528,19 @@ export default function BrisbanePage() {
       </section>
 
       {/* FAQ */}
+      {/* ── Factor Directory ── */}
+      <section id="factor-directory" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: C.n900, marginBottom: '10px', lineHeight: '1.2' }}>
+            Brisbane Suburb Factor Breakdown — All 23 Markets
+          </h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '36px', maxWidth: '760px' }}>
+            Engine-derived scores across demand, rent pressure, competition density, seasonality, and tourism for every Brisbane suburb in the dataset. Sorted by composite score. Click any suburb for the full detail page.
+          </p>
+          <BrisbaneFactorDirectory />
+        </div>
+      </section>
+
       <FAQSection faqs={FAQS} />
 
       {/* CTA */}
