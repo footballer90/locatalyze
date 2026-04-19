@@ -10,6 +10,8 @@ import { ComparisonTable } from '@/components/analyse/ComparisonTable'
 import { FAQSection } from '@/components/analyse/FAQSection'
 import { CTASection } from '@/components/analyse/CTASection'
 import { C } from '@/components/analyse/AnalyseTheme'
+import { FactorGrid } from '@/components/analyse/FactorGrid'
+import { getSydneySuburbs } from '@/lib/analyse-data/sydney'
 
 export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Sydney — 2026 Location Guide',
@@ -122,6 +124,84 @@ const SCHEMA = {
   })),
 }
 
+function SydneyFactorDirectory() {
+  const suburbs = getSydneySuburbs().slice().sort((a, b) => b.compositeScore - a.compositeScore)
+  return (
+    <div style={{ display: 'grid', gap: '20px' }}>
+      {suburbs.map((s) => {
+        const verdictColor =
+          s.verdict === 'GO' ? C.emerald : s.verdict === 'CAUTION' ? C.amber : C.red
+        const verdictBg =
+          s.verdict === 'GO' ? C.emeraldBg : s.verdict === 'CAUTION' ? C.amberBg : C.redBg
+        const verdictBdr =
+          s.verdict === 'GO' ? C.emeraldBdr : s.verdict === 'CAUTION' ? C.amberBdr : C.redBdr
+        return (
+          <Link
+            key={s.slug}
+            href={`/analyse/sydney/${s.slug}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <div
+              style={{
+                backgroundColor: C.white,
+                border: `1px solid ${C.border}`,
+                borderRadius: '14px',
+                padding: '24px',
+                transition: 'border-color 0.15s',
+              }}
+            >
+              {/* Header row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: C.n900, margin: 0 }}>{s.name}</h3>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '3px 10px',
+                    borderRadius: '999px',
+                    backgroundColor: verdictBg,
+                    color: verdictColor,
+                    border: `1px solid ${verdictBdr}`,
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  {s.verdict}
+                </span>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Café</div>
+                    <div style={{ fontSize: '16px', fontWeight: 800, color: C.brand }}>{s.cafe}</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Restaurant</div>
+                    <div style={{ fontSize: '16px', fontWeight: 800, color: C.brand }}>{s.restaurant}</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Retail</div>
+                    <div style={{ fontSize: '16px', fontWeight: 800, color: C.brand }}>{s.retail}</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Composite</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>{s.compositeScore}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key insight */}
+              <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '0 0 14px 0', maxWidth: '760px' }}>
+                {s.why[0]}
+              </p>
+
+              {/* FactorGrid */}
+              <FactorGrid factors={s.locationFactors} />
+            </div>
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function SydneyPage() {
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
@@ -159,6 +239,7 @@ export default function SydneyPage() {
             { label: 'Suburb Directory', href: '#suburbs' },
             { label: 'Comparisons', href: '#comparisons' },
             { label: 'High-Risk Zones', href: '#high-risk' },
+            { label: 'Factor Breakdown', href: '#factor-directory' },
             { label: 'FAQ', href: '#faq' },
           ].map((link) => (
             <a
@@ -750,6 +831,19 @@ export default function SydneyPage() {
               Read Parramatta analysis
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── Factor Directory ── */}
+      <section id="factor-directory" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: C.n900, marginBottom: '10px', lineHeight: '1.2' }}>
+            Sydney Suburb Factor Breakdown — All 60 Markets
+          </h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '36px', maxWidth: '760px' }}>
+            Engine-derived scores across demand, rent pressure, competition density, seasonality, and tourism for every suburb in the dataset. Sorted by composite score. Click any suburb for the full detail page.
+          </p>
+          <SydneyFactorDirectory />
         </div>
       </section>
 
