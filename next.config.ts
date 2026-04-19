@@ -24,7 +24,8 @@ const nextConfig: NextConfig = {
       { source: '/melbourne',  destination: '/analyse/melbourne',  permanent: true },
       { source: '/brisbane',   destination: '/analyse/brisbane',   permanent: true },
       { source: '/adelaide',   destination: '/analyse/adelaide',   permanent: true },
-      { source: '/gold-coast', destination: '/analyse/gold-coast', permanent: true },
+      { source: '/gold-coast',  destination: '/analyse/gold-coast',  permanent: true },
+      { source: '/wollongong', destination: '/analyse/wollongong', permanent: true },
       // Newcastle best-suburbs → city hub (301 preserves SEO equity)
       { source: '/analyse/newcastle/best-suburbs', destination: '/analyse/newcastle', permanent: true },
     ]
