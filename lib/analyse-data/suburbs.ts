@@ -9,8 +9,10 @@
 
 import { SUBURBS } from '@/lib/suburb-data'
 import { type LocationFactors } from './scoring-engine'
+import { getSydneySuburb, getSydneySuburbs } from './sydney'
+import { getPerthSuburb, getPerthSuburbs } from './melbourne'
 
-export type Verdict = 'GO' | 'CAUTION' | 'NO'
+export type Verdict = 'GO' | 'CAUTION' | 'NO' | 'RISKY'
 export type CompetitionLevel = 'Low' | 'Medium' | 'High' | 'Very High'
 
 export interface RentRange {
@@ -342,6 +344,204 @@ function toVerdict(score: number): Verdict {
   return 'NO'
 }
 
+function fromEngineVerdict(v: 'GO' | 'CAUTION' | 'RISKY'): Verdict {
+  return v
+}
+
+function buildSydneyEngineSuburbPageData(suburbSlug: string): SuburbPageData | null {
+  const suburb = getSydneySuburb(suburbSlug)
+  if (!suburb) return null
+
+  const nearbySuburbs: NearbySuburb[] = getSydneySuburbs()
+    .filter((s) => s.slug !== suburb.slug)
+    .sort((a, b) => b.compositeScore - a.compositeScore)
+    .slice(0, 3)
+    .map((s) => ({
+      name: s.name,
+      slug: s.slug,
+      score: s.compositeScore,
+      verdict: fromEngineVerdict(s.verdict),
+    }))
+
+  const demand = suburb.locationFactors.demandStrength
+  const rent = suburb.locationFactors.rentPressure
+  const comp = suburb.locationFactors.competitionDensity
+  const season = suburb.locationFactors.seasonalityRisk
+  const tourism = suburb.locationFactors.tourismDependency
+
+  return {
+    slug: suburb.slug,
+    city: 'Sydney',
+    citySlug: 'sydney',
+    name: suburb.name,
+    postcode: 'N/A',
+    state: 'NSW',
+    verdict: fromEngineVerdict(suburb.verdict),
+    overallScore: suburb.compositeScore,
+    factors: suburb.locationFactors,
+    scores: {
+      footTraffic: suburb.cafe,
+      demographics: suburb.restaurant,
+      rentViability: suburb.retail,
+      competitionGap: Math.max(30, 100 - comp * 7),
+      accessibility: tourism >= 7 ? 82 : demand >= 8 ? 78 : 70,
+    },
+    tagline: `${suburb.name}, Sydney — engine-derived suburb viability profile`,
+    summary: suburb.why.join(' '),
+    metaTitle: `${suburb.name}, Sydney Business Analysis — ${suburb.compositeScore}/100 ${suburb.verdict} | Locatalyze`,
+    metaDescription: `${suburb.name} scored ${suburb.compositeScore}/100 using a five-factor weighted Sydney model (demand, rent, competition, seasonality, tourism).`,
+    rentRanges: [
+      { label: 'Prime strip', range: 'Varies by micro-location', note: `Rent pressure ${rent}/10 for top-exposure positions.` },
+      { label: 'Secondary streets', range: 'Varies by frontage and fitout', note: 'Usually better value if destination demand is strong.' },
+      { label: 'Local pockets', range: 'Indicative only', note: 'Validate current quoting with live listings and agent comps.' },
+    ],
+    medianIncome: 'Sydney profile varies by SA2',
+    population: 'Refer to suburb-specific census and daytime movement data',
+    targetCustomer: 'Local residents plus commuter/visitor overlay depending on strip position',
+    competitionLevel: comp >= 8 ? 'Very High' : comp >= 6 ? 'High' : comp >= 4 ? 'Medium' : 'Low',
+    sections: [
+      { heading: 'Demand and Movement', body: `Demand strength is ${demand}/10. ${suburb.why[0] ?? ''}` },
+      { heading: 'Rent and Competitive Pressure', body: `Rent pressure is ${rent}/10 and competition density is ${comp}/10. ${suburb.why[1] ?? ''}` },
+      { heading: 'Structural Risk and Upside', body: `Seasonality risk is ${season}/10 and tourism dependency is ${tourism}/10. ${suburb.why[2] ?? ''}` },
+    ],
+    advantages: [
+      `Weighted composite score ${suburb.compositeScore}/100 from the shared scoring engine.`,
+      `Business-type scores: Cafe ${suburb.cafe}, Restaurant ${suburb.restaurant}, Retail ${suburb.retail}.`,
+      `Demand/rent/competition inputs are explicit and auditable at suburb level.`,
+    ],
+    disadvantages: [
+      'Suburb-level factors do not replace site-level due diligence.',
+      'Street-by-street tenancy economics can differ materially within one suburb.',
+      'Use address-level analysis before final lease decisions.',
+    ],
+    caseScenario: {
+      concept: `Suburb-fit concept in ${suburb.name}`,
+      monthlyRent: 6500,
+      dailyCoversRequired: 65,
+      avgSpend: 24,
+      breakEvenTimeline: '4–9 months',
+      keyAssumptions: [
+        'Model uses the same deterministic five-factor scoring engine as all migrated cities.',
+        'Operating format aligns with strongest business-type score.',
+        'Final site validates frontage, visibility, and tenancy terms.',
+      ],
+      verdict: `${suburb.name} currently rates ${suburb.verdict} at ${suburb.compositeScore}/100 in the Sydney engine model.`,
+    },
+    nearbySuburbs,
+    faqs: [
+      {
+        question: `How is ${suburb.name} scored in the Sydney model?`,
+        answer: `${suburb.name} is scored from five factors on a 1–10 scale, then weighted into cafe/restaurant/retail scores and a single composite.`,
+      },
+      {
+        question: `Is ${suburb.name} a high-rent suburb?`,
+        answer: `Current model rent pressure is ${rent}/10 for ${suburb.name}; confirm live market asking rents before committing to a tenancy.`,
+      },
+      {
+        question: `What is the main risk in ${suburb.name}?`,
+        answer: `Key model risk signals are competition ${comp}/10, seasonality ${season}/10, and tourism dependency ${tourism}/10.`,
+      },
+    ],
+  }
+}
+
+function buildPerthEngineSuburbPageData(suburbSlug: string): SuburbPageData | null {
+  const suburb = getPerthSuburb(suburbSlug)
+  if (!suburb) return null
+
+  const nearbySuburbs: NearbySuburb[] = getPerthSuburbs()
+    .filter((s) => s.slug !== suburb.slug)
+    .sort((a, b) => b.compositeScore - a.compositeScore)
+    .slice(0, 3)
+    .map((s) => ({
+      name: s.name,
+      slug: s.slug,
+      score: s.compositeScore,
+      verdict: fromEngineVerdict(s.verdict),
+    }))
+
+  const demand = suburb.locationFactors.demandStrength
+  const rent = suburb.locationFactors.rentPressure
+  const comp = suburb.locationFactors.competitionDensity
+  const season = suburb.locationFactors.seasonalityRisk
+  const tourism = suburb.locationFactors.tourismDependency
+
+  return {
+    slug: suburb.slug,
+    city: 'Perth',
+    citySlug: 'perth',
+    name: suburb.name,
+    postcode: 'N/A',
+    state: 'WA',
+    verdict: fromEngineVerdict(suburb.verdict),
+    overallScore: suburb.compositeScore,
+    factors: suburb.locationFactors,
+    scores: {
+      footTraffic: suburb.cafe,
+      demographics: suburb.restaurant,
+      rentViability: suburb.retail,
+      competitionGap: Math.max(30, 100 - comp * 7),
+      accessibility: tourism >= 7 ? 80 : demand >= 8 ? 76 : 68,
+    },
+    tagline: `${suburb.name}, Perth — engine-derived suburb viability profile`,
+    summary: suburb.why.join(' '),
+    metaTitle: `${suburb.name}, Perth Business Analysis — ${suburb.compositeScore}/100 ${suburb.verdict} | Locatalyze`,
+    metaDescription: `${suburb.name} scored ${suburb.compositeScore}/100 using a five-factor weighted Perth model (demand, rent, competition, seasonality, tourism).`,
+    rentRanges: [
+      { label: 'Prime strip', range: 'Varies by micro-location', note: `Rent pressure ${rent}/10 for top-exposure positions.` },
+      { label: 'Secondary streets', range: 'Varies by frontage and fitout', note: 'Usually better value if destination demand is strong.' },
+      { label: 'Local pockets', range: 'Indicative only', note: 'Validate current quoting with live listings and agent comps.' },
+    ],
+    medianIncome: 'Perth profile varies by SA2',
+    population: 'Refer to suburb-specific census and daytime movement data',
+    targetCustomer: 'Local residents plus commuter/visitor overlay depending on strip position',
+    competitionLevel: comp >= 8 ? 'Very High' : comp >= 6 ? 'High' : comp >= 4 ? 'Medium' : 'Low',
+    sections: [
+      { heading: 'Demand and Movement', body: `Demand strength is ${demand}/10. ${suburb.why[0] ?? ''}` },
+      { heading: 'Rent and Competitive Pressure', body: `Rent pressure is ${rent}/10 and competition density is ${comp}/10. ${suburb.why[1] ?? ''}` },
+      { heading: 'Structural Risk and Upside', body: `Seasonality risk is ${season}/10 and tourism dependency is ${tourism}/10. ${suburb.why[2] ?? ''}` },
+    ],
+    advantages: [
+      `Weighted composite score ${suburb.compositeScore}/100 from the shared scoring engine.`,
+      `Business-type scores: Cafe ${suburb.cafe}, Restaurant ${suburb.restaurant}, Retail ${suburb.retail}.`,
+      `Demand/rent/competition inputs are explicit and auditable at suburb level.`,
+    ],
+    disadvantages: [
+      'Suburb-level factors do not replace site-level due diligence.',
+      'Street-by-street tenancy economics can differ materially within one suburb.',
+      'Use address-level analysis before final lease decisions.',
+    ],
+    caseScenario: {
+      concept: `Suburb-fit concept in ${suburb.name}`,
+      monthlyRent: 5500,
+      dailyCoversRequired: 60,
+      avgSpend: 22,
+      breakEvenTimeline: '4–9 months',
+      keyAssumptions: [
+        'Model uses the same deterministic five-factor scoring engine as all migrated cities.',
+        'Operating format aligns with strongest business-type score.',
+        'Final site validates frontage, visibility, and tenancy terms.',
+      ],
+      verdict: `${suburb.name} currently rates ${suburb.verdict} at ${suburb.compositeScore}/100 in the Perth engine model.`,
+    },
+    nearbySuburbs,
+    faqs: [
+      {
+        question: `How is ${suburb.name} scored in the Perth model?`,
+        answer: `${suburb.name} is scored from five factors on a 1–10 scale, then weighted into cafe/restaurant/retail scores and a single composite.`,
+      },
+      {
+        question: `Is ${suburb.name} a high-rent suburb?`,
+        answer: `Current model rent pressure is ${rent}/10 for ${suburb.name}; confirm live market asking rents before committing to a tenancy.`,
+      },
+      {
+        question: `What is the main risk in ${suburb.name}?`,
+        answer: `Key model risk signals are competition ${comp}/10, seasonality ${season}/10, and tourism dependency ${tourism}/10.`,
+      },
+    ],
+  }
+}
+
 function buildGeneratedSuburbPageData(citySlug: string, suburbSlug: string): SuburbPageData | null {
   const suburb = SUBURBS.find((s) => s.citySlug === citySlug && s.slug === suburbSlug)
   if (!suburb) return null
@@ -441,6 +641,20 @@ export function getSuburbPageData(citySlug: string, suburbSlug: string): SuburbP
   const key = `${citySlug}/${suburbSlug}`
   if (SUBURB_PAGE_DATA[key]) return SUBURB_PAGE_DATA[key]
   if (GENERATED_SUBURB_CACHE[key]) return GENERATED_SUBURB_CACHE[key]
+  if (citySlug === 'sydney') {
+    const sydneyBuilt = buildSydneyEngineSuburbPageData(suburbSlug)
+    if (sydneyBuilt) {
+      GENERATED_SUBURB_CACHE[key] = sydneyBuilt
+      return sydneyBuilt
+    }
+  }
+  if (citySlug === 'perth') {
+    const perthBuilt = buildPerthEngineSuburbPageData(suburbSlug)
+    if (perthBuilt) {
+      GENERATED_SUBURB_CACHE[key] = perthBuilt
+      return perthBuilt
+    }
+  }
   const built = buildGeneratedSuburbPageData(citySlug, suburbSlug)
   if (built) GENERATED_SUBURB_CACHE[key] = built
   return built
@@ -450,6 +664,12 @@ export function getAllSuburbKeys(): { citySlug: string; suburbSlug: string }[] {
   const keys = new Set<string>(Object.keys(SUBURB_PAGE_DATA))
   for (const suburb of SUBURBS) {
     keys.add(`${suburb.citySlug}/${suburb.slug}`)
+  }
+  for (const suburb of getSydneySuburbs()) {
+    keys.add(`sydney/${suburb.slug}`)
+  }
+  for (const suburb of getPerthSuburbs()) {
+    keys.add(`perth/${suburb.slug}`)
   }
   return Array.from(keys).map((key) => {
     const [citySlug, suburbSlug] = key.split('/')

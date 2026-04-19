@@ -437,5 +437,11 @@ export function getPerthSuburbs(): SuburbModel[] {
 
 export function getPerthSuburb(name: string): SuburbModel | undefined {
   const key = name.toLowerCase().trim()
-  return PERTH_SUBURBS.find((s) => s.name.toLowerCase() === key)
+  return PERTH_SUBURBS.find(
+    (s) => s.name.toLowerCase() === key || s.slug.toLowerCase() === key,
+  )
+}
+
+export function getPerthSuburbSlugs(): string[] {
+  return PERTH_SUBURBS.map((s) => s.slug)
 }
