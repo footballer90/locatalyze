@@ -1,0 +1,78 @@
+# .check-scores-ignore
+#
+# Legacy pages that predate the scoring engine and still use manual scores.
+# These are KNOWN violations — do not add new files here.
+# Instead, migrate each page to use computeLocationModel() and remove it from this list.
+#
+# Migration status tracked at: docs/engine-migration.md
+# Rule: if a file is here → it needs migration. If a file is NOT here → it must be clean.
+#
+# To check if your new file is clean: npm run check:scores
+
+lib/analyse-data/cities.ts
+lib/analyse-data/suburbs.ts
+app/(marketing)/analyse/page.tsx
+app/(marketing)/analyse/adelaide/restaurant/page.tsx
+app/(marketing)/analyse/ballarat/cafe/page.tsx
+app/(marketing)/analyse/bendigo/restaurant/page.tsx
+app/(marketing)/analyse/brisbane/cafe/page.tsx
+app/(marketing)/analyse/brisbane/page.tsx
+app/(marketing)/analyse/bundaberg/cafe/page.tsx
+app/(marketing)/analyse/cairns/cafe/page.tsx
+app/(marketing)/analyse/canberra/retail/page.tsx
+app/(marketing)/analyse/geelong/cafe/page.tsx
+app/(marketing)/analyse/gold-coast/gym/page.tsx
+app/(marketing)/analyse/hervey-bay/restaurant/page.tsx
+app/(marketing)/analyse/hobart/cafe/page.tsx
+app/(marketing)/analyse/ipswich/gym/page.tsx
+app/(marketing)/analyse/launceston/cafe/page.tsx
+app/(marketing)/analyse/mackay/retail/page.tsx
+app/(marketing)/analyse/melbourne/broadmeadows/page.tsx
+app/(marketing)/analyse/melbourne/cafe/page.tsx
+app/(marketing)/analyse/melbourne/cranbourne/page.tsx
+app/(marketing)/analyse/melbourne/epping/page.tsx
+app/(marketing)/analyse/melbourne/frankston/page.tsx
+app/(marketing)/analyse/melbourne/hoppers-crossing/page.tsx
+app/(marketing)/analyse/melbourne/narre-warren/page.tsx
+app/(marketing)/analyse/melbourne/page.tsx
+app/(marketing)/analyse/melbourne/pakenham/page.tsx
+app/(marketing)/analyse/melbourne/restaurant/page.tsx
+app/(marketing)/analyse/melbourne/sunshine/page.tsx
+app/(marketing)/analyse/newcastle/bakery/page.tsx
+app/(marketing)/analyse/newcastle/page.tsx
+app/(marketing)/analyse/perth/cafe/page.tsx
+app/(marketing)/analyse/perth/mount-lawley/page.tsx
+app/(marketing)/analyse/perth/page.tsx
+app/(marketing)/analyse/perth/perth-cbd/page.tsx
+app/(marketing)/analyse/perth/restaurant/page.tsx
+app/(marketing)/analyse/rockhampton/cafe/page.tsx
+app/(marketing)/analyse/sunshine-coast/cafe/page.tsx
+app/(marketing)/analyse/sunshine-coast/restaurant/page.tsx
+app/(marketing)/analyse/toowoomba/cafe/page.tsx
+app/(marketing)/analyse/townsville/gym/page.tsx
+app/(marketing)/analyse/wollongong/restaurant/page.tsx
+app/(marketing)/analyse/sydney/alexandria/page.tsx
+app/(marketing)/analyse/sydney/auburn/page.tsx
+app/(marketing)/analyse/sydney/bakery/page.tsx
+app/(marketing)/analyse/sydney/bankstown/page.tsx
+app/(marketing)/analyse/sydney/blacktown/page.tsx
+app/(marketing)/analyse/sydney/burwood/page.tsx
+app/(marketing)/analyse/sydney/cafe/page.tsx
+app/(marketing)/analyse/sydney/campbelltown/page.tsx
+app/(marketing)/analyse/sydney/fairfield/page.tsx
+app/(marketing)/analyse/sydney/granville/page.tsx
+app/(marketing)/analyse/sydney/gym/page.tsx
+app/(marketing)/analyse/sydney/hornsby/page.tsx
+app/(marketing)/analyse/sydney/lakemba/page.tsx
+app/(marketing)/analyse/sydney/liverpool/page.tsx
+app/(marketing)/analyse/sydney/marrickville/page.tsx
+app/(marketing)/analyse/sydney/merrylands/page.tsx
+app/(marketing)/analyse/sydney/mount-druitt/page.tsx
+app/(marketing)/analyse/sydney/north-sydney/page.tsx
+app/(marketing)/analyse/sydney/page.tsx
+app/(marketing)/analyse/sydney/parramatta/page.tsx
+app/(marketing)/analyse/sydney/penrith/page.tsx
+app/(marketing)/analyse/sydney/restaurant/page.tsx
+app/(marketing)/analyse/sydney/retail/page.tsx
+app/(marketing)/analyse/sydney/ryde/page.tsx
+app/(marketing)/analyse/sydney/salon/page.tsx

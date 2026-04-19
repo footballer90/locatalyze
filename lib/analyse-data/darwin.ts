@@ -1,4 +1,5 @@
 import {
+  assertNoManualScores,
   computeLocationModel,
   type LocationFactors,
   type LocationVerdict,
@@ -192,6 +193,8 @@ function toLocationFactors(seed: DarwinSuburbSeed['factors']): LocationFactors {
 }
 
 const DARWIN_SUBURBS: DarwinSuburb[] = DARWIN_SUBURB_DATASET.map((suburb) => {
+  // Guard: seed objects must not contain pre-computed score fields.
+  assertNoManualScores(suburb as unknown as Record<string, unknown>, suburb.name)
   const locationFactors = toLocationFactors(suburb.factors)
   const model = computeLocationModel(locationFactors)
 

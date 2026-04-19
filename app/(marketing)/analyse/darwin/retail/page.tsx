@@ -170,9 +170,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Berrimah', postcode: '0828', score: 28, verdict: 'NO' as const, reason: 'Industrial and warehouse zone with no retail foot traffic infrastructure. Businesses here serve wholesale and B2B only. Residential population density is insufficient to support retail. Zero walk-in traffic; all revenue must come from destination shopping by vehicle.' },
-  { name: 'Humpty Doo', postcode: '0836', score: 22, verdict: 'NO' as const, reason: 'Rural fringe population is severely dispersed across large geographic area. The "drive-through retail culture" means customers do not walk or browse — they drive purposefully to destination retailers. No retail foot traffic generation. Population too sparse to support independent retail economics.' },
-  { name: 'Winnellie', postcode: '0821', score: 18, verdict: 'NO' as const, reason: 'Light industrial zone with transient business visitors only. No residential density; no repeat customer base. Foot traffic is incidental to industrial activity, not retail-driving. Viable only for wholesale, office supply, or B2B operations targeting industrial tenants.' },
+  { name: 'Berrimah', postcode: '0828', verdict: 'NO' as const, reason: 'Industrial and warehouse zone with no retail foot traffic infrastructure. Businesses here serve wholesale and B2B only. Residential population density is insufficient to support retail. Zero walk-in traffic; all revenue must come from destination shopping by vehicle.' },
+  { name: 'Humpty Doo', postcode: '0836', verdict: 'NO' as const, reason: 'Rural fringe population is severely dispersed across large geographic area. The "drive-through retail culture" means customers do not walk or browse — they drive purposefully to destination retailers. No retail foot traffic generation. Population too sparse to support independent retail economics.' },
+  { name: 'Winnellie', postcode: '0821', verdict: 'NO' as const, reason: 'Light industrial zone with transient business visitors only. No residential density; no repeat customer base. Foot traffic is incidental to industrial activity, not retail-driving. Viable only for wholesale, office supply, or B2B operations targeting industrial tenants.' },
 ]
 
 const S = {
@@ -597,15 +597,12 @@ export default function DarwinRetailPage() {
             Understanding why certain locations fail is as strategically valuable as knowing where to succeed.
           </p>
           {RISK_SUBURBS.map(sub => (
-            <div key={sub.name} style={{ background: S.white, border: `1.5px solid ${S.redBdr}`, borderRadius: 14, padding: '20px 24px', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'start' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}><h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900 }}>{sub.name}, NT {sub.postcode}</h3><VerdictBadge v={sub.verdict} /></div>
-                <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>{sub.reason}</p>
+            <div key={sub.name} style={{ background: S.white, border: `1.5px solid ${S.redBdr}`, borderRadius: 14, padding: '20px 24px', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900 }}>{sub.name}, NT {sub.postcode}</h3>
+                <VerdictBadge v={sub.verdict} />
               </div>
-              <div style={{ textAlign: 'center', minWidth: 56 }}>
-                <div style={{ fontSize: 36, fontWeight: 900, color: S.red, lineHeight: 1 }}>{sub.score}</div>
-                <div style={{ fontSize: 10, color: S.muted }}>/100</div>
-              </div>
+              <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>{sub.reason}</p>
             </div>
           ))}
         </section>
@@ -719,7 +716,7 @@ export default function DarwinRetailPage() {
               <tbody>
                 {[
                   ...TOP_SUBURBS.map(s => ({ name: s.name, score: s.score, verdict: s.verdict, income: s.income, rent: s.rent, comp: s.competition, payback: s.payback })),
-                  ...RISK_SUBURBS.map(s => ({ name: s.name, score: s.score, verdict: s.verdict, income: '< $75k', rent: 'Not viable', comp: '7+', payback: 'N/A' })),
+                  ...RISK_SUBURBS.map(s => ({ name: s.name, score: '—', verdict: s.verdict, income: '< $75k', rent: 'Not viable', comp: '7+', payback: 'N/A' })),
                 ].map((row, i) => (
                   <tr key={row.name} style={{ borderBottom: i < 6 ? `1px solid ${S.n100}` : 'none', background: row.verdict === 'NO' ? '#FEF8F8' : 'transparent' }}>
                     <td style={{ padding: '10px 14px', fontWeight: 600 }}>{row.name}</td>
