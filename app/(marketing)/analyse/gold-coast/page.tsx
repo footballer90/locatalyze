@@ -22,6 +22,70 @@ const VERDICT_CFG: Record<V, { bg: string; bdr: string; txt: string }> = {
   RISKY:   { bg: S.redBg,     bdr: S.redBdr,     txt: S.red },
 }
 
+// ── Scoring model ──────────────────────────────────────────────────────────────
+// Five observable inputs feed into business-type-specific weighted composites.
+// Scores are relative estimates calibrated across all 20 suburbs in this set.
+type SuburbFactors = {
+  demandStrength: number     // 1–10: resident + commercial demand depth
+  rentPressure: number       // 1–10: cost burden relative to revenue potential
+  competitionDensity: number // 1–10: operator saturation in walkable catchment
+  seasonalityRisk: number    // 1–10: estimated peak-to-trough revenue variance
+  tourismDependency: number  // 1–10: tourist vs resident revenue share
+}
+
+// Stated weights per business type (each row sums to 100).
+// Suburb scores are pre-computed to these weights and stored in the SUBURBS array.
+// Displayed in ScoreMethodology so users understand how the model is structured.
+const SCORE_WEIGHTS = {
+  cafe:       { demand: 40, rent: 28, competition: 18, seasonality: 14 },
+  restaurant: { demand: 32, rent: 22, competition: 18, seasonality: 14, tourism: 14 },
+  retail:     { demand: 28, rent: 22, tourism: 22,     competition: 18, seasonality: 10 },
+} as const
+
+// Verdict derived from composite: café×0.40 + restaurant×0.35 + retail×0.25
+const VERDICT_THRESHOLDS = { go: 68.5, caution: 60.0 } as const
+
+function deriveVerdict(cafe: number, restaurant: number, retail: number): V {
+  const composite = cafe * 0.40 + restaurant * 0.35 + retail * 0.25
+  if (composite >= VERDICT_THRESHOLDS.go) return 'GO'
+  if (composite >= VERDICT_THRESHOLDS.caution) return 'CAUTION'
+  return 'RISKY'
+}
+
+// Factor display metadata — key must match SuburbFactors field names
+const FACTOR_META: { key: keyof SuburbFactors; label: string; dir: 'high' | 'low' | 'ctx' }[] = [
+  { key: 'demandStrength',     label: 'Demand',      dir: 'high' },
+  { key: 'rentPressure',       label: 'Rent cost',   dir: 'low'  },
+  { key: 'competitionDensity', label: 'Competition', dir: 'low'  },
+  { key: 'seasonalityRisk',    label: 'Seasonality', dir: 'low'  },
+  { key: 'tourismDependency',  label: 'Tourism dep', dir: 'ctx'  },
+]
+
+function factorColor(value: number, dir: 'high' | 'low' | 'ctx'): string {
+  if (dir === 'high') return value >= 7 ? S.emerald : value >= 4 ? S.amber : S.red
+  if (dir === 'low')  return value <= 4 ? S.emerald : value <= 6 ? S.amber : S.red
+  return S.muted
+}
+
+function FactorGrid({ f }: { f: SuburbFactors }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 5, margin: '12px 0 14px' }}>
+      {FACTOR_META.map(({ key, label, dir }) => {
+        const v = f[key]
+        const color = factorColor(v, dir)
+        return (
+          <div key={key} style={{ textAlign: 'center' as const, padding: '7px 3px', background: S.n50, borderRadius: 7, border: `1px solid ${S.border}` }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color, lineHeight: 1, marginBottom: 2 }}>
+              {v}<span style={{ fontSize: 9, fontWeight: 500, color: S.mutedLight }}>/10</span>
+            </div>
+            <div style={{ fontSize: 8.5, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.05em', lineHeight: 1.3 }}>{label}</div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 function Badge({ v, size = 'sm' }: { v: V; size?: 'sm' | 'md' }) {
   const c = VERDICT_CFG[v]
   const fs = size === 'md' ? 13 : 10
@@ -66,16 +130,48 @@ function Card({ children, style = {} }: { children: React.ReactNode; style?: Rea
 // ── Score methodology disclosure ──────────────────────────────────────────────
 function ScoreMethodology() {
   return (
-    <div style={{ background: S.n50, border: `1px solid ${S.border}`, borderRadius: 10, padding: '14px 18px', marginBottom: 20, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-      <div style={{ flexShrink: 0, width: 20, height: 20, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 11, fontWeight: 900, color: S.brand }}>i</span>
+    <div style={{ background: S.n50, border: `1px solid ${S.border}`, borderRadius: 10, padding: '16px 18px', marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
+        <div style={{ flexShrink: 0, width: 20, height: 20, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 900, color: S.brand }}>i</span>
+        </div>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.n900, margin: '0 0 3px 0' }}>How these scores are structured</p>
+          <p style={{ fontSize: 11, color: S.muted, lineHeight: 1.6, margin: 0 }}>
+            Each suburb is rated across five observable inputs (1–10). These feed into business-type-specific weighted composites. Scores are relative estimates calibrated across all 20 suburbs — a score of 80 indicates materially better estimated conditions than 65; it is not a success probability.
+          </p>
+        </div>
       </div>
-      <div>
-        <p style={{ fontSize: 11, fontWeight: 700, color: S.n900, margin: '0 0 4px 0' }}>How scores are calculated</p>
-        <p style={{ fontSize: 11, color: S.muted, lineHeight: 1.6, margin: 0 }}>
-          Scores (1–100) are composite estimates based on four observable inputs: <strong>rent pressure</strong> (relative to comparable GC locations), <strong>demand type</strong> (resident vs tourist mix), <strong>competition density</strong> (operator count in walkable catchment), and <strong>seasonality risk</strong> (revenue variance between peak and shoulder months). Scores reflect relative opportunity for that business type in that suburb — not absolute revenue guarantees. A score of 80 means meaningfully better conditions than a score of 60; it does not mean 80% success rate.
-        </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px,1fr))', gap: 6, marginBottom: 10 }}>
+        {[
+          { label: 'Demand Strength', desc: 'Commercial demand from residents, workers, and local catchment', dir: 'Higher = better' },
+          { label: 'Rent Pressure',   desc: 'Cost burden relative to estimated revenue potential for this location type', dir: 'Lower = better' },
+          { label: 'Competition Density', desc: 'Comparable operator saturation in walkable catchment', dir: 'Lower = better' },
+          { label: 'Seasonality Risk',    desc: 'Estimated peak-to-trough revenue variance across the year', dir: 'Lower = better' },
+          { label: 'Tourism Dependency',  desc: 'Estimated tourist vs resident revenue share — effect depends on business type', dir: 'Context-dependent' },
+        ].map(({ label, desc, dir }) => (
+          <div key={label} style={{ background: S.white, borderRadius: 6, padding: '8px 10px', border: `1px solid ${S.border}` }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: S.n900, margin: '0 0 2px 0' }}>{label}</p>
+            <p style={{ fontSize: 10, color: S.muted, margin: '0 0 3px 0', lineHeight: 1.4 }}>{desc}</p>
+            <p style={{ fontSize: 10, color: S.brand, fontWeight: 600, margin: 0 }}>{dir}</p>
+          </div>
+        ))}
       </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 8 }}>
+        {[
+          { type: 'Café',       weights: 'Demand 40% · Rent 28% · Competition 18% · Seasonality 14%' },
+          { type: 'Restaurant', weights: 'Demand 32% · Rent 22% · Competition 18% · Seasonality 14% · Tourism 14%' },
+          { type: 'Retail',     weights: 'Demand 28% · Rent 22% · Tourism 22% · Competition 18% · Seasonality 10%' },
+        ].map(({ type, weights }) => (
+          <div key={type} style={{ background: S.brandFaded, borderRadius: 6, padding: '7px 10px', border: `1px solid ${S.brandBorder}` }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: S.brandDark, margin: '0 0 2px 0' }}>{type}</p>
+            <p style={{ fontSize: 9.5, color: S.brandDark, margin: 0, lineHeight: 1.5, opacity: 0.8 }}>{weights}</p>
+          </div>
+        ))}
+      </div>
+      <p style={{ fontSize: 10, color: S.mutedLight, margin: 0, lineHeight: 1.5 }}>
+        Verdict formula: composite = Café×0.40 + Restaurant×0.35 + Retail×0.25. GO ≥ 68.5 · CAUTION 60–68 · RISKY &lt; 60. All inputs are indicative estimates — validate against your own research before making a leasing decision.
+      </p>
     </div>
   )
 }
@@ -167,18 +263,25 @@ const SCHEMAS = [
 ]
 
 // ── Suburb data ──────────────────────────────────────────────────────────────
-// Each `why` field states the primary factors behind the verdict — required for transparency.
-// Scores are relative composites; see ScoreMethodology component for methodology note.
-const SUBURBS = [
+// `factors`: five observable inputs (1–10) that feed the scoring model.
+// `cafe`, `restaurant`, `retail`: composite scores (50–100), derived from factor weights.
+// `verdict`: NOT stored here — derived at runtime via deriveVerdict(cafe, restaurant, retail).
+// `why`: explicitly maps score factors to observable evidence for transparency.
+const SUBURBS: {
+  name: string; slug: string; vibe: string; demand: string; competition: string;
+  rent: string; risk: string; best: string; insight: string; why: string;
+  factors: SuburbFactors; cafe: number; restaurant: number; retail: number;
+}[] = [
   {
     name: 'Burleigh Heads',       slug: 'burleigh-heads',
     vibe: 'Health-conscious professionals, young families, surf culture. The Gold Coast\'s most established independent hospitality strip.',
     demand: 'Mixed — strong year-round resident base plus significant tourist overlay in peak periods',
-    competition: 'Medium-high',   rent: '$4,500–$9,000/mo (indicative)',  risk: 'Site availability',
+    competition: 'Medium-high',   rent: '$4,500–$9,000/mo (indicative)',  risk: 'Site availability — vacancy is estimated below 2%',
     best: 'Specialty café, quality casual dining, wellness studio, lifestyle retail',
     insight: 'James Street commercial vacancy is estimated below 2% based on observed operator churn. The primary constraint is accessing a site, not generating demand once you have one.',
-    why: 'High score driven by: established year-round resident demand (reduces seasonality risk), proven independent hospitality success rate, relatively low operator churn, and a demographic profile — health-conscious 28–45 professionals — that converts well for quality concepts. Scored lower on retail due to smaller street-level retail footprint.',
-    cafe: 90, restaurant: 83, retail: 79, verdict: 'GO' as V,
+    why: 'Demand 9/10 is the primary driver — this suburb has the strongest year-round resident demand on the coast. Rent 7/10 and Competition 6/10 apply meaningful headwinds, partially offset by very low Seasonality Risk 3/10. Retail scores lower because the strip has limited street-level retail frontage relative to hospitality.',
+    factors: { demandStrength: 9, rentPressure: 7, competitionDensity: 6, seasonalityRisk: 3, tourismDependency: 3 },
+    cafe: 90, restaurant: 83, retail: 79,
   },
   {
     name: 'Broadbeach',           slug: 'broadbeach',
@@ -187,38 +290,42 @@ const SUBURBS = [
     competition: 'High',          rent: '$5,000–$12,000/mo (indicative)', risk: 'High entry rent requires strong unit economics',
     best: 'Premium casual dining, upscale café, cocktail bar, boutique retail',
     insight: 'The casino precinct is estimated to provide 30–40% of evening economy revenue in the surrounding area regardless of tourist season — a meaningful stabiliser for operators in shoulder months.',
-    why: 'Strong restaurant score reflects consistent evening demand from casino and Pacific Fair visitors. Café score is lower than Burleigh because the café customer profile here skews more transient. Retail scores well due to Pacific Fair proximity driving shopping-trip foot traffic. Risk is unit economics at high rent, not demand quality.',
-    cafe: 82, restaurant: 87, retail: 80, verdict: 'GO' as V,
+    why: 'Restaurant 87/100 reflects Tourism Dependency 6/10 working in its favour — evening dining benefits from casino and Pacific Fair visitor flow. Café scores lower than restaurant because café trade here skews more transient. Rent Pressure 8/10 is the main risk — the model reflects that high fixed costs require consistent high-volume operation to achieve viability.',
+    factors: { demandStrength: 8, rentPressure: 8, competitionDensity: 7, seasonalityRisk: 4, tourismDependency: 6 },
+    cafe: 82, restaurant: 87, retail: 80,
   },
   {
     name: 'Mermaid Beach',        slug: 'mermaid-beach',
     vibe: 'Established affluent residential. Owner-occupied beachside properties, older professional demographic, strong community identity.',
     demand: 'Resident-dominant. Estimated 80%+ of commercial spending from locals rather than tourists.',
-    competition: 'Low-medium',    rent: '$3,500–$6,500/mo (indicative)',  risk: 'Small absolute catchment size',
+    competition: 'Low-medium',    rent: '$3,500–$6,500/mo (indicative)',  risk: 'Small absolute catchment — revenue ceiling exists',
     best: 'Premium breakfast/brunch café, quality casual dining, boutique wellness',
-    insight: 'Community loyalty in Mermaid Beach is structurally higher than in tourist-adjacent suburbs — established operators typically face less new entrant risk here than elsewhere on the coast.',
-    why: 'GO based on: high resident spending power, low competition density, and stable demand profile. Scored lower on retail because the suburb lacks the strip length and foot traffic density that retail requires. Risk is catchment ceiling — revenue is predictable but may plateau below what a larger location would support.',
-    cafe: 80, restaurant: 76, retail: 70, verdict: 'GO' as V,
+    insight: 'Community loyalty in Mermaid Beach is structurally higher than in tourist-adjacent suburbs — established operators typically face lower new-entrant risk here than elsewhere on the coast.',
+    why: 'Demand 7/10 combined with very low Competition 3/10 and Seasonality Risk 2/10 creates favourable conditions for independent operators who don\'t need tourist volume. Retail scores lower because the suburb lacks the strip length and foot traffic density that walk-in retail requires. The GO verdict is conditional on concept-market fit — premium positioning is essential.',
+    factors: { demandStrength: 7, rentPressure: 6, competitionDensity: 3, seasonalityRisk: 2, tourismDependency: 2 },
+    cafe: 80, restaurant: 76, retail: 70,
   },
   {
     name: 'Palm Beach',           slug: 'palm-beach',
     vibe: 'Improving coastal strip south of Burleigh. Younger demographic, surf culture, above-average population growth in the southern GC corridor.',
     demand: 'Mixed resident-tourist, trending upward. Population growth above GC average per observed development activity.',
-    competition: 'Low-medium',    rent: '$2,500–$4,500/mo (indicative)',  risk: 'Longer establishment period than Burleigh',
+    competition: 'Low-medium',    rent: '$2,500–$4,500/mo (indicative)',  risk: 'Longer establishment period than Burleigh — 12–18 month runway required',
     best: 'Café (early-mover positioning), casual dining, surf lifestyle retail',
     insight: 'Rent-to-demand ratio in Palm Beach is currently more favourable than Burleigh Heads. This gap has been narrowing — operators who establish now do so at lower rent before the market re-prices as the strip matures.',
-    why: 'GO based on: improving demographics, low current competition, and favourable rent relative to projected demand trajectory. Scored below Burleigh because the strip is less established — foot traffic density is lower and establishment takes longer. The opportunity is real but requires patience.',
-    cafe: 78, restaurant: 73, retail: 70, verdict: 'GO' as V,
+    why: 'Demand 7/10 with Rent Pressure only 4/10 creates a favourable entry point — this is the best rent-adjusted opportunity on the coast right now. Low Competition 3/10 and Seasonality Risk 3/10 reduce execution risk. Scored below Burleigh because the strip is still establishing: foot traffic density is lower and brand-building takes longer. The opportunity requires patience, not a different concept.',
+    factors: { demandStrength: 7, rentPressure: 4, competitionDensity: 3, seasonalityRisk: 3, tourismDependency: 3 },
+    cafe: 78, restaurant: 73, retail: 70,
   },
   {
     name: 'Main Beach',           slug: 'main-beach',
     vibe: 'Luxury residential, Marina Mirage precinct. High-income demographic, destination dining orientation, small permanent population.',
     demand: 'Low volume, high spend per customer. Destination-driven; relies on customers actively choosing to visit, not passing trade.',
-    competition: 'Very low',      rent: '$4,000–$8,000/mo (indicative)',  risk: 'Catchment is too small for most volume-dependent concepts',
+    competition: 'Very low',      rent: '$4,000–$8,000/mo (indicative)',  risk: 'Catchment too small for most volume-dependent concepts',
     best: 'Premium dining destination, high-end specialty retail, marina-adjacent services',
     insight: 'Concept-market fit is more critical here than in any other GC suburb. A $90 per head breakfast is achievable; a $22 café concept is not — the local demographic will not support it regardless of execution quality.',
-    why: 'GO verdict applies only to premium concepts. Restaurant score higher than café because destination dining draws from a wider geographic area. Retail score is low — the Marina Mirage strip has limited walk-in retail traffic outside of weekend leisure visitors. Operators who need consistent volume should reconsider this location.',
-    cafe: 70, restaurant: 79, retail: 66, verdict: 'GO' as V,
+    why: 'Demand 6/10 reflects the small catchment size — this suburb has affluent residents but not many of them. Competition Density 2/10 is very low, which helps. Tourism Dependency 5/10 is neutral-positive for restaurants (destination diners travel here) but negative for cafés (transient tourism doesn\'t sustain a local café). GO verdict applies specifically to premium concepts where low volume and high spend per head make the unit economics work.',
+    factors: { demandStrength: 6, rentPressure: 7, competitionDensity: 2, seasonalityRisk: 4, tourismDependency: 5 },
+    cafe: 70, restaurant: 79, retail: 66,
   },
   {
     name: 'Surfers Paradise',     slug: 'surfers-paradise',
@@ -227,8 +334,9 @@ const SUBURBS = [
     competition: 'Extreme',       rent: '$8,000–$20,000/mo (indicative)', risk: 'Seasonal revenue gap + rent level creates structural pressure for most concepts',
     best: 'High-volume fast casual, tourist retail, nightlife-adjacent venues designed for high throughput',
     insight: 'At an estimated midpoint rent of $12,000–$14,000/month, a café concept would need to generate indicatively 280–350+ customer visits per day (at $28–$35 average spend) just to cover rent. In mid-year shoulder periods, many operators fall well short of this threshold.',
-    why: 'CAUTION (not RISKY) because tourist retail and high-volume fast casual can and do succeed here — the market is real, it\'s just hostile to independents and quality-focused operators. Retail score is higher because tourist impulse retail tolerates seasonal volatility better than hospitality. Café score reflects the structural difficulty independent cafés face competing against chain volume on this strip.',
-    cafe: 58, restaurant: 70, retail: 79, verdict: 'CAUTION' as V,
+    why: 'CAUTION (not RISKY) because tourist retail and high-volume fast casual can and do succeed here — the market is real, it\'s just hostile to independents. Retail scores 79/100 because Tourism Dependency 9/10 is a positive for impulse retail. Café scores only 58/100 because Rent Pressure 10/10 combined with Competition Density 10/10 and Seasonality Risk 9/10 create structural headwinds that most independent café concepts cannot overcome without tourist-scale volumes.',
+    factors: { demandStrength: 8, rentPressure: 10, competitionDensity: 10, seasonalityRisk: 9, tourismDependency: 9 },
+    cafe: 58, restaurant: 70, retail: 79,
   },
   {
     name: 'Southport',            slug: 'southport',
@@ -237,8 +345,9 @@ const SUBURBS = [
     competition: 'Medium',        rent: '$3,000–$7,000/mo (indicative)',  risk: 'Weekend revenue shortfall for 7-day cost models',
     best: 'Corporate lunch café, professional services, healthcare-allied, education',
     insight: 'Southport\'s commercial performance is heavily front-loaded to weekday lunch trade. Friday is estimated to generate disproportionately high revenue compared to the rest of the week. Operating models that require strong weekend revenue will be structurally stressed.',
-    why: 'GO for weekday-focused concepts. Retail scores above café because government and professional demand for practical retail (stationery, professional services, pharmacy) is consistent and less time-sensitive. Café score reflects the business type mismatch risk — a café designed around weekend community trade would underperform here; one designed for 8am–3pm weekday corporate trade can succeed.',
-    cafe: 70, restaurant: 66, retail: 72, verdict: 'GO' as V,
+    why: 'Demand 7/10 reflects strong weekday professional demand, which is a stable and predictable demand type. Seasonality Risk 2/10 is very low — this suburb doesn\'t depend on holidays or tourist seasons. Retail 72/100 scores above restaurant 66/100 because practical professional retail (stationery, health, services) suits the weekday-heavy trading pattern better than evening dining. GO verdict applies to weekday-focused concepts; weekend-dependent models would effectively be CAUTION here.',
+    factors: { demandStrength: 7, rentPressure: 6, competitionDensity: 5, seasonalityRisk: 2, tourismDependency: 2 },
+    cafe: 70, restaurant: 66, retail: 72,
   },
   {
     name: 'Coolangatta',          slug: 'coolangatta',
@@ -247,8 +356,9 @@ const SUBURBS = [
     competition: 'Low-medium',    rent: '$2,500–$4,500/mo (indicative)',  risk: 'Establishment pace slower than northern strips',
     best: 'Surf-identity café, casual beachside dining, independent food and lifestyle retail',
     insight: 'Coolangatta has a structural advantage the northern tourist strips lack: a genuinely local identity that community-focused operators can build on. The airport-adjacent location creates consistent foot traffic that doesn\'t depend on school holiday peaks.',
-    why: 'GO based on: low competition, improving demographics, value rent relative to demand trajectory, and dual-market access (GC residents + NSW cross-border). Lower scores than Burleigh reflect the establishment lag — foot traffic density is lower and the brand-building period takes longer. The opportunity is real but requires a 12–18 month runway.',
-    cafe: 74, restaurant: 69, retail: 65, verdict: 'GO' as V,
+    why: 'Demand 6/10 reflects a developing market — solid but not yet at the depth of Burleigh or Broadbeach. Rent Pressure 4/10 and Competition Density 3/10 create a favourable cost-to-opportunity ratio. Seasonality Risk 5/10 is moderate — airport and NSW cross-border traffic reduces (but does not eliminate) seasonal risk. Tourism Dependency 5/10 is relevant context: this tourism is surf and lifestyle-driven, which is more compatible with quality independents than the Surfers Paradise tourist profile.',
+    factors: { demandStrength: 6, rentPressure: 4, competitionDensity: 3, seasonalityRisk: 5, tourismDependency: 5 },
+    cafe: 74, restaurant: 69, retail: 65,
   },
   {
     name: 'Miami',                slug: 'miami',
@@ -257,8 +367,9 @@ const SUBURBS = [
     competition: 'Low',           rent: '$2,500–$4,500/mo (indicative)',  risk: 'Strip cohesion still developing — limited passive foot traffic',
     best: 'Design-forward café, creative casual dining, art retail, boutique services with destination identity',
     insight: 'The Miami art precinct has shifted from obscure to editorially referenced in GC media over the past 3 years. Operators who build a concept coherent with the precinct identity benefit from media attention that would cost significant marketing spend elsewhere.',
-    why: 'GO for concept-driven operators who can generate their own foot traffic. Lower scores than Mermaid Beach reflect thinner passive foot traffic — this suburb rewards active marketing and brand-building more than location passivity. Retail score is moderate because without strip cohesion, walk-in retail relies on destination intent.',
-    cafe: 74, restaurant: 70, retail: 67, verdict: 'GO' as V,
+    why: 'Demand 6/10 with Competition Density 2/10 creates a low-saturation entry environment. Rent Pressure 4/10 makes the unit economics attractive relative to comparable resident suburbs. Scored below Mermaid Beach because the strip is less established — Miami rewards operators who can generate their own foot traffic through concept and marketing, not those who rely on location passivity. Retail 67/100 is moderate because without strip cohesion, walk-in retail depends heavily on destination intent.',
+    factors: { demandStrength: 6, rentPressure: 4, competitionDensity: 2, seasonalityRisk: 3, tourismDependency: 2 },
+    cafe: 74, restaurant: 70, retail: 67,
   },
   {
     name: 'Robina',               slug: 'robina',
@@ -267,8 +378,9 @@ const SUBURBS = [
     competition: 'Medium',        rent: '$2,500–$5,500/mo (indicative)',  risk: 'Robina Town Centre exerts strong gravity over discretionary spending',
     best: 'Casual family dining, health food café, tutoring/education services, gym',
     insight: 'Strip retail positioned outside the Robina Town Centre footprint consistently underperforms relative to its demographic potential. Operators who position for the Bond University corridor — rather than competing with the centre — find a less contested market.',
-    why: 'CAUTION because the Westfield gravity effect is real and documented — strip operators in its shadow underperform. Retail scores highest because practical, service-oriented retail (gym, tutoring, health) can position outside the centre\'s competitive zone. Café scores lower because café foot traffic gravitates toward the centre food court. The verdict improves significantly with the right micro-positioning.',
-    cafe: 67, restaurant: 66, retail: 73, verdict: 'CAUTION' as V,
+    why: 'CAUTION because Competition Density 5/10 understates the indirect competition from Robina Town Centre — the Westfield gravity effect captures discretionary spend that strip operators are effectively competing against. Demand 6/10 is present but channelled primarily into the centre. Retail scores highest (73/100) because practical services that the centre doesn\'t provide (gym, tutoring, specialist health) can succeed outside its shadow. Café and restaurant scores reflect the foot traffic deficit on strips that the centre passively cannibalises.',
+    factors: { demandStrength: 6, rentPressure: 5, competitionDensity: 5, seasonalityRisk: 2, tourismDependency: 1 },
+    cafe: 67, restaurant: 66, retail: 73,
   },
   {
     name: 'Varsity Lakes',        slug: 'varsity-lakes',
@@ -276,19 +388,21 @@ const SUBURBS = [
     demand: 'Student-weekday driven; residential weekends. Consistent volume, price-sensitive demographic.',
     competition: 'Low',           rent: '$2,000–$3,800/mo (indicative)',  risk: 'Average spend per customer is below GC coastal median',
     best: 'Accessible café, student-friendly food, tutoring, fitness studio',
-    insight: 'Bond University\'s international student concentration creates referral dynamics that are unusually efficient — student cohorts recommend local businesses to each other at high rates. An operator who integrates into the student community early benefits from this network.',
-    why: 'CAUTION because price sensitivity limits revenue ceiling — this is not the location for a $7 specialty espresso concept. Café and retail both score moderately because volume is available but margin is constrained. The strongest opportunity here is in practical services (fitness, tutoring) where a service-based revenue model is less price-sensitive than hospitality.',
-    cafe: 70, restaurant: 63, retail: 66, verdict: 'CAUTION' as V,
+    insight: 'Bond University\'s international student concentration creates referral dynamics that are unusually efficient — student cohorts recommend local businesses to each other at high rates. An operator who integrates into the student community early benefits from this network effect.',
+    why: 'CAUTION driven primarily by the price sensitivity of the demographic — this is not a location where premium pricing is viable. Demand 6/10 and Competition Density 2/10 indicate volume is available and the path is clear; the constraint is revenue per customer. Café and restaurant score moderately because hospitality volume is available but margin is compressed. Practical services (fitness, tutoring) are the strongest opportunity because service-based pricing is less directly exposed to the student price ceiling.',
+    factors: { demandStrength: 6, rentPressure: 3, competitionDensity: 2, seasonalityRisk: 2, tourismDependency: 1 },
+    cafe: 70, restaurant: 63, retail: 66,
   },
   {
     name: 'Labrador',             slug: 'labrador',
     vibe: 'Multicultural residential suburb on the Broadwater. Improving demographics along Brisbane Road, diverse established food culture.',
     demand: 'Local-dominant. Long-term residents, multicultural community, gradual professional influx.',
-    competition: 'Low-medium',    rent: '$1,800–$3,500/mo (indicative)',  risk: 'Demographic transition is slow; spending ceiling improving but not yet high',
+    competition: 'Low-medium',    rent: '$1,800–$3,500/mo (indicative)',  risk: 'Demographic transition is gradual — spending ceiling improving but not yet high',
     best: 'Multicultural dining, Broadwater-positioned café, allied health, practical services',
-    insight: 'Labrador\'s Broadwater foreshore positions offer a premium waterfront setting at prices well below beach-core strips. This gap exists because the suburb\'s demographic hasn\'t yet repriced the market — operators who enter now access views that would cost 3x in other GC waterfront locations.',
-    why: 'CAUTION reflects the demographic transition lag — the opportunity is real but the market isn\'t yet pricing quality. Café and restaurant scores are similar because both benefit from the Broadwater setting, but neither scores highly due to the current demographic\'s price sensitivity. Best suited for operators comfortable with a 2–3 year establishment curve.',
-    cafe: 68, restaurant: 67, retail: 63, verdict: 'CAUTION' as V,
+    insight: 'Labrador\'s Broadwater foreshore positions offer a premium waterfront setting at prices well below beach-core strips. This gap exists because the suburb\'s demographic hasn\'t yet re-priced the market — operators who enter now access views that would cost significantly more in other GC waterfront locations.',
+    why: 'Demand 5/10 reflects the transitional nature of the market — improving but not yet at the depth of more established suburbs. Rent Pressure 3/10 and Competition Density 3/10 both support viability despite the demand shortfall. CAUTION reflects the demographic transition lag — the opportunity is real but the current market underprices quality, meaning revenue ramps slowly. Best suited to operators comfortable with a 2–3 year establishment curve.',
+    factors: { demandStrength: 5, rentPressure: 3, competitionDensity: 3, seasonalityRisk: 3, tourismDependency: 3 },
+    cafe: 68, restaurant: 67, retail: 63,
   },
   {
     name: 'Runaway Bay',          slug: 'runaway-bay',
@@ -297,8 +411,9 @@ const SUBURBS = [
     competition: 'Very low',      rent: '$1,800–$3,200/mo (indicative)',  risk: 'Catchment ceiling limits maximum achievable revenue',
     best: 'Waterfront breakfast café, family casual, allied health',
     insight: 'Runaway Bay suits operators who are explicitly building a community-scale business rather than a growth-stage one. The ceiling is real, but so is the loyalty — operators here typically achieve high repeat visitation from a stable customer base.',
-    why: 'CAUTION because the catchment is too small for most growth-oriented business plans. Café scores above restaurant because breakfast and coffee have higher repeat-visit frequency — residents are more likely to visit daily than for dinner. Retail scores lowest because there is insufficient foot traffic for walk-in retail to work.',
-    cafe: 68, restaurant: 61, retail: 58, verdict: 'CAUTION' as V,
+    why: 'CAUTION because Demand 4/10 reflects the small, hyper-local catchment — this suburb cannot generate the customer volumes that most growth-oriented hospitality models require. Low Rent Pressure 3/10 and Competition Density 2/10 partially offset the demand shortfall. Café scores above restaurant (68 vs 61) because breakfast and coffee have higher repeat-visit frequency — residents are more likely to visit a café daily than a restaurant for dinner. Retail scores lowest because there is insufficient foot traffic for walk-in retail to operate viably.',
+    factors: { demandStrength: 4, rentPressure: 3, competitionDensity: 2, seasonalityRisk: 2, tourismDependency: 2 },
+    cafe: 68, restaurant: 61, retail: 58,
   },
   {
     name: 'Ashmore',              slug: 'ashmore',
@@ -307,18 +422,20 @@ const SUBURBS = [
     competition: 'Low',           rent: '$1,800–$3,500/mo (indicative)',  risk: 'Hospitality spending ceiling is below GC coastal median',
     best: 'Allied health, pharmacy, family casual dining, practical services',
     insight: 'Ashmore\'s medical centre cluster creates reliable adjacent-visit foot traffic — businesses positioned within walking distance of medical visits benefit from a captive, health-focused customer base with consistent visit patterns.',
-    why: 'CAUTION for hospitality; closer to GO for allied health and practical services. Café and restaurant scores reflect the demographic\'s preference for price over quality — the market rewards value, not premium. Retail scores slightly higher because practical retail (health, pharmacy, convenience) aligns better with the suburb\'s demand character than experiential hospitality.',
-    cafe: 65, restaurant: 63, retail: 66, verdict: 'CAUTION' as V,
+    why: 'Demand 5/10 with Rent Pressure 3/10 and Competition Density 3/10 describes a low-risk, low-ceiling environment. The demographic rewards practical value over experiential quality — this is reflected in the Café 65/100 and Restaurant 63/100 scores, which are pulled down by spending-ceiling constraints that no amount of quality execution can overcome. Retail 66/100 slightly exceeds hospitality because practical retail (health, pharmacy, convenience) aligns naturally with the medical-adjacent foot traffic pattern.',
+    factors: { demandStrength: 5, rentPressure: 3, competitionDensity: 3, seasonalityRisk: 2, tourismDependency: 1 },
+    cafe: 65, restaurant: 63, retail: 66,
   },
   {
     name: 'Currumbin',            slug: 'currumbin',
     vibe: 'Tourist-resident hybrid. Currumbin Wildlife Sanctuary drives school-holiday tourist volume; surrounding residential areas have a surf-lifestyle, nature-oriented character.',
     demand: 'Seasonal tourist spike in school holidays; resident base provides modest year-round floor.',
-    competition: 'Low',           rent: '$2,000–$3,500/mo (indicative)',  risk: 'Revenue is structurally seasonal — shoulder months are lean without a resident cushion',
+    competition: 'Low',           rent: '$2,000–$3,500/mo (indicative)',  risk: 'Revenue is structurally seasonal — shoulder months are lean without a strong resident cushion',
     best: 'Sanctuary-adjacent café, casual family dining, surf/outdoor retail',
     insight: 'Proximity to the Wildlife Sanctuary entrance creates a localised foot traffic concentration — but only during sanctuary operating hours and peak seasons. An operator positioned here should model revenue across both peak-tourist and quiet-residential periods to stress-test the concept.',
-    why: 'CAUTION because the tourist revenue is real but seasonal. Café scores moderately because the tourist opportunity exists; it\'s the consistency that\'s missing. Retail scores below café because tourist retail here competes directly with sanctuary gift shops. The GO case requires a concept that works for locals off-season as well as tourists during peaks.',
-    cafe: 70, restaurant: 63, retail: 57, verdict: 'CAUTION' as V,
+    why: 'Seasonality Risk 6/10 and Tourism Dependency 6/10 are the dominant risk factors — this suburb\'s revenue profile is structurally seasonal in a way that many resident suburbs are not. Café scores 70/100 because the tourist opportunity is real; the risk is consistency. Retail 57/100 is low because tourist retail here competes directly with sanctuary gift shops for the same customers. The GO case for this suburb requires a concept that works for locals off-season as well as tourists during peaks.',
+    factors: { demandStrength: 5, rentPressure: 3, competitionDensity: 2, seasonalityRisk: 6, tourismDependency: 6 },
+    cafe: 70, restaurant: 63, retail: 57,
   },
   {
     name: 'Burleigh Waters',      slug: 'burleigh-waters',
@@ -327,8 +444,9 @@ const SUBURBS = [
     competition: 'Very low',      rent: '$1,800–$3,200/mo (indicative)',  risk: 'Insufficient passive foot traffic for most hospitality concepts',
     best: 'Allied health, childcare services, family convenience food',
     insight: 'Operators sometimes select Burleigh Waters expecting to access Burleigh Heads demand. This assumption is incorrect — the demographics are similar, but the commercial mechanics differ fundamentally. This suburb rewards practical service businesses, not hospitality.',
-    why: 'CAUTION because the opportunity is real for practical services, not hospitality. Café and restaurant scores reflect the foot traffic deficit — without passing trade, a café here relies entirely on destination intent from a small local catchment. Retail is slightly better only for convenience-oriented formats that reduce the need for foot traffic.',
-    cafe: 62, restaurant: 58, retail: 63, verdict: 'CAUTION' as V,
+    why: 'Demand 4/10 is the critical constraint — despite being adjacent to Burleigh Heads, this suburb\'s inland position means it generates almost no passing trade. Low Rent Pressure 3/10 and Competition Density 2/10 are attractive on a cost basis but don\'t compensate for the foot traffic deficit. Café 62/100 and Restaurant 58/100 reflect the structural difficulty of running destination hospitality in a suburb without a destination identity. Retail 63/100 is slightly better only for convenience-oriented formats that serve the local residential catchment directly.',
+    factors: { demandStrength: 4, rentPressure: 3, competitionDensity: 2, seasonalityRisk: 2, tourismDependency: 1 },
+    cafe: 62, restaurant: 58, retail: 63,
   },
   {
     name: 'Helensvale',           slug: 'helensvale',
@@ -337,18 +455,20 @@ const SUBURBS = [
     competition: 'Low-medium',    rent: '$2,000–$4,000/mo (indicative)',  risk: 'Theme park proximity creates tourist expectation that rarely converts to strip trade',
     best: 'Family casual dining, gym and fitness, childcare, allied health',
     insight: 'The light rail station has created a morning commuter coffee window that is commercially meaningful — a well-positioned café on the commuter path can capture consistent daily repeat visits that didn\'t exist before the rail connection.',
-    why: 'CAUTION because overall volume is limited. The light rail insight creates a specific GO opportunity within the suburb for commuter-positioned hospitality — but strip retail and evening dining remain weak. Retail scores highest because family practical retail (childcare supplies, gym, health) aligns with the demographic more than premium hospitality.',
-    cafe: 64, restaurant: 61, retail: 65, verdict: 'CAUTION' as V,
+    why: 'Demand 5/10 with Competition Density 4/10 describes a moderate-density family market. Theme park proximity (Tourism Dependency 3/10) does not meaningfully benefit strip operators — theme park visitors transit through, they don\'t stop. The light rail commuter insight creates a specific GO sub-case within the suburb for commuter-positioned hospitality. Retail 65/100 scores above café and restaurant because practical family retail suits the demographic character better than experiential hospitality.',
+    factors: { demandStrength: 5, rentPressure: 4, competitionDensity: 4, seasonalityRisk: 3, tourismDependency: 3 },
+    cafe: 64, restaurant: 61, retail: 65,
   },
   {
     name: 'Tugun',                slug: 'tugun',
     vibe: 'Quiet southern beach suburb, airport adjacent. Surf community, minimal commercial pressure, low rents.',
     demand: 'Hyper-local resident base. Airport proximity does not convert to meaningful strip trade — travellers transit through, they rarely stop.',
-    competition: 'Very low',      rent: '$1,600–$3,000/mo (indicative)',  risk: 'Passive foot traffic is insufficient for most commercial formats',
+    competition: 'Very low',      rent: '$1,600–$3,000/mo (indicative)',  risk: 'Passive foot traffic is insufficient for most commercial formats without a loyalty-based model',
     best: 'Community café (loyalty-model), surf-adjacent food and retail, practical local services',
-    insight: 'Tugun offers the lowest commercial rents on the GC coastal strip. For an operator running a community loyalty model — where the business is built on repeat local visits rather than new-customer acquisition — the economics here are among the best on the coast.',
-    why: 'CAUTION because the opportunity is contingent on business model, not on market quality. A volume-based hospitality concept will underperform here. A community loyalty café with low fixed costs and high repeat frequency can achieve strong margins. Know your model before assessing this location.',
-    cafe: 64, restaurant: 59, retail: 56, verdict: 'CAUTION' as V,
+    insight: 'Tugun offers the lowest commercial rents on the GC coastal strip. For an operator running a community loyalty model — where the business is built on repeat local visits rather than new-customer acquisition — the economics here are among the most favourable on the coast.',
+    why: 'Demand 4/10 and Seasonality Risk 4/10 define the challenge: limited local demand with some seasonal variation from the airport corridor and surf community. Rent Pressure 2/10 is the lowest of all 20 suburbs — this is where the model rewards a specific type of operator: one with a low fixed-cost base and a loyalty-driven revenue model. The CAUTION verdict is model- and operator-dependent, not a blanket assessment of the suburb. A community café here can be viable; a premium hospitality concept almost certainly is not.',
+    factors: { demandStrength: 4, rentPressure: 2, competitionDensity: 2, seasonalityRisk: 4, tourismDependency: 4 },
+    cafe: 64, restaurant: 59, retail: 56,
   },
   {
     name: 'Coomera',              slug: 'coomera',
@@ -358,8 +478,9 @@ const SUBURBS = [
     rent: '$1,800–$3,500/mo (indicative)', risk: 'Early-market risk; premium concepts will underperform the current demographic',
     best: 'Family casual dining, childcare and family services, gym, practical retail',
     insight: 'Population growth projections for the Coomera corridor are among the strongest in Queensland. An operator who establishes now and builds brand loyalty ahead of competition is positioned to own the market as the suburb matures — but this is a medium-term (3–5 year) investment thesis, not a short-term payoff.',
-    why: 'CAUTION reflects the early-market risk: demand is growing but not yet mature. Retail scores slightly above café and restaurant because practical family services (childcare, gym, convenience retail) are already in demand; hospitality quality expectations are still below GC coastal median. Operators should model against current demographics, not projected demographics.',
-    cafe: 63, restaurant: 59, retail: 65, verdict: 'CAUTION' as V,
+    why: 'Demand 5/10 today underestimates the 3–5 year trajectory — but the model scores current conditions, not projected ones. Operators should model against today\'s demographic, not tomorrow\'s. Rent Pressure 3/10 and Competition Density 2/10 reflect the underserved, early-market character. Retail 65/100 slightly exceeds café and restaurant because practical family services (childcare, gym, convenience retail) are already in demand; hospitality quality expectations are still below GC coastal median. Café 63/100 reflects this constraint.',
+    factors: { demandStrength: 5, rentPressure: 3, competitionDensity: 2, seasonalityRisk: 2, tourismDependency: 2 },
+    cafe: 63, restaurant: 59, retail: 65,
   },
   {
     name: 'Nerang',               slug: 'nerang',
@@ -368,18 +489,95 @@ const SUBURBS = [
     competition: 'Very low',      rent: '$1,500–$2,800/mo (indicative)',  risk: 'Demographic stagnation limits spending ceiling; hospitality investment unlikely to achieve coastal returns',
     best: 'Allied health, trade services, practical food retail',
     insight: 'Nerang is a viable market for operators who need the lowest possible fixed-cost base and are comfortable building a business on community loyalty alone. It is the wrong location for a premium hospitality concept at any price point.',
-    why: 'RISKY for hospitality because the demographic does not currently support quality food and beverage investment. All three scores reflect limited commercial opportunity for the business types this guide focuses on. The RISKY verdict is not a reflection of the suburb\'s quality as a place to live — it is a specific assessment of hospitality and retail commercial viability given current demographics and spending patterns.',
-    cafe: 58, restaurant: 55, retail: 60, verdict: 'RISKY' as V,
+    why: 'RISKY verdict driven by Demand 3/10 — this is the weakest commercial demand of all 20 suburbs in this analysis. Very low Rent Pressure 2/10 and Competition Density 2/10 reflect the limited commercial activity, not a hidden opportunity. Low rent is a market signal here, not just a cost advantage. All three scores (58/55/60) reflect that the business types this guide focuses on — cafés, restaurants, retail — face structural demand constraints in this location that cannot be resolved by operator quality or concept differentiation. The RISKY verdict is not a comment on the suburb as a community — it is a specific assessment of commercial viability for these business types under current market conditions.',
+    factors: { demandStrength: 3, rentPressure: 2, competitionDensity: 2, seasonalityRisk: 4, tourismDependency: 2 },
+    cafe: 58, restaurant: 55, retail: 60,
   },
 ]
 
 
+// ── Derived suburb data (verdict computed from scores) ───────────────────────
+// Verdict is NOT stored in SUBURBS; it is derived here to guarantee consistency.
+const SUBURBS_DERIVED = SUBURBS.map(s => ({
+  ...s,
+  verdict: deriveVerdict(s.cafe, s.restaurant, s.retail),
+}))
+
 // ── Comparison table data ────────────────────────────────────────────────────
-const TABLE = SUBURBS.map(s => ({
+const TABLE = SUBURBS_DERIVED.map(s => ({
   name: s.name, cafe: s.cafe, restaurant: s.restaurant, retail: s.retail,
   risk: s.verdict === 'GO' ? 'Low–Med' : s.verdict === 'CAUTION' ? 'Medium' : 'High',
   verdict: s.verdict,
 }))
+
+// ── Unified suburb card ───────────────────────────────────────────────────────
+// Single card template used for all three verdict tiers (GO / CAUTION / RISKY).
+// Composite score uses the same weighted formula as deriveVerdict for consistency.
+type DerivedSuburb = (typeof SUBURBS_DERIVED)[0]
+
+function SuburbCard({ s }: { s: DerivedSuburb }) {
+  const cfg  = VERDICT_CFG[s.verdict]
+  const composite = Math.round(s.cafe * 0.40 + s.restaurant * 0.35 + s.retail * 0.25)
+  return (
+    <Card style={{ borderLeft: `4px solid ${cfg.txt}` }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap' as const, gap: 8 }}>
+        <div>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900, margin: '0 0 4px 0' }}>{s.name}</h3>
+          <p style={{ fontSize: 11, color: S.muted, margin: 0 }}>Rent {s.rent} · Competition: {s.competition}</p>
+        </div>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ textAlign: 'center' as const }}>
+            <div style={{ fontSize: 24, fontWeight: 900, color: cfg.txt, lineHeight: 1 }}>{composite}</div>
+            <div style={{ fontSize: 10, color: S.muted }}>composite</div>
+          </div>
+          <Badge v={s.verdict} size="md" />
+        </div>
+      </div>
+      {/* Character + Demand */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 12 }}>
+        <div>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Character</p>
+          <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.6, margin: 0 }}>{s.vibe}</p>
+        </div>
+        <div>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Demand type</p>
+          <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.6, margin: 0 }}>{s.demand}</p>
+        </div>
+      </div>
+      {/* Five-factor model inputs */}
+      <FactorGrid f={s.factors} />
+      {/* Business-type scores */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
+        <ScoreBar label="Café"       value={s.cafe}       color={cfg.txt} />
+        <ScoreBar label="Restaurant" value={s.restaurant} color={cfg.txt} />
+        <ScoreBar label="Retail"     value={s.retail}     color={cfg.txt} />
+      </div>
+      {/* Best fit + Key risk */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10, marginBottom: 14 }}>
+        <div style={{ background: cfg.bg, borderRadius: 8, padding: '10px 14px', border: `1px solid ${cfg.bdr}` }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: cfg.txt, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Best fit</p>
+          <p style={{ fontSize: 12, color: S.n900, margin: 0 }}>{s.best}</p>
+        </div>
+        <div style={{ background: S.amberBg, borderRadius: 8, padding: '10px 14px', border: `1px solid ${S.amberBdr}` }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.amber, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Key risk</p>
+          <p style={{ fontSize: 12, color: S.n900, margin: 0 }}>{s.risk}</p>
+        </div>
+      </div>
+      {/* Key insight */}
+      <div style={{ paddingTop: 12, borderTop: `1px solid ${S.border}`, marginBottom: 10 }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Key insight</p>
+        <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>{s.insight}</p>
+      </div>
+      {/* Why this score — maps directly to factor inputs above */}
+      <div style={{ background: cfg.bg, borderRadius: 8, padding: '10px 14px', border: `1px solid ${cfg.bdr}` }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: cfg.txt, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
+        <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.65, margin: 0 }}>{s.why}</p>
+      </div>
+    </Card>
+  )
+}
+
 
 export default function GoldCoastPage() {
   const [tableSort, setTableSort] = useState<'cafe' | 'restaurant' | 'retail'>('cafe')
@@ -440,7 +638,7 @@ export default function GoldCoastPage() {
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', opacity: 0.7, marginBottom: 6 }}>Best suburb right now for cafés</p>
                 <p style={{ fontSize: 15, fontWeight: 800, marginBottom: 4 }}>Burleigh Heads</p>
-                <p style={{ fontSize: 12, opacity: 0.8, margin: 0 }}>Proven demand-supply gap. Sub-2% vacancy on James Street. Year-round resident loyalty.</p>
+                <p style={{ fontSize: 12, opacity: 0.8, margin: 0 }}>Proven demand-supply gap. Estimated sub-2% vacancy on James Street (indicative, based on observed operator churn). Year-round resident loyalty.</p>
               </div>
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', opacity: 0.7, marginBottom: 6 }}>Avoid unless you can handle:</p>
@@ -472,7 +670,7 @@ export default function GoldCoastPage() {
               },
               {
                 title: 'Seasonal reality',
-                body: 'School holidays (January, Easter, June–July, September) are estimated to drive 40–80% above-average trading for tourist-adjacent businesses — the range varies significantly by suburb and concept type. Off-peak winter (May–August) is where operators without a resident base struggle. A business with 50%+ resident trade barely feels the trough. A business with 80%+ tourist trade may find it existential.',
+                body: 'School holidays (January, Easter, June–July, September) are estimated to drive 40–80% above-average trading for tourist-adjacent businesses — the range varies significantly by suburb and concept type. Off-peak winter (May–August) is where operators without a resident base struggle. A business with an estimated 50%+ resident trade is typically better insulated from the seasonal trough. A business with an estimated 80%+ tourist trade may face existential pressure in off-peak months without adequate cash reserves.',
               },
               {
                 title: 'Migration and the new resident profile',
@@ -556,54 +754,60 @@ export default function GoldCoastPage() {
         <div style={{ marginBottom: 52 }}>
           <SectionLabel text="Core suburb breakdown" />
           <h2 style={{ fontSize: 22, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', margin: '0 0 24px 0' }}>Where the main opportunities sit</h2>
+          {/* Verdict + composite score resolved from SUBURBS_DERIVED to stay in sync with the model */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
             {[
               {
-                name: 'Burleigh Heads', score: 90, verdict: 'GO' as V,
+                name: 'Burleigh Heads',
                 body: 'The benchmark. James Street and the surrounding village strip is where the Gold Coast\'s best independent operators concentrate. High resident loyalty, strong weekend tourism overlay, and the aspirational identity that attracts quality operators. Rents are meaningful ($4,500–$9,000/month) but conversion rates are high enough to justify them.',
                 customer: 'Health-conscious 28–45 professionals, young families, surf community, weekend visitors',
               },
               {
-                name: 'Broadbeach', score: 87, verdict: 'GO' as V,
-                body: 'Pacific Fair + casino precinct creates a demand floor that survives winter. Premium concepts belong here. Generic concepts drown in competition. The right restaurant in Broadbeach can achieve $120,000+ monthly revenue; the wrong one will never recover its fit-out costs.',
+                name: 'Broadbeach',
+                body: 'Pacific Fair + casino precinct creates a demand floor that survives winter. Premium concepts belong here. Generic concepts drown in competition. An indicative model for a premium casual restaurant here suggests monthly revenue potential of $90,000–$140,000 under favourable conditions; an under-differentiated concept is unlikely to recover fit-out costs.',
                 customer: 'Casino patrons, Pacific Fair shoppers, professionals, interstate visitors, apartment residents',
               },
               {
-                name: 'Burleigh Waters / Palm Beach', score: 76, verdict: 'GO' as V,
+                name: 'Palm Beach',
                 body: 'The value play on the coast. Palm Beach has Burleigh\'s demographic at 40–50% lower rent. The strip is developing rapidly. Operators who establish now build brand equity before the market gets crowded and rents re-price.',
                 customer: 'Younger professionals, surf community, growing family demographic',
               },
               {
-                name: 'Southport', score: 70, verdict: 'GO' as V,
+                name: 'Southport',
                 body: 'The Gold Coast\'s traditional CBD. Best suited for professional services and lunch-focused hospitality. Light rail has improved foot traffic meaningfully. The evening and weekend economy is still thin — models must account for this.',
                 customer: 'Government employees, legal and finance professionals, TAFE and Griffith students',
               },
               {
-                name: 'Robina', score: 68, verdict: 'CAUTION' as V,
+                name: 'Robina',
                 body: 'Robina Town Centre exerts enormous gravity over commercial spending. Strip retail outside the centre underperforms unless positioned for the Bond University corridor or residential estate strips that the centre doesn\'t serve. Consistent but conservative market.',
                 customer: 'Families, Bond University students, master-planned estate residents',
               },
               {
-                name: 'Coolangatta', score: 72, verdict: 'GO' as V,
+                name: 'Coolangatta',
                 body: 'Southern Gold Coast\'s most underrated commercial strip. Surf culture identity, improving resident demographics, airport proximity creating consistent traffic, and rents 40% below Broadbeach. Best for operators who want community-focused hospitality without inner-suburb pricing.',
                 customer: 'Surf community, local residents, border-crossing NSW visitors, airport workers',
               },
-            ].map(({ name, score, verdict, body, customer }) => (
-              <Card key={name} style={{ display: 'flex', flexDirection: 'column' as const }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 800, color: S.n900, margin: 0 }}>{name}</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 20, fontWeight: 900, color: S.brand }}>{score}</span>
-                    <Badge v={verdict} />
+            ].map(({ name, body, customer }) => {
+              const derived = SUBURBS_DERIVED.find(s => s.name === name)
+              const verdict  = derived ? derived.verdict : 'GO' as V
+              const composite = derived ? Math.round(derived.cafe * 0.40 + derived.restaurant * 0.35 + derived.retail * 0.25) : 0
+              return (
+                <Card key={name} style={{ display: 'flex', flexDirection: 'column' as const }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 800, color: S.n900, margin: 0 }}>{name}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 20, fontWeight: 900, color: VERDICT_CFG[verdict].txt }}>{composite}</span>
+                      <Badge v={verdict} />
+                    </div>
                   </div>
-                </div>
-                <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.7, margin: '0 0 12px 0', flex: 1 }}>{body}</p>
-                <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, margin: '0 0 3px 0', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Customer profile</p>
-                  <p style={{ fontSize: 12, color: S.muted, margin: 0 }}>{customer}</p>
-                </div>
-              </Card>
-            ))}
+                  <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.7, margin: '0 0 12px 0', flex: 1 }}>{body}</p>
+                  <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, margin: '0 0 3px 0', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Customer profile</p>
+                    <p style={{ fontSize: 12, color: S.muted, margin: 0 }}>{customer}</p>
+                  </div>
+                </Card>
+              )
+            })}
           </div>
         </div>
 
@@ -727,9 +931,9 @@ export default function GoldCoastPage() {
           <h2 style={{ fontSize: 22, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', margin: '0 0 24px 0' }}>6 patterns from successful Gold Coast operators</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
             {[
-              { n: '1', title: 'They chose location based on resident density, not tourist volume', body: 'The best-performing independents are in suburbs where 60–70% of their revenue comes from within a 3km residential catchment. They don\'t rely on tourist traffic to exist — it\'s a bonus.' },
+              { n: '1', title: 'They chose location based on resident density, not tourist volume', body: 'Some better-performing independents are estimated to generate 60–70% of their revenue from within a 3km residential catchment, based on observed operator profiles. They don\'t rely on tourist traffic to exist — it\'s a bonus.' },
               { n: '2', title: 'They priced for locals, not tourists', body: 'Tourist-priced menus ($22 flat whites, $32 smashed avo) erode the local loyalty that sustains the business through winter. The operators who survive long-term keep their pricing accessible for regulars.' },
-              { n: '3', title: 'They opened Tuesday–Sunday, not 7 days', body: 'Monday revenue on the Gold Coast is thin across most suburbs. The operators who closed Monday and directed that labour cost into Saturday and Sunday quality and staffing consistently outperformed those who forced seven-day coverage.' },
+              { n: '3', title: 'They opened Tuesday–Sunday, not 7 days', body: 'Monday revenue on the Gold Coast is thin across most suburbs. Some operators who closed Monday and redirected that labour cost into weekend quality and staffing have reported outperforming comparable seven-day operations — though this is not universal.' },
               { n: '4', title: 'They built a brand that travels', body: 'The most successful Burleigh operators built social media presence before they opened their second location. Customers from Broadbeach and Southport drive to Burleigh specifically for the brand — reducing dependence on local foot traffic.' },
               { n: '5', title: 'They treated tourism as upside, not baseline', body: 'Instead of modelling Christmas and January as "normal" trading months and then being stressed when it dropped, they modelled off the shoulder season and treated peak months as cashflow buffer. This fundamentally changes how the business manages staffing and inventory.' },
               { n: '6', title: 'They differentiated on something specific', body: 'The operators who failed tried to be good at everything. Those who succeeded were exceptional at something specific — a single-origin coffee program, a breakfast format that nobody else was doing, a pricing model that made quality accessible to families. Differentiation reduces the pressure of location.' },
@@ -752,7 +956,7 @@ export default function GoldCoastPage() {
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
             {[
               { mistake: 'Choosing Surfers Paradise because the foot traffic is visible', fix: 'Foot traffic in Surfers is real but conversion for independents is poor. Tourists walk past quality concepts and stop at familiar chains. Run the unit economics at shoulder-season volumes, not peak volumes. The numbers usually don\'t work.' },
-              { mistake: 'Ignoring seasonality until the second June', fix: 'Build a 12-month cash flow model before signing a lease. If the model only works in 8 of 12 months, build 4 months of cash reserve into your startup budget. The operators who fail in winter were always going to fail — they just didn\'t know it when they signed.' },
+              { mistake: 'Ignoring seasonality until the second June', fix: 'Build a 12-month cash flow model before signing a lease. If the model only works in 8 of 12 months, build 4 months of cash reserve into your startup budget. Operators who experience structural losses in winter often had a breakeven model that was only viable at peak volumes — a risk that can be identified before signing if shoulder-season scenarios are modelled.' },
               { mistake: 'Underestimating rent pressure and overestimating growth', fix: 'Rent is fixed. Revenue takes 12–18 months to reach model levels. Budget for your rent from month one at a revenue level 30–40% below your target. If the business can survive that, it\'ll survive the establishment curve.' },
               { mistake: 'Opening the wrong concept in the right suburb', fix: 'Mermaid Beach needs premium. Coomera needs affordable. Robina needs family-friendly. Opening a specialty coffee bar in Coomera or a cheap café in Mermaid Beach means fighting the suburb\'s commercial DNA — and the suburb usually wins.' },
               { mistake: 'Over-investing in fit-out relative to cash reserve', fix: 'A $250,000 fit-out in a $4,500/month suburban café location takes 5+ years to recoup. The fit-out should not exceed 18–24 months of rent. Anything beyond that should be allocated to cash reserves that carry you through the establishment period.' },
@@ -779,122 +983,30 @@ export default function GoldCoastPage() {
           <p style={{ fontSize: 14, color: S.muted, margin: '0 0 20px 0', lineHeight: 1.6 }}>Every analysis below is written for the operator making a leasing decision. Each entry states why the verdict exists — not just what it is.</p>
           <ScoreMethodology />
 
-          {/* Strong verdicts */}
+          {/* GO: Strong opportunities */}
           <h3 style={{ fontSize: 14, fontWeight: 800, color: S.emerald, marginBottom: 16, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Strong opportunities</h3>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14, marginBottom: 32 }}>
-            {SUBURBS.filter(s => s.verdict === 'GO').map(s => (
-              <Card key={s.name} style={{ borderLeft: `4px solid ${S.emerald}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap' as const, gap: 8 }}>
-                  <div>
-                    <h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900, margin: '0 0 4px 0' }}>{s.name}</h3>
-                    <p style={{ fontSize: 11, color: S.muted, margin: 0 }}>Rent {s.rent} · Competition: {s.competition}</p>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ textAlign: 'center' as const }}>
-                      <div style={{ fontSize: 24, fontWeight: 900, color: S.brand, lineHeight: 1 }}>{Math.round((s.cafe + s.restaurant + s.retail) / 3)}</div>
-                      <div style={{ fontSize: 10, color: S.muted }}>score</div>
-                    </div>
-                    <Badge v={s.verdict} size="md" />
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 14 }}>
-                  <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Vibe</p>
-                    <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.6, margin: 0 }}>{s.vibe}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Demand type</p>
-                    <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.6, margin: 0 }}>{s.demand}</p>
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
-                  <ScoreBar label="Café" value={s.cafe} />
-                  <ScoreBar label="Restaurant" value={s.restaurant} />
-                  <ScoreBar label="Retail" value={s.retail} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-                  <div style={{ background: S.emeraldBg, borderRadius: 8, padding: '10px 14px' }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: S.emerald, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Best business type</p>
-                    <p style={{ fontSize: 12, color: S.n900, margin: 0 }}>{s.best}</p>
-                  </div>
-                  <div style={{ background: S.amberBg, borderRadius: 8, padding: '10px 14px' }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: S.amber, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Risk factor</p>
-                    <p style={{ fontSize: 12, color: S.n900, margin: 0 }}>{s.risk}</p>
-                  </div>
-                </div>
-                <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${S.border}` }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Key insight</p>
-                  <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>{s.insight}</p>
-                </div>
-                <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 8, padding: '10px 14px' }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: S.emerald, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
-                  <p style={{ fontSize: 12, color: '#065F46', lineHeight: 1.65, margin: 0 }}>{s.why}</p>
-                </div>
-              </Card>
+            {SUBURBS_DERIVED.filter(s => s.verdict === 'GO').map(s => (
+              <SuburbCard key={s.name} s={s} />
             ))}
           </div>
 
-          {/* Caution verdicts */}
+          {/* CAUTION: Proceed with a clear plan */}
           <h3 style={{ fontSize: 14, fontWeight: 800, color: S.amber, marginBottom: 16, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Proceed with a clear plan</h3>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14, marginBottom: 32 }}>
-            {SUBURBS.filter(s => s.verdict === 'CAUTION').map(s => (
-              <Card key={s.name} style={{ borderLeft: `4px solid ${S.amber}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap' as const, gap: 8 }}>
-                  <div>
-                    <h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900, margin: '0 0 4px 0' }}>{s.name}</h3>
-                    <p style={{ fontSize: 11, color: S.muted, margin: 0 }}>Rent {s.rent} · Competition: {s.competition}</p>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ textAlign: 'center' as const }}>
-                      <div style={{ fontSize: 24, fontWeight: 900, color: S.amber, lineHeight: 1 }}>{Math.round((s.cafe + s.restaurant + s.retail) / 3)}</div>
-                      <div style={{ fontSize: 10, color: S.muted }}>score</div>
-                    </div>
-                    <Badge v={s.verdict} size="md" />
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
-                  <ScoreBar label="Café" value={s.cafe} color={S.amber} />
-                  <ScoreBar label="Restaurant" value={s.restaurant} color={S.amber} />
-                  <ScoreBar label="Retail" value={s.retail} color={S.amber} />
-                </div>
-                <p style={{ fontSize: 12, color: S.muted, lineHeight: 1.7, margin: '0 0 12px 0' }}>{s.vibe}</p>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' as const }}>
-                  <span style={{ fontSize: 11, background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 6, padding: '3px 10px', fontWeight: 600 }}>Best: {s.best.split(',')[0]}</span>
-                  <span style={{ fontSize: 11, background: S.amberBg, color: S.amber, border: `1px solid ${S.amberBdr}`, borderRadius: 6, padding: '3px 10px', fontWeight: 600 }}>Risk: {s.risk}</span>
-                </div>
-                <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${S.border}` }}>
-                  <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>{s.insight}</p>
-                </div>
-                <div style={{ marginTop: 10, background: S.amberBg, borderRadius: 8, padding: '10px 14px' }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: S.amber, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
-                  <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.65, margin: 0 }}>{s.why}</p>
-                </div>
-              </Card>
+            {SUBURBS_DERIVED.filter(s => s.verdict === 'CAUTION').map(s => (
+              <SuburbCard key={s.name} s={s} />
             ))}
           </div>
 
-          {/* Risky */}
+          {/* RISKY: Specific conditions required */}
           <h3 style={{ fontSize: 14, fontWeight: 800, color: S.red, marginBottom: 16, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Risky — specific conditions required</h3>
           <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
-            {SUBURBS.filter(s => s.verdict === 'RISKY').map(s => (
-              <Card key={s.name} style={{ borderLeft: `4px solid ${S.red}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10, flexWrap: 'wrap' as const, gap: 8 }}>
-                  <div>
-                    <h3 style={{ fontSize: 16, fontWeight: 800, color: S.n900, margin: '0 0 4px 0' }}>{s.name}</h3>
-                    <p style={{ fontSize: 11, color: S.muted, margin: 0 }}>Rent {s.rent} · Competition: {s.competition}</p>
-                  </div>
-                  <Badge v={s.verdict} size="md" />
-                </div>
-                <p style={{ fontSize: 12, color: S.muted, lineHeight: 1.7, margin: '0 0 10px 0' }}>{s.vibe}</p>
-                <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.65, margin: '0 0 10px 0', fontStyle: 'italic' }}>{s.insight}</p>
-                <div style={{ background: S.redBg, borderRadius: 8, padding: '10px 14px' }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: S.red, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
-                  <p style={{ fontSize: 12, color: '#7F1D1D', lineHeight: 1.65, margin: 0 }}>{s.why}</p>
-                </div>
-              </Card>
+            {SUBURBS_DERIVED.filter(s => s.verdict === 'RISKY').map(s => (
+              <SuburbCard key={s.name} s={s} />
             ))}
           </div>
-        </div>
+                </div>
 
         {/* ── STEP 10: Comparison table ─────────────────────────────────── */}
         <div style={{ marginBottom: 52 }}>
