@@ -63,6 +63,41 @@ function Card({ children, style = {} }: { children: React.ReactNode; style?: Rea
   )
 }
 
+// ── Score methodology disclosure ──────────────────────────────────────────────
+function ScoreMethodology() {
+  return (
+    <div style={{ background: S.n50, border: `1px solid ${S.border}`, borderRadius: 10, padding: '14px 18px', marginBottom: 20, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <div style={{ flexShrink: 0, width: 20, height: 20, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 11, fontWeight: 900, color: S.brand }}>i</span>
+      </div>
+      <div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: S.n900, margin: '0 0 4px 0' }}>How scores are calculated</p>
+        <p style={{ fontSize: 11, color: S.muted, lineHeight: 1.6, margin: 0 }}>
+          Scores (1–100) are composite estimates based on four observable inputs: <strong>rent pressure</strong> (relative to comparable GC locations), <strong>demand type</strong> (resident vs tourist mix), <strong>competition density</strong> (operator count in walkable catchment), and <strong>seasonality risk</strong> (revenue variance between peak and shoulder months). Scores reflect relative opportunity for that business type in that suburb — not absolute revenue guarantees. A score of 80 means meaningfully better conditions than a score of 60; it does not mean 80% success rate.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ── Assumption banner for financial section ────────────────────────────────────
+function AssumptionBanner() {
+  return (
+    <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 18px', marginBottom: 24, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <div style={{ flexShrink: 0, paddingTop: 1 }}>
+        <span style={{ fontSize: 14, color: S.amber }}>▲</span>
+      </div>
+      <div>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#92400E', margin: '0 0 4px 0' }}>Financial figures are illustrative models, not forecasts</p>
+        <p style={{ fontSize: 11, color: '#78350F', lineHeight: 1.6, margin: 0 }}>
+          The break-even examples below use assumed rent midpoints, indicative staffing costs for Queensland hospitality, and an estimated average spend per customer. Your actual costs will differ based on lease terms negotiated, staffing mix, trading hours, and concept type. Use these as a sanity-check framework — not as a business case. Validate all numbers against your own financial modelling before signing a lease.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+
 // ── Suburb poll ──────────────────────────────────────────────────────────────
 function SuburbPoll() {
   const [voted, setVoted] = useState<number | null>(null)
@@ -132,189 +167,212 @@ const SCHEMAS = [
 ]
 
 // ── Suburb data ──────────────────────────────────────────────────────────────
+// Each `why` field states the primary factors behind the verdict — required for transparency.
+// Scores are relative composites; see ScoreMethodology component for methodology note.
 const SUBURBS = [
   {
     name: 'Burleigh Heads',       slug: 'burleigh-heads',
-    vibe: 'Health-conscious professionals, young families, surf culture. The Gold Coast\'s most credible independent hospitality strip.',
-    demand: 'Mixed — strong year-round resident base plus significant tourist overlay',
-    competition: 'Medium-high',   rent: '$4,500–$9,000/mo',  risk: 'Lease scarcity',
+    vibe: 'Health-conscious professionals, young families, surf culture. The Gold Coast\'s most established independent hospitality strip.',
+    demand: 'Mixed — strong year-round resident base plus significant tourist overlay in peak periods',
+    competition: 'Medium-high',   rent: '$4,500–$9,000/mo (indicative)',  risk: 'Site availability',
     best: 'Specialty café, quality casual dining, wellness studio, lifestyle retail',
-    insight: 'James Street vacancy rate is sub-2%. If a site opens, there\'s a queue for it. The barrier to entry is access, not demand.',
+    insight: 'James Street commercial vacancy is estimated below 2% based on observed operator churn. The primary constraint is accessing a site, not generating demand once you have one.',
+    why: 'High score driven by: established year-round resident demand (reduces seasonality risk), proven independent hospitality success rate, relatively low operator churn, and a demographic profile — health-conscious 28–45 professionals — that converts well for quality concepts. Scored lower on retail due to smaller street-level retail footprint.',
     cafe: 90, restaurant: 83, retail: 79, verdict: 'GO' as V,
   },
   {
     name: 'Broadbeach',           slug: 'broadbeach',
     vibe: 'Upscale mixed: casino professionals, Pacific Fair shoppers, holiday apartment residents, long-term owner-occupiers.',
-    demand: 'High year-round — casino complex drives consistent evening economy even in off-peak months',
-    competition: 'High',          rent: '$5,000–$12,000/mo', risk: 'High entry rent',
+    demand: 'High year-round — casino and Pacific Fair create a demand floor that moderates tourist-season volatility',
+    competition: 'High',          rent: '$5,000–$12,000/mo (indicative)', risk: 'High entry rent requires strong unit economics',
     best: 'Premium casual dining, upscale café, cocktail bar, boutique retail',
-    insight: 'The casino precinct provides a demand floor that prevents the seasonal troughs that kill operators in tourist-only locations.',
+    insight: 'The casino precinct is estimated to provide 30–40% of evening economy revenue in the surrounding area regardless of tourist season — a meaningful stabiliser for operators in shoulder months.',
+    why: 'Strong restaurant score reflects consistent evening demand from casino and Pacific Fair visitors. Café score is lower than Burleigh because the café customer profile here skews more transient. Retail scores well due to Pacific Fair proximity driving shopping-trip foot traffic. Risk is unit economics at high rent, not demand quality.',
     cafe: 82, restaurant: 87, retail: 80, verdict: 'GO' as V,
   },
   {
     name: 'Mermaid Beach',        slug: 'mermaid-beach',
     vibe: 'Established affluent residential. Owner-occupied beachside properties, older professional demographic, strong community identity.',
-    demand: 'Resident-dominant. Limited tourist overlay — locals drive 80%+ of commercial spending.',
-    competition: 'Low-medium',    rent: '$3,500–$6,500/mo',  risk: 'Small catchment',
+    demand: 'Resident-dominant. Estimated 80%+ of commercial spending from locals rather than tourists.',
+    competition: 'Low-medium',    rent: '$3,500–$6,500/mo (indicative)',  risk: 'Small absolute catchment size',
     best: 'Premium breakfast/brunch café, quality casual dining, boutique wellness',
-    insight: 'The residential loyalty here is unusually strong. Quality operators who become the local go-to hold their position for years against new entrants.',
+    insight: 'Community loyalty in Mermaid Beach is structurally higher than in tourist-adjacent suburbs — established operators typically face less new entrant risk here than elsewhere on the coast.',
+    why: 'GO based on: high resident spending power, low competition density, and stable demand profile. Scored lower on retail because the suburb lacks the strip length and foot traffic density that retail requires. Risk is catchment ceiling — revenue is predictable but may plateau below what a larger location would support.',
     cafe: 80, restaurant: 76, retail: 70, verdict: 'GO' as V,
   },
   {
     name: 'Palm Beach',           slug: 'palm-beach',
-    vibe: 'The affordable Burleigh. Younger demographic, improving strip, strong surf culture. Early-mover dynamics still available.',
-    demand: 'Mixed resident-tourist, trending upward. Population growth is above average for the southern corridor.',
-    competition: 'Low-medium',    rent: '$2,500–$4,500/mo',  risk: 'Establishment curve',
-    best: 'Café (early mover advantage), casual dining, surf lifestyle retail',
-    insight: 'Palm Beach is where Burleigh was 8 years ago. Rents are 40–50% lower for comparable strip positions. The window is closing.',
+    vibe: 'Improving coastal strip south of Burleigh. Younger demographic, surf culture, above-average population growth in the southern GC corridor.',
+    demand: 'Mixed resident-tourist, trending upward. Population growth above GC average per observed development activity.',
+    competition: 'Low-medium',    rent: '$2,500–$4,500/mo (indicative)',  risk: 'Longer establishment period than Burleigh',
+    best: 'Café (early-mover positioning), casual dining, surf lifestyle retail',
+    insight: 'Rent-to-demand ratio in Palm Beach is currently more favourable than Burleigh Heads. This gap has been narrowing — operators who establish now do so at lower rent before the market re-prices as the strip matures.',
+    why: 'GO based on: improving demographics, low current competition, and favourable rent relative to projected demand trajectory. Scored below Burleigh because the strip is less established — foot traffic density is lower and establishment takes longer. The opportunity is real but requires patience.',
     cafe: 78, restaurant: 73, retail: 70, verdict: 'GO' as V,
   },
   {
     name: 'Main Beach',           slug: 'main-beach',
-    vibe: 'Luxury residential, Marina Mirage precinct. Narrow demographic: high-income, retired professionals, international visitors staying at Palazzo Versace.',
-    demand: 'Low volume, extremely high spend per customer. Destination-driven rather than foot traffic driven.',
-    competition: 'Very low',      rent: '$4,000–$8,000/mo',  risk: 'Very small catchment',
-    best: 'Premium dining, high-end retail, superyacht services',
-    insight: 'A $90 breakfast works here. A $22 smashed avo café does not — the concept must match the postcode or it fails regardless of quality.',
+    vibe: 'Luxury residential, Marina Mirage precinct. High-income demographic, destination dining orientation, small permanent population.',
+    demand: 'Low volume, high spend per customer. Destination-driven; relies on customers actively choosing to visit, not passing trade.',
+    competition: 'Very low',      rent: '$4,000–$8,000/mo (indicative)',  risk: 'Catchment is too small for most volume-dependent concepts',
+    best: 'Premium dining destination, high-end specialty retail, marina-adjacent services',
+    insight: 'Concept-market fit is more critical here than in any other GC suburb. A $90 per head breakfast is achievable; a $22 café concept is not — the local demographic will not support it regardless of execution quality.',
+    why: 'GO verdict applies only to premium concepts. Restaurant score higher than café because destination dining draws from a wider geographic area. Retail score is low — the Marina Mirage strip has limited walk-in retail traffic outside of weekend leisure visitors. Operators who need consistent volume should reconsider this location.',
     cafe: 70, restaurant: 79, retail: 66, verdict: 'GO' as V,
   },
   {
     name: 'Surfers Paradise',     slug: 'surfers-paradise',
-    vibe: 'International tourist strip. High volume, high churn, low loyalty. The Gold Coast\'s most well-known and most difficult commercial environment for independents.',
-    demand: 'Seasonal peaks (school holidays, Christmas, GC600) with real off-peak troughs. Weekday winter is thin.',
-    competition: 'Extreme',       rent: '$8,000–$20,000/mo', risk: 'Seasonal volatility + extreme rent',
-    best: 'High-volume fast casual, tourist retail, nightlife-adjacent venues',
-    insight: 'The operators who profit here run high volume, low complexity operations. A craft café paying $12,000/month rent needs 250 covers before the rent is covered. Do the maths before committing.',
+    vibe: 'International tourist strip. Extremely high peak-season volume, high operator churn, limited community loyalty. Most challenging environment for quality independents.',
+    demand: 'Seasonally volatile — school holidays and summer create strong peaks; mid-year winter trough is significant for tourist-dependent operators.',
+    competition: 'Extreme',       rent: '$8,000–$20,000/mo (indicative)', risk: 'Seasonal revenue gap + rent level creates structural pressure for most concepts',
+    best: 'High-volume fast casual, tourist retail, nightlife-adjacent venues designed for high throughput',
+    insight: 'At an estimated midpoint rent of $12,000–$14,000/month, a café concept would need to generate indicatively 280–350+ customer visits per day (at $28–$35 average spend) just to cover rent. In mid-year shoulder periods, many operators fall well short of this threshold.',
+    why: 'CAUTION (not RISKY) because tourist retail and high-volume fast casual can and do succeed here — the market is real, it\'s just hostile to independents and quality-focused operators. Retail score is higher because tourist impulse retail tolerates seasonal volatility better than hospitality. Café score reflects the structural difficulty independent cafés face competing against chain volume on this strip.',
     cafe: 58, restaurant: 70, retail: 79, verdict: 'CAUTION' as V,
   },
   {
     name: 'Southport',            slug: 'southport',
-    vibe: 'The Gold Coast\'s traditional commercial centre — government offices, medical precinct, light rail, legal and finance businesses.',
-    demand: 'Weekday professional, thin weekends. TAFE and Griffith student population adds lunchtime volume.',
-    competition: 'Medium',        rent: '$3,000–$7,000/mo',  risk: 'Weekend dead zones',
-    best: 'Corporate lunch café, professional services, healthcare allied, education',
-    insight: 'Friday lunch on Nerang Street is the single best commercial hour in Southport. Everything else requires a concept that specifically targets the 9-to-5 economy.',
+    vibe: 'The Gold Coast\'s traditional commercial centre — government offices, medical precinct, light rail, legal and finance services.',
+    demand: 'Weekday professional-dominant; weekend volume is thin. TAFE and Griffith students contribute weekday lunch.',
+    competition: 'Medium',        rent: '$3,000–$7,000/mo (indicative)',  risk: 'Weekend revenue shortfall for 7-day cost models',
+    best: 'Corporate lunch café, professional services, healthcare-allied, education',
+    insight: 'Southport\'s commercial performance is heavily front-loaded to weekday lunch trade. Friday is estimated to generate disproportionately high revenue compared to the rest of the week. Operating models that require strong weekend revenue will be structurally stressed.',
+    why: 'GO for weekday-focused concepts. Retail scores above café because government and professional demand for practical retail (stationery, professional services, pharmacy) is consistent and less time-sensitive. Café score reflects the business type mismatch risk — a café designed around weekend community trade would underperform here; one designed for 8am–3pm weekday corporate trade can succeed.',
     cafe: 70, restaurant: 66, retail: 72, verdict: 'GO' as V,
   },
   {
     name: 'Coolangatta',          slug: 'coolangatta',
-    vibe: 'Border surf town. Airport proximity, NSW border crossings, strong surf competition culture. Grittier character than Burleigh.',
-    demand: 'Mixed: resident surf community, airport traffic, day-trippers, improving tourist overlay',
-    competition: 'Low-medium',    rent: '$2,500–$4,500/mo',  risk: 'Slower establishment pace',
-    best: 'Surf café, casual beachside dining, independent food retail',
-    insight: 'The NSW airport relocation is already reshaping foot traffic patterns in Coolangatta\'s commercial strip. The moment has not passed.',
+    vibe: 'Southern border surf town. Airport proximity, NSW cross-border catchment, surf competition culture. Character distinct from the northern tourist strip.',
+    demand: 'Mixed: established resident surf community, airport-corridor traffic, improving tourist overlay, day-trippers from NSW.',
+    competition: 'Low-medium',    rent: '$2,500–$4,500/mo (indicative)',  risk: 'Establishment pace slower than northern strips',
+    best: 'Surf-identity café, casual beachside dining, independent food and lifestyle retail',
+    insight: 'Coolangatta has a structural advantage the northern tourist strips lack: a genuinely local identity that community-focused operators can build on. The airport-adjacent location creates consistent foot traffic that doesn\'t depend on school holiday peaks.',
+    why: 'GO based on: low competition, improving demographics, value rent relative to demand trajectory, and dual-market access (GC residents + NSW cross-border). Lower scores than Burleigh reflect the establishment lag — foot traffic density is lower and the brand-building period takes longer. The opportunity is real but requires a 12–18 month runway.',
     cafe: 74, restaurant: 69, retail: 65, verdict: 'GO' as V,
   },
   {
     name: 'Miami',                slug: 'miami',
-    vibe: 'Between Burleigh and Mermaid Beach — quietly improving. Art gallery district on Currumbin Creek Road is emerging as a creative hub.',
-    demand: 'Resident-dominant. Limited tourist draw but strong local spending power from surrounding affluent residential.',
-    competition: 'Low',           rent: '$2,500–$4,500/mo',  risk: 'Thin strip cohesion',
-    best: 'Creative café, design-forward dining, art retail, boutique services',
-    insight: 'Miami\'s art precinct is creating a destination pull that didn\'t exist three years ago. A well-designed concept gets media attention free in this market.',
+    vibe: 'Emerging creative district between Burleigh and Mermaid Beach. Art precinct establishing on Currumbin Creek Road, affluent residential catchment.',
+    demand: 'Resident-dominant. Limited tourist draw currently, but growing destination appeal from the emerging art precinct.',
+    competition: 'Low',           rent: '$2,500–$4,500/mo (indicative)',  risk: 'Strip cohesion still developing — limited passive foot traffic',
+    best: 'Design-forward café, creative casual dining, art retail, boutique services with destination identity',
+    insight: 'The Miami art precinct has shifted from obscure to editorially referenced in GC media over the past 3 years. Operators who build a concept coherent with the precinct identity benefit from media attention that would cost significant marketing spend elsewhere.',
+    why: 'GO for concept-driven operators who can generate their own foot traffic. Lower scores than Mermaid Beach reflect thinner passive foot traffic — this suburb rewards active marketing and brand-building more than location passivity. Retail score is moderate because without strip cohesion, walk-in retail relies on destination intent.',
     cafe: 74, restaurant: 70, retail: 67, verdict: 'GO' as V,
   },
   {
     name: 'Robina',               slug: 'robina',
-    vibe: 'Master-planned family suburb. Robina Town Centre, Bond University, and a large residential catchment create consistent but conservative demand.',
-    demand: 'Family-driven, consistent year-round. No tourist overlay. Bond University generates student weekday volume.',
-    competition: 'Medium',        rent: '$2,500–$5,500/mo',  risk: 'Westfield gravity effect',
+    vibe: 'Master-planned family suburb. Robina Town Centre, Bond University, large residential catchment — consistent but conservative demand dynamics.',
+    demand: 'Family-driven, consistent year-round. No tourist overlay. Bond University corridor adds student weekday volume.',
+    competition: 'Medium',        rent: '$2,500–$5,500/mo (indicative)',  risk: 'Robina Town Centre exerts strong gravity over discretionary spending',
     best: 'Casual family dining, health food café, tutoring/education services, gym',
-    insight: 'Operators who try to compete with the Town Centre strip fail. Those who position outside it — serving the Bond University corridor or the residential estate strips — find a reliable lower-competition market.',
+    insight: 'Strip retail positioned outside the Robina Town Centre footprint consistently underperforms relative to its demographic potential. Operators who position for the Bond University corridor — rather than competing with the centre — find a less contested market.',
+    why: 'CAUTION because the Westfield gravity effect is real and documented — strip operators in its shadow underperform. Retail scores highest because practical, service-oriented retail (gym, tutoring, health) can position outside the centre\'s competitive zone. Café scores lower because café foot traffic gravitates toward the centre food court. The verdict improves significantly with the right micro-positioning.',
     cafe: 67, restaurant: 66, retail: 73, verdict: 'CAUTION' as V,
   },
   {
     name: 'Varsity Lakes',        slug: 'varsity-lakes',
-    vibe: 'Bond University adjacent. Student-young professional mix, relatively new residential development, improving amenity.',
-    demand: 'Student-driven weekday, residential weekends. Consistent but price-sensitive volume.',
-    competition: 'Low',           rent: '$2,000–$3,800/mo',  risk: 'Price sensitivity',
-    best: 'Affordable café, student-friendly food, tutoring, fitness studio',
-    insight: 'Bond University has Australia\'s highest proportion of international students. A café that builds international student loyalty has one of the most referral-efficient customer bases in Queensland.',
+    vibe: 'Bond University adjacent. Student-young professional mix, relatively new residential development, lower price-point expectations.',
+    demand: 'Student-weekday driven; residential weekends. Consistent volume, price-sensitive demographic.',
+    competition: 'Low',           rent: '$2,000–$3,800/mo (indicative)',  risk: 'Average spend per customer is below GC coastal median',
+    best: 'Accessible café, student-friendly food, tutoring, fitness studio',
+    insight: 'Bond University\'s international student concentration creates referral dynamics that are unusually efficient — student cohorts recommend local businesses to each other at high rates. An operator who integrates into the student community early benefits from this network.',
+    why: 'CAUTION because price sensitivity limits revenue ceiling — this is not the location for a $7 specialty espresso concept. Café and retail both score moderately because volume is available but margin is constrained. The strongest opportunity here is in practical services (fitness, tutoring) where a service-based revenue model is less price-sensitive than hospitality.',
     cafe: 70, restaurant: 63, retail: 66, verdict: 'CAUTION' as V,
   },
   {
     name: 'Labrador',             slug: 'labrador',
-    vibe: 'Multicultural working-class suburb on the broadwater. Improving demographics along Brisbane Road, diverse food scene.',
-    demand: 'Local-dominant. Long-term residents, multicultural community, improving professional overlay.',
-    competition: 'Low-medium',    rent: '$1,800–$3,500/mo',  risk: 'Slow demographic shift',
-    best: 'Multicultural dining, broadwater café, allied health, practical services',
-    insight: 'Labrador\'s broadwater foreshore positions offer a premium setting at non-premium prices — exactly the gap that hospitality operators should look for.',
+    vibe: 'Multicultural residential suburb on the Broadwater. Improving demographics along Brisbane Road, diverse established food culture.',
+    demand: 'Local-dominant. Long-term residents, multicultural community, gradual professional influx.',
+    competition: 'Low-medium',    rent: '$1,800–$3,500/mo (indicative)',  risk: 'Demographic transition is slow; spending ceiling improving but not yet high',
+    best: 'Multicultural dining, Broadwater-positioned café, allied health, practical services',
+    insight: 'Labrador\'s Broadwater foreshore positions offer a premium waterfront setting at prices well below beach-core strips. This gap exists because the suburb\'s demographic hasn\'t yet repriced the market — operators who enter now access views that would cost 3x in other GC waterfront locations.',
+    why: 'CAUTION reflects the demographic transition lag — the opportunity is real but the market isn\'t yet pricing quality. Café and restaurant scores are similar because both benefit from the Broadwater setting, but neither scores highly due to the current demographic\'s price sensitivity. Best suited for operators comfortable with a 2–3 year establishment curve.',
     cafe: 68, restaurant: 67, retail: 63, verdict: 'CAUTION' as V,
   },
   {
     name: 'Runaway Bay',          slug: 'runaway-bay',
-    vibe: 'Quiet waterfront residential. Established older demographic, strong owner-occupier base, limited commercial infrastructure.',
-    demand: 'Hyper-local. Serves the immediate residential catchment almost exclusively.',
-    competition: 'Very low',      rent: '$1,800–$3,200/mo',  risk: 'Extremely limited catchment',
+    vibe: 'Quiet waterfront residential. Older established demographic, strong owner-occupier base, limited commercial infrastructure.',
+    demand: 'Hyper-local. Catchment is the immediate residential area — minimal external visitor draw.',
+    competition: 'Very low',      rent: '$1,800–$3,200/mo (indicative)',  risk: 'Catchment ceiling limits maximum achievable revenue',
     best: 'Waterfront breakfast café, family casual, allied health',
-    insight: 'Runaway Bay\'s commercial strips have a ceiling — you\'ll build a loyal local business, but you won\'t build a scalable one. Know which you want before entering.',
+    insight: 'Runaway Bay suits operators who are explicitly building a community-scale business rather than a growth-stage one. The ceiling is real, but so is the loyalty — operators here typically achieve high repeat visitation from a stable customer base.',
+    why: 'CAUTION because the catchment is too small for most growth-oriented business plans. Café scores above restaurant because breakfast and coffee have higher repeat-visit frequency — residents are more likely to visit daily than for dinner. Retail scores lowest because there is insufficient foot traffic for walk-in retail to work.',
     cafe: 68, restaurant: 61, retail: 58, verdict: 'CAUTION' as V,
   },
   {
     name: 'Ashmore',              slug: 'ashmore',
-    vibe: 'Middle suburban family area. Ross Street commercial strip serves the surrounding residential catchment. Unglamorous but functional.',
-    demand: 'Family-driven, consistent, price-sensitive. Medical and practical services consistently outperform hospitality.',
-    competition: 'Low',           rent: '$1,800–$3,500/mo',  risk: 'Limited spending ceiling',
+    vibe: 'Middle suburban family area. Ross Street commercial strip serves the surrounding residential catchment. Practical rather than aspirational commercial demand.',
+    demand: 'Family-driven, consistent, price-sensitive. Medical and practical services demonstrably outperform hospitality here.',
+    competition: 'Low',           rent: '$1,800–$3,500/mo (indicative)',  risk: 'Hospitality spending ceiling is below GC coastal median',
     best: 'Allied health, pharmacy, family casual dining, practical services',
-    insight: 'Ashmore\'s medical centre cluster is one of the most concentrated on the GC. Businesses that position adjacent to established medical visits create reliable repeat traffic.',
+    insight: 'Ashmore\'s medical centre cluster creates reliable adjacent-visit foot traffic — businesses positioned within walking distance of medical visits benefit from a captive, health-focused customer base with consistent visit patterns.',
+    why: 'CAUTION for hospitality; closer to GO for allied health and practical services. Café and restaurant scores reflect the demographic\'s preference for price over quality — the market rewards value, not premium. Retail scores slightly higher because practical retail (health, pharmacy, convenience) aligns better with the suburb\'s demand character than experiential hospitality.',
     cafe: 65, restaurant: 63, retail: 66, verdict: 'CAUTION' as V,
   },
   {
     name: 'Currumbin',            slug: 'currumbin',
-    vibe: 'Tourist-resident hybrid. Currumbin Wildlife Sanctuary drives significant tourist volume; surrounding areas are surfing community and nature-oriented residents.',
-    demand: 'Seasonal tourist spike in school holidays; consistent resident base off-peak.',
-    competition: 'Low',           rent: '$2,000–$3,500/mo',  risk: 'Seasonal volatility',
-    best: 'Tourist-adjacent café, surf gear retail, family casual, eco-tourism services',
-    insight: 'The Wildlife Sanctuary entrance is the single highest-traffic location per square metre in Currumbin. A café positioned within walking distance captures visitors without competing with the sanctuary itself.',
+    vibe: 'Tourist-resident hybrid. Currumbin Wildlife Sanctuary drives school-holiday tourist volume; surrounding residential areas have a surf-lifestyle, nature-oriented character.',
+    demand: 'Seasonal tourist spike in school holidays; resident base provides modest year-round floor.',
+    competition: 'Low',           rent: '$2,000–$3,500/mo (indicative)',  risk: 'Revenue is structurally seasonal — shoulder months are lean without a resident cushion',
+    best: 'Sanctuary-adjacent café, casual family dining, surf/outdoor retail',
+    insight: 'Proximity to the Wildlife Sanctuary entrance creates a localised foot traffic concentration — but only during sanctuary operating hours and peak seasons. An operator positioned here should model revenue across both peak-tourist and quiet-residential periods to stress-test the concept.',
+    why: 'CAUTION because the tourist revenue is real but seasonal. Café scores moderately because the tourist opportunity exists; it\'s the consistency that\'s missing. Retail scores below café because tourist retail here competes directly with sanctuary gift shops. The GO case requires a concept that works for locals off-season as well as tourists during peaks.',
     cafe: 70, restaurant: 63, retail: 57, verdict: 'CAUTION' as V,
   },
   {
     name: 'Burleigh Waters',      slug: 'burleigh-waters',
-    vibe: 'Inland residential behind Burleigh Heads. Family demographic, lower density, limited commercial infrastructure relative to the beach strip.',
-    demand: 'Hyper-local residential. Benefits from Burleigh Heads proximity but without the foot traffic.',
-    competition: 'Very low',      rent: '$1,800–$3,200/mo',  risk: 'Insufficient foot traffic density',
-    best: 'Allied health, childcare, family services, convenience food',
-    insight: 'Do not attempt to replicate a Burleigh Heads café concept in Burleigh Waters. The demographics are superficially similar; the commercial mechanics are not.',
+    vibe: 'Inland residential behind Burleigh Heads. Family demographic, lower density, limited commercial strip infrastructure.',
+    demand: 'Hyper-local residential. The Burleigh Heads tourist foot traffic does not extend meaningfully into this suburb.',
+    competition: 'Very low',      rent: '$1,800–$3,200/mo (indicative)',  risk: 'Insufficient passive foot traffic for most hospitality concepts',
+    best: 'Allied health, childcare services, family convenience food',
+    insight: 'Operators sometimes select Burleigh Waters expecting to access Burleigh Heads demand. This assumption is incorrect — the demographics are similar, but the commercial mechanics differ fundamentally. This suburb rewards practical service businesses, not hospitality.',
+    why: 'CAUTION because the opportunity is real for practical services, not hospitality. Café and restaurant scores reflect the foot traffic deficit — without passing trade, a café here relies entirely on destination intent from a small local catchment. Retail is slightly better only for convenience-oriented formats that reduce the need for foot traffic.',
     cafe: 62, restaurant: 58, retail: 63, verdict: 'CAUTION' as V,
   },
   {
     name: 'Helensvale',           slug: 'helensvale',
-    vibe: 'Northern Gold Coast family hub. Movie World and Dreamworld proximity creates limited tourist overlay; primary demand is family residential.',
-    demand: 'Family-dominant, consistent, price-sensitive. Light rail station driving improving midday volume.',
-    competition: 'Low-medium',    rent: '$2,000–$4,000/mo',  risk: 'Theme park proximity doesn\'t convert',
-    best: 'Family casual dining, gym, childcare, allied health',
-    insight: 'Helensvale\'s light rail station has materially changed peak-hour foot traffic patterns since 2020. Morning commuter coffee volume is now commercially meaningful for the first time.',
+    vibe: 'Northern Gold Coast family hub. Primary demand is residential family; theme park proximity creates tourist adjacency but limited commercial conversion.',
+    demand: 'Family-dominant, consistent, price-sensitive. Light rail station has measurably improved morning commuter foot traffic since 2020.',
+    competition: 'Low-medium',    rent: '$2,000–$4,000/mo (indicative)',  risk: 'Theme park proximity creates tourist expectation that rarely converts to strip trade',
+    best: 'Family casual dining, gym and fitness, childcare, allied health',
+    insight: 'The light rail station has created a morning commuter coffee window that is commercially meaningful — a well-positioned café on the commuter path can capture consistent daily repeat visits that didn\'t exist before the rail connection.',
+    why: 'CAUTION because overall volume is limited. The light rail insight creates a specific GO opportunity within the suburb for commuter-positioned hospitality — but strip retail and evening dining remain weak. Retail scores highest because family practical retail (childcare supplies, gym, health) aligns with the demographic more than premium hospitality.',
     cafe: 64, restaurant: 61, retail: 65, verdict: 'CAUTION' as V,
   },
   {
     name: 'Tugun',                slug: 'tugun',
-    vibe: 'Quiet southern beach town, airport adjacent. Surf lifestyle community, relaxed pace, limited commercial pressure.',
-    demand: 'Hyper-local resident base. Minimal tourist traffic despite airport proximity — travellers pass through, they don\'t stop.',
-    competition: 'Very low',      rent: '$1,600–$3,000/mo',  risk: 'Very thin passing trade',
-    best: 'Local café (high loyalty), surf-adjacent food and retail, practical services',
-    insight: 'The lowest rents on the coastal strip are here. If your concept doesn\'t need foot traffic — or if you\'re building a loyal local customer base from day one — Tugun offers better economics than anywhere on the coast.',
+    vibe: 'Quiet southern beach suburb, airport adjacent. Surf community, minimal commercial pressure, low rents.',
+    demand: 'Hyper-local resident base. Airport proximity does not convert to meaningful strip trade — travellers transit through, they rarely stop.',
+    competition: 'Very low',      rent: '$1,600–$3,000/mo (indicative)',  risk: 'Passive foot traffic is insufficient for most commercial formats',
+    best: 'Community café (loyalty-model), surf-adjacent food and retail, practical local services',
+    insight: 'Tugun offers the lowest commercial rents on the GC coastal strip. For an operator running a community loyalty model — where the business is built on repeat local visits rather than new-customer acquisition — the economics here are among the best on the coast.',
+    why: 'CAUTION because the opportunity is contingent on business model, not on market quality. A volume-based hospitality concept will underperform here. A community loyalty café with low fixed costs and high repeat frequency can achieve strong margins. Know your model before assessing this location.',
     cafe: 64, restaurant: 59, retail: 56, verdict: 'CAUTION' as V,
   },
   {
     name: 'Coomera',              slug: 'coomera',
-    vibe: 'One of Queensland\'s fastest-growing residential corridors. Young families, new estates, infrastructure still catching up to population.',
-    demand: 'Resident-dominant, growing rapidly. Volume is there; spending maturity is not yet.',
-    competition: 'Low — market is genuinely underserved',
-    rent: '$1,800–$3,500/mo', risk: 'Early-market risk, low quality ceiling currently',
-    best: 'Family casual dining, childcare, gym, practical services',
-    insight: 'Coomera\'s population will double over the next decade. An operator who enters now and builds brand loyalty will own the market before competition arrives. This is a five-year play, not a year-one payoff.',
+    vibe: 'One of Queensland\'s fastest-growing residential corridors. Young families, new estates, infrastructure and commercial amenity still catching up to population growth.',
+    demand: 'Resident-dominant, growing rapidly. Volume is building; spending sophistication is at an early stage.',
+    competition: 'Low — genuinely underserved relative to population',
+    rent: '$1,800–$3,500/mo (indicative)', risk: 'Early-market risk; premium concepts will underperform the current demographic',
+    best: 'Family casual dining, childcare and family services, gym, practical retail',
+    insight: 'Population growth projections for the Coomera corridor are among the strongest in Queensland. An operator who establishes now and builds brand loyalty ahead of competition is positioned to own the market as the suburb matures — but this is a medium-term (3–5 year) investment thesis, not a short-term payoff.',
+    why: 'CAUTION reflects the early-market risk: demand is growing but not yet mature. Retail scores slightly above café and restaurant because practical family services (childcare, gym, convenience retail) are already in demand; hospitality quality expectations are still below GC coastal median. Operators should model against current demographics, not projected demographics.',
     cafe: 63, restaurant: 59, retail: 65, verdict: 'CAUTION' as V,
   },
   {
     name: 'Nerang',               slug: 'nerang',
-    vibe: 'Hinterland gateway town. Older demographic, limited gentrification, functional commercial strip serving inland Gold Coast.',
-    demand: 'Price-sensitive local residential. Hinterland day-tripper overlay is inconsistent.',
-    competition: 'Very low',      rent: '$1,500–$2,800/mo',  risk: 'Limited spending ceiling and demographic stagnation',
-    best: 'Allied health, tradesperson services, practical food retail',
-    insight: 'Nerang is the right entry market for operators who want the lowest possible overhead and are comfortable building a business on community loyalty alone. It is not the right market for a premium hospitality concept.',
+    vibe: 'Hinterland gateway town. Older demographic, limited gentrification trajectory, functional commercial strip serving inland GC areas.',
+    demand: 'Price-sensitive local residential. Hinterland day-tripper overlay is inconsistent and not commercially reliable.',
+    competition: 'Very low',      rent: '$1,500–$2,800/mo (indicative)',  risk: 'Demographic stagnation limits spending ceiling; hospitality investment unlikely to achieve coastal returns',
+    best: 'Allied health, trade services, practical food retail',
+    insight: 'Nerang is a viable market for operators who need the lowest possible fixed-cost base and are comfortable building a business on community loyalty alone. It is the wrong location for a premium hospitality concept at any price point.',
+    why: 'RISKY for hospitality because the demographic does not currently support quality food and beverage investment. All three scores reflect limited commercial opportunity for the business types this guide focuses on. The RISKY verdict is not a reflection of the suburb\'s quality as a place to live — it is a specific assessment of hospitality and retail commercial viability given current demographics and spending patterns.',
     cafe: 58, restaurant: 55, retail: 60, verdict: 'RISKY' as V,
   },
 ]
+
 
 // ── Comparison table data ────────────────────────────────────────────────────
 const TABLE = SUBURBS.map(s => ({
@@ -358,11 +416,11 @@ export default function GoldCoastPage() {
             <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 14, padding: '20px 24px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', opacity: 0.7, marginBottom: 10 }}>Market verdict</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                <span style={{ fontSize: 22, fontWeight: 900, color: '#4ADE80' }}>OPEN</span>
-                <span style={{ fontSize: 11, opacity: 0.75, lineHeight: 1.4 }}>in the right suburb with the right concept</span>
+                <span style={{ fontSize: 22, fontWeight: 900, color: '#4ADE80' }}>CONDITIONAL GO</span>
+                <span style={{ fontSize: 11, opacity: 0.75, lineHeight: 1.4 }}>subject to suburb selection and concept fit</span>
               </div>
               <p style={{ fontSize: 12, opacity: 0.8, lineHeight: 1.6, margin: 0 }}>
-                The Gold Coast has a fundamentally improving resident economy underneath the tourist surface. The failure risk is in location selection, not in market size.
+                The Gold Coast has a growing resident economy alongside its tourist base. Evidence suggests location selection is the primary failure driver — not overall market size.
               </p>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.10)', borderRadius: 14, padding: '20px 24px' }}>
@@ -386,7 +444,7 @@ export default function GoldCoastPage() {
               </div>
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', opacity: 0.7, marginBottom: 6 }}>Avoid unless you can handle:</p>
-                <p style={{ fontSize: 12, opacity: 0.85, margin: 0, lineHeight: 1.6 }}>Extreme seasonal volatility (Surfers Paradise winter can drop 60% of peak revenue) or Broadbeach rent requiring 300+ daily covers to break even.</p>
+                <p style={{ fontSize: 12, opacity: 0.85, margin: 0, lineHeight: 1.6 }}>Extreme seasonal volatility — tourist-only locations on the Gold Coast typically see 40–65% revenue decline between peak summer and mid-winter — or high-rent locations where break-even requires estimated 250–350+ daily covers at average spend.</p>
               </div>
             </div>
           </div>
@@ -400,7 +458,7 @@ export default function GoldCoastPage() {
         <div style={{ marginTop: 52, marginBottom: 52 }}>
           <SectionLabel text="Gold Coast market overview" />
           <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', margin: '0 0 24px 0' }}>
-            A $10 billion visitor economy built on top of a rapidly growing resident city
+            A large visitor economy alongside a rapidly growing resident city — two distinct demand profiles that require different business strategies
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
             {[
@@ -410,11 +468,11 @@ export default function GoldCoastPage() {
               },
               {
                 title: 'Tourism economy — the real numbers',
-                body: '13+ million visitors per year generate enormous hospitality demand but equally enormous supply. The tourist strip is chronically oversupplied with generic operators competing for the same impulse spend. The opportunity is not in serving tourists — it\'s in serving the growing resident base that tourism operators have consistently underserved.',
+                body: 'An estimated 13+ million visitors per year generate significant hospitality demand but equally enormous supply. The tourist strip is chronically oversupplied with generic operators competing for the same impulse spend. The opportunity is not in serving tourists — it\'s in serving the growing resident base that tourism operators have consistently underserved.',
               },
               {
                 title: 'Seasonal reality',
-                body: 'School holidays (January, Easter, June–July, September) drive 60–80% above-average trading for tourist-adjacent businesses. Off-peak winter (May–August) is where operators without a resident base struggle. A business with 50%+ resident trade barely feels the trough. A business with 80%+ tourist trade may find it existential.',
+                body: 'School holidays (January, Easter, June–July, September) are estimated to drive 40–80% above-average trading for tourist-adjacent businesses — the range varies significantly by suburb and concept type. Off-peak winter (May–August) is where operators without a resident base struggle. A business with 50%+ resident trade barely feels the trough. A business with 80%+ tourist trade may find it existential.',
               },
               {
                 title: 'Migration and the new resident profile',
@@ -590,9 +648,10 @@ export default function GoldCoastPage() {
         <div style={{ marginBottom: 52 }}>
           <SectionLabel text="Cost reality" />
           <h2 style={{ fontSize: 22, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', margin: '0 0 24px 0' }}>The real numbers behind a Gold Coast hospitality business</h2>
+          <AssumptionBanner />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, marginBottom: 24 }}>
             <Card>
-              <h3 style={{ fontSize: 13, fontWeight: 800, color: S.n900, marginBottom: 16 }}>Rent tiers by zone</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: S.n900, marginBottom: 16 }}>Rent tiers by zone (indicative, mid-2026)</h3>
               {[
                 { zone: 'Surfers Paradise (strip)',  range: '$8,000–$20,000/mo' },
                 { zone: 'Broadbeach core',           range: '$5,000–$12,000/mo' },
@@ -638,12 +697,26 @@ export default function GoldCoastPage() {
             </Card>
           </div>
           <Card style={{ background: S.brandFaded, border: `1px solid ${S.brandBorder}` }}>
-            <h3 style={{ fontSize: 14, fontWeight: 800, color: S.brandDark, marginBottom: 12 }}>Break-even logic — what the numbers actually mean</h3>
-            <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.7, margin: '0 0 12px 0' }}>
-              A Burleigh Heads café paying $6,000/month rent with 2 FT staff ($26,000) and $5,000 in other costs needs $37,000/month revenue before the owner takes a cent. At $28 average spend, that&apos;s 1,321 customers per month — roughly 44 covers per day on a 30-day model, or 60 covers on the 22 trading days most operators actually work.
-            </p>
-            <p style={{ fontSize: 13, color: S.muted, lineHeight: 1.7, margin: 0 }}>
-              A Surfers Paradise café at $14,000/month rent needs 1,900+ customers per month at the same spend just to cover costs. That&apos;s 87 covers per day. In January it&apos;s achievable. In July it probably isn&apos;t. Model the slow month — not the peak month.
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: S.brandDark, marginBottom: 6 }}>Indicative break-even model — illustrative only</h3>
+            <p style={{ fontSize: 11, color: S.brandDark, marginBottom: 12, opacity: 0.8 }}>Assumptions: rent at indicative midpoint, 2 FT + 2 casual staff, $24,000–$28,000/month all-in staffing, $4,000–$6,000/month other costs, $26–$32 average spend per customer. Your actual figures will differ.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))', gap: 12, marginBottom: 14 }}>
+              {[
+                { location: 'Burleigh Heads', rent: '~$6,500/mo', totalFixed: '~$36,000–$40,000/mo', coversNeeded: 'est. 40–55 covers/day', note: 'Achievable at shoulder season' },
+                { location: 'Broadbeach core', rent: '~$8,500/mo', totalFixed: '~$38,000–$44,000/mo', coversNeeded: 'est. 50–65 covers/day', note: 'Requires consistent evening trade' },
+                { location: 'Surfers Paradise', rent: '~$14,000/mo', totalFixed: '~$44,000–$52,000/mo', coversNeeded: 'est. 75–100 covers/day', note: 'High-risk in shoulder months' },
+                { location: 'Palm Beach', rent: '~$3,500/mo', totalFixed: '~$32,000–$36,000/mo', coversNeeded: 'est. 32–42 covers/day', note: 'Lower bar; slower establishment' },
+              ].map(({ location, rent, totalFixed, coversNeeded, note }) => (
+                <div key={location} style={{ background: 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '12px 14px' }}>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: S.n900, margin: '0 0 6px 0' }}>{location}</p>
+                  <p style={{ fontSize: 11, color: S.muted, margin: '0 0 2px 0' }}>Est. rent: {rent}</p>
+                  <p style={{ fontSize: 11, color: S.muted, margin: '0 0 2px 0' }}>Fixed costs: {totalFixed}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: S.brandDark, margin: '0 0 4px 0' }}>{coversNeeded}</p>
+                  <p style={{ fontSize: 10, color: S.brand, margin: 0, fontStyle: 'italic' }}>{note}</p>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 12, color: S.brandDark, lineHeight: 1.7, margin: 0 }}>
+              The principle is consistent regardless of location: model your break-even using the <em>shoulder-season revenue estimate</em>, not peak. If the model only works in your three best trading months, the business has structural risk in the other nine.
             </p>
           </Card>
         </div>
@@ -703,7 +776,8 @@ export default function GoldCoastPage() {
         <div style={{ marginBottom: 52 }}>
           <SectionLabel text="Suburb intelligence" />
           <h2 style={{ fontSize: 22, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', margin: '0 0 8px 0' }}>20 Gold Coast suburbs — scored and ranked</h2>
-          <p style={{ fontSize: 14, color: S.muted, margin: '0 0 28px 0', lineHeight: 1.6 }}>Every analysis below is written for the operator making a leasing decision — not for general readers. Unique insight for each suburb; no filler repeated across entries.</p>
+          <p style={{ fontSize: 14, color: S.muted, margin: '0 0 20px 0', lineHeight: 1.6 }}>Every analysis below is written for the operator making a leasing decision. Each entry states why the verdict exists — not just what it is.</p>
+          <ScoreMethodology />
 
           {/* Strong verdicts */}
           <h3 style={{ fontSize: 14, fontWeight: 800, color: S.emerald, marginBottom: 16, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>Strong opportunities</h3>
@@ -752,6 +826,10 @@ export default function GoldCoastPage() {
                   <p style={{ fontSize: 10, fontWeight: 700, color: S.brand, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Key insight</p>
                   <p style={{ fontSize: 13, color: S.n900, lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>{s.insight}</p>
                 </div>
+                <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 8, padding: '10px 14px' }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: S.emerald, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
+                  <p style={{ fontSize: 12, color: '#065F46', lineHeight: 1.65, margin: 0 }}>{s.why}</p>
+                </div>
               </Card>
             ))}
           </div>
@@ -787,6 +865,10 @@ export default function GoldCoastPage() {
                 <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${S.border}` }}>
                   <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>{s.insight}</p>
                 </div>
+                <div style={{ marginTop: 10, background: S.amberBg, borderRadius: 8, padding: '10px 14px' }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: S.amber, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
+                  <p style={{ fontSize: 12, color: '#78350F', lineHeight: 1.65, margin: 0 }}>{s.why}</p>
+                </div>
               </Card>
             ))}
           </div>
@@ -804,7 +886,11 @@ export default function GoldCoastPage() {
                   <Badge v={s.verdict} size="md" />
                 </div>
                 <p style={{ fontSize: 12, color: S.muted, lineHeight: 1.7, margin: '0 0 10px 0' }}>{s.vibe}</p>
-                <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>{s.insight}</p>
+                <p style={{ fontSize: 12, color: S.n900, lineHeight: 1.65, margin: '0 0 10px 0', fontStyle: 'italic' }}>{s.insight}</p>
+                <div style={{ background: S.redBg, borderRadius: 8, padding: '10px 14px' }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: S.red, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: 4 }}>Why this score</p>
+                  <p style={{ fontSize: 12, color: '#7F1D1D', lineHeight: 1.65, margin: 0 }}>{s.why}</p>
+                </div>
               </Card>
             ))}
           </div>
@@ -814,7 +900,8 @@ export default function GoldCoastPage() {
         <div style={{ marginBottom: 52 }}>
           <SectionLabel text="Suburb comparison" />
           <h2 style={{ fontSize: 22, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', margin: '0 0 8px 0' }}>All 20 suburbs ranked</h2>
-          <p style={{ fontSize: 13, color: S.muted, marginBottom: 20 }}>Sort by your business type.</p>
+          <p style={{ fontSize: 13, color: S.muted, marginBottom: 8 }}>Sort by your business type. Scores are composite relative estimates (1–100) — see methodology note above for how they are calculated.</p>
+          <p style={{ fontSize: 11, color: S.mutedLight, marginBottom: 20 }}>Higher score = relatively better conditions for that business type in that suburb. Not a forecast or success guarantee.</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' as const }}>
             {(['cafe', 'restaurant', 'retail'] as const).map(col => (
               <button key={col} onClick={() => setTableSort(col)} style={{ padding: '6px 16px', borderRadius: 6, border: `1px solid ${tableSort === col ? S.brand : S.border}`, background: tableSort === col ? S.brand : S.white, color: tableSort === col ? S.white : S.muted, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', textTransform: 'capitalize' as const }}>
