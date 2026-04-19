@@ -170,7 +170,7 @@ export default async function SuburbPage({ params }: Props) {
               </div>
               <div style={{ fontSize: '12px', color: C.muted, fontWeight: 600 }}>/ 100</div>
               <div style={{ marginTop: '10px' }}>
-                <VerdictBadge verdict={data.verdict} size="md" />
+                <VerdictBadge verdict={data.verdict === 'RISKY' ? 'NO' : data.verdict} size="md" />
               </div>
             </div>
             <div style={{ minWidth: 0 }}>
@@ -468,7 +468,7 @@ export default async function SuburbPage({ params }: Props) {
                   citySlug={data.citySlug}
                   description=""
                   score={ns.score ?? 0}
-                  verdict={ns.verdict}
+                  verdict={ns.verdict === 'RISKY' ? 'NO' : ns.verdict}
                 />
               ))}
             </div>
