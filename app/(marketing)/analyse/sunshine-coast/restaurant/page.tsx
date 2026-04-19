@@ -2,6 +2,17 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getSunshineCoastSuburb } from '@/lib/analyse-data/brisbane'
+
+function getRestaurantScore(name: string): number {
+  return getSunshineCoastSuburb(name)?.restaurant ?? 0
+}
+function getRestaurantVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getRestaurantScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
@@ -27,7 +38,7 @@ const SCHEMAS = [
         name: 'What is the best suburb to open a restaurant on the Sunshine Coast?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Noosa Heads scores 87/100 with strong tourism draw (900k+ annual visitors) and affluent diner base. Mooloolaba (84) is accessible alternative with strong restaurant culture.',
+          text: 'Noosa Heads ranks highest with strong tourism draw (900k+ annual visitors) and affluent diner base. Mooloolaba is an accessible alternative with strong restaurant culture.',
         },
       },
       {
@@ -60,13 +71,13 @@ const SCHEMAS = [
 
 // Chart data
 const SUBURB_SCORES = [
-  { name: 'Noosa Heads', score: 87, rent: 8500, traffic: 89, income: 108 },
-  { name: 'Mooloolaba', score: 84, rent: 6200, traffic: 86, income: 84 },
-  { name: 'Maroochydore', score: 78, rent: 4800, traffic: 74, income: 76 },
-  { name: 'Buderim', score: 72, rent: 3800, traffic: 68, income: 92 },
-  { name: 'Kawana Waters', score: 58, rent: 4200, traffic: 58, income: 88 },
-  { name: 'Nambour', score: 35, rent: 2900, traffic: 38, income: 64 },
-  { name: 'Caboolture', score: 29, rent: 2600, traffic: 32, income: 72 },
+  { name: 'Noosa Heads', score: getRestaurantScore('Noosa Heads'), rent: 8500, traffic: 89, income: 108 },
+  { name: 'Mooloolaba', score: getRestaurantScore('Mooloolaba'), rent: 6200, traffic: 86, income: 84 },
+  { name: 'Maroochydore', score: getRestaurantScore('Maroochydore'), rent: 4800, traffic: 74, income: 76 },
+  { name: 'Buderim', score: getRestaurantScore('Buderim'), rent: 3800, traffic: 68, income: 92 },
+  { name: 'Kawana Waters', score: getRestaurantScore('Kawana Waters'), rent: 4200, traffic: 58, income: 88 },
+  { name: 'Nambour', score: getRestaurantScore('Nambour'), rent: 2900, traffic: 38, income: 64 },
+  { name: 'Caboolture', score: getRestaurantScore('Caboolture'), rent: 2600, traffic: 32, income: 72 },
 ]
 
 const RENT_VS_REVENUE = [
@@ -79,19 +90,19 @@ const RENT_VS_REVENUE = [
 
 // Poll data
 const POLL_OPTIONS = [
-  'Noosa Heads (87 score, premium positioning)',
-  'Mooloolaba (84 score, established dining)',
-  'Maroochydore (78 score, emerging area)',
-  'Buderim (72 score, local focus)',
+  'Noosa Heads (premium positioning)',
+  'Mooloolaba (established dining)',
+  'Maroochydore (emerging area)',
+  'Buderim (local focus)',
 ]
 
 // Suburb data
 const TOP_SUBURBS = [
   {
     name: 'Noosa Heads',
-    score: 87,
+    score: getRestaurantScore('Noosa Heads'),
     postcode: 4567,
-    verdict: 'GO',
+    verdict: getRestaurantVerdict('Noosa Heads'),
     rent: '$8,500/mo',
     walkability: 74,
     income: 108,
@@ -101,9 +112,9 @@ const TOP_SUBURBS = [
   },
   {
     name: 'Mooloolaba',
-    score: 84,
+    score: getRestaurantScore('Mooloolaba'),
     postcode: 4558,
-    verdict: 'GO',
+    verdict: getRestaurantVerdict('Mooloolaba'),
     rent: '$6,200/mo',
     walkability: 76,
     income: 84,
@@ -113,9 +124,9 @@ const TOP_SUBURBS = [
   },
   {
     name: 'Maroochydore',
-    score: 78,
+    score: getRestaurantScore('Maroochydore'),
     postcode: 4558,
-    verdict: 'GO',
+    verdict: getRestaurantVerdict('Maroochydore'),
     rent: '$4,800/mo',
     walkability: 70,
     income: 76,
@@ -125,9 +136,9 @@ const TOP_SUBURBS = [
   },
   {
     name: 'Buderim',
-    score: 72,
+    score: getRestaurantScore('Buderim'),
     postcode: 4556,
-    verdict: 'GO',
+    verdict: getRestaurantVerdict('Buderim'),
     rent: '$3,800/mo',
     walkability: 64,
     income: 92,
@@ -140,24 +151,21 @@ const TOP_SUBURBS = [
 const RISK_SUBURBS = [
   {
     name: 'Kawana Waters',
-    score: 58,
     postcode: 4575,
-    verdict: 'CAUTION',
+    verdict: getRestaurantVerdict('Kawana Waters'),
     risk: 'Inland suburb with moderate foot traffic but high rent ($4,200/mo). Rent-to-traffic ratio is unfavorable. Dining scene fragmented; no established restaurant cluster.',
   },
   {
     name: 'Nambour',
-    score: 35,
     postcode: 4560,
-    verdict: 'NO',
-    risk: 'Regional inland suburb. Restaurant viability weak (1,200 daily foot traffic). Rent at $2,900/mo is low but insufficient traffic compensates. No tourism draw.',
+    verdict: getRestaurantVerdict('Nambour'),
+    risk: 'Regional inland suburb. Restaurant viability weak (1,200 daily foot traffic). Rent at $2,900/mo is low but insufficient traffic to compensate. No tourism draw.',
   },
   {
     name: 'Caboolture',
-    score: 29,
     postcode: 4510,
-    verdict: 'NO',
-    risk: 'Far northern suburb. Minimal tourism or affluent dining demographic. Restaurant model not viable.',
+    verdict: getRestaurantVerdict('Caboolture'),
+    risk: 'Outer-suburban demographics limit willingness-to-pay for restaurant concepts. Viable only for value-positioned formats with tight cost control.',
   },
 ]
 
@@ -631,7 +639,7 @@ export default function SunshineCoastRestaurantPage() {
                   <h3 style={{ color: '#1C1917', marginTop: 0, marginBottom: '8px', fontSize: '18px', fontWeight: '700' }}>
                     {suburb.name}
                   </h3>
-                  <div style={{ fontSize: '13px', color: S.muted, marginBottom: '8px' }}>Postcode {suburb.postcode} — Score {suburb.score}/100</div>
+                  <div style={{ fontSize: '13px', color: S.muted, marginBottom: '8px' }}>Postcode {suburb.postcode}</div>
                   <p style={{ margin: '0', fontSize: '14px', color: '#374151', lineHeight: '1.6' }}>
                     {suburb.risk}
                   </p>

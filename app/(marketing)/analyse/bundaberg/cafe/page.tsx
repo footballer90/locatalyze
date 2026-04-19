@@ -1,5 +1,6 @@
 'use client'
 // app/(marketing)/analyse/bundaberg/cafe/page.tsx
+// Engine-migrated: scores derived from lib/analyse-data/brisbane.ts getBundabergSuburb()
 
 import Link from 'next/link'
 import { useState } from 'react'
@@ -7,6 +8,17 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
 } from 'recharts'
+import { getBundabergSuburb } from '@/lib/analyse-data/brisbane'
+
+function getCafeScore(name: string): number {
+  return getBundabergSuburb(name)?.cafe ?? 0
+}
+function getCafeVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getCafeScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 
 // ── Schema (injected inline since this is a client component) ─────────────────
 const SCHEMAS = [
@@ -35,12 +47,12 @@ const SCHEMAS = [
 
 // ── Chart data ─────────────────────────────────────────────────────────────────
 const SUBURB_SCORES = [
-  { suburb: 'Bargara',           score: 84, rent: 3000, traffic: 82, income: 76 },
-  { suburb: 'Bundaberg Central', score: 78, rent: 2400, traffic: 79, income: 68 },
-  { suburb: 'Kepnock',           score: 72, rent: 2000, traffic: 68, income: 71 },
-  { suburb: 'Bundaberg North',   score: 65, rent: 1900, traffic: 54, income: 62 },
-  { suburb: 'Gin Gin',           score: 34, rent: 900,  traffic: 18, income: 48 },
-  { suburb: 'Childers',          score: 28, rent: 1200, traffic: 22, income: 44 },
+  { suburb: 'Bargara',           score: getCafeScore('Bargara'),           rent: 3000, traffic: 82, income: 76 },
+  { suburb: 'Bundaberg Central', score: getCafeScore('Bundaberg Central'), rent: 2400, traffic: 79, income: 68 },
+  { suburb: 'Kepnock',           score: getCafeScore('Kepnock'),           rent: 2000, traffic: 68, income: 71 },
+  { suburb: 'Bundaberg North',   score: getCafeScore('Bundaberg North'),   rent: 1900, traffic: 54, income: 62 },
+  { suburb: 'Gin Gin',           score: getCafeScore('Gin Gin'),           rent: 900,  traffic: 18, income: 48 },
+  { suburb: 'Childers',          score: getCafeScore('Childers'),          rent: 1200, traffic: 22, income: 44 },
 ]
 
 const RENT_VS_REVENUE = [
@@ -62,7 +74,7 @@ const POLL_OPTIONS = [
 // ── Suburb data ───────────────────────────────────────────────────────────────
 const TOP_SUBURBS = [
   {
-    rank: 1, name: 'Bargara', postcode: '4670', score: 84, verdict: 'GO' as const,
+    rank: 1, name: 'Bargara', postcode: '4670', score: getCafeScore('Bargara'), verdict: getCafeVerdict('Bargara') as 'GO' | 'CAUTION' | 'NO',
     income: '$76,000', rent: '$2,200–$3,800/mo', competition: '3 within 500m',
     footTraffic: 82, demographics: 86, rentFit: 82, competitionScore: 80,
     breakEven: '25/day', payback: '6 months', annualProfit: '$156,000',
@@ -76,7 +88,7 @@ const TOP_SUBURBS = [
     opportunity: 'A café positioned as the social hub for active retirees (community bulletin boards, book swap, interest group meeting space) would own defensible positioning. The demographic seeks community connection — a "third place" positioning would differentiate sharply from generic beachside cafés.',
   },
   {
-    rank: 2, name: 'Bundaberg Central', postcode: '4670', score: 78, verdict: 'GO' as const,
+    rank: 2, name: 'Bundaberg Central', postcode: '4670', score: getCafeScore('Bundaberg Central'), verdict: getCafeVerdict('Bundaberg Central') as 'GO' | 'CAUTION' | 'NO',
     income: '$68,000', rent: '$1,800–$3,000/mo', competition: '4 within 500m',
     footTraffic: 79, demographics: 76, rentFit: 80, competitionScore: 75,
     breakEven: '22/day', payback: '7 months', annualProfit: '$144,000',
@@ -90,7 +102,7 @@ const TOP_SUBURBS = [
     opportunity: 'A café positioned as the "meeting place" for seasonal agricultural workers and professionals (reliable wifi, meeting space, high-quality food) would differentiate. The demographic travels between properties and job sites — a reliable known location becomes valuable.',
   },
   {
-    rank: 3, name: 'Kepnock', postcode: '4670', score: 72, verdict: 'GO' as const,
+    rank: 3, name: 'Kepnock', postcode: '4670', score: getCafeScore('Kepnock'), verdict: getCafeVerdict('Kepnock') as 'GO' | 'CAUTION' | 'NO',
     income: '$71,000', rent: '$1,600–$2,400/mo', competition: '2 within 500m',
     footTraffic: 68, demographics: 72, rentFit: 85, competitionScore: 88,
     breakEven: '20/day', payback: '8 months', annualProfit: '$132,000',
@@ -104,7 +116,7 @@ const TOP_SUBURBS = [
     opportunity: 'Position as the neighbourhood "third place" with community programming — book club, yoga classes, local art. Lower rent enables event hosting without margin compression. Weekend farmers market or craft activities would differentiate.',
   },
   {
-    rank: 4, name: 'Bundaberg North', postcode: '4670', score: 65, verdict: 'CAUTION' as const,
+    rank: 4, name: 'Bundaberg North', postcode: '4670', score: getCafeScore('Bundaberg North'), verdict: getCafeVerdict('Bundaberg North') as 'GO' | 'CAUTION' | 'NO',
     income: '$62,000', rent: '$1,600–$2,600/mo', competition: '2 within 500m',
     footTraffic: 54, demographics: 62, rentFit: 78, competitionScore: 80,
     breakEven: '28/day', payback: '10 months', annualProfit: '$96,000',
@@ -120,8 +132,8 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Gin Gin', postcode: '4671', score: 34, verdict: 'NO' as const, reason: 'Gin Gin is too small and rural — population insufficient to support café foot traffic. Rent is cheap ($900/month) but reflects zero commercial demand. No tourism anchor. Agricultural worker trade is passing through (not local). Positioning as rural truck-stop café could work but requires commoditized positioning, not quality specialty coffee.' },
-  { name: 'Childers', postcode: '4660', score: 28, verdict: 'NO' as const, reason: 'Childers is backpacker-accommodation-heavy with extreme price-sensitivity and high customer volatility. Median income ($44k) is 35% below viability threshold. Backpackers pay $2.50/coffee and $6.00 for toast. Quality café economics fail. Only viable as ultra-budget (Big W café equivalent) with high volume and low expectation.' },
+  { name: 'Gin Gin', postcode: '4671', verdict: getCafeVerdict('Gin Gin') as 'GO' | 'CAUTION' | 'NO', reason: 'Gin Gin is too small and rural — population insufficient to support café foot traffic. Rent is cheap but reflects near-zero commercial demand. No tourism anchor. Agricultural worker trade is passing through, not local. Positioning as a rural truck-stop café could work but requires commoditized pricing, not specialty coffee.' },
+  { name: 'Childers', postcode: '4660', verdict: getCafeVerdict('Childers') as 'GO' | 'CAUTION' | 'NO', reason: 'Childers is backpacker-accommodation-heavy with extreme price-sensitivity and high customer volatility. The demographic pays $2.50/coffee, not $5.50. Quality café economics fail here. Only viable as ultra-budget with high volume and minimal fit-out investment.' },
 ]
 
 const S = {

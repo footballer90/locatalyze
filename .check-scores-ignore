@@ -15,9 +15,6 @@ app/(marketing)/analyse/page.tsx
 app/(marketing)/analyse/adelaide/restaurant/page.tsx
 app/(marketing)/analyse/ballarat/cafe/page.tsx
 app/(marketing)/analyse/bendigo/restaurant/page.tsx
-app/(marketing)/analyse/brisbane/cafe/page.tsx
-app/(marketing)/analyse/brisbane/page.tsx
-app/(marketing)/analyse/bundaberg/cafe/page.tsx
 app/(marketing)/analyse/cairns/cafe/page.tsx
 app/(marketing)/analyse/canberra/retail/page.tsx
 app/(marketing)/analyse/geelong/cafe/page.tsx
@@ -46,8 +43,6 @@ app/(marketing)/analyse/perth/page.tsx
 app/(marketing)/analyse/perth/perth-cbd/page.tsx
 app/(marketing)/analyse/perth/restaurant/page.tsx
 app/(marketing)/analyse/rockhampton/cafe/page.tsx
-app/(marketing)/analyse/sunshine-coast/cafe/page.tsx
-app/(marketing)/analyse/sunshine-coast/restaurant/page.tsx
 app/(marketing)/analyse/toowoomba/cafe/page.tsx
 app/(marketing)/analyse/townsville/gym/page.tsx
 app/(marketing)/analyse/wollongong/restaurant/page.tsx

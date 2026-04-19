@@ -9,6 +9,18 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
 } from 'recharts'
+import { getBrisbaneSuburb } from '@/lib/analyse-data/brisbane'
+
+// Engine-derived score helpers
+function getCafeScore(name: string): number {
+  return getBrisbaneSuburb(name)?.cafe ?? 0
+}
+function getCafeVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getCafeScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 
 // ── SEO metadata exported from a separate server file ────────────────────────
 // NOTE: Because this is 'use client', metadata lives in a layout.tsx wrapper.
@@ -39,24 +51,24 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
-      { '@type': 'Question', name: 'What is the best suburb to open a café in Brisbane?', acceptedAnswer: { '@type': 'Answer', text: 'Paddington scores 87/100 — the highest of any Brisbane suburb. Given Terrace delivers strong foot traffic from young professionals earning $98,000+ median income. West End (83/100) and New Farm (80/100) offer excellent alternatives with different competitive dynamics.' } },
+      { '@type': 'Question', name: 'What is the best suburb to open a café in Brisbane?', acceptedAnswer: { '@type': 'Answer', text: 'Paddington ranks highest for café operators in Brisbane. Given Terrace delivers strong foot traffic from young professionals earning $98,000+ median income. West End and New Farm offer excellent alternatives with different competitive dynamics.' } },
       { '@type': 'Question', name: 'How much does café rent cost in Brisbane inner suburbs?', acceptedAnswer: { '@type': 'Answer', text: 'Brisbane inner suburb café rents range from $3,200 to $5,500/month for a 60–80sqm tenancy (recent Queensland commercial surveys). This is 30–40% below equivalent Sydney locations and 20–25% below Melbourne — a material advantage for unit economics.' } },
       { '@type': 'Question', name: 'Why is Brisbane better than Sydney for opening a coffee shop?', acceptedAnswer: { '@type': 'Answer', text: 'Brisbane combines lower commercial rents (30–40% cheaper than Sydney) with a growing high-income demographic fuelled by interstate migration from Sydney and Melbourne. The subtropical climate enables year-round outdoor seating — a revenue stream that Sydney cafés cannot access. Combined, these factors produce rent-to-revenue ratios of 6–9% versus 12–18% in Sydney.' } },
-      { '@type': 'Question', name: 'Is Fortitude Valley good for a café?', acceptedAnswer: { '@type': 'Answer', text: 'Fortitude Valley (score 68, CAUTION) has high foot traffic but the market is transitioning from nightlife to daytime vibrancy. Weekend foot traffic remains strong; weekday morning commuter base is softer than Paddington or West End. Rent is 15–20% higher than West End despite lower median income ($72,000 vs $82,000). New entrants face higher risk here than in GO-rated suburbs.' } },
-      { '@type': 'Question', name: 'Which Brisbane suburbs should I avoid for a café?', acceptedAnswer: { '@type': 'Answer', text: 'Chermside (score 42, NO) is chain-dominated with insufficient independent operator space. Springfield (score 35, NO) is too new and car-dependent with immature demographics. Caboolture (score 31, NO) has income demographics below café viability thresholds. All three have rent-to-revenue ratios exceeding 18%, indicating high risk.' } },
+      { '@type': 'Question', name: 'Is Fortitude Valley good for a café?', acceptedAnswer: { '@type': 'Answer', text: 'Fortitude Valley (CAUTION) has high foot traffic but the market is transitioning from nightlife to daytime vibrancy. Weekend foot traffic remains strong; weekday morning commuter base is softer than Paddington or West End. Rent is 15–20% higher than West End despite lower median income ($72,000 vs $82,000). New entrants face higher risk here than in GO-rated suburbs.' } },
+      { '@type': 'Question', name: 'Which Brisbane suburbs should I avoid for a café?', acceptedAnswer: { '@type': 'Answer', text: 'Chermside is chain-dominated — Westfield monopolises foot traffic, making independent café economics structurally difficult. Springfield is too car-dependent and demographically immature for walk-in café trade. Caboolture has income demographics below premium café viability thresholds — a value concept can work but specialty pricing is a stretch.' } },
     ],
   },
 ]
 
 // ── Chart data ─────────────────────────────────────────────────────────────────
 const SUBURB_SCORES = [
-  { suburb: 'Paddington',   score: 87, rent: 4500, traffic: 89, income: 98 },
-  { suburb: 'West End',     score: 83, rent: 3800, traffic: 91, income: 82 },
-  { suburb: 'New Farm',     score: 80, rent: 4750, traffic: 84, income: 92 },
-  { suburb: 'Teneriffe',    score: 76, rent: 4200, traffic: 79, income: 95 },
-  { suburb: 'Fortitude Valley', score: 68, rent: 5100, traffic: 88, income: 72 },
-  { suburb: 'Chermside',    score: 42, rent: 3600, traffic: 68, income: 65 },
-  { suburb: 'Springfield',  score: 35, rent: 3400, traffic: 52, income: 72 },
+  { suburb: 'Paddington',       score: getCafeScore('Paddington'),       rent: 4500, traffic: 89, income: 98 },
+  { suburb: 'West End',         score: getCafeScore('West End'),         rent: 3800, traffic: 91, income: 82 },
+  { suburb: 'New Farm',         score: getCafeScore('New Farm'),         rent: 4750, traffic: 84, income: 92 },
+  { suburb: 'Teneriffe',        score: getCafeScore('Teneriffe'),        rent: 4200, traffic: 79, income: 95 },
+  { suburb: 'Fortitude Valley', score: getCafeScore('Fortitude Valley'), rent: 5100, traffic: 88, income: 72 },
+  { suburb: 'Chermside',        score: getCafeScore('Chermside'),        rent: 3600, traffic: 68, income: 65 },
+  { suburb: 'Springfield',      score: getCafeScore('Springfield'),      rent: 3400, traffic: 52, income: 72 },
 ]
 
 const RENT_VS_REVENUE = [
@@ -82,7 +94,7 @@ const POLL_OPTIONS = [
 // ── Suburb data ───────────────────────────────────────────────────────────────
 const TOP_SUBURBS = [
   {
-    rank: 1, name: 'Paddington', postcode: '4064', score: 87, verdict: 'GO' as const,
+    rank: 1, name: 'Paddington', postcode: '4064', score: getCafeScore('Paddington'), verdict: getCafeVerdict('Paddington') as 'GO' | 'CAUTION' | 'NO',
     income: '$98,000', rent: '$3,800–$5,200/mo', competition: '4 within 500m',
     footTraffic: 89, demographics: 87, rentFit: 86, competitionScore: 85,
     breakEven: '32/day', payback: '6 months', annualProfit: '$318,400',
@@ -96,7 +108,7 @@ const TOP_SUBURBS = [
     opportunity: 'Afternoon trade (2–5pm) and weekday lunch are genuinely underdeveloped relative to the morning peak. A café with strong lunch food offering (fresh salads, warm bowls, artisanal sandwiches) captures uncontested revenue. Weekday evening ambient food and wine positioning (5–8pm) is completely absent and would differentiate.',
   },
   {
-    rank: 2, name: 'West End', postcode: '4101', score: 83, verdict: 'GO' as const,
+    rank: 2, name: 'West End', postcode: '4101', score: getCafeScore('West End'), verdict: getCafeVerdict('West End') as 'GO' | 'CAUTION' | 'NO',
     income: '$82,000', rent: '$3,200–$4,800/mo', competition: '5 within 500m',
     footTraffic: 91, demographics: 80, rentFit: 89, competitionScore: 84,
     breakEven: '29/day', payback: '7 months', annualProfit: '$276,800',
@@ -110,7 +122,7 @@ const TOP_SUBURBS = [
     opportunity: 'The first craft-focused operator with a strong cultural positioning (art, design, activism) would own a clearly differentiated market position. West End\'s demographic actively seeks alignment with values-driven businesses. This positioning advantage is defensible long-term against generic competition.',
   },
   {
-    rank: 3, name: 'New Farm', postcode: '4005', score: 80, verdict: 'GO' as const,
+    rank: 3, name: 'New Farm', postcode: '4005', score: getCafeScore('New Farm'), verdict: getCafeVerdict('New Farm') as 'GO' | 'CAUTION' | 'NO',
     income: '$92,000', rent: '$4,000–$5,500/mo', competition: '3 within 500m',
     footTraffic: 84, demographics: 84, rentFit: 83, competitionScore: 88,
     breakEven: '33/day', payback: '8 months', annualProfit: '$252,000',
@@ -124,7 +136,7 @@ const TOP_SUBURBS = [
     opportunity: 'Weekday lunch is materially underdeveloped despite high residential and office population density in surrounding suburbs. An early-mover with strong lunch positioning would capture uncontested market share. Evening food and wine (5–8pm) is also absent — positioning as a nightlife-adjacent venue (small plates, natural wine) would differentiate sharply.',
   },
   {
-    rank: 4, name: 'Teneriffe', postcode: '4005', score: 76, verdict: 'GO' as const,
+    rank: 4, name: 'Teneriffe', postcode: '4005', score: getCafeScore('Teneriffe'), verdict: getCafeVerdict('Teneriffe') as 'GO' | 'CAUTION' | 'NO',
     income: '$95,000', rent: '$3,500–$5,000/mo', competition: '2 within 500m',
     footTraffic: 79, demographics: 82, rentFit: 85, competitionScore: 92,
     breakEven: '30/day', payback: '9 months', annualProfit: '$231,600',
@@ -140,9 +152,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Fortitude Valley', postcode: '4006', score: 68, verdict: 'CAUTION' as const, reason: 'Fortitude Valley is transitioning from nightlife to daytime vibrancy, but the economics are challenging. Rents are $4,200–$6,000/month — the highest in Brisbane — while median income is only $72,000. Foot traffic is high on Friday–Sunday nights; weekday mornings are softer. Rent-to-revenue for most day-focused café concepts exceeds 16%, leaving thin margins. Viability depends on strong brand differentiation and premium pricing.' },
-  { name: 'Chermside', postcode: '4032', score: 42, verdict: 'NO' as const, reason: 'Chermside shopping centre dominates the precinct, forcing independent operators into a race-to-the-bottom competition with chains (The Coffee Club, Dome, Gloria Jean\'s). The mall takes a 15% commission from sales. Independent café economics at the Chermside shopping centre are structurally unviable. Suburban standalone locations lack foot traffic and lack the density to support quality pricing.' },
-  { name: 'Caboolture', postcode: '4510', score: 31, verdict: 'NO' as const, reason: 'Median household income of $64,000 — 20% below Brisbane median — makes the premium café price point a genuine stretch purchase rather than habitual spend. Customer traffic exists but willingness-to-pay is insufficient to support the rent and cost structure a quality café requires. At these income levels, customers default to supermarket coffee during any economic uncertainty.' },
+  { name: 'Fortitude Valley', postcode: '4006', verdict: getCafeVerdict('Fortitude Valley') as 'GO' | 'CAUTION' | 'NO', reason: 'Fortitude Valley is transitioning from nightlife to daytime vibrancy, but the economics are challenging. Rents are $4,200–$6,000/month — the highest in Brisbane — while median income is only $72,000. Foot traffic is high on Friday–Sunday nights; weekday mornings are softer. Rent-to-revenue for most day-focused café concepts exceeds 16%, leaving thin margins. Viability depends on strong brand differentiation and premium pricing.' },
+  { name: 'Chermside', postcode: '4032', verdict: getCafeVerdict('Chermside') as 'GO' | 'CAUTION' | 'NO', reason: 'Chermside shopping centre dominates the precinct, forcing independent operators into a race-to-the-bottom competition with chains (The Coffee Club, Dome, Gloria Jean\'s). The mall captures the majority of foot traffic and consumer spend. Independent café economics are structurally challenged here — strip locations outside the centre lack the density to support quality pricing.' },
+  { name: 'Caboolture', postcode: '4510', verdict: getCafeVerdict('Caboolture') as 'GO' | 'CAUTION' | 'NO', reason: 'Median household income of $64,000 — 20% below Brisbane median — means the premium café price point is a stretch purchase rather than habitual spend. Willingness-to-pay is below the cost structure a quality café requires. A value-positioned concept may be viable, but specialty coffee with premium pricing faces a difficult market here.' },
 ]
 
 const S = {
@@ -570,7 +582,7 @@ export default function BrisbaneCafePage() {
                 <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>{sub.reason}</p>
               </div>
               <div style={{ textAlign: 'center', minWidth: 56 }}>
-                <div style={{ fontSize: 36, fontWeight: 900, color: S.red, lineHeight: 1 }}>{sub.score}</div>
+                <div style={{ fontSize: 36, fontWeight: 900, color: S.red, lineHeight: 1 }}>{getCafeScore(sub.name)}</div>
                 <div style={{ fontSize: 10, color: S.muted }}>/100</div>
               </div>
             </div>
@@ -685,7 +697,7 @@ export default function BrisbaneCafePage() {
               <tbody>
                 {[
                   ...TOP_SUBURBS.map(s => ({ name: s.name, score: s.score, verdict: s.verdict, income: s.income, rent: s.rent, comp: s.competition, payback: s.payback })),
-                  ...RISK_SUBURBS.map(s => ({ name: s.name, score: s.score, verdict: s.verdict, income: '< $75k', rent: 'Not viable', comp: '7+', payback: 'N/A' })),
+                  ...RISK_SUBURBS.map(s => ({ name: s.name, score: getCafeScore(s.name), verdict: s.verdict, income: '< $75k', rent: 'Not viable', comp: '7+', payback: 'N/A' })),
                 ].map((row, i) => (
                   <tr key={row.name} style={{ borderBottom: i < 6 ? `1px solid ${S.n100}` : 'none', background: row.verdict === 'NO' ? '#FEF8F8' : 'transparent' }}>
                     <td style={{ padding: '10px 14px', fontWeight: 600 }}>{row.name}</td>

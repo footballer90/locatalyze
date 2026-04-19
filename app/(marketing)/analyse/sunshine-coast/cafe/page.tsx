@@ -6,6 +6,17 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
 } from 'recharts'
+import { getSunshineCoastSuburb } from '@/lib/analyse-data/brisbane'
+
+function getCafeScore(name: string): number {
+  return getSunshineCoastSuburb(name)?.cafe ?? 0
+}
+function getCafeVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getCafeScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 
 // Schema JSON-LD
 const SCHEMAS = [
@@ -60,13 +71,13 @@ const SCHEMAS = [
 
 // Chart data
 const SUBURB_SCORES = [
-  { name: 'Mooloolaba', score: 88, rent: 5850, traffic: 91, income: 84 },
-  { name: 'Noosa Heads', score: 85, rent: 7500, traffic: 88, income: 108 },
-  { name: 'Buderim', score: 79, rent: 3500, traffic: 76, income: 92 },
-  { name: 'Maroochydore', score: 75, rent: 5200, traffic: 74, income: 76 },
-  { name: 'Caloundra', score: 62, rent: 4100, traffic: 65, income: 82 },
-  { name: 'Nambour', score: 37, rent: 2800, traffic: 41, income: 64 },
-  { name: 'Beerwah', score: 31, rent: 2600, traffic: 35, income: 58 },
+  { name: 'Mooloolaba',  score: getCafeScore('Mooloolaba'),  rent: 5850, traffic: 91, income: 84 },
+  { name: 'Noosa Heads', score: getCafeScore('Noosa Heads'), rent: 7500, traffic: 88, income: 108 },
+  { name: 'Buderim',     score: getCafeScore('Buderim'),     rent: 3500, traffic: 76, income: 92 },
+  { name: 'Maroochydore',score: getCafeScore('Maroochydore'),rent: 5200, traffic: 74, income: 76 },
+  { name: 'Caloundra',   score: getCafeScore('Caloundra'),   rent: 4100, traffic: 65, income: 82 },
+  { name: 'Nambour',     score: getCafeScore('Nambour'),     rent: 2800, traffic: 41, income: 64 },
+  { name: 'Beerwah',     score: getCafeScore('Beerwah'),     rent: 2600, traffic: 35, income: 58 },
 ]
 
 const RENT_VS_REVENUE = [
@@ -80,19 +91,19 @@ const RENT_VS_REVENUE = [
 
 // Poll data
 const POLL_OPTIONS = [
-  'Mooloolaba (88 score, tourist + local hybrid)',
-  'Noosa Heads (85 score, premium positioning)',
-  'Buderim (79 score, established suburb)',
-  'Maroochydore (75 score, emerging area)',
+  'Mooloolaba (tourist + local hybrid)',
+  'Noosa Heads (premium positioning)',
+  'Buderim (established suburb)',
+  'Maroochydore (emerging area)',
 ]
 
 // Suburb data
 const TOP_SUBURBS = [
   {
     name: 'Mooloolaba',
-    score: 88,
+    score: getCafeScore('Mooloolaba'),
     postcode: 4558,
-    verdict: 'GO',
+    verdict: getCafeVerdict('Mooloolaba'),
     rent: '$5,850/mo',
     walkability: 76,
     income: 84,
@@ -102,9 +113,9 @@ const TOP_SUBURBS = [
   },
   {
     name: 'Noosa Heads',
-    score: 85,
+    score: getCafeScore('Noosa Heads'),
     postcode: 4567,
-    verdict: 'GO',
+    verdict: getCafeVerdict('Noosa Heads'),
     rent: '$7,500/mo',
     walkability: 74,
     income: 108,
@@ -114,9 +125,9 @@ const TOP_SUBURBS = [
   },
   {
     name: 'Buderim',
-    score: 79,
+    score: getCafeScore('Buderim'),
     postcode: 4556,
-    verdict: 'GO',
+    verdict: getCafeVerdict('Buderim'),
     rent: '$3,500/mo',
     walkability: 68,
     income: 92,
@@ -126,9 +137,9 @@ const TOP_SUBURBS = [
   },
   {
     name: 'Maroochydore',
-    score: 75,
+    score: getCafeScore('Maroochydore'),
     postcode: 4558,
-    verdict: 'GO',
+    verdict: getCafeVerdict('Maroochydore'),
     rent: '$5,200/mo',
     walkability: 70,
     income: 76,
@@ -141,23 +152,23 @@ const TOP_SUBURBS = [
 const RISK_SUBURBS = [
   {
     name: 'Caloundra',
-    score: 62,
+    score: getCafeScore('Caloundra'),
     postcode: 4551,
-    verdict: 'CAUTION',
+    verdict: getCafeVerdict('Caloundra'),
     risk: 'Older demographic (retirees) with lower day-time foot traffic. Tourist appeal is moderate. Seasonal volatility (winter drops 35% from summer peak). Rent at $4,100/mo is reasonable but traffic-to-rent ratio is weak.',
   },
   {
     name: 'Nambour',
-    score: 37,
+    score: getCafeScore('Nambour'),
     postcode: 4560,
-    verdict: 'NO',
-    risk: 'Inland suburb with low tourist appeal. Foot traffic is weak (1,600 daily) despite reasonable rent ($2,800/mo). Commercial strip is car-dependent; café viability is questionable.',
+    verdict: getCafeVerdict('Nambour'),
+    risk: 'Inland suburb with low tourist appeal. Foot traffic is weak (1,600 daily) despite reasonable rent ($2,800/mo). Commercial strip is car-dependent; café viability is below threshold for specialty positioning.',
   },
   {
     name: 'Beerwah',
-    score: 31,
+    score: getCafeScore('Beerwah'),
     postcode: 4519,
-    verdict: 'NO',
+    verdict: getCafeVerdict('Beerwah'),
     risk: 'Regional suburb with minimal café demand. Foot traffic insufficient (800 daily). Rent savings do not compensate for low traffic volume.',
   },
 ]
