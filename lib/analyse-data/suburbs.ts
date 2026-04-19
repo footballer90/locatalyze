@@ -1,8 +1,14 @@
 // lib/analyse-data/suburbs.ts
 // Canonical suburb data for /analyse/[city]/[suburb] pages
 // Each suburb has: full content, scores, rent data, case scenario, FAQs
+//
+// MIGRATION NOTE: overallScore, scores, and verdict fields are being phased out.
+// As each suburb page migrates to the engine, these will be removed and replaced
+// with engine-computed values via get[City]Suburb(slug) from lib/analyse-data/[city].ts
+// See docs/engine-migration.md for the full migration plan.
 
 import { SUBURBS } from '@/lib/suburb-data'
+import { type LocationFactors } from './scoring-engine'
 
 export type Verdict = 'GO' | 'CAUTION' | 'NO'
 export type CompetitionLevel = 'Low' | 'Medium' | 'High' | 'Very High'
@@ -34,7 +40,8 @@ export interface CaseScenario {
 export interface NearbySuburb {
   name: string
   slug: string
-  score: number
+  /** Legacy field — migrated pages use engine compositeScore instead. */
+  score?: number
   verdict: Verdict
 }
 
@@ -56,8 +63,12 @@ export interface SuburbPageData {
   postcode: string
   state: string
   verdict: Verdict
-  overallScore: number
-  scores: ScoreBreakdown
+  /** Legacy field — migrated pages use suburb.compositeScore from engine instead. */
+  overallScore?: number
+  /** Legacy field — migrated pages use suburb.locationFactors from engine instead. */
+  scores?: ScoreBreakdown
+  /** Engine factors — when provided, use computeLocationModel() to derive scores. */
+  factors?: LocationFactors
   tagline: string
   summary: string
   metaTitle: string

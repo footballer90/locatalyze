@@ -62,8 +62,9 @@ export default async function SuburbPage({ params }: Props) {
     dateModified: '2026-03-01',
   }
 
+  const overallScore = data.overallScore ?? 0
   const scoreColor =
-    data.overallScore >= 80 ? C.emerald : data.overallScore >= 65 ? C.brand : C.amber
+    overallScore >= 80 ? C.emerald : overallScore >= 65 ? C.brand : C.amber
 
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
@@ -165,7 +166,7 @@ export default async function SuburbPage({ params }: Props) {
                   marginBottom: '4px',
                 }}
               >
-                {data.overallScore}
+                {overallScore}
               </div>
               <div style={{ fontSize: '12px', color: C.muted, fontWeight: 600 }}>/ 100</div>
               <div style={{ marginTop: '10px' }}>
@@ -176,11 +177,11 @@ export default async function SuburbPage({ params }: Props) {
               <h3 style={{ fontSize: '14px', fontWeight: 700, color: C.n700, marginBottom: '16px' }}>
                 Score Breakdown
               </h3>
-              <ScoreBar label="Foot Traffic" value={data.scores.footTraffic} />
-              <ScoreBar label="Area Demographics" value={data.scores.demographics} />
-              <ScoreBar label="Rent Viability" value={data.scores.rentViability} />
-              <ScoreBar label="Competition Gap" value={data.scores.competitionGap} />
-              <ScoreBar label="Accessibility" value={data.scores.accessibility} />
+              <ScoreBar label="Foot Traffic" value={data.scores?.footTraffic ?? 0} />
+              <ScoreBar label="Area Demographics" value={data.scores?.demographics ?? 0} />
+              <ScoreBar label="Rent Viability" value={data.scores?.rentViability ?? 0} />
+              <ScoreBar label="Competition Gap" value={data.scores?.competitionGap ?? 0} />
+              <ScoreBar label="Accessibility" value={data.scores?.accessibility ?? 0} />
             </div>
           </div>
         </div>
@@ -466,7 +467,7 @@ export default async function SuburbPage({ params }: Props) {
                   slug={ns.slug}
                   citySlug={data.citySlug}
                   description=""
-                  score={ns.score}
+                  score={ns.score ?? 0}
                   verdict={ns.verdict}
                 />
               ))}

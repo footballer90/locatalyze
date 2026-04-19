@@ -241,8 +241,8 @@ export default async function CityPage({ params }: Props) {
                     slug={suburb.slug}
                     citySlug={data.slug}
                     description={suburb.description}
-                    score={suburb.score}
-                    verdict={suburb.verdict}
+                    score={suburb.score ?? 0}
+                    verdict={suburb.verdict ?? 'CAUTION'}
                     rentRange={suburb.rentRange}
                   />
                 ))}
@@ -265,10 +265,10 @@ export default async function CityPage({ params }: Props) {
                 .slice(0, 8)
                 .map((s) => ({
                   name: s.name,
-                  score: s.score,
-                  verdict: s.verdict,
+                  score: s.score ?? 0,
+                  verdict: (s.verdict ?? 'CAUTION') as 'GO' | 'CAUTION' | 'NO',
                   rent: s.rentRange,
-                  footTraffic: s.score >= 85 ? 'Very High' : s.score >= 75 ? 'High' : s.score >= 65 ? 'Medium' : 'Lower',
+                  footTraffic: (s.score ?? 0) >= 85 ? 'Very High' : (s.score ?? 0) >= 75 ? 'High' : (s.score ?? 0) >= 65 ? 'Medium' : 'Lower',
                   bestFor: s.description.split('.')[0],
                 }))}
             />

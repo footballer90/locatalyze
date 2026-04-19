@@ -1,6 +1,18 @@
 // lib/analyse-data/cities.ts
 // Canonical city data for /analyse/[city] pages
 // Each city has full SEO content: overview, suburb categories, comparisons, FAQs
+//
+// MIGRATION NOTE: score and verdict fields are optional.
+// Legacy city data still provides them manually (see .check-scores-ignore).
+// As each city is migrated to a proper engine data layer (lib/analyse-data/[city].ts),
+// remove score/verdict from the SuburbRef entries and compute them via the engine.
+// See docs/engine-migration.md for the full migration plan.
+
+import {
+  computeLocationModel,
+  type LocationFactors,
+  type LocationVerdict,
+} from './scoring-engine'
 
 export type Verdict = 'GO' | 'CAUTION' | 'NO'
 
@@ -8,9 +20,42 @@ export interface SuburbRef {
   name: string
   slug: string
   description: string
-  score: number
-  verdict: Verdict
+  /** Legacy field — will be removed as cities migrate to engine scoring. */
+  score?: number
+  /** Legacy field — will be removed as cities migrate to engine scoring. */
+  verdict?: Verdict
   rentRange: string
+  /**
+   * Engine factors for computing score/verdict without manual values.
+   * When provided, consumers should call deriveSuburbRef() to get the computed score.
+   * See docs/engine-migration.md.
+   */
+  factors?: LocationFactors
+}
+
+/**
+ * Given a SuburbRef seed with `factors`, compute score and verdict from the engine.
+ * Use this in migrated city hub pages instead of hardcoding score/verdict.
+ *
+ * @example
+ * const ref = deriveSuburbRef({
+ *   name: 'Fortitude Valley',
+ *   slug: 'fortitude-valley',
+ *   description: '...',
+ *   rentRange: '$4,000–$7,000/mo',
+ *   factors: { demandStrength: 8, rentPressure: 7, competitionDensity: 7, seasonalityRisk: 4, tourismDependency: 6 },
+ * })
+ * // ref.score → computed composite, ref.verdict → 'GO' | 'CAUTION' | 'RISKY'
+ */
+export function deriveSuburbRef(seed: Omit<SuburbRef, 'score' | 'verdict'> & { factors: LocationFactors }): SuburbRef & { score: number; verdict: Verdict } {
+  const model = computeLocationModel(seed.factors)
+  // Map engine 'RISKY' to legacy 'NO' so the returned type satisfies SuburbRef.verdict (Verdict)
+  const verdict: Verdict = model.verdict === 'RISKY' ? 'NO' : model.verdict
+  return {
+    ...seed,
+    score: model.compositeScore,
+    verdict,
+  }
 }
 
 export interface SuburbCategoryData {
