@@ -128,7 +128,7 @@ export default async function SuburbPage({ params }: Props) {
                 {data.name}
               </h1>
             </div>
-            <RiskBadge verdict={data.verdict} />
+            <RiskBadge verdict={data.verdict === 'RISKY' ? 'NO' : data.verdict} />
           </div>
 
           <p
