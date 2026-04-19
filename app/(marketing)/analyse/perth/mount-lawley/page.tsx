@@ -1,7 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { getPerthSuburb } from '@/lib/analyse-data/melbourne'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+
+function pScore(name: string): number { return getPerthSuburb(name)?.compositeScore ?? 0 }
+function pVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const v = getPerthSuburb(name)?.verdict
+  return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO'
+}
 
 const S = { brand: '#0891B2', brandLight: '#06B6D4', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0', amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A', red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA', muted: '#475569', border: '#E2E8F0', n50: '#FAFAF9', n100: '#F5F5F4', n900: '#1C1917', white: '#FFFFFF' }
 
@@ -63,16 +70,16 @@ function SuburbPoll({ suburb }: { suburb: string }) {
 }
 
 const nearby = [
-  { name: 'Subiaco', slug: 'subiaco', score: 82, verdict: 'GO' as const },
-  { name: 'Northbridge', slug: 'northbridge', score: 74, verdict: 'GO' as const },
-  { name: 'Morley', slug: 'morley', score: 70, verdict: 'GO' as const },
+  { name: 'Subiaco', slug: 'subiaco', score: pScore('Subiaco'), verdict: pVerdict('Subiaco') },
+  { name: 'Northbridge', slug: 'northbridge', score: pScore('Northbridge'), verdict: pVerdict('Northbridge') },
+  { name: 'Morley', slug: 'morley', score: pScore('Morley'), verdict: pVerdict('Morley') },
 ]
 
 const scoreChartData = [
-  { category: 'Foot Traffic', score: 87 },
-  { category: 'Demographics', score: 88 },
-  { category: 'Rent Viability', score: 76 },
-  { category: 'Competition Gap', score: 83 },
+  { category: 'Foot Traffic', value: 87 },
+  { category: 'Demographics', value: 88 },
+  { category: 'Rent Viability', value: 76 },
+  { category: 'Competition Gap', value: 83 },
 ]
 
 export default function MountLawley() {
@@ -131,7 +138,7 @@ export default function MountLawley() {
                   <XAxis dataKey="category" angle={-15} textAnchor="end" height={80} />
                   <YAxis domain={[0, 100]} />
                   <Tooltip cursor={{ fill: 'rgba(8,145,178,0.1)' }} />
-                  <Bar dataKey="score" fill={S.brand} radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="value" fill={S.brand} radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

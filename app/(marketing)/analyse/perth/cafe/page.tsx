@@ -5,6 +5,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getPerthSuburb } from '@/lib/analyse-data/melbourne'
 import {
  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
@@ -24,6 +25,16 @@ import {
 // }
 
 // ── Schema (injected inline since this is a client component) ─────────────────
+function getCafeScore(name: string): number {
+  return getPerthSuburb(name)?.cafe ?? 0
+}
+function getCafeVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getCafeScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
+
 const SCHEMAS = [
  {
     '@context': 'https://schema.org',
@@ -50,13 +61,13 @@ const SCHEMAS = [
 
 // ── Chart data ─────────────────────────────────────────────────────────────────
 const SUBURB_SCORES = [
-  { suburb: 'Subiaco',   score: 89, rent: 5350, traffic: 91, income: 105 },
-  { suburb: 'Leederville', score: 84, rent: 4000, traffic: 83, income: 88 },
-  { suburb: 'Mt Lawley',  score: 81, rent: 3750, traffic: 78, income: 95  },
-  { suburb: 'Northbridge', score: 72, rent: 4500, traffic: 88, income: 72 },
-  { suburb: 'Fremantle',  score: 61, rent: 4200, traffic: 74, income: 78  },
-  { suburb: 'Joondalup',  score: 41, rent: 3200, traffic: 55, income: 78  },
-  { suburb: 'Midland',   score: 38, rent: 2800, traffic: 42, income: 58  },
+  { suburb: 'Subiaco',   score: getCafeScore('Subiaco'), rent: 5350, traffic: 91, income: 105 },
+  { suburb: 'Leederville', score: getCafeScore('Leederville'), rent: 4000, traffic: 83, income: 88 },
+  { suburb: 'Mt Lawley',  score: getCafeScore('Mount Lawley'), rent: 3750, traffic: 78, income: 95  },
+  { suburb: 'Northbridge', score: getCafeScore('Northbridge'), rent: 4500, traffic: 88, income: 72 },
+  { suburb: 'Fremantle',  score: getCafeScore('Fremantle'), rent: 4200, traffic: 74, income: 78  },
+  { suburb: 'Joondalup',  score: getCafeScore('Joondalup'), rent: 3200, traffic: 55, income: 78  },
+  { suburb: 'Midland',   score: getCafeScore('Midland'), rent: 2800, traffic: 42, income: 58  },
 ]
 
 const RENT_VS_REVENUE = [
@@ -83,7 +94,7 @@ const POLL_OPTIONS = [
 // ── Suburb data ───────────────────────────────────────────────────────────────
 const TOP_SUBURBS = [
  {
-    rank: 1, name: 'Subiaco', postcode: '6008', score: 89, verdict: 'GO' as const,
+    rank: 1, name: 'Subiaco', postcode: '6008', score: getCafeScore('Subiaco'), verdict: 'GO' as const,
   income: '$105,000', rent: '$4,200–$6,500/mo', competition: '5 within 500m',
   footTraffic: 91, demographics: 88, rentFit: 82, competitionScore: 84,
     breakEven: '34/day', payback: '7 months', annualProfit: '$299,400',
@@ -97,7 +108,7 @@ const TOP_SUBURBS = [
   opportunity: 'Single-origin filter coffee and alternative milks are significantly underrepresented relative to Melbourne equivalents. Subiaco\'s demographic supports $8 filter coffees — a revenue-per-transaction uplift that compounds at scale.',
  },
   {
-    rank: 2, name: 'Leederville', postcode: '6007', score: 84, verdict: 'GO' as const,
+    rank: 2, name: 'Leederville', postcode: '6007', score: getCafeScore('Leederville'), verdict: 'GO' as const,
   income: '$88,000', rent: '$3,200–$4,800/mo', competition: '6 within 500m',
   footTraffic: 83, demographics: 80, rentFit: 87, competitionScore: 78,
     breakEven: '31/day', payback: '8 months', annualProfit: '$228,000',
@@ -111,7 +122,7 @@ const TOP_SUBURBS = [
   opportunity: 'Afternoon trade (2–5pm) is meaningfully underserved relative to the morning peak. A hospitality business with a strong afternoon food offering — cakes, toasties, specialty drinks — captures revenue that competitors leave uncontested.',
  },
   {
-    rank: 3, name: 'Mount Lawley', postcode: '6050', score: 81, verdict: 'GO' as const,
+    rank: 3, name: 'Mount Lawley', postcode: '6050', score: getCafeScore('Mount Lawley'), verdict: 'GO' as const,
   income: '$95,000', rent: '$3,000–$4,500/mo', competition: '4 within 500m',
   footTraffic: 78, demographics: 84, rentFit: 89, competitionScore: 82,
     breakEven: '29/day', payback: '9 months', annualProfit: '$204,000',
@@ -125,7 +136,7 @@ const TOP_SUBURBS = [
   opportunity: 'The first specialty coffee shop with a quality all-day menu in Mount Lawley has a clear run at market ownership. Once established, this position is very difficult for later entrants to displace.',
  },
   {
-    rank: 4, name: 'Northbridge', postcode: '6003', score: 72, verdict: 'GO' as const,
+    rank: 4, name: 'Northbridge', postcode: '6003', score: getCafeScore('Northbridge'), verdict: 'GO' as const,
   income: '$72,000', rent: '$3,500–$5,500/mo', competition: '9 within 500m',
   footTraffic: 88, demographics: 68, rentFit: 64, competitionScore: 62,
     breakEven: '42/day', payback: '13 months', annualProfit: '$138,000',
@@ -141,9 +152,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Joondalup', postcode: '6027', score: 41, verdict: 'NO' as const, reason: 'Oversaturated with established chains (The Coffee Club, Dome, Gloria Jean\'s). Independent operators cannot compete on volume, and the income demographic does not support premium pricing. Rent-to-revenue for new entrants typically exceeds 22%.' },
- { name: 'Midland', postcode: '6056', score: 38, verdict: 'NO' as const, reason: 'Commercial vacancy on Great Northern Highway exceeds 18% — a clear signal of foot traffic below the threshold for new hospitality entrants. A vacancy rate this high means the market has already rejected the economics of operating there.' },
- { name: 'Armadale', postcode: '6112', score: 29, verdict: 'NO' as const, reason: 'Median household income of $58,000 — 26% below Perth median — makes standard café price points a stretch purchase rather than a habitual one. At these income levels, customers default to supermarket coffee under any financial pressure. Not viable for independent espresso bar operators.' },
+  { name: 'Joondalup', postcode: '6027', score: getCafeScore('Joondalup'), verdict: 'NO' as const, reason: 'Oversaturated with established chains (The Coffee Club, Dome, Gloria Jean\'s). Independent operators cannot compete on volume, and the income demographic does not support premium pricing. Rent-to-revenue for new entrants typically exceeds 22%.' },
+ { name: 'Midland', postcode: '6056', score: getCafeScore('Midland'), verdict: 'NO' as const, reason: 'Commercial vacancy on Great Northern Highway exceeds 18% — a clear signal of foot traffic below the threshold for new hospitality entrants. A vacancy rate this high means the market has already rejected the economics of operating there.' },
+ { name: 'Armadale', postcode: '6112', score: getCafeScore('Armadale'), verdict: 'NO' as const, reason: 'Median household income of $58,000 — 26% below Perth median — makes standard café price points a stretch purchase rather than a habitual one. At these income levels, customers default to supermarket coffee under any financial pressure. Not viable for independent espresso bar operators.' },
 ]
 
 const S = {

@@ -6,10 +6,21 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getMelbourneSuburb } from '@/lib/analyse-data/melbourne'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis,
 } from 'recharts'
+
+function getRestaurantScore(name: string): number {
+  return getMelbourneSuburb(name)?.restaurant ?? 0
+}
+function getRestaurantVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getRestaurantScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 const SCHEMAS = [
@@ -58,12 +69,12 @@ const SCHEMAS = [
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const SUBURB_SCORES = [
-  { suburb: 'Fitzroy',     score: 87, rent: 6800,  traffic: 92, income: 92  },
-  { suburb: 'Collingwood', score: 83, rent: 5400,  traffic: 85, income: 86  },
-  { suburb: 'Brunswick',   score: 80, rent: 4500,  traffic: 83, income: 78  },
-  { suburb: 'Richmond',    score: 75, rent: 6900,  traffic: 81, income: 90  },
-  { suburb: 'South Yarra', score: 66, rent: 10500, traffic: 79, income: 112 },
-  { suburb: 'CBD',         score: 38, rent: 18000, traffic: 68, income: 98  },
+  { suburb: 'Fitzroy',     score: getRestaurantScore('Fitzroy'), rent: 6800,  traffic: 92, income: 92  },
+  { suburb: 'Collingwood', score: getRestaurantScore('Collingwood'), rent: 5400,  traffic: 85, income: 86  },
+  { suburb: 'Brunswick',   score: getRestaurantScore('Brunswick'), rent: 4500,  traffic: 83, income: 78  },
+  { suburb: 'Richmond',    score: getRestaurantScore('Richmond'), rent: 6900,  traffic: 81, income: 90  },
+  { suburb: 'South Yarra', score: getRestaurantScore('South Yarra'), rent: 10500, traffic: 79, income: 112 },
+  { suburb: 'Melbourne CBD', score: getRestaurantScore('Melbourne CBD'), rent: 18000, traffic: 68, income: 98  },
 ]
 
 const RENT_VS_REVENUE = [
@@ -87,7 +98,7 @@ const POLL_OPTIONS = [
 
 const SUBURBS = [
   {
-    rank: 1, name: 'Fitzroy', postcode: '3065', score: 87, verdict: 'GO' as const,
+    rank: 1, name: 'Fitzroy', postcode: '3065', score: getRestaurantScore('Fitzroy'), verdict: 'GO' as const,
     income: '$92,000', rent: '$5,800–$7,800/mo', competition: '10 within 500m',
     footTraffic: 92, demographics: 91, rentFit: 76, competitionScore: 78,
     breakEven: '38/day', payback: '8 months', annualProfit: '$268,000',
@@ -101,7 +112,7 @@ const SUBURBS = [
     opportunity: 'Natural wine and biodynamic dining is underrepresented relative to the demographic\'s stated preferences. A restaurant with a serious drinks program built around natural producers would face limited direct competition in the Brunswick Street precinct.',
   },
   {
-    rank: 2, name: 'Collingwood', postcode: '3066', score: 83, verdict: 'GO' as const,
+    rank: 2, name: 'Collingwood', postcode: '3066', score: getRestaurantScore('Collingwood'), verdict: 'GO' as const,
     income: '$86,000', rent: '$4,800–$6,200/mo', competition: '8 within 500m',
     footTraffic: 85, demographics: 86, rentFit: 82, competitionScore: 80,
     breakEven: '34/day', payback: '7 months', annualProfit: '$244,000',
@@ -114,7 +125,7 @@ const SUBURBS = [
     opportunity: 'Collingwood has no dominant modern Asian restaurant. The demographic — young professional, food-literate — has a strong appetite for quality Asian dining at accessible price points. This category gap is larger in Collingwood than in Fitzroy.',
   },
   {
-    rank: 3, name: 'Brunswick', postcode: '3056', score: 80, verdict: 'GO' as const,
+    rank: 3, name: 'Brunswick', postcode: '3056', score: getRestaurantScore('Brunswick'), verdict: 'GO' as const,
     income: '$78,000', rent: '$3,800–$5,200/mo', competition: '7 within 500m',
     footTraffic: 83, demographics: 80, rentFit: 88, competitionScore: 82,
     breakEven: '30/day', payback: '7 months', annualProfit: '$228,000',
@@ -127,7 +138,7 @@ const SUBURBS = [
     opportunity: 'Brunswick has limited quality Middle Eastern and Mediterranean dining relative to its demographic\'s cultural mix. An operator with genuine credentials in this cuisine would fill a genuine gap in the suburb\'s dining landscape.',
   },
   {
-    rank: 4, name: 'Richmond', postcode: '3121', score: 75, verdict: 'CAUTION' as const,
+    rank: 4, name: 'Richmond', postcode: '3121', score: getRestaurantScore('Richmond'), verdict: 'CAUTION' as const,
     income: '$90,000', rent: '$5,800–$7,500/mo', competition: '9 within 500m',
     footTraffic: 81, demographics: 84, rentFit: 70, competitionScore: 68,
     breakEven: '42/day', payback: '10 months', annualProfit: '$204,000',
@@ -140,7 +151,7 @@ const SUBURBS = [
     opportunity: 'Richmond has no dominant quality Southeast Asian restaurant. The income demographic and the suburb\'s multicultural dining history creates demand that is currently served by mid-quality operators. A well-executed Vietnamese or Thai concept with quality differentiation has a clear positioning gap.',
   },
   {
-    rank: 5, name: 'South Yarra', postcode: '3141', score: 66, verdict: 'CAUTION' as const,
+    rank: 5, name: 'South Yarra', postcode: '3141', score: getRestaurantScore('South Yarra'), verdict: 'CAUTION' as const,
     income: '$112,000', rent: '$9,000–$14,000/mo', competition: '13 within 500m',
     footTraffic: 79, demographics: 88, rentFit: 52, competitionScore: 56,
     breakEven: '58/day', payback: '13 months', annualProfit: '$182,000',

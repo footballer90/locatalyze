@@ -6,6 +6,17 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getMelbourneSuburb } from '@/lib/analyse-data/melbourne'
+
+function getCafeScore(name: string): number {
+  return getMelbourneSuburb(name)?.cafe ?? 0
+}
+function getCafeVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getCafeScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis,
@@ -39,12 +50,12 @@ const SCHEMAS = [
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const SUBURB_SCORES = [
-  { suburb: 'Fitzroy',     score: 88, rent: 5800, traffic: 92, income: 92  },
-  { suburb: 'Brunswick',   score: 83, rent: 4000, traffic: 85, income: 78  },
-  { suburb: 'Collingwood', score: 79, rent: 4900, traffic: 83, income: 85  },
-  { suburb: 'Richmond',    score: 74, rent: 6200, traffic: 80, income: 90  },
-  { suburb: 'South Yarra', score: 65, rent: 8800, traffic: 78, income: 112 },
-  { suburb: 'Melbourne CBD', score: 40, rent: 16000, traffic: 70, income: 98 },
+  { suburb: 'Fitzroy',     score: getCafeScore('Fitzroy'), rent: 5800, traffic: 92, income: 92  },
+  { suburb: 'Brunswick',   score: getCafeScore('Brunswick'), rent: 4000, traffic: 85, income: 78  },
+  { suburb: 'Collingwood', score: getCafeScore('Collingwood'), rent: 4900, traffic: 83, income: 85  },
+  { suburb: 'Richmond',    score: getCafeScore('Richmond'), rent: 6200, traffic: 80, income: 90  },
+  { suburb: 'South Yarra', score: getCafeScore('South Yarra'), rent: 8800, traffic: 78, income: 112 },
+  { suburb: 'Melbourne CBD', score: getCafeScore('Melbourne CBD'), rent: 16000, traffic: 70, income: 98 },
 ]
 
 const RENT_VS_REVENUE = [
@@ -68,7 +79,7 @@ const POLL_OPTIONS = [
 
 const TOP_SUBURBS = [
   {
-    rank: 1, name: 'Fitzroy', postcode: '3065', score: 88, verdict: 'GO' as const,
+    rank: 1, name: 'Fitzroy', postcode: '3065', score: getCafeScore('Fitzroy'), verdict: 'GO' as const,
     income: '$92,000', rent: '$4,800–$6,800/mo', competition: '11 within 500m',
     footTraffic: 92, demographics: 90, rentFit: 80, competitionScore: 78,
     breakEven: '36/day', payback: '8 months', annualProfit: '$276,000',
@@ -82,7 +93,7 @@ const TOP_SUBURBS = [
     opportunity: 'Natural wine and specialty non-alcoholic drinks are underrepresented relative to the demographic\'s stated preferences. Evening trade (5–9pm) is largely uncaptured by the existing coffee operators. A hybrid café/wine bar model targeting this gap would face minimal direct competition.',
   },
   {
-    rank: 2, name: 'Brunswick', postcode: '3056', score: 83, verdict: 'GO' as const,
+    rank: 2, name: 'Brunswick', postcode: '3056', score: getCafeScore('Brunswick'), verdict: 'GO' as const,
     income: '$78,000', rent: '$3,400–$4,800/mo', competition: '7 within 500m',
     footTraffic: 85, demographics: 82, rentFit: 88, competitionScore: 82,
     breakEven: '30/day', payback: '7 months', annualProfit: '$248,000',
@@ -96,7 +107,7 @@ const TOP_SUBURBS = [
     opportunity: 'Brunswick has no dominant third-wave roaster presence. The suburb\'s demographics would support a café that leads with sourcing story and brewing craft. Weekend brunch demand consistently exceeds supply — a quality operator with a genuine food offering has real upside.',
   },
   {
-    rank: 3, name: 'Collingwood', postcode: '3066', score: 79, verdict: 'GO' as const,
+    rank: 3, name: 'Collingwood', postcode: '3066', score: getCafeScore('Collingwood'), verdict: 'GO' as const,
     income: '$85,000', rent: '$4,400–$5,800/mo', competition: '8 within 500m',
     footTraffic: 83, demographics: 82, rentFit: 82, competitionScore: 76,
     breakEven: '33/day', payback: '8 months', annualProfit: '$224,000',
@@ -109,7 +120,7 @@ const TOP_SUBURBS = [
     opportunity: 'Collingwood has fewer dedicated breakfast-focused operators than Fitzroy. An all-day café with a strong morning menu competes less directly with the existing landscape, which skews toward espresso-bar-only formats.',
   },
   {
-    rank: 4, name: 'Richmond', postcode: '3121', score: 74, verdict: 'CAUTION' as const,
+    rank: 4, name: 'Richmond', postcode: '3121', score: getCafeScore('Richmond'), verdict: 'CAUTION' as const,
     income: '$90,000', rent: '$5,500–$7,200/mo', competition: '9 within 500m',
     footTraffic: 80, demographics: 80, rentFit: 70, competitionScore: 68,
     breakEven: '40/day', payback: '10 months', annualProfit: '$196,000',
@@ -122,7 +133,7 @@ const TOP_SUBURBS = [
     opportunity: 'The office population around the Epworth/Alfred hospital precinct creates a consistent Tuesday–Friday lunchtime demand that most inner-north cafés don\'t see. A café positioned toward the hospital catchment (quality, fast, reliable) serves a different customer than the weekend-brunch operator.',
   },
   {
-    rank: 5, name: 'South Yarra', postcode: '3141', score: 65, verdict: 'CAUTION' as const,
+    rank: 5, name: 'South Yarra', postcode: '3141', score: getCafeScore('South Yarra'), verdict: 'CAUTION' as const,
     income: '$112,000', rent: '$7,500–$11,000/mo', competition: '12 within 500m',
     footTraffic: 78, demographics: 85, rentFit: 55, competitionScore: 58,
     breakEven: '52/day', payback: '12 months', annualProfit: '$168,000',
