@@ -1,380 +1,421 @@
-import type { Metadata } from 'next'
+// app/(marketing)/analyse/adelaide/page.tsx
+// Adelaide city hub — server component, engine scores, FactorGrid directory
+
 import Link from 'next/link'
+import type { Metadata } from 'next'
+import { CityHero } from '@/components/analyse/CityHero'
+import { SuburbCard } from '@/components/analyse/SuburbCard'
+import { ComparisonTable } from '@/components/analyse/ComparisonTable'
+import { FAQSection } from '@/components/analyse/FAQSection'
+import { CTASection } from '@/components/analyse/CTASection'
+import { C } from '@/components/analyse/AnalyseTheme'
+import { FactorGrid } from '@/components/analyse/FactorGrid'
+import { getAdelaideSuburb, getAdelaideSuburbs } from '@/lib/analyse-data/adelaide'
+
+function aScore(slug: string): number {
+  return getAdelaideSuburb(slug)?.compositeScore ?? 0
+}
+function aVerdict(slug: string): 'GO' | 'CAUTION' | 'NO' {
+  const v = getAdelaideSuburb(slug)?.verdict
+  if (v === 'GO') return 'GO'
+  if (v === 'CAUTION') return 'CAUTION'
+  return 'NO'
+}
 
 export const metadata: Metadata = {
-  title: 'Best Suburbs to Open a Business in Adelaide 2026 | Locatalyze',
-  description: 'Discover the best and worst suburbs to open a business in Adelaide. Real data on rent, competition, demographics and demand — before you sign a lease.',
+  title: 'Best Suburbs to Open a Business in Adelaide — 2026 Location Guide',
+  description:
+    'Adelaide business location guide 2026. 22 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Adelaide suburb for your café, restaurant, retail or service business.',
   alternates: { canonical: 'https://www.locatalyze.com/analyse/adelaide' },
+  openGraph: {
+    title: 'Best Suburbs to Open a Business in Adelaide — 2026 Location Guide',
+    description: '22 Adelaide suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
+    url: 'https://www.locatalyze.com/analyse/adelaide',
+  },
 }
 
-const S = {
-  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
-  n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4', n400: '#A8A29E',
-  n500: '#78716C', n700: '#44403C', n800: '#292524', n900: '#1C1917',
-  white: '#FFFFFF', emerald: '#059669', emeraldBg: '#ECFDF5', emeraldBdr: '#A7F3D0',
-  amber: '#D97706', amberBg: '#FFFBEB', amberBdr: '#FDE68A',
-  red: '#DC2626', redBg: '#FEF2F2', redBdr: '#FECACA',
-  font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
+const COMPARISON_ROWS = [
+  { name: 'Norwood', score: aScore('norwood'), verdict: aVerdict('norwood'), rent: '$4,500–$8,500', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty café, boutique retail' },
+  { name: 'Prospect', score: aScore('prospect'), verdict: aVerdict('prospect'), rent: '$2,500–$4,500', footTraffic: 'High', bestFor: 'Independent café, casual dining, creative retail' },
+  { name: 'North Adelaide', score: aScore('north-adelaide'), verdict: aVerdict('north-adelaide'), rent: '$4,000–$7,500', footTraffic: 'High', bestFor: 'Restaurants, café, professional services' },
+  { name: 'Glenelg', score: aScore('glenelg'), verdict: aVerdict('glenelg'), rent: '$4,000–$7,000', footTraffic: 'High (seasonal)', bestFor: 'Hospitality, beach retail, tourism concepts' },
+  { name: 'Burnside', score: aScore('burnside'), verdict: aVerdict('burnside'), rent: '$4,000–$7,000', footTraffic: 'Medium-High', bestFor: 'Premium café, specialty retail, allied health' },
+  { name: 'Adelaide CBD', score: aScore('adelaide-cbd'), verdict: aVerdict('adelaide-cbd'), rent: '$8,000–$22,000', footTraffic: 'Very High', bestFor: 'Premium dining, high-volume hospitality' },
+  { name: 'Port Adelaide', score: aScore('port-adelaide'), verdict: aVerdict('port-adelaide'), rent: '$1,800–$3,500', footTraffic: 'Medium', bestFor: 'Creative concepts, café, casual dining' },
+  { name: 'Thebarton', score: aScore('thebarton'), verdict: aVerdict('thebarton'), rent: '$1,500–$3,000', footTraffic: 'Medium', bestFor: 'Brewery, creative, specialty food' },
+]
+
+const SUBURB_CATEGORIES = [
+  {
+    title: 'Premium Inner East — High Reward, High Entry',
+    description: "Adelaide's benchmark hospitality strips. Strong customer quality, but rents and competition demand an operator who knows exactly what they're building.",
+    suburbs: [
+      { name: 'Norwood', slug: 'norwood', description: "Adelaide's best independent strip. The Parade delivers the highest pedestrian density in SA outside the CBD.", score: aScore('norwood'), verdict: aVerdict('norwood'), rentRange: '$4,500–$8,500/mo' },
+      { name: 'North Adelaide', slug: 'north-adelaide', description: "O'Connell Street and Melbourne Street — the city's top restaurant precinct with strong AFL and event uplift.", score: aScore('north-adelaide'), verdict: aVerdict('north-adelaide'), rentRange: '$4,000–$7,500/mo' },
+      { name: 'Unley', slug: 'unley', description: 'Highest-income suburban strip. Consistent professional repeat trade, low seasonality.', score: aScore('unley'), verdict: aVerdict('unley'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Kent Town', slug: 'kent-town', description: 'CBD-adjacent at suburban rent. Captures professional lunch and Fringe festival spillover.', score: aScore('kent-town'), verdict: aVerdict('kent-town'), rentRange: '$3,500–$6,500/mo' },
+    ],
+  },
+  {
+    title: 'Growth Strips — Best Risk/Return',
+    description: "Suburbs where demand is proven but rents haven't fully caught up. The smart operator window is open but closing.",
+    suburbs: [
+      { name: 'Prospect', slug: 'prospect', description: "Adelaide's fastest-growing independent strip. Melbourne café culture at 50% of Norwood's rent.", score: aScore('prospect'), verdict: aVerdict('prospect'), rentRange: '$2,500–$4,500/mo' },
+      { name: 'Kensington', slug: 'kensington', description: 'Norwood-quality demographic at lower competition and lower rent. An underrated inner-east entry.', score: aScore('kensington'), verdict: aVerdict('kensington'), rentRange: '$3,000–$5,500/mo' },
+      { name: 'Hyde Park', slug: 'hyde-park', description: 'High-income residential, low seasonality. Strong repeat trade, moderate entry point.', score: aScore('hyde-park'), verdict: aVerdict('hyde-park'), rentRange: '$3,500–$6,000/mo' },
+      { name: 'Goodwood', slug: 'goodwood', description: 'Norwood-adjacent demographic at 35% lower rent. Loyal local base with growth trajectory.', score: aScore('goodwood'), verdict: aVerdict('goodwood'), rentRange: '$2,500–$4,500/mo' },
+      { name: 'Burnside', slug: 'burnside', description: "Adelaide's highest average income suburb. Underserved by quality independents — supply gap is real.", score: aScore('burnside'), verdict: aVerdict('burnside'), rentRange: '$4,000–$7,000/mo' },
+    ],
+  },
+  {
+    title: 'Beachside — Seasonal Strategy Required',
+    description: 'Strong peak-season revenue, genuine off-season risk. These markets reward operators with dual income streams: tourist peak plus local loyalty.',
+    suburbs: [
+      { name: 'Glenelg', slug: 'glenelg', description: "SA's top tourism precinct. Summer revenue is exceptional — winter requires a strong local repeat base.", score: aScore('glenelg'), verdict: aVerdict('glenelg'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Henley Beach', slug: 'henley-beach', description: 'More balanced than Glenelg — strong local residential reduces the winter cliff.', score: aScore('henley-beach'), verdict: aVerdict('henley-beach'), rentRange: '$3,000–$5,500/mo' },
+      { name: 'Semaphore', slug: 'semaphore', description: 'Community-first beachside market. Loyal locals moderate seasonal risk.', score: aScore('semaphore'), verdict: aVerdict('semaphore'), rentRange: '$2,000–$4,000/mo' },
+      { name: 'Glenelg North', slug: 'glenelg-north', description: 'Beachside residential at lower rent than Glenelg proper. Growing and underserved.', score: aScore('glenelg-north'), verdict: aVerdict('glenelg-north'), rentRange: '$2,800–$5,000/mo' },
+    ],
+  },
+  {
+    title: 'Emerging — Early-Mover Opportunity',
+    description: 'Gentrifying precincts where rents are low and first-mover advantage is still available.',
+    suburbs: [
+      { name: 'Bowden', slug: 'bowden', description: 'Urban renewal precinct. 1,800+ new dwellings, growing young professional population, below-market leases.', score: aScore('bowden'), verdict: aVerdict('bowden'), rentRange: '$2,000–$3,800/mo' },
+      { name: 'Thebarton', slug: 'thebarton', description: 'Creative and brewery precinct. Lowest inner-ring rents with a growing young professional demographic.', score: aScore('thebarton'), verdict: aVerdict('thebarton'), rentRange: '$1,500–$3,000/mo' },
+      { name: 'Port Adelaide', slug: 'port-adelaide', description: 'Gentrification wave underway. Heritage waterfront, lowest inner-ring rents, 3–5 year growth trajectory.', score: aScore('port-adelaide'), verdict: aVerdict('port-adelaide'), rentRange: '$1,800–$3,500/mo' },
+      { name: 'Mount Barker', slug: 'mount-barker', description: "Adelaide Hills' fastest-growing satellite. Professional demographics arriving ahead of hospitality supply.", score: aScore('mount-barker'), verdict: aVerdict('mount-barker'), rentRange: '$1,800–$3,500/mo' },
+    ],
+  },
+]
+
+const FAQS = [
+  {
+    question: 'What is the best suburb to open a café in Adelaide?',
+    answer: "Norwood (The Parade) is Adelaide's benchmark café market — the highest pedestrian density outside the CBD, a national track record of successful independents, and a customer demographic that spends consistently. The honest caveat: competition is elevated and rents have risen to $6,000–$9,000/month. The better value play for 2026 is Prospect Road, where Melbourne-calibre café demand exists at 50% of Norwood's rent.",
+  },
+  {
+    question: 'How do Adelaide commercial rents compare to Sydney and Melbourne?',
+    answer: "Adelaide rents are 40–60% lower than equivalent Sydney positions and 30–45% lower than Melbourne. A prime Norwood position at $7,000/month would cost $12,000–$15,000 in Fitzroy or Surry Hills. This lower entry cost is Adelaide's structural advantage for independent operators — break-even is achievable at materially lower revenue thresholds, reducing first-year failure risk significantly.",
+  },
+  {
+    question: 'Is Adelaide CBD worth considering for an independent restaurant or café?',
+    answer: "The Rundle Street precinct (East End) is genuinely viable for premium concepts — rent at $10,000–$18,000/month is expensive for Adelaide but 40% below comparable Sydney positions. The CBD's tourism draw (Fringe, WOMADelaide, arts festivals) adds revenue uplifts unavailable in suburban markets. For independent operators without premium pricing or high volume, suburban strips like Norwood or Prospect offer better risk-adjusted economics.",
+  },
+  {
+    question: 'What makes Prospect Road worth considering in 2026?',
+    answer: "Prospect Road is where the demographic curve and the rent curve have not yet met. A younger professional population with Melbourne-equivalent café expectations is living in a suburb where rents are still 50% below Norwood. Operators who entered in 2022–2024 are seeing the benefit; the window for below-market entry is closing but still open in 2026.",
+  },
+  {
+    question: 'Is Glenelg a good location for a restaurant or café?',
+    answer: "Glenelg is an excellent location for operators who correctly model the seasonality. Summer revenue (November–March) can be 40–60% above the annual average. The failure mode is operators who project summer revenue across 12 months — winter softness from May to August requires a strong local customer base to sustain.",
+  },
+  {
+    question: 'Which Adelaide suburbs are underrated for business in 2026?',
+    answer: "Three markets consistently outperform their reputation: Kensington (Norwood demographic at lower rent and lower competition), Goodwood (inner-south loyal residential base at 35% below Norwood pricing), and Burnside (Adelaide's highest household income suburb with genuine supply gaps for quality independents).",
+  },
+  {
+    question: 'What is the outlook for Port Adelaide and Thebarton?',
+    answer: "Both are genuine early-mover opportunities with 3–5 year growth trajectories. Port Adelaide's Heritage Wharf precinct and government investment are bringing new residential density to a formerly commercial-only suburb. Thebarton's creative and brewery precinct is attracting a young professional demographic. In both cases, rents are among the lowest in the inner ring — the first-mover window is open but not permanent.",
+  },
+]
+
+const SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
 }
 
-export default function AdelaideAnalysePage() {
+function AdelaideFactorDirectory() {
+  const suburbs = getAdelaideSuburbs().slice().sort((a, b) => b.compositeScore - a.compositeScore)
   return (
-    <div style={{ fontFamily: S.font, background: S.n50, color: S.n900, minHeight: '100vh' }}>
-      <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        h1,h2,h3 { letter-spacing: -0.03em; line-height: 1.25; }
-        p { line-height: 1.75; }
-        @media (max-width: 768px) {
-          .two-col { flex-direction: column !important; }
-          .hide-mobile { display: none !important; }
-          .full-mobile { width: 100% !important; }
-        }
-      `}</style>
-{/* HERO */}
-      <div style={{ background: S.n900, padding: '64px 32px', textAlign: 'center' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(15,118,110,0.2)', border: '1px solid rgba(20,184,166,0.3)', borderRadius: 20, padding: '4px 14px', fontSize: 11, fontWeight: 700, color: S.brandLight, marginBottom: 20, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          Adelaide Location Intelligence
-        </div>
-        <h1 style={{ fontSize: 40, fontWeight: 900, color: '#F8FAFC', maxWidth: 700, margin: '0 auto 16px' }}>
-          Best Suburbs to Open a Business in Adelaide
-        </h1>
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', maxWidth: 560, margin: '0 auto 32px', lineHeight: 1.7 }}>
-          Most location decisions in Adelaide are made on gut feel. This guide uses competitor density, demographics, and rent benchmarks to show you where the real opportunities are — and where to avoid.
-        </p>
-        <Link href="/auth/signup" style={{ display: 'inline-block', background: S.brand, color: S.white, borderRadius: 12, padding: '14px 32px', fontSize: 15, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 20px rgba(15,118,110,0.65)' }}>
-          Analyse your Adelaide location →
-        </Link>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>Free report · No credit card · Results in ~90 seconds</p>
-      </div>
-
-      {/* MAIN CONTENT */}
-      <div style={{ maxWidth: 820, margin: '0 auto', padding: '48px 24px 80px' }}>
-
-        {/* INTRO */}
-        <section style={{ marginBottom: 48 }}>
-          <p style={{ fontSize: 16, color: S.n700, marginBottom: 16 }}>Adelaide is consistently underestimated by operators who benchmark it against Sydney or Melbourne. The city has a different commercial rhythm — lower rents, a genuinely loyal local customer base, and a food and beverage culture that regularly produces nationally recognised businesses from relatively modest beginnings.</p>
-          <p style={{ fontSize: 16, color: S.n700, marginBottom: 16 }}>The challenge in Adelaide is not finding affordable rent. The challenge is identifying which of the affordable locations actually has the customer density and spending power to sustain a viable business. The gap between a suburb that looks good on paper and one that actually delivers the customer counts you need can be significant.</p>
-          <p style={{ fontSize: 16, color: S.n700 }}>This guide focuses on where the demand signals are real, where the competition has not yet saturated the market, and which areas are genuinely worth committing to in 2026.</p>
-        </section>
-
-        {/* MAP PLACEHOLDER */}
-        <div style={{ background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 16, height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 48 }}>
-          <div style={{ textAlign: 'center' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={S.n400} strokeWidth="1.5" style={{ marginBottom: 8 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <p style={{ fontSize: 13, color: S.n400 }}>Adelaide suburb map</p>
-          </div>
-        </div>
-
-        {/* BEST SUBURBS */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Best Suburbs in Adelaide for New Businesses</h2>
-          <p style={{ fontSize: 15, color: S.n500, marginBottom: 32 }}>These areas show the strongest combination of demand, manageable competition, and viable rent levels.</p>
-          
-          <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '24px 28px', marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suburb 1</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginTop: 4 }}>Norwood</h3>
-              </div>
-              <span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 12 }}>Recommended</span>
-            </div>
-            <p style={{ fontSize: 14, color: S.n700, marginBottom: 12, lineHeight: 1.7 }}>The Parade in Norwood is one of Adelaide's most reliable commercial corridors. The demographic is affluent, spending patterns are strong, and the strip has maintained consistent occupancy rates even during broader economic softness. Competition is real but the market is not saturated — quality operators consistently find space to build a profitable business.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Competition</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Medium</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Rent Level</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>$65–$80/m²</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Demand</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>High</p>
-              </div>
-            </div>
-          </div>
-          <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '24px 28px', marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suburb 2</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginTop: 4 }}>Unley</h3>
-              </div>
-              <span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 12 }}>Recommended</span>
-            </div>
-            <p style={{ fontSize: 14, color: S.n700, marginBottom: 12, lineHeight: 1.7 }}>Unley Road carries a demographic that is significantly wealthier than its understated appearance suggests. The customer base is loyal, the repeat visit rate is high, and the commercial rents have not moved as aggressively as comparable strips in Sydney or Melbourne. For businesses targeting the 35–60 age bracket with above-average household income, Unley is consistently strong.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Competition</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Low–Medium</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Rent Level</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>$55–$70/m²</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Demand</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Strong</p>
-              </div>
-            </div>
-          </div>
-          <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '24px 28px', marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suburb 3</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginTop: 4 }}>Prospect</h3>
-              </div>
-              <span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 12 }}>Recommended</span>
-            </div>
-            <p style={{ fontSize: 14, color: S.n700, marginBottom: 12, lineHeight: 1.7 }}>Prospect Road has been one of Adelaide's genuine success stories over the past five years. A deliberate effort by the local council to attract independent businesses, combined with a demographic shift toward younger, higher-income residents, has created a strip with real commercial momentum. Rents remain affordable relative to the customer quality.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Competition</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Low</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Rent Level</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>$50–$65/m²</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Demand</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Rising</p>
-              </div>
-            </div>
-          </div>
-          <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '24px 28px', marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Suburb 4</span>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: S.n900, marginTop: 4 }}>Glenelg</h3>
-              </div>
-              <span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 12 }}>Recommended</span>
-            </div>
-            <p style={{ fontSize: 14, color: S.n700, marginBottom: 12, lineHeight: 1.7 }}>Glenelg's beachside position creates strong seasonal and weekend demand, but operators need to model the mid-week winter trough carefully. The tourist component of foot traffic has lower conversion rates than the resident base. For businesses that can capture both audiences with an appropriate offering, Glenelg remains a strong location.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Competition</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Medium</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Rent Level</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>$60–$80/m²</p>
-              </div>
-              <div style={{ background: S.n50, borderRadius: 8, padding: '8px 12px' }}>
-                <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>Demand</p>
-                <p style={{ fontSize: 13, fontWeight: 700, color: S.n800 }}>Seasonal</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* MID CTA */}
-        <div style={{ background: `linear-gradient(135deg,${S.brand},${S.brandLight})`, borderRadius: 16, padding: '32px', marginBottom: 56, textAlign: 'center' }}>
-          <h3 style={{ fontSize: 22, fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>Not sure which suburb is right for you?</h3>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>Enter your exact address and get a full GO / CAUTION / NO verdict in about 90 seconds.</p>
-          <Link href="/auth/signup" style={{ display: 'inline-block', background: S.white, color: S.brand, borderRadius: 10, padding: '12px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
-            Run a free location analysis →
-          </Link>
-        </div>
-
-        {/* HIDDEN GEMS */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Underrated Areas Most Business Owners Overlook</h2>
-          <p style={{ fontSize: 15, color: S.n500, marginBottom: 24 }}>These suburbs rarely appear in "best of" lists, but the numbers often tell a different story.</p>
-          
-          <div style={{ borderLeft: `3px solid ${S.brand}`, paddingLeft: 20, marginBottom: 24 }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: S.n900, marginBottom: 6 }}>Goodwood</h3>
-            <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Goodwood Road is significantly underrated in operator conversations. The residential density is solid, the demographic skews toward families and professionals with genuine discretionary spend, and the commercial strip has not attracted the level of competition that comparable areas in other cities would generate. Rents are among the most viable in inner Adelaide.</p>
-          </div>
-          <div style={{ borderLeft: `3px solid ${S.brand}`, paddingLeft: 20, marginBottom: 24 }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: S.n900, marginBottom: 6 }}>Bowden</h3>
-            <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Bowden is an urban renewal project that has genuinely delivered. The residential component is nearly complete, the demographic profile is exactly what most café and specialty retail operators want — young professionals, design-aware, high café spend — and the commercial tenancies are still at pricing that reflects the area's transition rather than its destination status.</p>
-          </div>
-        </section>
-
-        {/* COMPARISON TABLE */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 24 }}>Suburb Comparison at a Glance</h2>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: S.n900 }}>
-                  {['Suburb','Rent','Competition','Demand','Risk'].map(h => (
-                    <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: 'rgba(255,255,255,0.7)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
+    <div style={{ display: 'grid', gap: '20px' }}>
+      {suburbs.map((s) => {
+        const verdictColor = s.verdict === 'GO' ? C.emerald : s.verdict === 'CAUTION' ? C.amber : C.red
+        const verdictBg = s.verdict === 'GO' ? C.emeraldBg : s.verdict === 'CAUTION' ? C.amberBg : C.redBg
+        const verdictBdr = s.verdict === 'GO' ? C.emeraldBdr : s.verdict === 'CAUTION' ? C.amberBdr : C.redBdr
+        return (
+          <Link key={s.slug} href={`/analyse/adelaide/${s.slug}`} style={{ textDecoration: 'none' }}>
+            <div style={{ backgroundColor: C.white, border: `1px solid ${C.border}`, borderRadius: '14px', padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: C.n900, margin: 0 }}>{s.name}</h3>
+                <span style={{ fontSize: '11px', fontWeight: 800, padding: '3px 10px', borderRadius: '999px', backgroundColor: verdictBg, color: verdictColor, border: `1px solid ${verdictBdr}`, letterSpacing: '0.05em' }}>
+                  {s.verdict === 'RISKY' ? 'NO' : s.verdict}
+                </span>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {[{ label: 'Café', value: s.cafe }, { label: 'Restaurant', value: s.restaurant }, { label: 'Retail', value: s.retail }].map(({ label, value }) => (
+                    <div key={label} style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>{label}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 800, color: C.brand }}>{value}</div>
+                    </div>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ background: S.white, borderBottom: `1px solid ${S.n100}` }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: S.n900 }}>Norwood</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>$65–80/m²</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Medium</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>High</td>
-                  <td style={{ padding: '12px 16px' }}><span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>Low</span></td>
-                </tr><tr style={{ background: S.n50, borderBottom: `1px solid ${S.n100}` }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: S.n900 }}>Prospect</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>$50–65/m²</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Low</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Rising</td>
-                  <td style={{ padding: '12px 16px' }}><span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>Low</span></td>
-                </tr><tr style={{ background: S.white, borderBottom: `1px solid ${S.n100}` }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: S.n900 }}>Unley</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>$55–70/m²</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Low–Med</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Strong</td>
-                  <td style={{ padding: '12px 16px' }}><span style={{ background: S.emeraldBg, color: S.emerald, border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>Low</span></td>
-                </tr><tr style={{ background: S.n50, borderBottom: `1px solid ${S.n100}` }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: S.n900 }}>Glenelg</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>$60–80/m²</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Medium</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Seasonal</td>
-                  <td style={{ padding: '12px 16px' }}><span style={{ background: S.amberBg, color: S.amber, border: `1px solid ${S.amberBdr}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>Medium</span></td>
-                </tr><tr style={{ background: S.white, borderBottom: `1px solid ${S.n100}` }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: S.n900 }}>Gouger Street</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>$70–90/m²</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>High</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Variable</td>
-                  <td style={{ padding: '12px 16px' }}><span style={{ background: S.amberBg, color: S.amber, border: `1px solid ${S.amberBdr}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>Medium</span></td>
-                </tr><tr style={{ background: S.n50, borderBottom: `1px solid ${S.n100}` }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: S.n900 }}>Rundle Mall</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>$100–140/m²</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Very High</td>
-                  <td style={{ padding: '12px 16px', color: S.n700 }}>Transient</td>
-                  <td style={{ padding: '12px 16px' }}><span style={{ background: S.redBg, color: S.red, border: `1px solid ${S.redBdr}`, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700 }}>High</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* HIGH RISK AREAS */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Areas to Approach with Caution</h2>
-          <p style={{ fontSize: 15, color: S.n500, marginBottom: 24 }}>These are not necessarily bad suburbs — but the conditions make it harder to build a viable business from day one.</p>
-          
-          <div style={{ background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 12, padding: '16px 20px', marginBottom: 12 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: S.red, marginBottom: 4 }}>Rundle Mall</h3>
-            <p style={{ fontSize: 13, color: '#7f1d1d', lineHeight: 1.7 }}>Rundle Mall's high foot traffic masks a challenging commercial environment for independent operators. Rents are structured for major national retailers, the lease terms are demanding, and the tourist and transient visitor component of traffic does not translate to the repeat business that independent operators need to build sustainable revenue.</p>
-          </div>
-          <div style={{ background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 12, padding: '16px 20px', marginBottom: 12 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: S.red, marginBottom: 4 }}>Gouger Street</h3>
-            <p style={{ fontSize: 13, color: '#7f1d1d', lineHeight: 1.7 }}>Gouger Street has a strong food and dining reputation, but competition density is extremely high and the market is largely price-sensitive. New operators entering this corridor face the dual challenge of high competition and a customer expectation of modest pricing that makes it difficult to build margins that justify the rent.</p>
-          </div>
-        </section>
-
-        {/* CASE STUDY */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Real Scenario: Two Locations, Very Different Outcomes</h2>
-          <p style={{ fontSize: 15, color: S.n500, marginBottom: 24 }}>Same business type, same budget — but the suburb makes all the difference.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="two-col">
-            <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 14, padding: '20px 22px' }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Location A — Stronger position</span>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#065f46', margin: '8px 0 10px' }}>Prospect — Prospect Road</h3>
-              <p style={{ fontSize: 13, color: '#064e3b', lineHeight: 1.7 }}>Monthly rent $4,200 for 70m². Competitor count within 500m: 3. Strong residential density with a demographic actively seeking quality independent businesses. Break-even at 26 customers per day. Council actively markets the strip, which provides marketing leverage a new business cannot easily replicate independently.</p>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Composite</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>{s.compositeScore}</div>
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '0 0 14px 0', maxWidth: '760px' }}>{s.why[0]}</p>
+              <FactorGrid factors={s.locationFactors} />
             </div>
-            <div style={{ background: S.redBg, border: `1.5px solid ${S.redBdr}`, borderRadius: 14, padding: '20px 22px' }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: S.red, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Location B — Higher risk</span>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#7f1d1d', margin: '8px 0 10px' }}>Rundle Mall</h3>
-              <p style={{ fontSize: 13, color: '#7f1d1d', lineHeight: 1.7 }}>Monthly rent $9,800 for similar 70m². Foot traffic is very high but dominated by transit and tourist visitors with low conversion. Competitor count within 500m: 24. Break-even requires 62 customers per day. The lease terms for mall tenancies also typically include turnover rent clauses that reduce financial certainty.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* TIPS */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 24 }}>What to Check Before You Sign a Lease in Adelaide</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 800, color: S.brand }}>1</div>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7, paddingTop: 4 }}>Adelaide's dining culture tends toward earlier evenings than eastern states. Understand the specific suburb's trading window before committing to a model that depends on late dinner service.</p>
-            </div>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 800, color: S.brand }}>2</div>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7, paddingTop: 4 }}>The city's flat geography means cycling is common. Locations with secure bicycle parking consistently report higher daytime foot traffic than the street appearance would suggest.</p>
-            </div>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 800, color: S.brand }}>3</div>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7, paddingTop: 4 }}>Festival season creates significant trading spikes in certain corridors. These spikes can be useful for cash flow but should not be factored into baseline revenue projections.</p>
-            </div>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 800, color: S.brand }}>4</div>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7, paddingTop: 4 }}>Adelaide landlords are generally more negotiable than their eastern states counterparts. Rent-free periods of 2–3 months for fit-out are reasonable to request on most commercial tenancies.</p>
-            </div>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 800, color: S.brand }}>5</div>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7, paddingTop: 4 }}>Check the specific council's position on outdoor dining. Some inner-suburb councils have been particularly supportive of alfresco permits, which materially affects the viable seating capacity of a hospitality business.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* POLL */}
-        <section style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '28px', marginBottom: 56 }}>
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: S.n900, marginBottom: 6 }}>Where would you open your business in Adelaide?</h3>
-          <p style={{ fontSize: 13, color: S.n400, marginBottom: 20 }}>Community poll — results update in real time</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            
-            <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, color: S.n800, fontWeight: 500 }}>Norwood</span>
-              <span style={{ fontSize: 12, color: S.n400 }}>34%</span>
-            </div>
-            <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, color: S.n800, fontWeight: 500 }}>Prospect</span>
-              <span style={{ fontSize: 12, color: S.n400 }}>26%</span>
-            </div>
-            <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, color: S.n800, fontWeight: 500 }}>Unley</span>
-              <span style={{ fontSize: 12, color: S.n400 }}>20%</span>
-            </div>
-            <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, color: S.n800, fontWeight: 500 }}>Glenelg</span>
-              <span style={{ fontSize: 12, color: S.n400 }}>13%</span>
-            </div>
-            <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, color: S.n800, fontWeight: 500 }}>Other suburb</span>
-              <span style={{ fontSize: 12, color: S.n400 }}>7%</span>
-            </div>
-          </div>
-          <p style={{ fontSize: 11, color: S.n400, marginTop: 12 }}>Data is illustrative. Run a free analysis to get real numbers for your location.</p>
-        </section>
-
-        {/* FAQ */}
-        <section style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: S.n900, marginBottom: 24 }}>Frequently Asked Questions</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            
-            <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>Is Adelaide a good city to start a small business?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Adelaide has a genuine case for being Australia's best city for independent business operators. Rents are lower than eastern states equivalents, the customer base is unusually loyal, and the competitive environment is less saturated. The challenge is identifying locations with sufficient customer density to support your financial model.</p>
-            </div>
-            <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>What are the best suburbs in Adelaide for a café or restaurant?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Norwood, Prospect, and Unley consistently show the strongest combination of demographics, rent viability, and customer loyalty. Goodwood is increasingly worth considering for operators targeting the family and professional demographic.</p>
-            </div>
-            <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>How does Locatalyze work for Adelaide locations?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Locatalyze analyses competitor density within 500m using Google Maps and Geoapify data, pulls ABS 2021 Census demographics for the SA2 region, and builds a financial model from your submitted rent and business type. The output is a GO, CAUTION, or NO verdict with a full score breakdown.</p>
-            </div>
-            <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '18px 22px' }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 6 }}>What is average commercial rent in Adelaide?</h3>
-              <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.7 }}>Adelaide commercial rents typically range from $45–$65/m² in inner suburbs like Prospect and Goodwood, to $65–$85/m² in premium strips like Norwood and Unley. These are significantly below Melbourne and Sydney equivalents for comparable demographic profiles.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* FINAL CTA */}
-        <section style={{ background: S.n900, borderRadius: 20, padding: '48px 32px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 900, color: '#F8FAFC', marginBottom: 12 }}>Ready to analyse your exact Adelaide location?</h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', marginBottom: 28, maxWidth: 480, margin: '0 auto 28px' }}>
-            Stop guessing. Get a full GO / CAUTION / NO verdict with competitor data, demographics, and a 3-year financial model — in about 90 seconds.
-          </p>
-          <Link href="/auth/signup" style={{ display: 'inline-block', background: S.brand, color: S.white, borderRadius: 12, padding: '14px 36px', fontSize: 15, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 20px rgba(15,118,110,0.4)' }}>
-            Analyse your location free →
           </Link>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 12 }}>No credit card · Takes ~90 seconds · Full financial model included</p>
-        </section>
+        )
+      })}
+    </div>
+  )
+}
 
+export default function AdelaidePage() {
+  return (
+    <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
+
+      <CityHero
+        cityName="Adelaide"
+        citySlug="adelaide"
+        tagline="Lower rents, loyal locals, and an underrated food culture. Adelaide rewards operators who read the market correctly — and punishes those who don't understand its seasonality."
+        statChips={[
+          { text: '22 suburbs scored — inner east to beachside to outer growth' },
+          { text: "Norwood: Adelaide's benchmark independent strip" },
+          { text: 'Rents 40–60% below Sydney equivalents' },
+        ]}
+      />
+
+      <div style={{ backgroundColor: C.amberBg, borderBottom: `1px solid ${C.amberBdr}`, padding: '12px 24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <p style={{ fontSize: '13px', color: C.amber, margin: 0 }}>
+            <strong>Methodology:</strong> Scores based on foot traffic density, demographic income distribution, commercial rent viability, competitive density, and accessibility. Data sourced from ABS 2024, REISA Q1 2026, JLL Adelaide, and Locatalyze proprietary foot traffic analysis.
+          </p>
+        </div>
       </div>
+
+      <nav style={{ backgroundColor: C.white, borderBottom: `1px solid ${C.border}`, padding: '10px 24px', overflowX: 'auto' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '6px', flexWrap: 'nowrap', alignItems: 'center' }}>
+          {[
+            { label: 'Top Suburbs', href: '#top-suburbs' },
+            { label: 'By Business Type', href: '#by-type' },
+            { label: 'Suburb Directory', href: '#suburbs' },
+            { label: 'Comparisons', href: '#comparisons' },
+            { label: 'High-Risk Zones', href: '#high-risk' },
+            { label: 'Factor Breakdown', href: '#factor-directory' },
+            { label: 'FAQ', href: '#faq' },
+          ].map((link) => (
+            <a key={link.href} href={link.href} style={{ fontSize: '13px', fontWeight: 600, color: C.n700, textDecoration: 'none', padding: '6px 14px', borderRadius: '5px', backgroundColor: C.n50, border: `1px solid ${C.border}`, whiteSpace: 'nowrap' }}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
+      <section style={{ padding: '40px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+            {[
+              { value: '$108K', label: 'Highest median household income in Adelaide — Burnside', source: 'ABS 2024' },
+              { value: '40%', label: 'Lower commercial rents vs Sydney inner ring', source: 'JLL Adelaide Q1 2026' },
+              { value: '900K+', label: 'Annual visitors to Adelaide Fringe — largest arts festival in Southern Hemisphere', source: 'Adelaide Fringe 2025' },
+              { value: '22%', label: 'Population growth in Mount Barker since 2016', source: 'ABS Census 2024' },
+            ].map((s) => (
+              <div key={s.value} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '12px', border: `1px solid ${C.border}`, textAlign: 'center' }}>
+                <div style={{ fontSize: '30px', fontWeight: 800, color: C.brand, marginBottom: '8px' }}>{s.value}</div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: C.n800, marginBottom: '6px', lineHeight: '1.4' }}>{s.label}</div>
+                <div style={{ fontSize: '11px', color: C.muted }}>{s.source}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '56px 24px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '28px' }}>Adelaide Business Landscape — 2026</h2>
+          <div style={{ display: 'grid', gap: '22px' }}>
+            {[
+              "Adelaide is the most underestimated food and beverage market in Australia. The city has produced nationally recognised hospitality businesses — Africola, Peel St, Press, Hentley Farm — from a metropolitan population of 1.4 million, at commercial rents that are 40–60% lower than Sydney equivalents. This cost structure creates a more forgiving environment for independent operators: break-even is achievable at lower revenue thresholds, first-year failures occur less frequently, and operators who execute well build sustainable businesses rather than grinding against rent.",
+              "The inner east is where Adelaide's café and dining culture concentrates. Norwood's The Parade, Unley's King William Road, North Adelaide's O'Connell and Melbourne Streets, and the emerging Prospect Road corridor all deliver professional demographics with above-average hospitality spend. These strips are not oversaturated in the Sydney or Melbourne sense — a quality independent concept can still find a viable position without fighting through 400 competitors for the same customer.",
+              "The beachside market is Adelaide's most nuanced. Glenelg, Henley Beach, and Semaphore all deliver strong peak-season revenue that attracts operators who then underestimate the off-season. The operators who succeed in these markets are not those who capture the summer wave — they're those who build genuine local community loyalty that sustains trade through the cooler months.",
+              "The emerging opportunity for 2026 is in the gentrifying precincts: Bowden, Thebarton, Port Adelaide, and Prospect Road all have the demand trajectory without the rent trajectory having fully caught up. First-mover operators in these precincts are locking in leases that will look underpriced in 3–5 years as demographics mature.",
+            ].map((para, i) => (
+              <p key={i} style={{ fontSize: '16px', lineHeight: '1.8', color: C.n800, margin: 0 }}>{para}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="by-type" style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Location Strategy by Business Type</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {[
+              { type: 'Cafés & Specialty Coffee', insight: "Norwood and Prospect are the two ends of the opportunity spectrum — Norwood for operators who want the established market, Prospect for those who want the growth market. Unley and Hyde Park are the underrated mid-tier plays: professional demographics, loyal repeat customers, lower competition than Norwood.", best: ['Norwood', 'Prospect', 'Unley'] },
+              { type: 'Full-Service Restaurants', insight: "North Adelaide (O'Connell/Melbourne Street) is Adelaide's primary restaurant precinct — event-night trade from Adelaide Oval and the CBD adds meaningful revenue uplift. Norwood's The Parade works for quality-casual dining.", best: ['North Adelaide', 'Norwood', 'Adelaide CBD'] },
+              { type: 'Retail (Independent)', insight: "Burnside Village and the Norwood strip are Adelaide's strongest independent retail precincts by household income. Prospect is the growth-stage retail play. Glenelg works for lifestyle retail with a tourist uplift — but seasonal planning is essential.", best: ['Burnside', 'Norwood', 'Prospect'] },
+              { type: 'Fitness & Wellness', insight: 'Allied health and boutique fitness follows high-income residential. Burnside, Unley, and North Adelaide all have household income demographics that sustain premium wellness spend. Hyde Park is the underrated play — strong demographics at lower rent.', best: ['Burnside', 'Unley', 'Hyde Park'] },
+              { type: 'Professional Services', insight: 'Professional services follow corporate concentration — the Adelaide CBD, North Adelaide professional firms on Melbourne Street, and the Norwood small-business cluster are the three primary markets.', best: ['Adelaide CBD', 'North Adelaide', 'Norwood'] },
+              { type: 'Creative & Hospitality Concepts', insight: "Thebarton's brewery precinct, Port Adelaide's Heritage Wharf, and Bowden's urban renewal zone are the three markets where emerging creative hospitality concepts find affordable entry and a receptive early-adopter demographic.", best: ['Thebarton', 'Bowden', 'Port Adelaide'] },
+            ].map((bt) => (
+              <div key={bt.type} style={{ padding: '20px', backgroundColor: C.white, borderRadius: '10px', border: `1px solid ${C.border}` }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: C.brand, marginBottom: '8px' }}>{bt.type}</h3>
+                <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '0 0 10px' }}>{bt.insight}</p>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {bt.best.map((s) => (
+                    <span key={s} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', backgroundColor: C.n100, borderRadius: '4px', color: C.n700 }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="top-suburbs" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '32px', fontWeight: 800, color: C.n900, marginBottom: '12px', lineHeight: '1.2' }}>Top Adelaide Suburbs to Open a Business (2026)</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px', maxWidth: '760px' }}>Ranked by overall viability score across foot traffic, demographics, rent economics, competition gap, and growth trajectory.</p>
+          <div style={{ display: 'grid', gap: '16px' }}>
+            {[
+              { rank: 1, name: 'Norwood', slug: 'norwood', verdict: aVerdict('norwood'), score: aScore('norwood'), rentFrom: '$4,500/mo', body: "The Parade is the clearest quality signal in South Australian hospitality — 200+ independents, a track record of nationally recognised operators, and a customer demographic that genuinely supports premium pricing. Differentiated concepts thrive; generic ones are outcompeted. Rent is elevated for Adelaide but 45% below a comparable Surry Hills or Fitzroy position." },
+              { rank: 2, name: 'Prospect', slug: 'prospect', verdict: aVerdict('prospect'), score: aScore('prospect'), rentFrom: '$2,500/mo', body: "The rent-to-demand ratio on Prospect Road is the best in Adelaide in 2026. A professional demographic with Melbourne café habits is living in a suburb where rents are still half of Norwood. The window for below-market entry is closing — Prospect rents rose 25% from 2022–2025 — but operators entering now capture better conditions than in two years." },
+              { rank: 3, name: 'Kensington', slug: 'kensington', verdict: aVerdict('kensington'), score: aScore('kensington'), rentFrom: '$3,000/mo', body: "Kensington sits in Norwood's shadow in terms of operator attention, despite sharing its demographic. The Parade corridor east of the main Norwood strip has fewer than half the competitors at 30% lower rent — a genuine gap for operators who want Norwood-quality customers without Norwood-level competition." },
+              { rank: 4, name: 'North Adelaide', slug: 'north-adelaide', verdict: aVerdict('north-adelaide'), score: aScore('north-adelaide'), rentFrom: '$4,000/mo', body: "O'Connell Street is Adelaide's primary restaurant corridor with strong AFL and cricket event uplift from Adelaide Oval. Melbourne Street serves a professional lunch and dinner market with above-average spend. Entry requires a clearly differentiated concept given the established incumbents." },
+              { rank: 5, name: 'Kent Town', slug: 'kent-town', verdict: aVerdict('kent-town'), score: aScore('kent-town'), rentFrom: '$3,500/mo', body: "Rundle Street East and the Kent Town corridor combine CBD adjacency with suburban rent. Professional lunch trade from the CBD and Fringe festival spillover (February–March) are consistent revenue drivers. At $5,000/month, a position here captures inner-city foot traffic at a fraction of CBD rent." },
+              { rank: 6, name: 'Unley', slug: 'unley', verdict: aVerdict('unley'), score: aScore('unley'), rentFrom: '$4,000/mo', body: "King William Road's highest-income suburban strip. The Unley demographic spends more per café visit than any comparable suburban strip in Adelaide. Works exceptionally well for specialty coffee and quality-casual; less suitable for high-volume value concepts." },
+              { rank: 7, name: 'Burnside', slug: 'burnside', verdict: aVerdict('burnside'), score: aScore('burnside'), rentFrom: '$4,000/mo', body: "Adelaide's highest household income suburb is conspicuously underserved by quality independent operators. Competition is 4/10 — unusual for a suburb with this income profile. A genuine first-mover opportunity for operators with a premium positioning." },
+              { rank: 8, name: 'Hyde Park', slug: 'hyde-park', verdict: aVerdict('hyde-park'), score: aScore('hyde-park'), rentFrom: '$3,500/mo', body: "King William Road south of Unley Road at 15% below Unley rents. Low seasonality, consistent repeat trade, and a growing apartment population make Hyde Park reliable. The market rewards execution quality over concept novelty." },
+              { rank: 9, name: 'Glenelg', slug: 'glenelg', verdict: aVerdict('glenelg'), score: aScore('glenelg'), rentFrom: '$4,000/mo', body: "South Australia's top tourism precinct. Summer revenue November–March can be 40–60% above the annual average. The failure mode is operators who project summer revenue forward without a viable winter strategy. Local loyalty is non-negotiable." },
+              { rank: 10, name: 'Goodwood', slug: 'goodwood', verdict: aVerdict('goodwood'), score: aScore('goodwood'), rentFrom: '$2,500/mo', body: "Goodwood Road delivers inner-south Adelaide professional demographics at 35% below Norwood pricing. Low tourism means the customer base is entirely local — requiring genuine community investment rather than destination marketing." },
+              { rank: 11, name: 'Bowden', slug: 'bowden', verdict: aVerdict('bowden'), score: aScore('bowden'), rentFrom: '$2,000/mo', body: "The Bowden urban renewal precinct is delivering new residents faster than hospitality supply is appearing. Renewal SA lease terms support independent operators. First-mover operators who build community loyalty now capture the demographic before rents reprice." },
+              { rank: 12, name: 'Henley Beach', slug: 'henley-beach', verdict: aVerdict('henley-beach'), score: aScore('henley-beach'), rentFrom: '$3,000/mo', body: "Henley Square delivers a more balanced seasonal trade profile than Glenelg. Operators who position for both the tourist peak and the local resident base achieve consistent year-round economics that pure beach-town concepts cannot." },
+            ].map((suburb) => (
+              <Link key={suburb.slug} href={`/analyse/adelaide/${suburb.slug}`} style={{ textDecoration: 'none' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr auto', gap: '20px', alignItems: 'start', padding: '20px 24px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+                  <div style={{ textAlign: 'center', paddingTop: '2px' }}>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
+                    <div style={{ marginTop: '6px', fontSize: '10px', fontWeight: 800, padding: '3px 7px', borderRadius: '4px', textAlign: 'center', backgroundColor: suburb.verdict === 'GO' ? C.emeraldBg : C.amberBg, color: suburb.verdict === 'GO' ? C.emerald : C.amber, border: `1px solid ${suburb.verdict === 'GO' ? C.emeraldBdr : C.amberBdr}` }}>
+                      {suburb.verdict}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                      <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
+                      <span style={{ fontSize: '12px', color: C.muted }}>From {suburb.rentFrom}</span>
+                    </div>
+                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
+                  </div>
+                  <div style={{ textAlign: 'center', minWidth: '52px' }}>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{suburb.score}</div>
+                    <div style={{ fontSize: '10px', color: C.muted, fontWeight: 600 }}>/ 100</div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '48px 24px', background: 'linear-gradient(135deg, #4C1D95 0%, #6D28D9 100%)', textAlign: 'center' }}>
+        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>Have a specific Adelaide address in mind?</h2>
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', marginBottom: '24px', lineHeight: '1.65' }}>Get a full foot traffic analysis, competitor map, rent benchmarks, and GO/CAUTION/NO verdict for any Adelaide address. Free.</p>
+          <Link href="/onboarding" style={{ display: 'inline-block', padding: '14px 30px', backgroundColor: '#EDE9FE', color: '#4C1D95', borderRadius: '8px', textDecoration: 'none', fontSize: '15px', fontWeight: 800 }}>
+            Analyse your Adelaide address →
+          </Link>
+        </div>
+      </section>
+
+      <section id="suburbs" style={{ padding: '56px 24px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '12px' }}>Adelaide Suburb Directory — By Category</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px' }}>22 suburbs grouped by risk profile and market type.</p>
+          {SUBURB_CATEGORIES.map((cat) => (
+            <div key={cat.title} style={{ marginBottom: '52px' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: C.brand, marginBottom: '6px' }}>{cat.title}</h3>
+                <p style={{ fontSize: '14px', color: C.muted, margin: 0 }}>{cat.description}</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '16px' }}>
+                {cat.suburbs.map((s) => (
+                  <SuburbCard key={s.slug} name={s.name} slug={s.slug} citySlug="adelaide" description={s.description} score={s.score} verdict={s.verdict} rentRange={s.rentRange} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Quick Comparison — Top Adelaide Suburbs</h2>
+          <ComparisonTable rows={COMPARISON_ROWS} />
+        </div>
+      </section>
+
+      <section id="comparisons" style={{ padding: '48px 24px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Head-to-Head: Suburb Comparisons</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+            {[
+              { title: 'Norwood vs Prospect', body: "Norwood is the proven market — established demand, national track record, premium customer quality. Prospect is the growth market — same demographic trajectory at half the rent, but less foot traffic depth today. For operators with a strong concept and the capital to weather a build period, Prospect offers better long-term unit economics. For operators who need immediate volume, Norwood's established foot traffic is more reliable." },
+              { title: 'Glenelg vs Henley Beach', body: "Glenelg has higher peak revenue but steeper winter softness — tourist dependency is 9/10 versus Henley's 7/10. Henley Beach's stronger local residential base moderates the off-season cliff and makes revenue more predictable across 12 months. For operators without the capital to sustain 3–4 lean winter months, Henley's more balanced demand profile is the lower-risk choice." },
+              { title: 'Bowden vs Thebarton vs Port Adelaide', body: "All three are genuine early-mover plays. Bowden has the most structured opportunity — Renewal SA leases are designed for independent operators and residential density is already arriving. Thebarton suits creative and brewery concepts. Port Adelaide is the highest-upside, highest-patience play — the gentrification wave is real but 3–5 years from full maturity." },
+              { title: 'Adelaide CBD vs North Adelaide', body: "CBD rents ($10,000–$22,000/month) require high volume or premium pricing — Fringe festival revenue uplift helps but doesn't sustain poor unit economics year-round. North Adelaide is the superior option for most independent restaurant operators: O'Connell Street delivers comparable foot traffic on event nights at 45% lower rent." },
+            ].map((comp) => (
+              <div key={comp.title} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '10px', border: `1px solid ${C.border}` }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: C.brand, marginBottom: '12px' }}>{comp.title}</h3>
+                <p style={{ fontSize: '14px', color: C.n800, lineHeight: '1.7', margin: 0 }}>{comp.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="high-risk" style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '8px' }}>High-Risk Zones</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '28px' }}>Locations where independent operators consistently underperform relative to expectation.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {[
+              { name: 'Modbury & Salisbury main strips', why: "Both suffer from major shopping centre gravity — Tea Tree Plaza and Parabanks Centre monopolise consumer attention and chains capture most foot traffic. Independent operators on secondary strips face difficulty acquiring the volume that strip positioning promises." },
+              { name: 'Glenelg (without winter strategy)', why: "Glenelg is not a high-risk location for operators who model the seasonality correctly. It is very high-risk for operators who open in November based on summer projections and discover in June that 40% of expected trade disappears. The location works; planning failure is the risk." },
+              { name: 'Adelaide CBD (non-premium concepts)', why: "Mid-market concepts in the CBD face a mathematical problem: $14,000–$20,000/month rent requires volume that a non-premium concept cannot generate. The CBD rewards premium pricing and high-volume formats — casual independent operators with standard margins are squeezed before the 12-month mark." },
+            ].map((zone) => (
+              <div key={zone.name} style={{ padding: '22px', backgroundColor: C.redBg, borderRadius: '10px', border: `1px solid ${C.redBdr}` }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: C.red, marginBottom: '10px' }}>{zone.name}</h3>
+                <p style={{ fontSize: '13px', color: C.n800, lineHeight: '1.65', margin: 0 }}>{zone.why}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="factor-directory" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: C.n900, marginBottom: '10px', lineHeight: '1.2' }}>Adelaide Suburb Factor Breakdown — All 22 Markets</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '36px', maxWidth: '760px' }}>Engine-derived scores across demand, rent pressure, competition density, seasonality, and tourism for every suburb in the dataset. Sorted by composite score. Click any suburb for the full detail page.</p>
+          <AdelaideFactorDirectory />
+        </div>
+      </section>
+
+      <FAQSection faqs={FAQS} title="Adelaide Business Location — FAQ" id="faq" />
+
+      <CTASection
+        title="Ready to find your Adelaide location?"
+        subtitle="Run a free analysis on any Adelaide address. Get foot traffic data, demographic breakdown, rent benchmarks, and competitive analysis in minutes."
+        variant="green"
+      />
+
+      <section style={{ padding: '28px 24px', backgroundColor: C.n50, borderTop: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '20px', flexWrap: 'wrap', fontSize: '13px' }}>
+          <Link href="/analyse" style={{ color: C.brand, fontWeight: 600, textDecoration: 'none' }}>← All Cities</Link>
+          <Link href="/analyse/adelaide/norwood" style={{ color: C.brand, textDecoration: 'none' }}>Norwood Analysis →</Link>
+          <Link href="/analyse/adelaide/prospect" style={{ color: C.brand, textDecoration: 'none' }}>Prospect Analysis →</Link>
+          <Link href="/analyse/adelaide/glenelg" style={{ color: C.brand, textDecoration: 'none' }}>Glenelg Analysis →</Link>
+        </div>
+      </section>
     </div>
   )
 }
