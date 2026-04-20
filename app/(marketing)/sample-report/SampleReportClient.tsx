@@ -444,10 +444,49 @@ export default function SampleReportClient() {
                         <div style={{ height: '100%', width: '93%', background: S.emerald, borderRadius: 4, opacity: 0.75 }} />
                       </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
                       <Tile label="Monthly Rent" value="$7,600" mono />
                       <Tile label="Rating" value="Excellent" color={S.emerald} />
                     </div>
+
+                    {/* ── Rent Breakpoints ────────────────────────────
+                        Answers the $200k-decision-maker's actual
+                        question: "how much can the rent rise before
+                        this stops being GO?" Computed from the model
+                        (revenue × verdict-band %), so the exact numbers
+                        on the negotiation table are visible here, not
+                        buried in a ratio.
+
+                        Band thresholds:
+                          <12%  GO
+                          13%   flips to CAUTION
+                          15%   flips to NO  (matches the 15% danger
+                                threshold referenced elsewhere) */}
+                    {(() => {
+                      const cautionRent = Math.round(M.revenue * 0.13 / 10) * 10
+                      const noRent      = Math.round(M.revenue * 0.15 / 10) * 10
+                      const dCaution    = cautionRent - M.rent
+                      const dNo         = noRent      - M.rent
+                      const pctCaution  = Math.round(dCaution / M.rent * 100)
+                      const pctNo       = Math.round(dNo      / M.rent * 100)
+                      const row = (dotColor: string, labelColor: string, verdict: string, rent: string, detail: string) => (
+                        <div key={verdict} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderTop: `1px solid ${S.n100}` }}>
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
+                          <span style={{ fontSize: 10, fontWeight: 900, color: labelColor, letterSpacing: '0.08em', width: 62, flexShrink: 0 }}>{verdict}</span>
+                          <span style={{ fontSize: 12, fontWeight: 800, color: S.n900, fontFamily: S.mono, minWidth: 68 }}>{rent}</span>
+                          <span style={{ fontSize: 11, color: S.n500, fontFamily: S.mono }}>{detail}</span>
+                        </div>
+                      )
+                      return (
+                        <div>
+                          <p style={{ fontSize: 10, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Rent Breakpoints</p>
+                          <p style={{ fontSize: 11, color: S.n400, marginBottom: 4 }}>What it takes to flip the verdict — take this into lease negotiation.</p>
+                          {row(S.emerald, '#065F46', 'GO',      `$${M.rent.toLocaleString()}/mo`,       'today · 11.2% of revenue')}
+                          {row(S.amber,   '#92400E', 'CAUTION', `$${cautionRent.toLocaleString()}/mo`, `+$${dCaution.toLocaleString()} (+${pctCaution}%) · 13% ratio`)}
+                          {row(S.red,     '#991B1B', 'NO',      `$${noRent.toLocaleString()}/mo`,      `+$${dNo.toLocaleString()} (+${pctNo}%) · 15% ratio`)}
+                        </div>
+                      )
+                    })()}
                   </Card>
                 </div>
 
@@ -573,8 +612,8 @@ export default function SampleReportClient() {
                       {[
                         { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
                         { key: 'Weaknesses', items: ['4 existing café competitors — clear positioning required', 'Weekend foot traffic noticeably lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
-                        { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Nearby apartment development expanding the residential catchment'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
-                        { key: 'Threats', items: ['Rent review clause could push costs above the 12% threshold at renewal', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
+                        { key: 'Opportunities', items: ['Two of four existing operators have no online ordering — Leederville Station commuter pre-order flow (7:15–8:45am) is structurally unserved', 'Bar/restaurant cluster at the north end of Oxford Street drives post-work foot traffic; a specialty concept with extended evening hours captures dinner-adjacent coffee trade uncontested'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
+                        { key: 'Threats', items: ['Rent review clause could push costs above the 12% threshold at renewal — the 13% line sits at ~$8,840/mo ($1,240 above today)', 'Saturday morning coffee trade on Oxford Street runs ~30% below weekday commuter peaks — Leederville\'s weekend gravity is evening-based, not daytime'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
                       ].map(s => (
                         <div key={s.key} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: '13px 15px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
