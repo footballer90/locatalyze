@@ -386,7 +386,7 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
       </div>
-      {[{l:'Profitability',p:85,c:D.e,v:'High'},{l:'Area Demographics',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Affordability',p:82,c:D.e,v:'9.2%'}].map((b,i)=>(
+      {[{l:'Profitability',p:85,c:D.e,v:'High'},{l:'Market Demand',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Affordability',p:82,c:D.e,v:'9.2%'},{l:'Location Quality',p:84,c:D.e,v:'Strong'}].map((b,i)=>(
         <div key={i} style={{ marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}><span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.l}</span><span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.v}</span></div>
           <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', background: b.c, borderRadius: 2, width: bars?`${b.p}%`:'0%', transition: `width 1.1s ease ${i*.12}s` }}/></div>
@@ -466,7 +466,7 @@ function ShowcaseReportUI() {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 88</p>
         </div>
       </div>
-      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Profitability',v:'Strong',c:D.e},{dot:D.amber,l:'Competition',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Affordability',v:'Viable',c:D.e},{dot:'#34D399',l:'Area Demographics',v:'Excellent',c:D.e}].map((r,i)=>(
+      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Profitability',v:'Strong',c:D.e},{dot:D.amber,l:'Competition',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Affordability',v:'Viable',c:D.e},{dot:'#34D399',l:'Market Demand',v:'Excellent',c:D.e}].map((r,i)=>(
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i<4?'1px solid rgba(255,255,255,.05)':'none' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: r.dot, flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: '#9CA3AF', flex: 1 }}>{r.l}</span>
@@ -1293,7 +1293,7 @@ function CinematicWalkthrough() {
                   ))}
                 </div>
 
-                {[{l:'Area Demographics',s:85},{l:'Rent Affordability',s:78},{l:'Competition',s:72},{l:'Profitability',s:90}].map((b, i) => (
+                {[{l:'Market Demand',s:85},{l:'Rent Affordability',s:78},{l:'Competition',s:72},{l:'Profitability',s:90},{l:'Location Quality',s:84}].map((b, i) => (
                   <div key={b.l} style={{ marginBottom: 7 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                       <span style={{ fontSize: 11, color: L.muted }}>{b.l}</span>

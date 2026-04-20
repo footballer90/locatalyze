@@ -21,12 +21,12 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default:  'Is Your Location Worth It? Café, Restaurant & Retail Analysis — Locatalyze',
+    default:  'Location Feasibility Analysis for Australian Businesses — Locatalyze | GO / CAUTION / NO in ~90 seconds',
     template: '%s | Locatalyze',
   },
   description:
-    'Enter any Australian address and find out if it can support your café, restaurant or retail store. Competitor map, rent-to-revenue check, demographics and a GO/CAUTION/NO verdict — free to start.',
-  keywords: ['café location analysis Australia', 'best suburb to open a café', 'restaurant location check', 'commercial rent analysis', 'open a café Sydney Melbourne Brisbane Perth', 'business location feasibility'],
+    'Business feasibility check for any Australian address. Competitor map, rent-to-revenue test, demographics and a GO / CAUTION / NO verdict on café, restaurant, retail and service locations. First report free, no credit card.',
+  keywords: ['business feasibility check Australia', 'location analysis for business Australia', 'café location analysis Australia', 'restaurant location analysis Sydney', 'commercial rent check Australia', 'rent to revenue ratio café', 'break even calculator café Australia', 'location feasibility scoring model', 'commercial lease due diligence checklist Australia'],
   authors: [{ name: 'Locatalyze', url: SITE_URL }],
   creator: 'Locatalyze',
   openGraph: {
@@ -34,13 +34,13 @@ export const metadata = {
     locale:      'en_AU',
     url:         SITE_URL,
     siteName:    'Locatalyze',
-    title:       'Is Your Location Worth It? Café & Restaurant Analysis — Locatalyze',
-    description: 'Know if a location will make you money before you sign the lease. Free for Australian addresses.',
+    title:       'Location Feasibility Analysis for Australian Businesses — Locatalyze',
+    description: 'GO / CAUTION / NO verdict on any Australian address in ~90 seconds. Competitor map, rent-to-revenue test, demographics and financials — first report free.',
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'Is Your Location Worth It? — Locatalyze',
-    description: 'Know if a location will make you money before you sign the lease.',
+    title:       'Location Feasibility Analysis for Australian Businesses — Locatalyze',
+    description: 'GO / CAUTION / NO on any Australian address in ~90 seconds. First report free.',
   },
   robots: {
     index:  true,

@@ -303,22 +303,24 @@ export default function SampleReportClient() {
                 Leederville's quality ceiling is soft — two of the four competing cafés score below 4.0 on Google. A serious specialty concept clears that on day one. The binding constraint is the lease, not the market.
               </p>
             </div>
-            {/* Score ring */}
+            {/* Score ring — intentionally the single dominant visual element:
+                scanners read "84" first, then the decision sentence, then
+                badge + context. One hierarchy, not four competing signals. */}
             <div style={{ textAlign: 'center' }}>
-              <div style={{ position: 'relative', width: 90, height: 90 }}>
-                <svg width="90" height="90" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
-                  <circle cx="45" cy="45" r="36" fill="none" stroke={S.emerald} strokeWidth="8" strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 36}`}
-                    strokeDashoffset={`${2 * Math.PI * 36 * (1 - 84 / 100)}`}
+              <div style={{ position: 'relative', width: 124, height: 124 }}>
+                <svg width="124" height="124" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="62" cy="62" r="52" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />
+                  <circle cx="62" cy="62" r="52" fill="none" stroke={S.emerald} strokeWidth="10" strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 52}`}
+                    strokeDashoffset={`${2 * Math.PI * 52 * (1 - 84 / 100)}`}
                   />
                 </svg>
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 22, fontWeight: 900, color: S.emerald, lineHeight: 1, fontFamily: S.mono }}>84</span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>/100</span>
+                  <span style={{ fontSize: 40, fontWeight: 900, color: S.emerald, lineHeight: 1, fontFamily: S.mono, letterSpacing: '-0.03em' }}>84</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>/100</span>
                 </div>
               </div>
-              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Score</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Location Score</p>
             </div>
           </div>
 
@@ -337,8 +339,8 @@ export default function SampleReportClient() {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4 }}>
-            Model inputs: your address, business type, rent, AOV and operating hours. Sources: <Link href="/methodology" style={{ color: 'inherit', textDecoration: 'underline' }}>methodology</Link>.
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 10, paddingLeft: 4, lineHeight: 1.6 }}>
+            Model inputs: your address, business type, rent, AOV and operating hours. Ranges on revenue (±20%) and profit (±25%) reflect modelled uncertainty — they are a decision aid for a lease evaluation, not financial advice. Sources &amp; math: <Link href="/methodology" style={{ color: 'inherit', textDecoration: 'underline' }}>methodology</Link>.
           </p>
         </div>
       </div>
@@ -888,11 +890,11 @@ export default function SampleReportClient() {
             <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Key Numbers</p>
               {[
-                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: 'benchmark est. ±20%' },
-                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: 'benchmark est. ±25% · excl. owner salary' },
+                { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: 'monthly, modelled' },
+                { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: 'excl. owner salary' },
                 { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber,  sub: 'of revenue' },
-                { label: 'Break-even / Day', value: `${M.beDailyFull} cust.`,            color: S.n900,   sub: `incl. paid staff · ~${M.beDailySolo}/day if owner-run` },
-                { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900,   sub: 'excl. ramp-up' },
+                { label: 'Break-even / Day', value: `${M.beDailyFull} cust.`,            color: S.n900,   sub: `with paid staff · ~${M.beDailySolo} if owner-run` },
+                { label: 'Payback Period',   value: `${M.paybackMonths} mo`,             color: S.n900,   sub: 'excl. ramp-up' },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
                   <div>
@@ -902,7 +904,7 @@ export default function SampleReportClient() {
                   <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
                 </div>
               ))}
-              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Payback excludes ramp-up — allow 3–4 months to reach full volume. Net profit excludes owner salary.</p>
+              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>Confidence bands and assumptions are in the <Link href="/methodology" style={{ color: 'inherit', textDecoration: 'underline' }}>methodology</Link>. Payback allows 3–4 months to reach full volume.</p>
             </div>
 
             {/* CTA */}

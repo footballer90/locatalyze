@@ -5,14 +5,15 @@ import { onboardingRef } from '@/lib/funnel-links'
 import { ToolsHubCapture } from '@/components/analytics/FunnelCapture'
 
 export const metadata: Metadata = {
-  title: 'Free Location Intelligence Tools | Locatalyze',
+  title: 'Free Break-Even Calculator, Rent Affordability Checker & Business Viability Tool — Australia | Locatalyze',
   description:
-    'Free location intelligence tools for Australian businesses. Validate rent, viability, and foot traffic before you sign a lease — then upgrade to a full site report.',
+    'Three free tools for Australian operators: break-even foot-traffic calculator, rent-overpriced checker, and a business viability scoring tool. Use them to pressure-test a site before you sign a lease, then upgrade to a full GO / CAUTION / NO location report.',
+  keywords: ['break even calculator café Australia', 'rent affordability calculator business', 'rent overpriced checker Australia', 'business viability calculator', 'foot traffic break even tool', 'commercial lease viability'],
   alternates: { canonical: 'https://www.locatalyze.com/tools' },
   openGraph: {
-    title: 'Free Location Intelligence Tools | Locatalyze',
+    title: 'Free Break-Even, Rent & Viability Tools for Australian Businesses — Locatalyze',
     description:
-      'Validate your business idea, rent, and location before you sign a lease. Built for operators who want data-backed decisions.',
+      'Pressure-test any Australian site before you sign a lease: break-even foot-traffic, rent affordability, and a viability score. Free, no signup.',
     type: 'website',
     url: 'https://www.locatalyze.com/tools',
   },

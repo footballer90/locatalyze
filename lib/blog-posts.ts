@@ -49,7 +49,7 @@ export const POSTS: Record<string, BlogPost> = {
   author: 'Ella Nguyen',
   authorRole: 'Hospitality contributor, Locatalyze',
   authorBio: 'Ella works with independent food and beverage operators across Melbourne and Sydney. After co-founding a small hospitality consultancy in 2023, she started analysing what actually separated the locations that survived from those that did not. She joined Locatalyze in 2024 and focuses on translating data into practical advice for first-time operators.',
-  intro: 'We had the espresso machine. We had the concept. We had a landlord who was surprisingly reasonable on rent. What we didn\'t have — and what cost us — was a clear picture of the three blocks around us. This is the checklist that should have existed before we signed. It\'s built from that mistake and a lot of subsequent research.',
+  intro: 'We ran our café for fourteen months before we admitted the location was wrong. The espresso was good. The concept was right. But 23 people per hour walked past our front door at 8am, and we needed 60. No café survives on 23. We just didn\'t know that number before we signed. This is the checklist that should have existed then — built from that mistake and the next three years of research.',
   sections: [
       { type: 'stats', items: [{ value: '18 months', label: 'Average survival time for a poorly-located café' }, { value: '12%', label: 'Maximum healthy rent-to-revenue ratio' }, { value: '7–9am', label: 'Window generating 40–60% of daily revenue' }] },
    { type: 'h2', text: 'Why location beats everything — including the coffee' },
