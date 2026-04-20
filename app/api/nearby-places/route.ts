@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse }             from 'next/server'
 import { fetchGooglePlaces, fetchGoogleTextSearch, haversineMeters } from '@/lib/places/multi-source'
 import { scoreCompetitorStrength, deriveMarketIntelligence, computeDemandSignals } from '@/lib/places/strength-scorer'
+import { getNearbyPlacesLimiter, limitByIp } from '@/lib/ratelimit'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Tier    = 'budget' | 'mid' | 'premium'
@@ -282,6 +283,24 @@ async function fetchGeoapify(
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
+  // ── Rate limit (fail-closed) ───────────────────────────────────────────────
+  //
+  // This route fans out to Google Places (Nearby + Text Search),
+  // Foursquare, and Geoapify — each a paid upstream on our billing
+  // account. Unlike the typing endpoints, fail-closed is correct here:
+  // a Redis outage must not become a free pass on cost-amplification
+  // attacks (scrape every suburb × business type combination and the
+  // bill clocks up regardless of Redis being up).
+  //
+  // 20 req/min per IP — covers rapid map panning (8–12 calls in a
+  // heavy legitimate session) with headroom, while making systematic
+  // scraping pointless within a single IP.
+  const gate = await limitByIp(req, getNearbyPlacesLimiter(), {
+    failMode: 'closed',
+    label: 'nearby-places',
+  })
+  if (!gate.ok) return gate.response!
+
   const { searchParams } = req.nextUrl
   const lat   = searchParams.get('lat')
   const lng   = searchParams.get('lng')

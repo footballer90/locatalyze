@@ -2,17 +2,7 @@ import { NextRequest, NextResponse, after } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createAuthClient } from '@/lib/supabase/server'
 import { getPostHogClient } from '@/lib/posthog-server'
-
-// ─── Rate limiting (graceful no-op if not configured) ───────────────────────
-let ratelimit: any = null
-try {
-  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-    const { Ratelimit } = require('@upstash/ratelimit')
-    const { Redis }     = require('@upstash/redis')
-    const redis = new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
-    ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 h'), prefix: 'locatalyze:analyse' })
-  }
-} catch {}
+import { getAnalyseLimiter, limitByIp } from '@/lib/ratelimit'
 
 // after() keeps function alive post-response — maxDuration covers total execution
 // n8n sequential pipeline can take 60-90s; give it 55s to at least receive the payload
@@ -171,13 +161,64 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   if (!isFinite(rent)   || rent   < 100  || rent   > 500000)  return { valid: false, error: 'Monthly rent must be between $100 and $500,000' }
   if (!isFinite(setup)  || setup  < 100  || setup  > 10000000) return { valid: false, error: 'Setup budget must be between $100 and $10,000,000' }
   if (!isFinite(ticket) || ticket < 1    || ticket > 10000)    return { valid: false, error: 'Average ticket size must be between $1 and $10,000' }
-  // IMPORTANT: do NOT hoist this regex outside `clean`. Regex with `g` flag are stateful
-  // (lastIndex advances on every .test()/.exec() call) — a shared instance would produce
-  // unpredictable results when clean() is called multiple times on different strings.
-  const clean = (s: string) => {
-    const stripped = s.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim()
-    return stripped.replace(/ignore|forget|disregard|pretend|you are|act as|jailbreak|prompt|system:|assistant:|\\n\\n/gi, '')
+  // ── Input sanitiser (defense-in-depth for LLM prompt injection) ─────────────
+  //
+  // User-supplied strings (address, businessType, operatingHours, etc.) are
+  // shipped to n8n, which interpolates them into an OpenAI prompt. This
+  // function is the last chokepoint before that happens — it must assume
+  // the input is hostile.
+  //
+  // Layers, in order:
+  //   1. Strip invisible / bidi / control unicode. Zero-width joiners,
+  //      right-to-left overrides, and bidi isolates are the classic
+  //      vectors for hiding instructions inside otherwise innocent-looking
+  //      strings ("Sydney" + U+202E + "esaelp erongi"). These characters
+  //      render invisibly to the user typing the address but survive into
+  //      the LLM prompt.
+  //   2. Strip HTML angle brackets (XSS hygiene for any downstream render).
+  //   3. Collapse all whitespace variants (including U+00A0 nbsp and
+  //      U+3000 ideographic space) into ASCII space — prevents
+  //      "   ignore previous" from slipping past substring filters that
+  //      match on ASCII space.
+  //   4. Substring filter for the most common injection patterns.
+  //      This is NOT sufficient on its own (trivially bypassed by
+  //      paraphrase or encoding), but it raises the bar for a casual
+  //      attacker copy-pasting a known jailbreak.
+  //   5. Hard length cap. Passed in per-field because "address" can
+  //      legitimately be 180 chars but "businessType" shouldn't exceed 60.
+  //
+  // IMPORTANT: regex with `g` flag are stateful (lastIndex advances on
+  // every .test()/.exec() call) — a shared instance would produce
+  // unpredictable results. Each call builds fresh regexes inside.
+  const clean = (s: string, maxLen: number) => {
+    const stripInvisible = s
+      // Zero-width + bidi + directional formatting: U+200B-U+200F,
+      // U+202A-U+202E (LRE/RLE/PDF/LRO/RLO), U+2066-U+2069 (isolates),
+      // U+FEFF (BOM), U+180E (Mongolian vowel separator).
+      .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF\u180E]/g, '')
+      // C0 and C1 control characters (except \t \n \r which we normalise below).
+      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '')
+    const noHtml = stripInvisible.replace(/<[^>]*>/g, '').replace(/[<>]/g, '')
+    const normalisedWs = noHtml.replace(/[\s\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+/g, ' ').trim()
+    const filtered = normalisedWs.replace(
+      /ignore|forget|disregard|pretend|you are|act as|jailbreak|prompt|system:|assistant:|\\n\\n/gi,
+      '',
+    )
+    return filtered.slice(0, maxLen)
   }
+
+  // Field-level length caps. Numbers chosen from realistic Australian
+  // address lengths + reasonable business descriptors; exceeding any of
+  // these is a signal of either bad input or an attempt to stuff a
+  // prompt inside a field.
+  const MAX = {
+    address: 200,
+    businessType: 60,
+    operatingHours: 100,
+    businessMode: 40,
+    locationAccess: 40,
+    rentSource: 40,
+  } as const
 
   const parsed = parseAustralianAddress(address)
   let latNum = typeof lat === 'number' ? lat : (lat ? parseFloat(lat) : null)
@@ -207,8 +248,8 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
   return {
     valid: true,
     data: {
-      businessType:  clean(businessType),
-      address:       clean(address),
+      businessType:  clean(businessType, MAX.businessType),
+      address:       clean(address, MAX.address),
       locality:      parsed.locality,
       area:          parsed.area,
       city:          parsed.city,
@@ -220,33 +261,36 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
       lat:           (latNum && isFinite(latNum)) ? latNum : null,
       lng:           (lngNum && isFinite(lngNum)) ? lngNum : null,
       userId: typeof userId === 'string' ? userId.slice(0, 100) : undefined,
-      // Optional accuracy inputs
-      operatingHours:  typeof operatingHours  === 'string' ? operatingHours  : null,
+      // Optional accuracy inputs — all string fields pass through clean()
+      // with field-specific caps so a hostile payload can't embed a
+      // 5,000-char instruction block inside e.g. `operatingHours`.
+      operatingHours:  typeof operatingHours  === 'string' ? clean(operatingHours, MAX.operatingHours)  : null,
       seatingCapacity: typeof seatingCapacity === 'number' ? seatingCapacity : (seatingCapacity ? Number(seatingCapacity) || null : null),
-      businessMode:    typeof businessMode    === 'string' ? businessMode    : null,
+      businessMode:    typeof businessMode    === 'string' ? clean(businessMode, MAX.businessMode)      : null,
       avgOrderValue:   typeof avgOrderValue   === 'number' ? avgOrderValue   : (avgOrderValue ? Number(avgOrderValue) || null : null),
-      locationAccess:  typeof locationAccess  === 'string' ? locationAccess  : null,
-      rentSource:      typeof rentSource      === 'string' ? rentSource      : 'benchmark',
+      locationAccess:  typeof locationAccess  === 'string' ? clean(locationAccess, MAX.locationAccess)  : null,
+      rentSource:      typeof rentSource      === 'string' ? clean(rentSource, MAX.rentSource)          : 'benchmark',
       estimatedSqm:    typeof estimatedSqm    === 'number' ? estimatedSqm    : (estimatedSqm ? Number(estimatedSqm) || null : null),
     }
   }
 }
 
 export async function POST(request: NextRequest) {
-  // ── Rate limit ─────────────────────────────────────────────────────────────
-  if (ratelimit) {
-    try {
-      // Rate limit by IP only — never by a client-supplied header.
-      // Using x-user-id from the request would allow an attacker to spoof a victim's
-      // ID to burn their limit, or rotate IDs to bypass their own limit.
-      const ip = (request.headers.get('x-forwarded-for') || 'anonymous').split(',')[0].trim()
-      const { success, limit, reset } = await ratelimit.limit(ip)
-      if (!success) {
-        const resetIn = Math.ceil((reset - Date.now()) / 60000)
-        return errorResponse(`Rate limit reached. ${limit} analyses per hour. Try again in ${resetIn}m.`, 429)
-      }
-    } catch { console.error('[Analyse] Rate limit check failed') }
-  }
+  // ── Rate limit (fail-closed) ────────────────────────────────────────────────
+  //
+  // Uses the shared IP-keyed limiter from `lib/ratelimit.ts`. Fail mode
+  // is 'closed': if Redis is unreachable, we return 503 rather than
+  // letting the request through unlimited. This route triggers an n8n
+  // pipeline + OpenAI call — a Redis outage is not allowed to become an
+  // unbounded-cost bug.
+  //
+  // The previous implementation silently swallowed the error and
+  // continued, which is exactly how rate limits become security theatre.
+  const gate = await limitByIp(request, getAnalyseLimiter(), {
+    failMode: 'closed',
+    label: 'analyse',
+  })
+  if (!gate.ok) return gate.response!
 
   // ── Parse & validate ───────────────────────────────────────────────────────
   let rawBody: any
@@ -389,16 +433,29 @@ export async function POST(request: NextRequest) {
   // ── Trigger n8n via after() — runs after response is sent, keeps function alive ──
   // n8n master now ACKs immediately (202) then processes A1-A8 asynchronously.
   // after() ensures Vercel doesn't kill the function before the fetch completes.
+  // ── n8n payload ────────────────────────────────────────────────────────────
+  //
+  // Shape note, for the n8n workflow author:
+  //   - Top-level keys are SYSTEM-CONTROLLED (reportId, parsed address
+  //     components, coordinates, currency). Safe to interpolate into a
+  //     prompt without quoting.
+  //   - `userInputs.*` keys are USER-CONTROLLED and have already passed
+  //     through the hardened `clean()` + length caps above. They must
+  //     still be treated as hostile in any downstream prompt template:
+  //       - never interpolate raw into a system message;
+  //       - always pass as a JSON argument to a tool call, or wrap in a
+  //         clearly delimited block (e.g. <<<USER_INPUT>>> ... <<<END>>>)
+  //         with an instruction ordering that disallows execution of
+  //         instructions found inside that block.
+  //
+  // The current n8n node uses `{{ $json.body }}` which dumps the entire
+  // payload as one blob — that's the prompt-injection surface the audit
+  // flagged. Splitting system vs user here is the structural precondition
+  // for fixing it on the n8n side without having to re-engineer every
+  // agent node at once.
   const n8nPayload = JSON.stringify({
     reportId,
-    // Core inputs
-    businessType:  data.businessType,
-    address:       data.address,
-    monthlyRent:   data.monthlyRent,
-    setupBudget:   data.setupBudget,
-    avgTicketSize: data.avgTicketSize,
-    userId:        userId || null,
-    // Parsed address components — used by A2 SerpApi queries
+    // Parsed address components (system-derived from user address)
     locality:  data.locality,
     area:      data.area,
     suburb:    data.area,     // alias — A3/A5 should use suburb-level search, not city
@@ -407,17 +464,38 @@ export async function POST(request: NextRequest) {
     postcode:  data.postcode,
     country:   'Australia',
     currency:  'A$',
-    // Coordinates from Mapbox — eliminates re-geocoding in A2
+    // Validated numeric inputs (not user-templatable strings; safe)
+    monthlyRent:   data.monthlyRent,
+    setupBudget:   data.setupBudget,
+    avgTicketSize: data.avgTicketSize,
+    seatingCapacity: data.seatingCapacity ?? null,
+    avgOrderValue:   data.avgOrderValue   ?? null,
+    estimatedSqm:    data.estimatedSqm    ?? null,
+    // Coordinates (Mapbox-supplied, bounds-validated above)
     lat: data.lat ?? null,
     lng: data.lng ?? null,
-    // Accuracy inputs — agents can use these for context
+    userId: userId || null,
+    // User-controlled free-text fields. Treat as hostile in any LLM
+    // prompt template. See shape note above.
+    userInputs: {
+      businessType:    data.businessType,
+      address:         data.address,
+      operatingHours:  data.operatingHours  ?? null,
+      businessMode:    data.businessMode    ?? null,
+      locationAccess:  data.locationAccess  ?? null,
+      rentSource:      data.rentSource      ?? 'benchmark',
+    },
+    // ── Back-compat mirror ──────────────────────────────────────────────────
+    // The existing n8n workflow reads these at the top level. Duplicate
+    // them so this change doesn't break the deployed pipeline. Once n8n
+    // has been updated to read from `userInputs.*` exclusively, remove
+    // the mirror.
+    businessType:    data.businessType,
+    address:         data.address,
     operatingHours:  data.operatingHours  ?? null,
-    seatingCapacity: data.seatingCapacity ?? null,
     businessMode:    data.businessMode    ?? null,
-    avgOrderValue:   data.avgOrderValue   ?? null,
     locationAccess:  data.locationAccess  ?? null,
     rentSource:      data.rentSource      ?? 'benchmark',
-    estimatedSqm:    data.estimatedSqm    ?? null,
   })
 
   after(async () => {
