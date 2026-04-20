@@ -1536,7 +1536,7 @@ export default function LandingPage() {
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: D.glow, display: 'inline-block' }}/>Feature Showcase
           </div>
           <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1.1, marginBottom: 14, background: `linear-gradient(135deg, ${D.text1} 30%, ${D.glow} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            Score any address.<br/>Know before you sign.
+            Most lease mistakes are made<br/>before the first competitor is mapped. We fix that.
           </h2>
           <p style={{ fontSize: 14, color: D.text2, lineHeight: 1.75, marginBottom: 24 }}>Map demand signals, competitors and financials for any Australian address in about 90 seconds.</p>
           <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${D.brand},#0B9488)`, color: '#fff', borderRadius: 12, padding: '13px 28px', fontSize: 14, fontWeight: 800, textDecoration: 'none' }}>
@@ -1653,9 +1653,9 @@ export default function LandingPage() {
               Data infrastructure
             </div>
             <h2 style={{ fontSize: isMobile ? 28 : 44, fontWeight:900, color:'#F0FDF9', letterSpacing:'-.04em', lineHeight:1.08, marginBottom:14 }}>
-              Not guesswork.<br/>
+              The verdict is deterministic.<br/>
               <span style={{ background:'linear-gradient(135deg, #34D399, #0FDECE)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
-                Six verified data layers.
+                The AI explains it. The data builds it.
               </span>
             </h2>
             <p style={{ fontSize: isMobile ? 14 : 16, color:'rgba(204,235,229,.55)', maxWidth:540, margin:'0 auto', lineHeight:1.75 }}>
@@ -1898,7 +1898,7 @@ export default function LandingPage() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>Pricing</div>
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>Simple, transparent pricing</h2>
-            <p style={{ fontSize: 15, color: L.muted }}>Start free. Upgrade only when you need more.</p>
+            <p style={{ fontSize: 15, color: L.muted }}>One report costs less than an hour with a consultant. It takes ~90 seconds.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4,1fr)', gap: 14, maxWidth: 1060, margin: '0 auto' }}>
 
