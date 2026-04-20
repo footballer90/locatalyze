@@ -9,7 +9,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Where to Open a Business in Australia — Location Analysis by City (2026)',
   description:
-    'Suburb-by-suburb scores for cafés, restaurants, retail and service businesses across Sydney, Melbourne, Brisbane, Perth and Adelaide. Rent benchmarks from $1,200/mo, foot traffic data, GO/CAUTION/NO verdicts and break-even analysis for 100+ Australian locations.',
+    'Suburb-by-suburb scores for cafés, restaurants, retail and service businesses across 17 Australian cities. Rent benchmarks, foot traffic data, GO/CAUTION/NO verdicts and break-even analysis for 200+ locations — Sydney, Melbourne, Brisbane, Perth, Canberra, Hobart, Darwin, Gold Coast, Ballarat, Cairns and more.',
   alternates: { canonical: 'https://www.locatalyze.com/analyse' },
   openGraph: {
     title: 'Where to Open a Business in Australia — Location Analysis by City (2026)',
@@ -127,6 +127,65 @@ const CITIES = [
     color: '#059669',
     bgColor: '#ECFDF5',
   },
+  {
+    name: 'Gold Coast',
+    slug: 'gold-coast',
+    state: 'QLD',
+    tagline: 'Tourism powerhouse with under-served local demand — a two-speed market',
+    topSuburbs: ['Burleigh Heads', 'Broadbeach', 'Palm Beach'],
+    rentFrom: '$1,400/mo',
+    score: 74,
+    highlight: 'Best local demand: Burleigh Heads and Palm Beach strip',
+    color: '#F59E0B',
+    bgColor: '#FFFBEB',
+  },
+  {
+    name: 'Wollongong',
+    slug: 'wollongong',
+    state: 'NSW',
+    tagline: 'University city revitalising fast — underpriced relative to demand strength',
+    topSuburbs: ['Wollongong CBD', 'Thirroul', 'Corrimal'],
+    rentFrom: '$800/mo',
+    score: 69,
+    highlight: 'Lowest commercial rents per foot-traffic unit in NSW coastal strip',
+    color: '#0891B2',
+    bgColor: '#EFF6FF',
+  },
+  {
+    name: 'Hobart',
+    slug: 'hobart',
+    state: 'TAS',
+    tagline: 'MONA effect — premium food culture, tight supply, high spend-per-visitor',
+    topSuburbs: ['Battery Point', 'North Hobart', 'Sandy Bay'],
+    rentFrom: '$900/mo',
+    score: 71,
+    highlight: 'North Hobart strip: highest independent dining density per capita in TAS',
+    color: '#1E3A5F',
+    bgColor: '#EFF6FF',
+  },
+  {
+    name: 'Darwin',
+    slug: 'darwin',
+    state: 'NT',
+    tagline: 'Compact city with high government spending power — manage the Wet season cycle',
+    topSuburbs: ['Darwin CBD', 'Parap', 'Fannie Bay'],
+    rentFrom: '$1,200/mo',
+    score: 63,
+    highlight: 'High household income but acute dry/wet season revenue swings',
+    color: '#0F766E',
+    bgColor: '#F0FDFA',
+  },
+]
+
+const REGIONAL_CITIES = [
+  { name: 'Ballarat', slug: 'ballarat', state: 'VIC', suburbs: 10, color: '#B45309' },
+  { name: 'Bendigo', slug: 'bendigo', state: 'VIC', suburbs: 10, color: '#C2410C' },
+  { name: 'Cairns', slug: 'cairns', state: 'QLD', suburbs: 11, color: '#0F766E' },
+  { name: 'Townsville', slug: 'townsville', state: 'QLD', suburbs: 10, color: '#1D4ED8' },
+  { name: 'Toowoomba', slug: 'toowoomba', state: 'QLD', suburbs: 10, color: '#166534' },
+  { name: 'Bundaberg', slug: 'bundaberg', state: 'QLD', suburbs: 8, color: '#A16207' },
+  { name: 'Ipswich', slug: 'ipswich', state: 'QLD', suburbs: 8, color: '#57534E' },
+  { name: 'Launceston', slug: 'launceston', state: 'TAS', suburbs: 10, color: '#1E40AF' },
 ]
 
 const POPULAR_SEARCHES = [
@@ -144,6 +203,14 @@ const POPULAR_SEARCHES = [
   { label: 'Low-rent high-foot-traffic Sydney suburbs', href: '/analyse/sydney', tag: 'Sydney' },
   { label: 'Parramatta business opportunity 2026', href: '/analyse/sydney/parramatta', tag: 'Parramatta' },
   { label: 'Is Ultimo good for a café or restaurant?', href: '/analyse/sydney/ultimo', tag: 'Ultimo' },
+  { label: 'Best Hobart suburbs to open a business 2026', href: '/analyse/hobart', tag: 'Hobart' },
+  { label: 'Ballarat business location guide 2026', href: '/analyse/ballarat', tag: 'Ballarat' },
+  { label: 'Cairns café and restaurant location scores', href: '/analyse/cairns', tag: 'Cairns' },
+  { label: 'Toowoomba business suburbs — GO/CAUTION/NO', href: '/analyse/toowoomba', tag: 'Toowoomba' },
+  { label: 'Bendigo commercial location analysis 2026', href: '/analyse/bendigo', tag: 'Bendigo' },
+  { label: 'Gold Coast café and restaurant location guide', href: '/analyse/gold-coast', tag: 'Gold Coast' },
+  { label: 'Darwin business location — dry vs wet season', href: '/analyse/darwin', tag: 'Darwin' },
+  { label: 'Launceston suburb scores for cafés and dining', href: '/analyse/launceston', tag: 'Launceston' },
 ]
 
 const HOW_IT_WORKS = [
@@ -477,6 +544,44 @@ export default function AnalysePage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: `1px solid ${S.border}` }}>
                     <span style={{ fontSize: '12px', color: S.mutedLight }}>Rent from {city.rentFrom}</span>
                     <span style={{ fontSize: '13px', color: city.color, fontWeight: 700 }}>View guide →</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── REGIONAL CITIES ── */}
+      <section style={{ padding: '0 24px 56px', backgroundColor: S.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: S.n900, margin: '0 0 6px 0' }}>Regional &amp; emerging cities</h2>
+            <p style={{ fontSize: '14px', color: S.muted, margin: 0 }}>Engine-scored suburb pages — same model, built for these markets.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+            {REGIONAL_CITIES.map((city) => (
+              <Link
+                key={city.slug}
+                href={`/analyse/${city.slug}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{
+                  backgroundColor: S.white,
+                  border: `1px solid ${S.border}`,
+                  borderRadius: '12px',
+                  padding: '16px 18px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: S.n900 }}>{city.name}</div>
+                    <div style={{ fontSize: '11px', color: S.mutedLight, fontWeight: 600, marginTop: '2px' }}>{city.state}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '12px', color: city.color, fontWeight: 700 }}>{city.suburbs} suburbs</div>
+                    <div style={{ fontSize: '11px', color: S.mutedLight, marginTop: 2 }}>scored →</div>
                   </div>
                 </div>
               </Link>
