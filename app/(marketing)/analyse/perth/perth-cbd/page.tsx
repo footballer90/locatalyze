@@ -182,9 +182,9 @@ export default function PerthCBD() {
               <p style={{ fontSize: 13, color: S.muted }}>Highest foot traffic. Requires 150+ customers/day at $25+ ATV to break even. Lunch-dominated revenue stream. Evening and weekend traffic is significantly lower.</p>
             </div>
             <div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Fringe (East End, Side Streets)</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 8 }}>Fringe (East Perth + side streets)</h3>
               <p style={{ fontSize: 18, fontWeight: 900, color: S.n900, marginBottom: 8 }}>$4,000–$9,000/mo</p>
-              <p style={{ fontSize: 13, color: S.muted }}>More affordable. Gouger Street (restaurant strip) and Rundle Street East are emerging. Foot traffic is 40–50% lower than Hay Street but rents are also 50% lower.</p>
+              <p style={{ fontSize: 13, color: S.muted }}>More affordable. Wolf Lane, Murray Street East and East Perth pockets can offer lower entry rents. Foot traffic is 40–50% lower than Hay Street Mall, but rents are typically lower as well.</p>
             </div>
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function PerthCBD() {
             </div>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: S.brand, marginBottom: 12 }}>Sunday</h3>
-              <p style={{ fontSize: 14, color: S.muted, lineHeight: 1.6 }}>Minimal foot traffic outside restaurant precinct (Gouger Street). Estimated: 15% of weekday lunch revenue.</p>
+              <p style={{ fontSize: 14, color: S.muted, lineHeight: 1.6 }}>Minimal foot traffic outside the core city precincts in many locations. Estimated: 15% of weekday lunch revenue.</p>
             </div>
           </div>
         </div>
@@ -332,8 +332,8 @@ export default function PerthCBD() {
           </div>
 
           <div style={{ marginBottom: 28 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 8 }}>Is Gouger Street or East End cheaper than Hay Street?</h3>
-            <p style={{ fontSize: 14, color: S.muted, lineHeight: 1.6 }}>Yes, 40–50% cheaper. Gouger Street is Perth's traditional restaurant strip and benefits from evening foot traffic. East End (Rundle Street) is transitioning to food and culture venues. If you target dinner service (not lunch), East End or Gouger Street rent economics are much more viable than Hay Street.</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: S.n900, marginBottom: 8 }}>Are fringe CBD pockets cheaper than Hay Street Mall?</h3>
+            <p style={{ fontSize: 14, color: S.muted, lineHeight: 1.6 }}>Often yes. Fringe pockets and side streets can be 30–50% cheaper than Hay Street Mall depending on frontage and fit-out. If you target dinner service more than weekday lunch, these areas can offer better rent economics than prime mall positions.</p>
           </div>
 
           <div>

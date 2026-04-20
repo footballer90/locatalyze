@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { C } from './AnalyseTheme'
 import { VerdictBadge } from './VerdictBadge'
 
-type Verdict = 'GO' | 'CAUTION' | 'NO'
+type Verdict = 'GO' | 'CAUTION' | 'RISKY' | 'NO'
 
 interface Props {
   name: string

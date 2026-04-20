@@ -2,6 +2,9 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getSydneySuburb } from '@/lib/analyse-data/sydney'
+function sScore(n: string): number { return getSydneySuburb(n)?.compositeScore ?? 0 }
+function sVerdict(n: string): 'GO' | 'CAUTION' | 'NO' { const v = getSydneySuburb(n)?.verdict; return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO' }
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer,
@@ -149,9 +152,9 @@ const SCORE_BARS: Array<{ label: string; value: number }> = [
 ]
 
 const NEARBY: Array<{ name: string; slug: string; score: number; verdict: Verdict }> = [
-  { name: 'Liverpool', slug: 'liverpool', score: 73, verdict: 'GO' },
-  { name: 'Bankstown', slug: 'bankstown', score: 70, verdict: 'GO' },
-  { name: 'Campbelltown', slug: 'campbelltown', score: 73, verdict: 'GO' },
+  { name: 'Liverpool', slug: 'liverpool', score: sScore('Liverpool'), verdict: sVerdict('Liverpool') },
+  { name: 'Bankstown', slug: 'bankstown', score: sScore('Bankstown'), verdict: sVerdict('Bankstown') },
+  { name: 'Campbelltown', slug: 'campbelltown', score: sScore('Campbelltown'), verdict: sVerdict('Campbelltown') },
 ]
 
 export default function FairfieldPage() {

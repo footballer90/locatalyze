@@ -1,6 +1,7 @@
 import { C } from './AnalyseTheme'
 
-type Verdict = 'GO' | 'CAUTION' | 'NO'
+/** `NO` is a legacy display alias for `RISKY` (same styling). */
+type Verdict = 'GO' | 'CAUTION' | 'RISKY' | 'NO'
 
 interface Props {
   verdict: Verdict
@@ -11,6 +12,7 @@ export function VerdictBadge({ verdict, size = 'md' }: Props) {
   const cfg: Record<Verdict, { bg: string; bdr: string; txt: string }> = {
     GO: { bg: C.emeraldBg, bdr: C.emeraldBdr, txt: C.emerald },
     CAUTION: { bg: C.amberBg, bdr: C.amberBdr, txt: C.amber },
+    RISKY: { bg: C.redBg, bdr: C.redBdr, txt: C.red },
     NO: { bg: C.redBg, bdr: C.redBdr, txt: C.red },
   }
   const sizing = {

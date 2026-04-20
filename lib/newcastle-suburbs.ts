@@ -1,8 +1,18 @@
 // lib/newcastle-suburbs.ts
 // Canonical data model for /analyse/newcastle/[suburb] pages.
 // 20 suburbs — consulting-grade content, fully typed, deterministic for static generation.
+//
+// Verdict + numeric scores are computed by `lib/analyse-data/scoring-engine.ts` from five 1–10 factors
+// derived from rentLevel / competitionLevel / footTrafficLevel (see `deriveFactorsFromAnalyseLevels`).
 
-export type Verdict = 'GO' | 'CAUTION' | 'NO'
+import {
+  computeLocationModel,
+  deriveFactorsFromAnalyseLevels,
+  type LocationFactors,
+  type LocationVerdict,
+} from '@/lib/analyse-data/scoring-engine'
+
+export type Verdict = LocationVerdict
 export type Level = 'Low' | 'Medium' | 'High' | 'Very High'
 export type FitRating = 'Excellent' | 'Good' | 'Fair' | 'Poor'
 export type SaturationLevel = 'Oversaturated' | 'Competitive' | 'Moderate' | 'Low' | 'Untapped'
@@ -25,6 +35,11 @@ export interface NewcastleSuburb {
   metaTitle: string
   metaDescription: string
   heroSubline: string
+  factors: LocationFactors
+  cafe: number
+  restaurant: number
+  retail: number
+  compositeScore: number
   verdict: Verdict
   verdictReason: string
   revenueRange: string
@@ -57,7 +72,34 @@ export interface NewcastleSuburb {
   keyInsight: string
 }
 
-export const NEWCASTLE_SUBURBS: Record<string, NewcastleSuburb> = {
+/** Stored content rows — legacy `verdict` is ignored; scores come from `scoring-engine`. */
+export type NewcastleSuburbSeed = Omit<
+  NewcastleSuburb,
+  'factors' | 'cafe' | 'restaurant' | 'retail' | 'compositeScore' | 'verdict'
+> & {
+  verdict: 'GO' | 'CAUTION' | 'NO'
+}
+
+function toNewcastleSuburb(seed: NewcastleSuburbSeed): NewcastleSuburb {
+  const { verdict: _legacy, ...rest } = seed
+  const factors = deriveFactorsFromAnalyseLevels(
+    seed.rentLevel,
+    seed.competitionLevel,
+    seed.footTrafficLevel,
+  )
+  const m = computeLocationModel(factors)
+  return {
+    ...rest,
+    factors: m.factors,
+    cafe: m.cafe,
+    restaurant: m.restaurant,
+    retail: m.retail,
+    compositeScore: m.compositeScore,
+    verdict: m.verdict,
+  }
+}
+
+const NEWCASTLE_SUBURBS_SEED: Record<string, NewcastleSuburbSeed> = {
 
   'merewether': {
     slug: 'merewether',
@@ -1465,11 +1507,13 @@ export const NEWCASTLE_SUBURBS: Record<string, NewcastleSuburb> = {
 }
 
 export function getNewcastleSuburb(slug: string): NewcastleSuburb | null {
-  return NEWCASTLE_SUBURBS[slug] ?? null
+  const seed = NEWCASTLE_SUBURBS_SEED[slug]
+  if (!seed) return null
+  return toNewcastleSuburb(seed)
 }
 
 export function getAllNewcastleSuburbs(): NewcastleSuburb[] {
-  return Object.values(NEWCASTLE_SUBURBS)
+  return Object.values(NEWCASTLE_SUBURBS_SEED).map(toNewcastleSuburb)
 }
 
-export const NEWCASTLE_SUBURB_SLUGS = Object.keys(NEWCASTLE_SUBURBS) as Array<keyof typeof NEWCASTLE_SUBURBS>
+export const NEWCASTLE_SUBURB_SLUGS = Object.keys(NEWCASTLE_SUBURBS_SEED) as string[]

@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { getPerthSuburb } from '@/lib/analyse-data/melbourne'
 import {
  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
+  ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend, Cell,
 } from 'recharts'
 
 // ── SEO metadata exported from a separate server file ────────────────────────
@@ -487,8 +487,9 @@ export default function PerthCafePage() {
                     label={{ position: 'top', fontSize: 12, fontWeight: 700, fill: '#64748B', formatter: (v: any) => `${v}` }}
           // Color each bar by verdict
                     isAnimationActive={true}>
-                    {SUBURB_SCORES.map((entry, index) => (
-                      <rect key={index} fill={entry.score >= 70 ? S.emerald : entry.score >= 45 ? S.amber : S.red}/>))}
+                    {SUBURB_SCORES.map((entry) => (
+                      <Cell key={entry.suburb} fill={entry.score >= 70 ? S.emerald : entry.score >= 45 ? S.amber : S.red} />
+                    ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -606,7 +607,7 @@ export default function PerthCafePage() {
 
         {/* 4 Key factors */}
         <section style={{ marginBottom: 44 }}>
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 14 }}>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 14 }}>
       The 4 Factors That Determine Perth Café Success
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
@@ -618,7 +619,7 @@ export default function PerthCafePage() {
       ].map(f => (
               <div key={f.title} style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 14, padding: '20px 22px' }}>
         <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F0FDFA', border: '1px solid #CCFBF1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>{f.icon}</div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: '#F8FAFC', marginBottom: 3 }}>{f.title}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 3 }}>{f.title}</h3>
                 <p style={{ fontSize: 11, fontWeight: 700, color: S.emerald, marginBottom: 10 }}>{f.weight}</p>
                 <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.75 }}>{f.detail}</p>
        </div>
@@ -718,8 +719,8 @@ export default function PerthCafePage() {
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 16 }}>Frequently Asked Questions</h2>
      {(SCHEMAS[1] as any).mainEntity.map(({ name, acceptedAnswer }: any) => (
-            <div key={'Perth'} style={{ borderBottom: `1px solid ${S.border}`, padding: '16px 0' }}>
-       <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 8 }}>{'Perth'}</h3>
+            <div key={name} style={{ borderBottom: `1px solid ${S.border}`, padding: '16px 0' }}>
+       <h3 style={{ fontSize: 15, fontWeight: 700, color: S.n900, marginBottom: 8 }}>{name}</h3>
               <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.75 }}>{acceptedAnswer.text}</p>
       </div>
           ))}

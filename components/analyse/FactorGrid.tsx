@@ -1,8 +1,5 @@
 import { C } from './AnalyseTheme'
-import {
-  GOLD_COAST_FACTOR_META,
-  type GoldCoastSuburbFactors,
-} from '@/lib/analyse-data/gold-coast'
+import { FACTOR_META, type LocationFactors } from '@/lib/analyse-data/scoring-engine'
 
 function factorColor(value: number, dir: 'high' | 'low' | 'ctx'): string {
   if (dir === 'high') return value >= 7 ? C.emerald : value >= 4 ? C.amber : C.red
@@ -11,7 +8,7 @@ function factorColor(value: number, dir: 'high' | 'low' | 'ctx'): string {
 }
 
 interface Props {
-  factors: GoldCoastSuburbFactors
+  factors: LocationFactors
 }
 
 export function FactorGrid({ factors }: Props) {
@@ -24,7 +21,7 @@ export function FactorGrid({ factors }: Props) {
         margin: '12px 0 14px',
       }}
     >
-      {GOLD_COAST_FACTOR_META.map(({ key, label, dir }) => {
+      {FACTOR_META.map(({ key, label, dir }) => {
         const value = factors[key]
         const color = factorColor(value, dir)
 

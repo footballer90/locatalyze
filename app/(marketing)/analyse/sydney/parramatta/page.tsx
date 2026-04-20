@@ -12,6 +12,9 @@ import { CTASection } from '@/components/analyse/CTASection'
 import { PollSection } from '@/components/analyse/PollSection'
 import { SuburbCard } from '@/components/analyse/SuburbCard'
 import { C } from '@/components/analyse/AnalyseTheme'
+import { getSydneySuburb } from '@/lib/analyse-data/sydney'
+function sScore(n: string): number { return getSydneySuburb(n)?.compositeScore ?? 0 }
+function sVerdict(n: string): 'GO' | 'CAUTION' | 'NO' { const v = getSydneySuburb(n)?.verdict; return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO' }
 
 export const metadata: Metadata = {
   title: 'Opening a Business in Parramatta Sydney — 2026 Location Analysis',
@@ -229,11 +232,11 @@ export default function ParramattaPage() {
           <h2 style={{ fontSize: '24px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Parramatta vs Comparable Sydney Suburbs</h2>
           <ComparisonTable
             rows={[
-              { name: 'Parramatta', score: 84, verdict: 'GO', rent: '$3,500–$8,500', footTraffic: 'High', bestFor: 'Most categories, multicultural food' },
-              { name: 'Surry Hills', score: 87, verdict: 'GO', rent: '$8,000–$14,000', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty retail' },
-              { name: 'Chatswood', score: 82, verdict: 'GO', rent: '$6,000–$10,000', footTraffic: 'High', bestFor: 'Asian market, professional services' },
-              { name: 'North Sydney', score: 76, verdict: 'GO', rent: '$5,500–$9,000', footTraffic: 'High (weekday)', bestFor: 'Corporate lunch, professional services' },
-              { name: 'Blacktown', score: 71, verdict: 'GO', rent: '$1,800–$3,200', footTraffic: 'Medium', bestFor: 'Value retail, non-premium concepts' },
+              { name: 'Parramatta', score: sScore('Parramatta'), verdict: sVerdict('Parramatta'), rent: '$3,500–$8,500', footTraffic: 'High', bestFor: 'Most categories, multicultural food' },
+              { name: 'Surry Hills', score: sScore('Surry Hills'), verdict: sVerdict('Surry Hills'), rent: '$8,000–$14,000', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty retail' },
+              { name: 'Chatswood', score: sScore('Chatswood'), verdict: sVerdict('Chatswood'), rent: '$6,000–$10,000', footTraffic: 'High', bestFor: 'Asian market, professional services' },
+              { name: 'North Sydney', score: sScore('North Sydney'), verdict: sVerdict('North Sydney'), rent: '$5,500–$9,000', footTraffic: 'High (weekday)', bestFor: 'Corporate lunch, professional services' },
+              { name: 'Blacktown', score: sScore('Blacktown'), verdict: sVerdict('Blacktown'), rent: '$1,800–$3,200', footTraffic: 'Medium', bestFor: 'Value retail, non-premium concepts' },
             ]}
           />
         </div>

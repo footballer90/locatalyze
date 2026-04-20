@@ -316,6 +316,76 @@ const MELBOURNE_SEEDS: SuburbSeed[] = [
       'Seasonality 4/10: northern suburbs have high temperature variance reducing year-round foot traffic reliability.',
     ],
   },
+
+  // ── 2026 expansion suburbs ─────────────────────────────────────────────────
+
+  {
+    name: 'Abbotsford',
+    slug: 'abbotsford',
+    factors: { demand: 7, rent: 7, comp: 6, season: 3, tourism: 3 },
+    why: [
+      'Demand 7/10: Victoria Street is a destination dining corridor drawing from Fitzroy, Collingwood, and Richmond catchments; Abbotsford Convent precinct anchors consistent weekend foot traffic that weekday trade alone cannot sustain.',
+      'Rent 7/10: industrial-to-residential warehouse conversions have pushed commercial rents toward Collingwood rates — new tenants should expect $300–$450/sqm gross on Victoria Street, materially above where the strip was three years ago.',
+      'Competition 6/10: operator density is rising as Fitzroy overflow pushes into the precinct; weekday trade is structurally weaker without the office density that drives lunchtime revenue in inner-north strips.',
+    ],
+  },
+  {
+    name: 'Thornbury',
+    slug: 'thornbury',
+    factors: { demand: 7, rent: 6, comp: 7, season: 3, tourism: 2 },
+    why: [
+      'Demand 7/10: High Street (Route 86 tram) generates consistent weekday foot traffic; the growing young professional demographic mirrors Northcote from five years ago — the gentrification curve is real and visible in café spend frequency.',
+      'Rent 6/10: Brunswick East spillover is accelerating landlord expectations — rents are 15–20% below Northcote today but closing at pace, and the early-mover window for below-market entry is estimated at 2025–2027.',
+      'Competition 7/10: café density has risen sharply as operators from Fitzroy and Brunswick relocate north; the strip rewards differentiated concepts, not generic hospitality.',
+    ],
+  },
+  {
+    name: 'Coburg',
+    slug: 'coburg',
+    factors: { demand: 6, rent: 5, comp: 6, season: 3, tourism: 1 },
+    why: [
+      'Demand 6/10: Sydney Road multicultural food strip sustains loyal local demand from established Greek, Italian, and Middle Eastern communities; the town hall precinct anchors foot traffic, but activity drops noticeably south toward Moreland Road.',
+      'Rent 5/10: below Brunswick but rising — landlords are beginning to price in the gentrification narrative, and operators need to assess which block they are on carefully before committing.',
+      'Competition 6/10: the demographic split — established migrant community plus arriving young renters — creates a two-speed market that complicates pricing; value-sensitive locals coexist with newer residents who have higher spend capacity.',
+    ],
+  },
+  {
+    name: 'Armadale',
+    slug: 'armadale',
+    factors: { demand: 7, rent: 9, comp: 5, season: 4, tourism: 2 },
+    why: [
+      'Demand 7/10: Malvern Road is Melbourne\'s boutique-retail heartland — foot traffic is low by inner-city standards but extraordinarily high in spend per visit, with an affluent catchment (household income $130K+) that makes deliberate, high-ticket purchasing decisions.',
+      'Rent 9/10: some of Melbourne\'s highest retail rents in the inner southeast; operators targeting $20–$30 average transaction values will not cover occupancy — the market demands $50–$100+ per transaction to make the economics work.',
+      'Competition 5/10: the suburb is almost entirely car-dependent with no meaningful commuter or tourist overspill; cold foot traffic conversion is very low — new operators need an existing local following or a strong word-of-mouth launch.',
+    ],
+  },
+  {
+    name: 'Tarneit',
+    slug: 'tarneit',
+    factors: { demand: 5, rent: 3, comp: 3, season: 2, tourism: 1 },
+    why: [
+      'Demand 5/10: one of Melbourne\'s fastest-growing postcodes over 2021–2025, primarily young families — but discretionary spend is structurally constrained by high mortgage stress, limited local employment, and 50–70 min CBD commutes that suppress weekday lunchtime trade almost entirely.',
+      'Rent 3/10: very accessible, but retail supply anchored by Tarneit Central is outpacing population maturity — the market needs another 3–5 years before specialty operators can build sustainable revenue above $10,000–$12,000/week.',
+    ],
+  },
+  {
+    name: 'Sunbury',
+    slug: 'sunbury',
+    factors: { demand: 4, rent: 3, comp: 3, season: 3, tourism: 2 },
+    why: [
+      'Demand 4/10: stable satellite town with a regional residential population and a loyal but low-volume commercial strip — Evans Street has minimal passing trade, no meaningful tourist draw, and a market ceiling that limits maximum achievable revenue regardless of concept quality.',
+      'Rent 3/10: among Melbourne\'s lowest commercial rents — viable for operators building a community loyalty model with low fixed costs, but rail electrification and Sunbury Fields estate growth will start to re-price the market within 3–5 years.',
+    ],
+  },
+  {
+    name: 'Essendon',
+    slug: 'essendon',
+    factors: { demand: 6, rent: 6, comp: 5, season: 3, tourism: 1 },
+    why: [
+      'Demand 6/10: Keilor Road mid-tier retail strip delivers reliable weekday lunchtime trade from nearby professional services and insurance firms; the Greek-Italian community base provides stable foot traffic but limits daily trading windows to business hours.',
+      'Rent 6/10: landlords are increasingly asking Melbourne-style rents for a mid-ring location — face rents have risen faster than effective rents, and operators need to negotiate rent-free periods and incentives to offset the gap between asking price and commercial reality.',
+    ],
+  },
 ]
 
 // ─── Perth suburbs ────────────────────────────────────────────────────────────
@@ -424,9 +494,22 @@ export function getMelbourneSuburbs(): SuburbModel[] {
   return [...MELBOURNE_SUBURBS]
 }
 
-export function getMelbourneSuburb(name: string): SuburbModel | undefined {
-  const key = name.toLowerCase().trim()
-  return MELBOURNE_SUBURBS.find((s) => s.name.toLowerCase() === key)
+export function getMelbourneSuburb(nameOrSlug: string): SuburbModel | undefined {
+  const key = nameOrSlug.toLowerCase().trim()
+  return MELBOURNE_SUBURBS.find(
+    (s) => s.name.toLowerCase() === key || s.slug === key,
+  )
+}
+
+export function getMelbourneSuburbSlugs(): string[] {
+  return MELBOURNE_SUBURBS.map((s) => s.slug)
+}
+
+export function getMelbourneNearbySuburbs(currentSlug: string, limit = 3): SuburbModel[] {
+  return MELBOURNE_SUBURBS
+    .filter((s) => s.slug !== currentSlug)
+    .sort((a, b) => b.compositeScore - a.compositeScore)
+    .slice(0, limit)
 }
 
 // ─── Perth exports ────────────────────────────────────────────────────────────
@@ -444,4 +527,11 @@ export function getPerthSuburb(name: string): SuburbModel | undefined {
 
 export function getPerthSuburbSlugs(): string[] {
   return PERTH_SUBURBS.map((s) => s.slug)
+}
+
+export function getPerthNearbySuburbs(currentSlug: string, limit = 3): SuburbModel[] {
+  return PERTH_SUBURBS
+    .filter((s) => s.slug !== currentSlug)
+    .sort((a, b) => b.compositeScore - a.compositeScore)
+    .slice(0, limit)
 }

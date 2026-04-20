@@ -7,6 +7,9 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { Logo } from '@/components/Logo'
+import { getSydneySuburb } from '@/lib/analyse-data/sydney'
+function sScore(n: string): number { return getSydneySuburb(n)?.compositeScore ?? 0 }
+function sVerdict(n: string): 'GO' | 'CAUTION' | 'NO' { const v = getSydneySuburb(n)?.verdict; return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO' }
 
 const S = {
   brand: '#0891B2', brandLight: '#06B6D4',
@@ -140,9 +143,9 @@ const SCORE_BARS: Array<{ label: string; value: number }> = [
 ]
 
 const NEARBY: Array<{ name: string; slug: string; score: number; verdict: Verdict }> = [
-  { name: 'Chatswood', slug: 'chatswood', score: 82, verdict: 'GO' },
-  { name: 'Ryde', slug: 'ryde', score: 77, verdict: 'GO' },
-  { name: 'North Sydney', slug: 'north-sydney', score: 76, verdict: 'GO' },
+  { name: 'Chatswood', slug: 'chatswood', score: sScore('Chatswood'), verdict: sVerdict('Chatswood') },
+  { name: 'Ryde', slug: 'ryde', score: sScore('Ryde'), verdict: sVerdict('Ryde') },
+  { name: 'North Sydney', slug: 'north-sydney', score: sScore('North Sydney'), verdict: sVerdict('North Sydney') },
 ]
 
 export default function HornsbyPage() {

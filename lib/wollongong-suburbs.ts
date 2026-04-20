@@ -1,8 +1,18 @@
 // lib/wollongong-suburbs.ts
 // Canonical data model for /analyse/wollongong/[suburb] pages.
 // 20 suburbs — consulting-grade content, fully typed, deterministic for static generation.
+//
+// Verdict + numeric scores are computed by `lib/analyse-data/scoring-engine.ts` from five 1–10 factors
+// derived from rentLevel / competitionLevel / footTrafficLevel (see `deriveFactorsFromAnalyseLevels`).
 
-export type Verdict = 'GO' | 'CAUTION' | 'NO'
+import {
+  computeLocationModel,
+  deriveFactorsFromAnalyseLevels,
+  type LocationFactors,
+  type LocationVerdict,
+} from '@/lib/analyse-data/scoring-engine'
+
+export type Verdict = LocationVerdict
 export type Level = 'Low' | 'Medium' | 'High' | 'Very High'
 export type FitRating = 'Excellent' | 'Good' | 'Fair' | 'Poor'
 export type SaturationLevel = 'Oversaturated' | 'Competitive' | 'Moderate' | 'Low' | 'Untapped'
@@ -25,6 +35,11 @@ export interface WollongongSuburb {
   metaTitle: string
   metaDescription: string
   heroSubline: string
+  factors: LocationFactors
+  cafe: number
+  restaurant: number
+  retail: number
+  compositeScore: number
   verdict: Verdict
   verdictReason: string
   revenueRange: string
@@ -57,7 +72,33 @@ export interface WollongongSuburb {
   keyInsight: string
 }
 
-export const WOLLONGONG_SUBURBS: Record<string, WollongongSuburb> = {
+export type WollongongSuburbSeed = Omit<
+  WollongongSuburb,
+  'factors' | 'cafe' | 'restaurant' | 'retail' | 'compositeScore' | 'verdict'
+> & {
+  verdict: 'GO' | 'CAUTION' | 'NO'
+}
+
+function toWollongongSuburb(seed: WollongongSuburbSeed): WollongongSuburb {
+  const { verdict: _legacy, ...rest } = seed
+  const factors = deriveFactorsFromAnalyseLevels(
+    seed.rentLevel,
+    seed.competitionLevel,
+    seed.footTrafficLevel,
+  )
+  const m = computeLocationModel(factors)
+  return {
+    ...rest,
+    factors: m.factors,
+    cafe: m.cafe,
+    restaurant: m.restaurant,
+    retail: m.retail,
+    compositeScore: m.compositeScore,
+    verdict: m.verdict,
+  }
+}
+
+const WOLLONGONG_SUBURBS_SEED: Record<string, WollongongSuburbSeed> = {
 
   'wollongong-cbd': {
     slug: 'wollongong-cbd',
@@ -1366,11 +1407,13 @@ export const WOLLONGONG_SUBURBS: Record<string, WollongongSuburb> = {
 }
 
 export function getWollongongSuburb(slug: string): WollongongSuburb | null {
-  return WOLLONGONG_SUBURBS[slug] ?? null
+  const seed = WOLLONGONG_SUBURBS_SEED[slug]
+  if (!seed) return null
+  return toWollongongSuburb(seed)
 }
 
 export function getAllWollongongSuburbs(): WollongongSuburb[] {
-  return Object.values(WOLLONGONG_SUBURBS)
+  return Object.values(WOLLONGONG_SUBURBS_SEED).map(toWollongongSuburb)
 }
 
-export const WOLLONGONG_SUBURB_SLUGS = Object.keys(WOLLONGONG_SUBURBS) as Array<keyof typeof WOLLONGONG_SUBURBS>
+export const WOLLONGONG_SUBURB_SLUGS = Object.keys(WOLLONGONG_SUBURBS_SEED) as string[]

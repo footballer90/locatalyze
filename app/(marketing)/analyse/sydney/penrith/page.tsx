@@ -7,6 +7,9 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { Logo } from '@/components/Logo'
+import { getSydneySuburb } from '@/lib/analyse-data/sydney'
+function sScore(n: string): number { return getSydneySuburb(n)?.compositeScore ?? 0 }
+function sVerdict(n: string): 'GO' | 'CAUTION' | 'NO' { const v = getSydneySuburb(n)?.verdict; return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO' }
 
 const S = {
   brand: '#0891B2', brandLight: '#06B6D4',
@@ -140,9 +143,9 @@ const SCORE_BARS: Array<{ label: string; value: number }> = [
 ]
 
 const NEARBY: Array<{ name: string; slug: string; score: number; verdict: Verdict }> = [
-  { name: 'Blacktown', slug: 'blacktown', score: 71, verdict: 'GO' },
-  { name: 'Mount Druitt', slug: 'mount-druitt', score: 68, verdict: 'CAUTION' },
-  { name: 'Campbelltown', slug: 'campbelltown', score: 73, verdict: 'GO' },
+  { name: 'Blacktown', slug: 'blacktown', score: sScore('Blacktown'), verdict: sVerdict('Blacktown') },
+  { name: 'Mount Druitt', slug: 'mount-druitt', score: sScore('Mount Druitt'), verdict: sVerdict('Mount Druitt') },
+  { name: 'Campbelltown', slug: 'campbelltown', score: sScore('Campbelltown'), verdict: sVerdict('Campbelltown') },
 ]
 
 export default function PenrithPage() {

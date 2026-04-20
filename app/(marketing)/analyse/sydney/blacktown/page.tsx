@@ -2,6 +2,9 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getSydneySuburb } from '@/lib/analyse-data/sydney'
+function sScore(n: string): number { return getSydneySuburb(n)?.compositeScore ?? 0 }
+function sVerdict(n: string): 'GO' | 'CAUTION' | 'NO' { const v = getSydneySuburb(n)?.verdict; return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO' }
 import {
   BarChart,
   Bar,
@@ -169,9 +172,9 @@ const BUSINESS_FIT: BusinessFitItem[] = [
 ]
 
 const NEARBY: NearbySuburb[] = [
-  { name: 'Parramatta', slug: 'parramatta', score: 84, verdict: 'GO' },
-  { name: 'Merrylands', slug: 'merrylands', score: 74, verdict: 'GO' },
-  { name: 'Penrith', slug: 'penrith', score: 76, verdict: 'GO' },
+  { name: 'Parramatta', slug: 'parramatta', score: sScore('Parramatta'), verdict: sVerdict('Parramatta') },
+  { name: 'Merrylands', slug: 'merrylands', score: sScore('Merrylands'), verdict: sVerdict('Merrylands') },
+  { name: 'Penrith', slug: 'penrith', score: sScore('Penrith'), verdict: sVerdict('Penrith') },
 ]
 
 function VerdictBadge({ v }: VerdictBadgeProps) {

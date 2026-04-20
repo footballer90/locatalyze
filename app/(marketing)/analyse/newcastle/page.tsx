@@ -1,735 +1,268 @@
-'use client'
 // app/(marketing)/analyse/newcastle/page.tsx
-// Newcastle city hub — canonical business location authority page for Newcastle NSW
-// Targets: "Newcastle business location", "best suburbs Newcastle", "open a café Newcastle"
-// All content from /best-suburbs consolidated here as the canonical /analyse/newcastle/ hub
+// Newcastle city hub — server component, engine scores, FactorGrid directory
 
 import Link from 'next/link'
-import { useState } from 'react'
+import type { Metadata } from 'next'
+import { CityHero } from '@/components/analyse/CityHero'
+import { SuburbCard } from '@/components/analyse/SuburbCard'
+import { ComparisonTable } from '@/components/analyse/ComparisonTable'
+import { FAQSection } from '@/components/analyse/FAQSection'
+import { CTASection } from '@/components/analyse/CTASection'
+import { C } from '@/components/analyse/AnalyseTheme'
+import { FactorGrid } from '@/components/analyse/FactorGrid'
+import { getNewcastleSuburb, getAllNewcastleSuburbs } from '@/lib/newcastle-suburbs'
 
-// ── Schema ─────────────────────────────────────────────────────────────────────
-const SCHEMA_ARTICLE = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Best Suburbs in Newcastle to Open a Business — Location Intelligence Guide 2026',
-  author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-  publisher: { '@type': 'Organization', name: 'Locatalyze' },
-  datePublished: '2026-04-01',
-  dateModified: '2026-04-18',
-  url: 'https://www.locatalyze.com/analyse/newcastle',
+function nScore(slug: string): number {
+  return getNewcastleSuburb(slug)?.compositeScore ?? 0
+}
+function nVerdict(slug: string): 'GO' | 'CAUTION' | 'NO' {
+  const v = getNewcastleSuburb(slug)?.verdict
+  if (v === 'GO') return 'GO'
+  if (v === 'CAUTION') return 'CAUTION'
+  return 'NO'
+}
+
+export const metadata: Metadata = {
+  title: 'Best Suburbs to Open a Business in Newcastle NSW — 2026 Location Guide',
   description:
-    'Data-backed guide to business locations in Newcastle NSW. Best suburbs for cafés, restaurants, and retail, with rent benchmarks, foot traffic scores, and suburb-by-suburb analysis for 20 locations.',
+    'Newcastle business location guide 2026. 20 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Newcastle suburb for your cafe, restaurant, retail or service business.',
+  alternates: { canonical: 'https://www.locatalyze.com/analyse/newcastle' },
+  openGraph: {
+    title: 'Best Suburbs to Open a Business in Newcastle NSW — 2026 Location Guide',
+    description: '20 Newcastle suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
+    url: 'https://www.locatalyze.com/analyse/newcastle',
+  },
 }
 
-const SCHEMA_BREADCRUMB = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.locatalyze.com' },
-    { '@type': 'ListItem', position: 2, name: 'Analyse', item: 'https://www.locatalyze.com/analyse' },
-    { '@type': 'ListItem', position: 3, name: 'Newcastle', item: 'https://www.locatalyze.com/analyse/newcastle' },
-  ],
-}
+const COMPARISON_ROWS = [
+  { name: 'Merewether', score: nScore('merewether'), verdict: nVerdict('merewether'), rent: '$2,200–$4,200', footTraffic: 'Medium-High', bestFor: 'Specialty cafe, brunch destination, lifestyle retail' },
+  { name: 'Cooks Hill', score: nScore('cooks-hill'), verdict: nVerdict('cooks-hill'), rent: '$2,500–$5,000', footTraffic: 'High', bestFor: 'Specialty cafe, independent restaurant, boutique retail' },
+  { name: 'Hamilton', score: nScore('hamilton'), verdict: nVerdict('hamilton'), rent: '$2,000–$4,500', footTraffic: 'High', bestFor: 'Restaurant, cafe, specialty food, service business' },
+  { name: 'Newcastle CBD', score: nScore('newcastle-cbd'), verdict: nVerdict('newcastle-cbd'), rent: '$3,500–$8,500', footTraffic: 'Very High', bestFor: 'Premium dining, high-volume hospitality, retail' },
+  { name: 'Honeysuckle', score: nScore('honeysuckle'), verdict: nVerdict('honeysuckle'), rent: '$3,000–$6,500', footTraffic: 'High (seasonal)', bestFor: 'Waterfront dining, cafe, leisure retail' },
+  { name: 'Adamstown', score: nScore('adamstown'), verdict: nVerdict('adamstown'), rent: '$1,200–$2,500', footTraffic: 'Medium', bestFor: 'First-mover cafe, community dining, allied health' },
+  { name: 'Wickham', score: nScore('wickham'), verdict: nVerdict('wickham'), rent: '$1,200–$2,800', footTraffic: 'Medium', bestFor: 'Creative concept, cafe, light-industrial food business' },
+  { name: 'Charlestown', score: nScore('charlestown'), verdict: nVerdict('charlestown'), rent: '$2,000–$4,500', footTraffic: 'High', bestFor: 'High-volume hospitality, franchise, convenience retail' },
+]
 
-const SCHEMA_FAQ = {
+const SUBURB_CATEGORIES = [
+  {
+    title: 'Premium Inner Suburbs — High Reward, High Entry',
+    description: "Newcastle's benchmark hospitality strips. Strong customer quality and genuine street life, but rents and competition require clear positioning.",
+    suburbs: [
+      { name: 'Cooks Hill', slug: 'cooks-hill', description: "Darby Street is the strongest independent hospitality strip in regional NSW — Newcastle's equivalent of Fitzroy's Brunswick Street.", score: nScore('cooks-hill'), verdict: nVerdict('cooks-hill'), rentRange: '$2,500–$5,000/mo' },
+      { name: 'Merewether', slug: 'merewether', description: "Affluent beach suburb with the best cafe unit economics in Newcastle. High incomes, low competition, and beach lifestyle driving year-round brunch demand.", score: nScore('merewether'), verdict: nVerdict('merewether'), rentRange: '$2,200–$4,200/mo' },
+      { name: 'Hamilton', slug: 'hamilton', description: "Beaumont Street is Newcastle's dining spine — diverse cuisine mix, strong local loyalty, and the highest restaurant density outside the CBD.", score: nScore('hamilton'), verdict: nVerdict('hamilton'), rentRange: '$2,000–$4,500/mo' },
+      { name: 'Newcastle CBD', slug: 'newcastle-cbd', description: "Hunter Street and the revitalised CBD precinct. Light rail has restored pedestrian life. Best for high-volume concepts with premium positioning.", score: nScore('newcastle-cbd'), verdict: nVerdict('newcastle-cbd'), rentRange: '$3,500–$8,500/mo' },
+    ],
+  },
+  {
+    title: 'Growth Strips — Best Risk/Return',
+    description: "Suburbs where demand is proven but rents have not fully repriced. The window for smart operator entry is open.",
+    suburbs: [
+      { name: 'Honeysuckle', slug: 'honeysuckle', description: 'Waterfront dining precinct with strong weekend trade. Event-driven uplift from Newcastle Entertainment Centre. Seasonal risk managed by local repeat trade.', score: nScore('honeysuckle'), verdict: nVerdict('honeysuckle'), rentRange: '$3,000–$6,500/mo' },
+      { name: 'The Junction', slug: 'junction', description: 'Community-first suburban strip between Cooks Hill and Merewether. Loyal local catchment with lower rents than both premium neighbours.', score: nScore('junction'), verdict: nVerdict('junction'), rentRange: '$1,500–$3,200/mo' },
+      { name: 'Waratah', slug: 'waratah', description: 'Hospital-worker demand base creates reliable weekday trade. Underserved by quality independents with genuine first-mover space.', score: nScore('waratah'), verdict: nVerdict('waratah'), rentRange: '$1,000–$2,200/mo' },
+      { name: 'Adamstown', slug: 'adamstown', description: 'Established residential catchment with low competition and the lowest rents near the inner ring. Reliable community foot traffic.', score: nScore('adamstown'), verdict: nVerdict('adamstown'), rentRange: '$1,200–$2,500/mo' },
+    ],
+  },
+  {
+    title: 'Emerging — First-Mover Opportunity',
+    description: 'Gentrifying precincts where rents are low and early operators can lock in leases before demographics fully mature.',
+    suburbs: [
+      { name: 'Wickham', slug: 'wickham', description: 'Light rail connectivity is accelerating gentrification. Creative class moving in. Lowest inner-ring rents available to operators willing to build the market.', score: nScore('wickham'), verdict: nVerdict('wickham'), rentRange: '$1,200–$2,800/mo' },
+      { name: 'Carrington', slug: 'carrington', description: 'Heritage harbour suburb with boutique character. Tourism upside from waterfront position. Genuine first-mover opportunity as residential density grows.', score: nScore('carrington'), verdict: nVerdict('carrington'), rentRange: '$900–$2,000/mo' },
+      { name: 'Mayfield', slug: 'mayfield', description: 'Industrial suburb in transition. Younger creative demographic arriving. Low rents and genuine white space for the right concept.', score: nScore('mayfield'), verdict: nVerdict('mayfield'), rentRange: '$800–$1,800/mo' },
+    ],
+  },
+  {
+    title: 'Suburban Convenience — Community-Anchored',
+    description: 'Established suburban markets driven by local loyalty. Lower ceilings but lower risk for operators building community-first businesses.',
+    suburbs: [
+      { name: 'Charlestown', slug: 'charlestown', description: "Charlestown Square anchors strong foot traffic but dominates the market. Independents must position clear of the centre's gravitational pull.", score: nScore('charlestown'), verdict: nVerdict('charlestown'), rentRange: '$2,000–$4,500/mo' },
+      { name: 'Kotara', slug: 'kotara', description: "Westfield Kotara creates similar chain-dominance dynamics to Charlestown. Works for high-volume franchise operators.", score: nScore('kotara'), verdict: nVerdict('kotara'), rentRange: '$2,200–$5,000/mo' },
+      { name: 'Lambton', slug: 'lambton', description: 'Quiet residential strip with loyal local demographic. Higher median incomes than nearby suburbs. Low competition.', score: nScore('lambton'), verdict: nVerdict('lambton'), rentRange: '$900–$2,000/mo' },
+      { name: 'Wallsend', slug: 'wallsend', description: 'Working-class community suburb with established commercial strip. Community loyalty model works; destination concepts do not.', score: nScore('wallsend'), verdict: nVerdict('wallsend'), rentRange: '$800–$1,800/mo' },
+    ],
+  },
+]
+
+const FAQS = [
+  {
+    question: 'What is the best suburb to open a cafe in Newcastle?',
+    answer: "Merewether and Cooks Hill (Darby Street) are the two benchmark cafe markets in Newcastle, but for different operator profiles. Merewether offers the best unit economics: high household incomes ($96,000+ median), low specialty competition, and a beach-lifestyle demographic that spends generously on quality coffee and brunch. Break-even at 38-45 customers per day is among the lowest thresholds in Newcastle metro. Darby Street in Cooks Hill is the higher-competition, higher-reward play — the street has genuine food culture and customers who pay $18-22 average ticket, but 15+ cafes within 800m means differentiation is non-negotiable.",
+  },
+  {
+    question: 'How do Newcastle commercial rents compare to Sydney?',
+    answer: "Newcastle commercial rents are 50-70% lower than equivalent Sydney inner-city positions. A prime Darby Street position at $4,500/month would cost $10,000-$14,000 in Newtown or Surry Hills. This structural advantage means break-even is achievable at materially lower revenue thresholds, and first-year failure risk is significantly reduced. The trade-off is a smaller overall customer pool — Newcastle metro at 500,000 people is roughly one-tenth of Sydney. Operators who build genuine local loyalty rather than relying on foot traffic density tend to build more sustainable businesses in Newcastle than in Sydney's high-rent, high-churn inner suburbs.",
+  },
+  {
+    question: 'Is Newcastle CBD worth considering for an independent restaurant or cafe?',
+    answer: "The revitalised Hunter Street corridor and the CBD light rail precinct are genuinely viable for premium concepts. The light rail has restored pedestrian life that the CBD lost during the construction period, and new residential density is arriving in the city core. At $5,000-$9,000/month, CBD rents are expensive by Newcastle standards but 50% below comparable Sydney positions. For mid-market independent operators, Darby Street or Beaumont Street offer better risk-adjusted economics — lower rent, stronger established food culture, and more consistent foot traffic.",
+  },
+  {
+    question: 'What makes Darby Street (Cooks Hill) worth considering?',
+    answer: "Darby Street is the strongest independent hospitality strip in regional NSW. It has genuine street life rather than constructed retail ambience — people actively walk, browse, and spend on the strip independent of any anchor tenant. The food-literate demographic pays $18-22 for average cafe visits and actively supports independent operators over chains. The honest caveat is that competition is real: 15+ cafes within 800m means a generic concept is outcompeted quickly. Operators who enter with a clear point of difference and quality execution perform very well.",
+  },
+  {
+    question: 'Is Honeysuckle a good location for a restaurant?',
+    answer: "Honeysuckle works well for operators who correctly model the mix of weekend waterfront trade and event-driven uplift from the Newcastle Entertainment Centre. The precinct has been transformed from an industrial port into a genuine dining and leisure destination. The failure mode is operators who project peak-event revenue across non-event weeks without a strategy for quieter periods. Operators with a strong local repeat customer base from surrounding residential areas weather the mid-week troughs better than those relying on foot traffic alone.",
+  },
+  {
+    question: 'Which Newcastle suburbs are the best early-mover opportunities in 2026?',
+    answer: "Three suburbs offer the clearest first-mover advantage in 2026: Wickham, where light rail connectivity is accelerating gentrification and rents are among the lowest in the inner ring; Carrington, a heritage harbour suburb where tourism upside and growing residential density have not yet repriced commercial leases; and Mayfield, an industrial suburb in transition where a younger creative demographic is arriving ahead of hospitality supply. All three require patience — break-even timelines are longer — but operators who lock in leases now are positioned ahead of the rent curve.",
+  },
+  {
+    question: 'What are the high-risk locations in Newcastle to avoid?',
+    answer: "Independent operators consistently struggle in two contexts in Newcastle. The first is directly adjacent to Westfield Kotara or Charlestown Square without a compelling reason to pull customers away from the centre — chain gravity is powerful and foot traffic that enters the shopping centre rarely returns to street-level independents. The second is Stockton, where ferry dependency creates isolation that limits the viable customer pool and makes daily consistency difficult. Broadmeadow without an event-day strategy is the third context: event-day revenue is real but mid-week without stadium activity is sparse.",
+  },
+]
+
+const SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: [
-    {
-      '@type': 'Question',
-      name: 'What is the best suburb in Newcastle to open a café?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: "Merewether is Newcastle's strongest café market by unit economics — household incomes above $96,000, low competition, and beach lifestyle driving brunch trade year-round. Cooks Hill (Darby Street) is the prestige address for specialty coffee with genuine street life. For best value entry, Wickham offers the lowest rents in inner Newcastle with first-mover advantage as the suburb gentrifies.",
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'How much does commercial rent cost in Newcastle?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Newcastle commercial rent ranges from $1,000–$2,000/month in outer suburbs like Elermore Vale and Stockton, to $3,500–$8,000/month for prime Hunter Street CBD positions. Inner suburbs like Cooks Hill (Darby Street) sit at $2,500–$5,000/month. Hamilton (Beaumont Street) at $2,000–$4,500/month represents the best value on an established strip. Rents are 40–60% below Sydney inner-suburb equivalents for comparable foot traffic.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Is Newcastle CBD good for opening a café or restaurant?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: "Newcastle CBD is mid-transformation and warrants caution. The light rail, Hunter Street Mall redevelopment, and growing apartment population have pushed weekday foot traffic higher since 2022. However, marquee Hunter Street rents are priced optimistically against a market still building its hospitality culture. A café needs 55–65 customers/day to break even at CBD rent. A restaurant needs a clear dinner draw — weekend foot traffic drops significantly after 6pm outside events. Treat quoted rents as negotiation starting points; vacancy rates remain elevated.",
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Which Newcastle suburbs have the lowest competition for cafés?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Adamstown, The Junction, Wickham, Waratah, Lambton, and Carrington all have low café competition. Adamstown is the strongest — 12,000+ residents, genuine local strip, and almost no quality café offering. Wickham is the best emerging play with lowest rents and incoming young professional demographic. Waratah has a hidden advantage: proximity to John Hunter Hospital with 5,000+ staff generating reliable weekday demand.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'How does Newcastle compare to Sydney for business costs?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Newcastle commercial rents are 40–60% below Sydney inner-suburb equivalents. A position equivalent to Surry Hills in Newcastle (Cooks Hill/Darby Street) costs $2,500–$5,000/month versus $8,000–$15,000/month in Sydney. However, Newcastle revenue ceilings are also lower — average café ticket sits at $16–19 in most suburbs versus $22–28 in Sydney inner suburbs. The business case in Newcastle is built on lower fixed costs, not higher revenue. For operators priced out of Sydney, Newcastle\'s inner suburbs offer a genuinely viable alternative with improving demographics.',
-      },
-    },
-  ],
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
 }
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-type Level   = 'Low' | 'Medium' | 'High'
-type Verdict = 'GO' | 'CAUTION' | 'AVOID'
-type BizType = 'Café' | 'Restaurant' | 'Retail' | 'Gym' | 'Takeaway'
-
-interface SuburbCard {
-  name        : string
-  slug        : string
-  vibe        : string
-  bestFor     : BizType[]
-  competition : Level
-  rent        : Level
-  footTraffic : Level
-  verdict     : Verdict
-  rentRange   : string
-  demandScore : number
-  insight     : string
-  watchOut    : string
-}
-
-// ── Data ───────────────────────────────────────────────────────────────────────
-const SUBURBS: SuburbCard[] = [
-  {
-    name: 'Newcastle CBD',
-    slug: 'newcastle-cbd',
-    vibe: 'Coastal urban revamp · office workers · tourism',
-    bestFor: ['Café', 'Restaurant', 'Retail'],
-    competition: 'High',
-    rent: 'High',
-    footTraffic: 'High',
-    verdict: 'CAUTION',
-    rentRange: '$3,500–$8,000/mo',
-    demandScore: 8,
-    insight:
-      'The CBD is mid-transformation — the light rail, Hunter Street Mall redevelopment, and growing apartment population have pushed weekday foot traffic meaningfully higher since 2022. The challenge is rent: marquee Hunter Street positions price optimistically against a market that is still building its post-industrial hospitality culture. A well-positioned café with office tower proximity breaks even at 55–65 customers/day. A restaurant needs a clear dinner draw — weekend foot traffic drops significantly after 6pm outside events.',
-    watchOut:
-      'Vacancy rates on Hunter Street remain elevated. Treat every quoted rent as a negotiation starting point, not a market rate.',
-  },
-  {
-    name: 'Merewether',
-    slug: 'merewether',
-    vibe: 'Affluent beach lifestyle · young families · high discretionary spend',
-    bestFor: ['Café', 'Retail'],
-    competition: 'Medium',
-    rent: 'Medium',
-    footTraffic: 'Medium',
-    verdict: 'GO',
-    rentRange: '$2,200–$4,200/mo',
-    demandScore: 9,
-    insight:
-      "Merewether is Newcastle's strongest café market by unit economics. Household incomes sit at $96,000+ median — the suburb's beach-lifestyle demographic spends generously on quality coffee, brunch, and lifestyle retail. There is no strong incumbent specialty café; the gap is real. A quality operator here breaks even at 38–45 customers/day and builds a loyal suburban base within 4 months. The beach surge in summer (October–March) adds 25–35% above baseline revenue.",
-    watchOut:
-      "Charlestown Road strip positions have inconsistent foot traffic. Bather's Way / beach-facing positions are structurally stronger.",
-  },
-  {
-    name: 'Hamilton',
-    slug: 'hamilton',
-    vibe: 'Inner-suburb cool · independent businesses · young professional renters',
-    bestFor: ['Café', 'Restaurant', 'Retail'],
-    competition: 'Medium',
-    rent: 'Medium',
-    footTraffic: 'Medium',
-    verdict: 'GO',
-    rentRange: '$2,000–$4,500/mo',
-    demandScore: 8,
-    insight:
-      "Hamilton is Newcastle's most underrated suburb for independent hospitality. Beaumont Street — Newcastle's longest and most diverse strip — hosts a genuine mix of ethnic restaurants, independent cafés, and boutique retail at rents 40–50% below inner-Sydney equivalents. A restaurant entering an underrepresented cuisine category has the fastest path to local loyalty. Café operators benefit from consistent commuter flow to Hamilton train station.",
-    watchOut:
-      'Weekend evening trade requires a compelling dinner concept — Beaumont Street has many choices and undifferentiated restaurants go dark after Thursday.',
-  },
-  {
-    name: 'Cooks Hill',
-    slug: 'cooks-hill',
-    vibe: 'Darby Street culture · creative class · café-literate locals',
-    bestFor: ['Café', 'Restaurant'],
-    competition: 'High',
-    rent: 'Medium',
-    footTraffic: 'High',
-    verdict: 'GO',
-    rentRange: '$2,500–$5,000/mo',
-    demandScore: 9,
-    insight:
-      "Darby Street is the spine of Cooks Hill and one of the strongest independent hospitality strips in regional NSW. The strip has genuine street life, a food-literate demographic, and a culture that actively supports independent operators. Competition is real — 15+ cafés within 800m — but the market rewards quality and point of difference. Average café ticket sits at $18–22, significantly above Newcastle average, making the economics work despite medium-high rents.",
-    watchOut:
-      'Darby Street has no cheap positions. Expect to negotiate hard for anything under $3,500/month — and verify foot traffic at your specific block, as there is meaningful variation across the strip.',
-  },
-  {
-    name: 'The Junction',
-    slug: 'junction',
-    vibe: 'Suburban village feel · families · local loyalists',
-    bestFor: ['Café', 'Retail'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'GO',
-    rentRange: '$1,800–$3,500/mo',
-    demandScore: 7,
-    insight:
-      "The Junction is a compact residential suburb with a small but loyal commercial strip on Glebe Road. The family-oriented demographic generates consistent weekday morning café trade and weekend brunch demand. Competition is low — there is no strong quality café incumbent and residents currently drive to Cooks Hill or Merewether for their preferred coffee. An operator who installs quality here at below-market rent has a clear path to becoming the suburb's default café.",
-    watchOut:
-      'The Junction has limited foot traffic from outside the immediate residential catchment. Your business is built on residents, not visitors — community integration is non-negotiable.',
-  },
-  {
-    name: 'Adamstown',
-    slug: 'adamstown',
-    vibe: 'Established working families · community-oriented · underserved',
-    bestFor: ['Café', 'Takeaway'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'GO',
-    rentRange: '$1,500–$3,000/mo',
-    demandScore: 7,
-    insight:
-      "Adamstown is Newcastle's clearest emerging café opportunity. The suburb has 12,000+ residents, a genuine local commercial strip on Brunker Road, and almost no quality café offering. Rents are among Newcastle's lowest for an established suburb. A quality flat white program and a tight weekend brunch menu here achieves break-even at 32–38 customers/day — one of the lowest targets in Newcastle metro.",
-    watchOut:
-      'Average income is slightly below inner suburbs. Price positioning should be accessible ($4.50–$5.50 coffee) rather than specialty-premium ($6.50+) until the demographic base is established.',
-  },
-  {
-    name: 'Kotara',
-    slug: 'kotara',
-    vibe: 'Shopping centre-anchored · families · car-dependent suburban',
-    bestFor: ['Retail', 'Café', 'Takeaway'],
-    competition: 'Medium',
-    rent: 'Medium',
-    footTraffic: 'High',
-    verdict: 'CAUTION',
-    rentRange: '$2,500–$6,000/mo',
-    demandScore: 7,
-    insight:
-      "Westfield Kotara dominates the suburb's commercial landscape. The opportunity for an independent is in categories Westfield under-serves: specialty food, artisan product, and experience-led retail. A café on Park Avenue adjacent to the centre gets overflow foot traffic without paying centre rent. A generic café inside will compete directly with major chains at a structural disadvantage.",
-    watchOut:
-      'Westfield lease terms inside the centre typically require turnover rent clauses. Read the fine print before committing to any in-centre position.',
-  },
-  {
-    name: 'Charlestown',
-    slug: 'charlestown',
-    vibe: 'Big-box retail · families · volume shoppers',
-    bestFor: ['Takeaway', 'Retail'],
-    competition: 'High',
-    rent: 'Medium',
-    footTraffic: 'High',
-    verdict: 'CAUTION',
-    rentRange: '$2,500–$5,500/mo',
-    demandScore: 6,
-    insight:
-      "Charlestown Square is one of Newcastle's largest shopping centres — high foot traffic but almost entirely national-chain hospitality. An independent café or restaurant adjacent to Charlestown Square competes for the same customers as Muffin Break, Bakers Delight, and Gloria Jean's. The exception: a specialty café with a quality differential significant enough to pull customers deliberately.",
-    watchOut:
-      'The area around Charlestown Square has high restaurant churn — the foot traffic looks attractive but the economics of non-chain hospitality are difficult. Verify competitor longevity before signing.',
-  },
-  {
-    name: 'Mayfield',
-    slug: 'mayfield',
-    vibe: 'Industrial grit meets gentrification · young renters · emerging',
-    bestFor: ['Café', 'Restaurant'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'GO',
-    rentRange: '$1,200–$2,800/mo',
-    demandScore: 6,
-    insight:
-      "Mayfield is where Newcastle's next wave of independent hospitality is taking root. The suburb has the DNA of an early-stage gentrifying suburb: cheaper rents, industrial-conversion spaces, an influx of young renters and artists, and a growing appetite for quality local food. The first quality independent café to open on Maitland Road will own the morning for 3–4 years before competition arrives.",
-    watchOut:
-      'Mayfield is a 5-year play, not an immediate-return suburb. Operators who need to break even in month two will struggle. Those who can withstand a 90-day ramp will find loyal, local support.',
-  },
-  {
-    name: 'Wallsend',
-    slug: 'wallsend',
-    vibe: 'Mining heritage · working families · community-proud',
-    bestFor: ['Café', 'Takeaway'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'CAUTION',
-    rentRange: '$1,200–$2,500/mo',
-    demandScore: 5,
-    insight:
-      "Wallsend has a loyal local community and very low commercial rents. However, the suburb's median household income ($62,000) and café spending culture are below inner-suburb equivalents. A café that pitches quality product at accessible pricing ($4–$5 coffee, $12–$16 food) can build a viable local business. The Wallsend market rewards community authenticity over brand.",
-    watchOut:
-      'Avoid expecting a quick ramp to profitability. Wallsend is a slow-burn, community-loyalty market. Plan for a 4–6 month build period.',
-  },
-  {
-    name: 'Jesmond',
-    slug: 'jesmond',
-    vibe: 'University student belt · transient · price-sensitive',
-    bestFor: ['Takeaway', 'Café'],
-    competition: 'Medium',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'CAUTION',
-    rentRange: '$1,500–$3,000/mo',
-    demandScore: 6,
-    insight:
-      "Jesmond is defined by its proximity to the University of Newcastle — a double-edged sword. Semester time delivers strong 7-day foot traffic and a volume-hungry student market. Outside semester, foot traffic drops 35–45% as students leave. High-volume, accessible pricing (sub-$5 coffee, $10–$14 food) works here. A specialty premium concept at $6+ coffee will face resistance.",
-    watchOut:
-      'Never model Jesmond revenue on semester-peak performance. Build your financial model on semester break volumes and treat semester peaks as the upside.',
-  },
-  {
-    name: 'Waratah',
-    slug: 'waratah',
-    vibe: 'Hospital workers · blue-collar mix · community local',
-    bestFor: ['Café', 'Takeaway'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'GO',
-    rentRange: '$1,300–$2,800/mo',
-    demandScore: 6,
-    insight:
-      "Waratah's proximity to John Hunter Hospital — one of NSW's largest regional hospitals with 5,000+ staff — creates reliable weekday medical-professional café demand. The hospital generates predictable 7–9am and 12:30–1:30pm coffee demand from shift workers. A café positioned on Turton Road within 400m of the hospital entrance could achieve 80+ covers per day by month three purely from hospital staff.",
-    watchOut:
-      'Weekend trade in Waratah is thin without the hospital worker base — a Monday-to-Friday model with reduced Saturday hours reflects the economic reality.',
-  },
-  {
-    name: 'Lambton',
-    slug: 'lambton',
-    vibe: 'Quiet suburban · established families · local loyalists',
-    bestFor: ['Café', 'Retail'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'GO',
-    rentRange: '$1,400–$2,800/mo',
-    demandScore: 6,
-    insight:
-      "Lambton is a quiet suburb with a small strip on Elder Street. The demographic — owner-occupier families, retirees, and professionals — is stable, income-decent ($78,000 median), and underserved for quality café options. The suburb is the kind of market where being the best local café generates a regular customer base of 60–80 people who visit 4–5 times per week. Revenue ceiling is modest but so is the floor at sub-$2,500/month rent.",
-    watchOut:
-      'This is a community market, not a destination. Marketing must be neighbourhood-first: local Facebook groups, school networks, sporting clubs.',
-  },
-  {
-    name: 'Broadmeadow',
-    slug: 'broadmeadow',
-    vibe: 'Stadium precinct · event-driven · industrial-to-residential shift',
-    bestFor: ['Café', 'Takeaway', 'Restaurant'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'CAUTION',
-    rentRange: '$1,200–$2,500/mo',
-    demandScore: 6,
-    insight:
-      "Broadmeadow is Newcastle's stadium suburb — McDonald Jones Stadium (35,000 capacity) generates 15–20 high-foot-traffic event days per year that can produce single-day revenue equivalent to a slow month. Between events, Broadmeadow has thin weekday foot traffic. A business here needs to be event-day-ready and built on a lean cost structure for the other 340 days.",
-    watchOut:
-      'Do not sign a lease in Broadmeadow without an event-day activation strategy. The stadium is the business case — without it, the location economics do not work.',
-  },
-  {
-    name: 'Wickham',
-    slug: 'wickham',
-    vibe: 'Urban industrial · gentrifying · creative workers',
-    bestFor: ['Café', 'Restaurant'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'GO',
-    rentRange: '$1,200–$2,800/mo',
-    demandScore: 7,
-    insight:
-      "Wickham is Newcastle's most interesting emerging suburb — a former industrial precinct being converted into apartments, creative studios, and office space on the back of the light rail corridor and urban renewal investment. First-mover advantage is real: the suburb has virtually no independent hospitality and the incoming demographic expects it. A café that opens now at $1,500–$2,000/month rent will be the established incumbent when competition follows.",
-    watchOut:
-      'Development timelines in urban renewal precincts slip. Validate that the apartment and office projects near your proposed site are actually under construction, not just approved.',
-  },
-  {
-    name: 'Carrington',
-    slug: 'carrington',
-    vibe: 'Harbour heritage · boutique · creative community',
-    bestFor: ['Café', 'Retail'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'GO',
-    rentRange: '$1,200–$2,500/mo',
-    demandScore: 6,
-    insight:
-      "Carrington is Newcastle's most characterful suburb — a compact, heritage-listed harbour community attracting creative workers, artists, and heritage-home owners. The business that succeeds in Carrington must feel genuinely local and place-specific. Tourism from the heritage precinct and water views adds a weekend visitor component. A specialty café or artisan retail concept with real connection to maritime heritage performs best.",
-    watchOut:
-      'The market is small. A business in Carrington is building on community loyalty, not volume. Keep costs low and community investment high.',
-  },
-  {
-    name: 'Stockton',
-    slug: 'stockton',
-    vibe: 'Ferry-linked coastal · quiet community · weekend visitor draw',
-    bestFor: ['Café', 'Retail'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'CAUTION',
-    rentRange: '$1,000–$2,200/mo',
-    demandScore: 5,
-    insight:
-      "Stockton is physically separated from Newcastle by the Hunter River, accessible only by ferry (15 min) or a 30-minute road detour. This isolation creates an unusual tourism dynamic: the ferry ride is itself a Newcastle experience, and the suburb receives weekend visitors who come specifically for the beach and quiet character. A café positioned for the ferry terminus can generate viable revenue on 5 days per week at a very low rent base.",
-    watchOut:
-      "Weekday trading in Stockton without a local community anchor is thin. An operator who can't survive Monday–Wednesday on resident trade alone will find Stockton structurally challenging.",
-  },
-  {
-    name: 'Belmont',
-    slug: 'belmont',
-    vibe: 'Lake Macquarie gateway · families · suburban convenience',
-    bestFor: ['Café', 'Takeaway', 'Retail'],
-    competition: 'Medium',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'CAUTION',
-    rentRange: '$1,500–$3,200/mo',
-    demandScore: 6,
-    insight:
-      "Belmont sits on the Lake Macquarie foreshore with a distinctly suburban, car-dependent character. The commercial strip on Pacific Highway has consistent local patronage but limited destination appeal. A café here is primarily a convenience business for local residents and lake-foreshore visitors on weekends. The economics can work at sub-$2,500/month rent with a focused weekday coffee-and-lunch offering.",
-    watchOut:
-      'Belmont is a convenience market. Price competitively and offer speed of service. This demographic will not pay Darby Street prices for a Belmont location.',
-  },
-  {
-    name: 'Glendale',
-    slug: 'glendale',
-    vibe: 'Suburban industrial · big-box retail · commuter families',
-    bestFor: ['Café', 'Takeaway', 'Retail'],
-    competition: 'Medium',
-    rent: 'Low',
-    footTraffic: 'Medium',
-    verdict: 'CAUTION',
-    rentRange: '$1,500–$3,500/mo',
-    demandScore: 5,
-    insight:
-      "Glendale is home to one of the Hunter Region's major retail parks. The opportunity for an independent is specific: a takeaway or café that captures the trade-day crowd rather than trying to compete as a destination. A quality coffee offering near the Bunnings or trade-facing strip would outperform a full-service café in this suburb.",
-    watchOut:
-      'Glendale is not a premium hospitality market. Margin comes from volume and efficiency, not high average ticket.',
-  },
-  {
-    name: 'Elermore Vale',
-    slug: 'elermore-vale',
-    vibe: 'Low-density residential · quiet suburban · young families',
-    bestFor: ['Café', 'Takeaway'],
-    competition: 'Low',
-    rent: 'Low',
-    footTraffic: 'Low',
-    verdict: 'CAUTION',
-    rentRange: '$1,000–$2,000/mo',
-    demandScore: 4,
-    insight:
-      'Elermore Vale is a quiet, low-density residential suburb with limited commercial activity and no established café culture. An operator here would be creating a market rather than serving an existing one. The very low rent makes the economics technically possible if you can build a loyal local base quickly, but the lack of passing foot traffic makes discovery very difficult.',
-    watchOut:
-      "Elermore Vale should not be a first-choice market. If committed to this suburb, begin with a 3-day-per-week operation and scale only once you've validated local demand.",
-  },
-]
-
-const TOP_PICKS = [
-  {
-    category: 'Best for Café',
-    suburb: 'Merewether',
-    reason: 'Highest income demographic, low competition, beach lifestyle drives brunch trade year-round.',
-    verdict: 'GO' as Verdict,
-    rentRange: '$2,200–$4,200/mo',
-  },
-  {
-    category: 'Best for Restaurant',
-    suburb: 'Hamilton',
-    reason: 'Beaumont Street has genuine multicultural dining culture, medium competition, and rents 40% below inner-Sydney.',
-    verdict: 'GO' as Verdict,
-    rentRange: '$2,000–$4,500/mo',
-  },
-  {
-    category: 'Best for Retail',
-    suburb: 'Cooks Hill (Darby St)',
-    reason: 'High-income, food-literate street with genuine browsing culture and strong weekend foot traffic.',
-    verdict: 'GO' as Verdict,
-    rentRange: '$2,500–$5,000/mo',
-  },
-  {
-    category: 'Best Value Entry',
-    suburb: 'Wickham',
-    reason: 'Lowest rents in inner Newcastle, first-mover advantage as gentrification accelerates.',
-    verdict: 'GO' as Verdict,
-    rentRange: '$1,200–$2,800/mo',
-  },
-]
-
-const TABLE_SUBURBS = [
-  { name: 'Merewether',     slug: 'merewether',     cafe: 9, restaurant: 6, retail: 7, rent: 'Med',  traffic: 'Med',  verdict: 'GO'      },
-  { name: 'Cooks Hill',     slug: 'cooks-hill',     cafe: 9, restaurant: 8, retail: 8, rent: 'Med',  traffic: 'High', verdict: 'GO'      },
-  { name: 'Hamilton',       slug: 'hamilton',       cafe: 8, restaurant: 9, retail: 7, rent: 'Med',  traffic: 'Med',  verdict: 'GO'      },
-  { name: 'Wickham',        slug: 'wickham',        cafe: 7, restaurant: 6, retail: 5, rent: 'Low',  traffic: 'Low',  verdict: 'GO'      },
-  { name: 'The Junction',   slug: 'junction',       cafe: 7, restaurant: 5, retail: 6, rent: 'Low',  traffic: 'Med',  verdict: 'GO'      },
-  { name: 'Adamstown',      slug: 'adamstown',      cafe: 7, restaurant: 5, retail: 5, rent: 'Low',  traffic: 'Med',  verdict: 'GO'      },
-  { name: 'Waratah',        slug: 'waratah',        cafe: 7, restaurant: 5, retail: 4, rent: 'Low',  traffic: 'Med',  verdict: 'GO'      },
-  { name: 'Newcastle CBD',  slug: 'newcastle-cbd',  cafe: 7, restaurant: 7, retail: 8, rent: 'High', traffic: 'High', verdict: 'CAUTION' },
-  { name: 'Kotara',         slug: 'kotara',         cafe: 6, restaurant: 5, retail: 8, rent: 'Med',  traffic: 'High', verdict: 'CAUTION' },
-  { name: 'Jesmond',        slug: 'jesmond',        cafe: 6, restaurant: 5, retail: 4, rent: 'Low',  traffic: 'Med',  verdict: 'CAUTION' },
-  { name: 'Charlestown',    slug: 'charlestown',    cafe: 5, restaurant: 5, retail: 6, rent: 'Med',  traffic: 'High', verdict: 'CAUTION' },
-  { name: 'Mayfield',       slug: 'mayfield',       cafe: 6, restaurant: 6, retail: 4, rent: 'Low',  traffic: 'Low',  verdict: 'GO'      },
-  { name: 'Carrington',     slug: 'carrington',     cafe: 6, restaurant: 4, retail: 6, rent: 'Low',  traffic: 'Low',  verdict: 'GO'      },
-  { name: 'Broadmeadow',    slug: 'broadmeadow',    cafe: 5, restaurant: 6, retail: 4, rent: 'Low',  traffic: 'Low',  verdict: 'CAUTION' },
-  { name: 'Wallsend',       slug: 'wallsend',       cafe: 5, restaurant: 4, retail: 4, rent: 'Low',  traffic: 'Med',  verdict: 'CAUTION' },
-  { name: 'Stockton',       slug: 'stockton',       cafe: 5, restaurant: 4, retail: 4, rent: 'Low',  traffic: 'Low',  verdict: 'CAUTION' },
-  { name: 'Belmont',        slug: 'belmont',        cafe: 5, restaurant: 4, retail: 5, rent: 'Low',  traffic: 'Med',  verdict: 'CAUTION' },
-  { name: 'Elermore Vale',  slug: 'elermore-vale',  cafe: 4, restaurant: 3, retail: 3, rent: 'Low',  traffic: 'Low',  verdict: 'CAUTION' },
-  { name: 'Glendale',       slug: 'glendale',       cafe: 4, restaurant: 3, retail: 5, rent: 'Low',  traffic: 'Med',  verdict: 'CAUTION' },
-  { name: 'Lambton',        slug: 'lambton',        cafe: 6, restaurant: 4, retail: 5, rent: 'Low',  traffic: 'Low',  verdict: 'GO'      },
-]
-
-// Suburb directory — all 20 suburbs for /analyse/newcastle/{slug} linking
-const SUBURB_DIRECTORY = [
-  { name: 'Newcastle CBD',  slug: 'newcastle-cbd',  verdict: 'CAUTION' as Verdict, rentRange: '$3,500–$8,000' },
-  { name: 'Merewether',     slug: 'merewether',     verdict: 'GO' as Verdict,      rentRange: '$2,200–$4,200' },
-  { name: 'Hamilton',       slug: 'hamilton',       verdict: 'GO' as Verdict,      rentRange: '$2,000–$4,500' },
-  { name: 'Cooks Hill',     slug: 'cooks-hill',     verdict: 'GO' as Verdict,      rentRange: '$2,500–$5,000' },
-  { name: 'The Junction',   slug: 'junction',       verdict: 'GO' as Verdict,      rentRange: '$1,800–$3,500' },
-  { name: 'Adamstown',      slug: 'adamstown',      verdict: 'GO' as Verdict,      rentRange: '$1,500–$3,000' },
-  { name: 'Kotara',         slug: 'kotara',         verdict: 'CAUTION' as Verdict, rentRange: '$2,500–$6,000' },
-  { name: 'Charlestown',    slug: 'charlestown',    verdict: 'CAUTION' as Verdict, rentRange: '$2,500–$5,500' },
-  { name: 'Mayfield',       slug: 'mayfield',       verdict: 'GO' as Verdict,      rentRange: '$1,200–$2,800' },
-  { name: 'Wallsend',       slug: 'wallsend',       verdict: 'CAUTION' as Verdict, rentRange: '$1,200–$2,500' },
-  { name: 'Jesmond',        slug: 'jesmond',        verdict: 'CAUTION' as Verdict, rentRange: '$1,500–$3,000' },
-  { name: 'Waratah',        slug: 'waratah',        verdict: 'GO' as Verdict,      rentRange: '$1,300–$2,800' },
-  { name: 'Lambton',        slug: 'lambton',        verdict: 'GO' as Verdict,      rentRange: '$1,400–$2,800' },
-  { name: 'Broadmeadow',    slug: 'broadmeadow',    verdict: 'CAUTION' as Verdict, rentRange: '$1,200–$2,500' },
-  { name: 'Wickham',        slug: 'wickham',        verdict: 'GO' as Verdict,      rentRange: '$1,200–$2,800' },
-  { name: 'Carrington',     slug: 'carrington',     verdict: 'GO' as Verdict,      rentRange: '$1,200–$2,500' },
-  { name: 'Stockton',       slug: 'stockton',       verdict: 'CAUTION' as Verdict, rentRange: '$1,000–$2,200' },
-  { name: 'Belmont',        slug: 'belmont',        verdict: 'CAUTION' as Verdict, rentRange: '$1,500–$3,200' },
-  { name: 'Glendale',       slug: 'glendale',       verdict: 'CAUTION' as Verdict, rentRange: '$1,500–$3,500' },
-  { name: 'Elermore Vale',  slug: 'elermore-vale',  verdict: 'CAUTION' as Verdict, rentRange: '$1,000–$2,000' },
-]
-
-// ── Style tokens ───────────────────────────────────────────────────────────────
-const FONT = '"DM Sans","Inter","Helvetica Neue",Arial,sans-serif'
-const C = {
-  text:    '#0F172A',
-  sub:     '#475569',
-  faint:   '#94A3B8',
-  border:  '#E2E8F0',
-  bg:      '#F8FAFC',
-  white:   '#FFFFFF',
-  green:   '#059669',
-  greenBg: '#ECFDF5',
-  greenBd: '#A7F3D0',
-  amber:   '#D97706',
-  amberBg: '#FFFBEB',
-  amberBd: '#FDE68A',
-  red:     '#DC2626',
-  redBg:   '#FEF2F2',
-  redBd:   '#FECACA',
-  blue:    '#1D4ED8',
-  blueBg:  '#EFF6FF',
-  blueBd:  '#BFDBFE',
-}
-
-// ── Helper components ──────────────────────────────────────────────────────────
-
-function VerdictBadge({ v }: { v: Verdict }) {
-  const map = {
-    GO:      { bg: C.greenBg, color: C.green, border: C.greenBd },
-    CAUTION: { bg: C.amberBg, color: C.amber, border: C.amberBd },
-    AVOID:   { bg: C.redBg,   color: C.red,   border: C.redBd   },
-  }
-  const s = map[v]
+function NewcastleFactorDirectory() {
+  const suburbs = getAllNewcastleSuburbs().slice().sort((a, b) => b.compositeScore - a.compositeScore)
   return (
-    <span style={{
-      display:'inline-block', fontSize:11, fontWeight:700, letterSpacing:'0.06em',
-      textTransform:'uppercase' as const, background:s.bg, color:s.color,
-      border:`1px solid ${s.border}`, borderRadius:999, padding:'3px 10px',
-    }}>{v}</span>
-  )
-}
-
-function LevelBadge({ level, type }: { level: Level; type: 'competition'|'rent'|'traffic' }) {
-  const color = level === 'Low'
-    ? (type === 'competition' ? C.green : type === 'rent' ? C.green : C.amber)
-    : level === 'Medium' ? C.amber : C.red
-  const bg = level === 'Low'
-    ? (type === 'competition' ? C.greenBg : type === 'rent' ? C.greenBg : C.amberBg)
-    : level === 'Medium' ? C.amberBg : C.redBg
-  return (
-    <span style={{
-      display:'inline-block', fontSize:11, fontWeight:700,
-      background:bg, color, borderRadius:6, padding:'2px 8px',
-    }}>{level}</span>
-  )
-}
-
-function ScoreBar({ value, max=10 }: { value:number; max?:number }) {
-  const pct = (value / max) * 100
-  const color = pct >= 80 ? C.green : pct >= 60 ? C.amber : C.red
-  return (
-    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-      <div style={{ flex:1, height:6, borderRadius:4, background:C.border, overflow:'hidden' }}>
-        <div style={{ width:`${pct}%`, height:'100%', background:color, borderRadius:4 }} />
-      </div>
-      <span style={{ fontSize:12, fontWeight:700, color, width:24, textAlign:'right' as const }}>{value}</span>
+    <div style={{ display: 'grid', gap: '20px' }}>
+      {suburbs.map((s) => {
+        const verdictColor = s.verdict === 'GO' ? C.emerald : s.verdict === 'CAUTION' ? C.amber : C.red
+        const verdictBg = s.verdict === 'GO' ? C.emeraldBg : s.verdict === 'CAUTION' ? C.amberBg : C.redBg
+        const verdictBdr = s.verdict === 'GO' ? C.emeraldBdr : s.verdict === 'CAUTION' ? C.amberBdr : C.redBdr
+        return (
+          <Link key={s.slug} href={`/analyse/newcastle/${s.slug}`} style={{ textDecoration: 'none' }}>
+            <div style={{ backgroundColor: C.white, border: `1px solid ${C.border}`, borderRadius: '14px', padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: C.n900, margin: 0 }}>{s.name}</h3>
+                <span style={{ fontSize: '11px', fontWeight: 800, padding: '3px 10px', borderRadius: '999px', backgroundColor: verdictBg, color: verdictColor, border: `1px solid ${verdictBdr}`, letterSpacing: '0.05em' }}>
+                  {s.verdict}
+                </span>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {[{ label: 'Cafe', value: s.cafe }, { label: 'Restaurant', value: s.restaurant }, { label: 'Retail', value: s.retail }].map(({ label, value }) => (
+                    <div key={label} style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>{label}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 800, color: C.brand }}>{value}</div>
+                    </div>
+                  ))}
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', color: C.muted, marginBottom: '2px' }}>Composite</div>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>{s.compositeScore}</div>
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '0 0 14px 0', maxWidth: '760px' }}>{s.verdictReason}</p>
+              <FactorGrid factors={s.factors} />
+            </div>
+          </Link>
+        )
+      })}
     </div>
   )
 }
 
-type FilterType = 'All' | BizType
-const FILTERS: FilterType[] = ['All', 'Café', 'Restaurant', 'Retail', 'Gym', 'Takeaway']
-
-// ── Main component ─────────────────────────────────────────────────────────────
 export default function NewcastlePage() {
-  const [activeFilter, setActiveFilter] = useState<FilterType>('All')
-  const [showAll, setShowAll] = useState(false)
-
-  const filtered = SUBURBS.filter(s =>
-    activeFilter === 'All' || s.bestFor.includes(activeFilter as BizType)
-  )
-  const displayed = showAll ? filtered : filtered.slice(0, 12)
-
   return (
-    <main style={{ fontFamily:FONT, color:C.text, background:C.bg, minHeight:'100vh' }}>
+    <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
 
-      {/* JSON-LD */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ARTICLE) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_BREADCRUMB) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_FAQ) }} />
+      <CityHero
+        cityName="Newcastle"
+        citySlug="newcastle"
+        tagline="Steel city turned creative capital. Newcastle rewards operators who understand its beach lifestyle, tight-knit suburb loyalties, and the commercial opportunity gap that Sydney pricing has never erased."
+        statChips={[
+          { text: '20 suburbs scored — inner city to beachside to outer growth' },
+          { text: "Newcastle East: Hunter's benchmark dining precinct" },
+          { text: 'Steel city to creative capital' },
+        ]}
+      />
 
-      {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section style={{
-        background:'linear-gradient(160deg,#FFFFFF 0%,#F0FDF4 60%,#ECFDF5 100%)',
-        borderBottom:`1px solid ${C.border}`, padding:'80px 24px 64px',
-      }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-
-          <nav aria-label="Breadcrumb" style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, color:C.faint, marginBottom:20, flexWrap:'wrap' as const }}>
-            <Link href="/" style={{ color:C.green, textDecoration:'none', fontWeight:600 }}>Home</Link>
-            <span>›</span>
-            <Link href="/analyse" style={{ color:C.green, textDecoration:'none', fontWeight:600 }}>Analyse</Link>
-            <span>›</span>
-            <span style={{ color:C.text, fontWeight:600 }}>Newcastle</span>
-          </nav>
-
-          <span style={{
-            display:'inline-block', fontSize:11, fontWeight:700, letterSpacing:'0.07em',
-            textTransform:'uppercase' as const, color:C.green, background:C.greenBg,
-            border:`1px solid ${C.greenBd}`, borderRadius:999, padding:'4px 12px', marginBottom:16,
-          }}>
-            NSW · Newcastle · Location Intelligence
-          </span>
-
-          <h1 style={{
-            fontSize:'clamp(28px,4.5vw,52px)', fontWeight:800, lineHeight:1.1,
-            letterSpacing:'-0.025em', margin:'0 0 18px', color:C.text,
-          }}>
-            Newcastle Business Location Guide —{' '}
-            <span style={{ color:C.green }}>Best Suburbs, Rent & Foot Traffic</span>
-            <br />2026
-          </h1>
-
-          <p style={{ fontSize:18, color:C.sub, lineHeight:1.7, maxWidth:680, margin:'0 0 14px' }}>
-            Newcastle is mid-transformation. The light rail, harbour renewal, and a decade of
-            population growth have reshaped which suburbs work for which businesses — and which
-            look attractive but will break you. This guide scores 20 Newcastle suburbs on
-            commercial rent, foot traffic, competition, and demographic spending power.
+      <div style={{ backgroundColor: C.amberBg, borderBottom: `1px solid ${C.amberBdr}`, padding: '12px 24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <p style={{ fontSize: '13px', color: C.amber, margin: 0 }}>
+            <strong>Methodology:</strong> Scores based on foot traffic density, demographic income distribution, commercial rent viability, competitive density, and accessibility. Data sourced from ABS 2024, NSW Valuer General Q1 2026, CBRE Newcastle, and Locatalyze proprietary foot traffic analysis.
           </p>
-
-          <p style={{ fontSize:14, color:C.faint, margin:'0 0 32px' }}>
-            Based on commercial lease data, ABS demographic benchmarks, and Newcastle Hunter Valley
-            hospitality industry metrics. Updated April 2026.
-          </p>
-
-          <div style={{ display:'flex', gap:14, flexWrap:'wrap' as const, alignItems:'center' }}>
-            <Link href="/onboarding?ref=newcastle-hub" style={{
-              display:'inline-flex', alignItems:'center', gap:8,
-              background:C.green, color:C.white, fontWeight:700, fontSize:15,
-              padding:'13px 26px', borderRadius:12, textDecoration:'none',
-            }}>
-              Run Full Location Analysis →
-            </Link>
-            <Link href="#suburbs" style={{ color:C.green, fontWeight:600, fontSize:14, textDecoration:'none' }}>
-              See all 20 suburbs ↓
-            </Link>
-          </div>
         </div>
-      </section>
+      </div>
 
-      {/* ── QUICK STATS ──────────────────────────────────────────────────────── */}
-      <section style={{ background:C.white, borderBottom:`1px solid ${C.border}`, padding:'32px 24px' }}>
-        <div style={{
-          maxWidth:860, margin:'0 auto',
-          display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:0,
-        }}>
+      <nav style={{ backgroundColor: C.white, borderBottom: `1px solid ${C.border}`, padding: '10px 24px', overflowX: 'auto' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '6px', flexWrap: 'nowrap', alignItems: 'center' }}>
           {[
-            { value:'20',       label:'Suburbs Analysed' },
-            { value:'8',        label:'GO Verdicts' },
-            { value:'$1k–$8k',  label:'Monthly Rent Range' },
-            { value:'Merewether', label:'Top Café Market' },
-            { value:'2026',     label:'Data Currency' },
-          ].map((s, i) => (
-            <div key={i} style={{
-              textAlign:'center' as const, padding:'16px 12px',
-              borderRight: i < 4 ? `1px solid ${C.border}` : 'none',
-            }}>
-              <div style={{ fontSize:22, fontWeight:800, color:C.green, lineHeight:1 }}>{s.value}</div>
-              <div style={{ fontSize:12, color:C.sub, marginTop:4, fontWeight:600 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── JUMP NAV ─────────────────────────────────────────────────────────── */}
-      <nav aria-label="Page sections" style={{
-        background:C.white, borderBottom:`1px solid ${C.border}`,
-        padding:'10px 24px', overflowX:'auto' as const,
-        position:'sticky' as const, top:0, zIndex:50,
-      }}>
-        <div style={{
-          maxWidth:860, margin:'0 auto',
-          display:'flex', gap:6, flexWrap:'nowrap' as const, alignItems:'center',
-        }}>
-          {[
-            { label:'Top Picks',    href:'#top-picks'    },
-            { label:'All Suburbs',  href:'#suburbs'      },
-            { label:'Compare',      href:'#compare'      },
-            { label:'Positioning',  href:'#positioning'  },
-            { label:'Suburb Directory', href:'#directory' },
-            { label:'How to Choose', href:'#framework'   },
-            { label:'FAQ',          href:'#faq'          },
-          ].map(link => (
-            <a key={link.href} href={link.href} style={{
-              fontSize:13, fontWeight:600, color:C.sub, textDecoration:'none',
-              padding:'6px 14px', borderRadius:5, backgroundColor:C.bg,
-              border:`1px solid ${C.border}`, whiteSpace:'nowrap' as const,
-            }}>{link.label}</a>
+            { label: 'Top Suburbs', href: '#top-suburbs' },
+            { label: 'By Business Type', href: '#by-type' },
+            { label: 'Suburb Directory', href: '#suburbs' },
+            { label: 'Comparisons', href: '#comparisons' },
+            { label: 'High-Risk Zones', href: '#high-risk' },
+            { label: 'Factor Breakdown', href: '#factor-directory' },
+            { label: 'FAQ', href: '#faq' },
+          ].map((link) => (
+            <a key={link.href} href={link.href} style={{ fontSize: '13px', fontWeight: 600, color: C.n700, textDecoration: 'none', padding: '6px 14px', borderRadius: '5px', backgroundColor: C.n50, border: `1px solid ${C.border}`, whiteSpace: 'nowrap' }}>
+              {link.label}
+            </a>
           ))}
         </div>
       </nav>
 
-      {/* ── TOP PICKS ────────────────────────────────────────────────────────── */}
-      <section id="top-picks" style={{ padding:'64px 24px' }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            Quick picks
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            Top Newcastle suburbs by business type
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 36px', maxWidth:560 }}>
-            If you need a fast answer before diving into the full suburb breakdown.
-          </p>
+      <section style={{ padding: '40px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+            {[
+              { value: '500K+', label: "Newcastle metro population — 2nd largest city in NSW", source: 'ABS 2024' },
+              { value: '$400M+', label: 'Annual food and hospitality sector revenue in the Hunter', source: 'Hunter Valley Research Foundation 2025' },
+              { value: '50-70%', label: 'Lower commercial rents vs Sydney inner-city equivalents', source: 'CBRE Newcastle Q1 2026' },
+              { value: '$96K', label: 'Highest median household income in inner Newcastle — Merewether', source: 'ABS 2024' },
+            ].map((s) => (
+              <div key={s.value} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '12px', border: `1px solid ${C.border}`, textAlign: 'center' }}>
+                <div style={{ fontSize: '30px', fontWeight: 800, color: C.brand, marginBottom: '8px' }}>{s.value}</div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: C.n800, marginBottom: '6px', lineHeight: '1.4' }}>{s.label}</div>
+                <div style={{ fontSize: '11px', color: C.muted }}>{s.source}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:16 }}>
-            {TOP_PICKS.map(p => (
-              <div key={p.suburb} style={{
-                background:C.white, border:`1px solid ${C.border}`, borderRadius:16,
-                padding:'22px 24px',
-              }}>
-                <span style={{
-                  fontSize:10, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const,
-                  color:C.blue, background:C.blueBg, border:`1px solid ${C.blueBd}`,
-                  borderRadius:999, padding:'3px 10px', display:'inline-block', marginBottom:12,
-                }}>{p.category}</span>
-                <div style={{ fontSize:22, fontWeight:800, color:C.text, marginBottom:6 }}>{p.suburb}</div>
-                <div style={{ fontSize:13, color:C.sub, lineHeight:1.6, marginBottom:14 }}>{p.reason}</div>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <VerdictBadge v={p.verdict} />
-                  <span style={{ fontSize:12, color:C.faint, fontWeight:600 }}>{p.rentRange}</span>
+      <section style={{ padding: '56px 24px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '28px' }}>Newcastle Business Landscape — 2026</h2>
+          <div style={{ display: 'grid', gap: '22px' }}>
+            {[
+              "Newcastle is the most misread business location in NSW. Operators from Sydney consistently underestimate the city's market depth and overestimate how much the smaller population limits revenue potential. The Hunter region has a $400 million food and hospitality sector, a cafe culture anchored by Darby Street that rivals inner-Sydney strips in quality, and a beach-lifestyle demographic in suburbs like Merewether and Cooks Hill that spends at levels most regional centres cannot match. The structural advantage is rent: a prime Darby Street position at $4,500/month would cost $12,000 in Newtown.",
+              "Newcastle's transformation from steel city to creative capital is real and measurable. The light rail corridor has restored pedestrian life to the CBD. Honeysuckle's waterfront precinct has established itself as a genuine dining destination. Wickham and Carrington are at the front of a gentrification wave that is delivering younger professional demographics ahead of hospitality supply. Operators who enter these precincts in 2026 are locking in leases that will look underpriced in three years.",
+              "The beach suburbs are Newcastle's premium residential market and its most underrated hospitality opportunity. Merewether has higher household incomes than most Sydney inner suburbs and fewer quality cafes than its demographic profile should support. Cooks Hill's Darby Street strip has the food literacy of Fitzroy at roughly 35% of Melbourne's rent. These are not second-tier markets — they are structurally advantaged positions for operators who can execute at a quality level.",
+              "The failure pattern in Newcastle is operators who treat it as a scaled-down Sydney. The customer acquisition model is fundamentally different: community loyalty matters more than destination-drawing power, repeat customers sustain more businesses than passing foot traffic, and the tight-knit suburb identity means operators who genuinely invest in their local community outperform those who rely on marketing. The suburbs that reward this model — Adamstown, Lambton, Waratah, The Junction — are consistently underrated and underpriced.",
+            ].map((para, i) => (
+              <p key={i} style={{ fontSize: '16px', lineHeight: '1.8', color: C.n800, margin: 0 }}>{para}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="by-type" style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Location Strategy by Business Type</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {[
+              { type: 'Cafes & Specialty Coffee', insight: "Merewether is the best unit-economics cafe play in Newcastle — high incomes, low competition, beach lifestyle demographic. Cooks Hill (Darby Street) is the higher-competition, higher-reward play for operators with a strong concept and clear differentiation. Hamilton works for operators who want strip energy without Darby Street rent.", best: ['Merewether', 'Cooks Hill', 'Hamilton'] },
+              { type: 'Full-Service Restaurants', insight: "Beaumont Street (Hamilton) is Newcastle's primary restaurant corridor — diverse cuisine mix, loyal dining culture, the highest restaurant density outside the CBD. Honeysuckle works for waterfront dining concepts with strong weekend positioning. The CBD is viable for premium concepts with a clear lunch and dinner trade split.", best: ['Hamilton', 'Honeysuckle', 'Newcastle CBD'] },
+              { type: 'Retail (Independent)', insight: "Darby Street in Cooks Hill is Newcastle's benchmark independent retail strip for lifestyle and boutique concepts. Merewether works for beach lifestyle retail with an affluent demographic. The CBD's revitalised Hunter Street corridor is building retail foot traffic via the light rail.", best: ['Cooks Hill', 'Merewether', 'Newcastle CBD'] },
+              { type: 'Fitness & Wellness', insight: "Boutique fitness follows high-income residential. Merewether's beach culture makes it the natural home for yoga, pilates, and reformer studios. Cooks Hill's creative demographic supports premium wellness concepts. The Junction is underrated — similar demographics to Merewether at lower rent.", best: ['Merewether', 'Cooks Hill', 'The Junction'] },
+              { type: 'Professional Services', insight: "Professional services follow corporate concentration — the Newcastle CBD has the strongest professional firm cluster. Hamilton is the secondary market with strong SME density on Beaumont Street. Kotara works for suburban professional service providers co-located near Westfield.", best: ['Newcastle CBD', 'Hamilton', 'Kotara'] },
+              { type: 'Creative & Hospitality Concepts', insight: "Wickham, Carrington, and Mayfield are the three markets where creative hospitality concepts find affordable entry and an early-adopter demographic. All three have the gentrification trajectory without the rent having caught up. First-mover advantage is real and the window is open in 2026.", best: ['Wickham', 'Carrington', 'Mayfield'] },
+            ].map((bt) => (
+              <div key={bt.type} style={{ padding: '20px', backgroundColor: C.white, borderRadius: '10px', border: `1px solid ${C.border}` }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: C.brand, marginBottom: '8px' }}>{bt.type}</h3>
+                <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '0 0 10px' }}>{bt.insight}</p>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {bt.best.map((s) => (
+                    <span key={s} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', backgroundColor: C.n100, borderRadius: '4px', color: C.n700 }}>{s}</span>
+                  ))}
                 </div>
               </div>
             ))}
@@ -737,601 +270,150 @@ export default function NewcastlePage() {
         </div>
       </section>
 
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── SUBURB CARDS ─────────────────────────────────────────────────────── */}
-      <section id="suburbs" style={{ padding:'64px 24px', background:C.white }}>
-        <div style={{ maxWidth:1000, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            Suburb by suburb
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            20 Newcastle suburbs — full breakdown
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 28px', maxWidth:580 }}>
-            Every suburb scored on demand, competition, rent, and business-type fit.
-            Filter by the business type you&apos;re planning.
-          </p>
-
-          <div style={{ display:'flex', flexWrap:'wrap' as const, gap:8, marginBottom:32 }}>
-            {FILTERS.map(f => (
-              <button key={f}
-                onClick={() => { setActiveFilter(f); setShowAll(false) }}
-                style={{
-                  fontSize:13, fontWeight:600, padding:'7px 16px', borderRadius:999,
-                  border:`1px solid ${activeFilter === f ? C.green : C.border}`,
-                  background: activeFilter === f ? C.green : C.white,
-                  color: activeFilter === f ? C.white : C.sub,
-                  cursor:'pointer',
-                }}
-              >{f}</button>
-            ))}
-          </div>
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:16 }}>
-            {displayed.map(s => (
-              <div key={s.name} style={{
-                background:C.bg, border:`1px solid ${C.border}`, borderRadius:18,
-                padding:'22px 24px', display:'flex', flexDirection:'column' as const,
-              }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:8 }}>
-                  <div>
-                    <div style={{ fontSize:18, fontWeight:800, color:C.text, marginBottom:4 }}>{s.name}</div>
-                    <div style={{ fontSize:12, color:C.faint, fontStyle:'italic' }}>{s.vibe}</div>
-                  </div>
-                  <VerdictBadge v={s.verdict} />
-                </div>
-
-                <div style={{ display:'flex', flexWrap:'wrap' as const, gap:5, marginBottom:14 }}>
-                  {s.bestFor.map(b => (
-                    <span key={b} style={{
-                      fontSize:11, fontWeight:700, background:C.greenBg,
-                      color:C.green, borderRadius:6, padding:'2px 8px',
-                    }}>{b}</span>
-                  ))}
-                </div>
-
-                <div style={{
-                  display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom:14,
-                  background:C.white, border:`1px solid ${C.border}`, borderRadius:10, padding:'10px 12px',
-                }}>
-                  {[
-                    { label:'Competition', value:s.competition, type:'competition' as const },
-                    { label:'Rent',        value:s.rent,        type:'rent' as const        },
-                    { label:'Foot Traffic',value:s.footTraffic, type:'traffic' as const     },
-                  ].map(m => (
-                    <div key={m.label} style={{ textAlign:'center' as const }}>
-                      <div style={{ fontSize:10, color:C.faint, fontWeight:700, textTransform:'uppercase' as const, letterSpacing:'0.05em', marginBottom:4 }}>{m.label}</div>
-                      <LevelBadge level={m.value} type={m.type} />
+      <section id="top-suburbs" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '32px', fontWeight: 800, color: C.n900, marginBottom: '12px', lineHeight: '1.2' }}>Top Newcastle Suburbs to Open a Business (2026)</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px', maxWidth: '760px' }}>Ranked by overall viability score across foot traffic, demographics, rent economics, competition gap, and growth trajectory.</p>
+          <div style={{ display: 'grid', gap: '16px' }}>
+            {[
+              { rank: 1, name: 'Merewether', slug: 'merewether', verdict: nVerdict('merewether'), score: nScore('merewether'), rentFrom: '$2,200/mo', body: "The easiest market in Newcastle to build a quality cafe business. High household incomes ($96,000+ median), low specialty competition, and a beach-lifestyle demographic that spends generously on quality coffee and brunch. Break-even at 38-45 customers per day — one of the lowest thresholds in Newcastle metro. No strong incumbent specialty cafe. A quality operator has clear space to own the suburb." },
+              { rank: 2, name: 'Cooks Hill', slug: 'cooks-hill', verdict: nVerdict('cooks-hill'), score: nScore('cooks-hill'), rentFrom: '$2,500/mo', body: "Darby Street is the benchmark independent hospitality strip in regional NSW. Genuine street life, a food-literate demographic paying $18-22 average ticket, and a creative class that actively supports quality independents. Competition is the only barrier — 15+ cafes within 800m means a generic concept is outcompeted quickly. Operators with clear differentiation perform very well." },
+              { rank: 3, name: 'Hamilton', slug: 'hamilton', verdict: nVerdict('hamilton'), score: nScore('hamilton'), rentFrom: '$2,000/mo', body: "Beaumont Street is Newcastle's most diverse dining corridor. Strong local loyalty, above-average spend on hospitality, and a customer base drawn from surrounding professional suburbs. Works for restaurants, cafes, and specialty food businesses. Lower competition than Darby Street at comparable rent." },
+              { rank: 4, name: 'Newcastle CBD', slug: 'newcastle-cbd', verdict: nVerdict('newcastle-cbd'), score: nScore('newcastle-cbd'), rentFrom: '$3,500/mo', body: "The light rail has restored pedestrian life to Hunter Street and the CBD core. New residential density is arriving. Best for premium concepts and high-volume hospitality. CBD rents are expensive by Newcastle standards — break-even requires either premium pricing or volume that simpler concepts cannot generate." },
+              { rank: 5, name: 'Honeysuckle', slug: 'honeysuckle', verdict: nVerdict('honeysuckle'), score: nScore('honeysuckle'), rentFrom: '$3,000/mo', body: "Waterfront precinct with strong weekend and event-day trade from Newcastle Entertainment Centre. A genuine dining destination. Operators who build local repeat trade alongside the waterfront tourism trade achieve consistent year-round economics. Pure waterfront-reliant concepts face mid-week exposure." },
+              { rank: 6, name: 'The Junction', slug: 'junction', verdict: nVerdict('junction'), score: nScore('junction'), rentFrom: '$1,500/mo', body: "Community-first strip between Cooks Hill and Merewether that inherits quality demographics from both premium neighbours. Loyal local catchment, lower rents, and genuine white space for a quality independent. The Merewether demographic shops here as well as on the beach strip." },
+              { rank: 7, name: 'Adamstown', slug: 'adamstown', verdict: nVerdict('adamstown'), score: nScore('adamstown'), rentFrom: '$1,200/mo', body: "Established residential catchment with low specialty competition and the lowest rents near the inner ring. Reliable community foot traffic without the volatility of event-dependent markets. The first-mover cafe opportunity is genuine — no quality specialty incumbent has moved in yet." },
+              { rank: 8, name: 'Wickham', slug: 'wickham', verdict: nVerdict('wickham'), score: nScore('wickham'), rentFrom: '$1,200/mo', body: "Light rail connectivity is accelerating Wickham's gentrification faster than rent has adjusted. A creative professional demographic is arriving. Lowest inner-ring rents available to operators willing to build the market rather than inherit it. First-mover advantage is real and the window is open in 2026." },
+              { rank: 9, name: 'Waratah', slug: 'waratah', verdict: nVerdict('waratah'), score: nScore('waratah'), rentFrom: '$1,000/mo', body: "Hospital-worker demand creates reliable weekday trade that most suburban strips cannot match. John Hunter Hospital generates consistent morning and lunch-hour customer flow. Underserved by quality independents — a hospital-adjacent cafe with quality product and convenient opening hours has a clear first-mover position." },
+              { rank: 10, name: 'Carrington', slug: 'carrington', verdict: nVerdict('carrington'), score: nScore('carrington'), rentFrom: '$900/mo', body: "Heritage harbour suburb with boutique character and genuine tourism upside from the waterfront position. Lowest commercial rents in the Newcastle inner ring. Growing residential density is bringing a new demographic before hospitality supply has responded. The 3-5 year trajectory is strong for early operators." },
+              { rank: 11, name: 'Charlestown', slug: 'charlestown', verdict: nVerdict('charlestown'), score: nScore('charlestown'), rentFrom: '$2,000/mo', body: "Charlestown Square drives strong area foot traffic, but chains dominate within the centre. Independents who position clearly outside the centre's gravity — specialty coffee, quality casual dining — capture the local residential catchment that prefers genuine hospitality to shopping-centre offerings." },
+              { rank: 12, name: 'Lambton', slug: 'lambton', verdict: nVerdict('lambton'), score: nScore('lambton'), rentFrom: '$900/mo', body: "Quiet residential strip with higher median incomes than neighbouring suburbs, loyal local customers, and almost no specialty competition. The community-loyalty model works well here. Operators who invest genuinely in the local community build sustainable businesses at very low break-even thresholds." },
+            ].map((suburb) => (
+              <Link key={suburb.slug} href={`/analyse/newcastle/${suburb.slug}`} style={{ textDecoration: 'none' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr auto', gap: '20px', alignItems: 'start', padding: '20px 24px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+                  <div style={{ textAlign: 'center', paddingTop: '2px' }}>
+                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
+                    <div style={{ marginTop: '6px', fontSize: '10px', fontWeight: 800, padding: '3px 7px', borderRadius: '4px', textAlign: 'center', backgroundColor: suburb.verdict === 'GO' ? C.emeraldBg : C.amberBg, color: suburb.verdict === 'GO' ? C.emerald : C.amber, border: `1px solid ${suburb.verdict === 'GO' ? C.emeraldBdr : C.amberBdr}` }}>
+                      {suburb.verdict}
                     </div>
-                  ))}
-                </div>
-
-                <div style={{ marginBottom:12 }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
-                    <span style={{ fontSize:12, fontWeight:600, color:C.sub }}>Demand Score</span>
-                    <span style={{ fontSize:12, color:C.faint }}>{s.rentRange}</span>
                   </div>
-                  <ScoreBar value={s.demandScore} />
-                </div>
-
-                <div style={{
-                  background:C.white, border:`1px solid ${C.border}`, borderRadius:10,
-                  padding:'12px 14px', marginBottom:10,
-                }}>
-                  <p style={{ fontSize:13, lineHeight:1.7, color:C.sub, margin:0 }}>{s.insight}</p>
-                </div>
-
-                <div style={{
-                  background:C.amberBg, border:`1px solid ${C.amberBd}`,
-                  borderRadius:10, padding:'10px 14px',
-                }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:C.amber, textTransform:'uppercase' as const, letterSpacing:'0.05em' }}>
-                    Watch out:{' '}
-                  </span>
-                  <span style={{ fontSize:13, color:'#92400E', lineHeight:1.6 }}>{s.watchOut}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {filtered.length > 12 && !showAll && (
-            <div style={{ textAlign:'center' as const, marginTop:32 }}>
-              <button onClick={() => setShowAll(true)} style={{
-                fontSize:14, fontWeight:700, color:C.green, background:C.greenBg,
-                border:`1px solid ${C.greenBd}`, borderRadius:12,
-                padding:'12px 28px', cursor:'pointer',
-              }}>
-                Show remaining {filtered.length - 12} suburbs →
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── MID-PAGE CTA ─────────────────────────────────────────────────────── */}
-      <section style={{
-        padding:'48px 24px',
-        background:'linear-gradient(135deg,#F0FDF4 0%,#ECFDF5 100%)',
-        borderTop:`1px solid ${C.greenBd}`, borderBottom:`1px solid ${C.greenBd}`,
-      }}>
-        <div style={{ maxWidth:860, margin:'0 auto', display:'flex', gap:32, flexWrap:'wrap' as const, alignItems:'center' }}>
-          <div style={{ flex:'1 1 320px' }}>
-            <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-              Need address-level precision?
-            </p>
-            <h2 style={{ fontSize:24, fontWeight:800, color:C.text, margin:'0 0 10px', lineHeight:1.2 }}>
-              This guide shows suburb averages.<br />Your block may be very different.
-            </h2>
-            <p style={{ fontSize:14, color:C.sub, lineHeight:1.65, margin:0 }}>
-              A Locatalyze full report analyses your specific address — competitors within 500m,
-              foot traffic for your exact block, rent benchmarks for your street, and a
-              GO/CAUTION/NO verdict with specific conditions.
-            </p>
-          </div>
-          <div style={{ flex:'0 0 auto' }}>
-            <Link href="/onboarding?ref=newcastle-mid-cta" style={{
-              display:'inline-flex', alignItems:'center', gap:8,
-              background:C.green, color:C.white, fontWeight:700, fontSize:15,
-              padding:'15px 30px', borderRadius:12, textDecoration:'none',
-            }}>
-              Analyse My Newcastle Address →
-            </Link>
-            <div style={{ fontSize:12, color:C.sub, marginTop:8, textAlign:'center' as const }}>
-              90 seconds · No credit card required
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── COMPARISON TABLE ─────────────────────────────────────────────────── */}
-      <section id="compare" style={{ padding:'64px 24px' }}>
-        <div style={{ maxWidth:1000, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            Side-by-side
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            Newcastle suburbs at a glance
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 32px', maxWidth:560 }}>
-            Demand scores by business type (1–10), rent level, and foot traffic. Sorted by café score.
-          </p>
-
-          <div style={{ overflowX:'auto' as const }}>
-            <table style={{
-              width:'100%', borderCollapse:'collapse' as const, fontSize:13,
-              background:C.white, borderRadius:16, overflow:'hidden',
-              border:`1px solid ${C.border}`,
-            }}>
-              <thead>
-                <tr style={{ background:C.bg, borderBottom:`2px solid ${C.border}` }}>
-                  {['Suburb', 'Café', 'Restaurant', 'Retail', 'Rent', 'Foot Traffic', 'Verdict'].map(h => (
-                    <th key={h} style={{
-                      padding:'12px 16px', textAlign:'left' as const, fontSize:11,
-                      fontWeight:700, color:C.sub, letterSpacing:'0.06em',
-                      textTransform:'uppercase' as const, whiteSpace:'nowrap' as const,
-                    }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {TABLE_SUBURBS.sort((a, b) => b.cafe - a.cafe).map((row, i) => (
-                  <tr key={row.name} style={{
-                    borderBottom:`1px solid ${C.border}`,
-                    background: i % 2 === 0 ? C.white : C.bg,
-                  }}>
-                    <td style={{ padding:'11px 16px', fontWeight:700, color:C.text, whiteSpace:'nowrap' as const }}>
-                      <Link href={`/analyse/newcastle/${row.slug}`} style={{ color:C.text, textDecoration:'none' }}>
-                        {row.name}
-                      </Link>
-                    </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div style={{ width:32, height:6, borderRadius:3, background:C.border, overflow:'hidden' }}>
-                          <div style={{ width:`${row.cafe*10}%`, height:'100%', background: row.cafe>=8?C.green:row.cafe>=6?C.amber:C.red }} />
-                        </div>
-                        <span style={{ fontSize:12, fontWeight:700, color:row.cafe>=8?C.green:row.cafe>=6?C.amber:C.red }}>{row.cafe}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div style={{ width:32, height:6, borderRadius:3, background:C.border, overflow:'hidden' }}>
-                          <div style={{ width:`${row.restaurant*10}%`, height:'100%', background: row.restaurant>=8?C.green:row.restaurant>=6?C.amber:C.red }} />
-                        </div>
-                        <span style={{ fontSize:12, fontWeight:700, color:row.restaurant>=8?C.green:row.restaurant>=6?C.amber:C.red }}>{row.restaurant}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div style={{ width:32, height:6, borderRadius:3, background:C.border, overflow:'hidden' }}>
-                          <div style={{ width:`${row.retail*10}%`, height:'100%', background: row.retail>=8?C.green:row.retail>=6?C.amber:C.red }} />
-                        </div>
-                        <span style={{ fontSize:12, fontWeight:700, color:row.retail>=8?C.green:row.retail>=6?C.amber:C.red }}>{row.retail}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <LevelBadge level={row.rent as Level} type="rent" />
-                    </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <LevelBadge level={row.traffic as Level} type="traffic" />
-                    </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <VerdictBadge v={row.verdict as Verdict} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Post-comparison CTA */}
-          <div style={{
-            marginTop:32, padding:'24px 28px', background:C.blueBg,
-            border:`1px solid ${C.blueBd}`, borderRadius:16,
-            display:'flex', gap:20, flexWrap:'wrap' as const, alignItems:'center',
-          }}>
-            <div style={{ flex:'1 1 280px' }}>
-              <div style={{ fontSize:15, fontWeight:700, color:C.blue, marginBottom:6 }}>
-                Want scores for your specific address, not just the suburb average?
-              </div>
-              <p style={{ fontSize:13, color:C.sub, margin:0, lineHeight:1.6 }}>
-                Suburb scores are starting points. A full Locatalyze report analyses your exact
-                street, block, and trade zone — including competitors within 500m and real
-                Newcastle commercial rent benchmarks.
-              </p>
-            </div>
-            <Link href="/onboarding?ref=newcastle-table-cta" style={{
-              display:'inline-flex', alignItems:'center', gap:6,
-              background:C.blue, color:C.white, fontWeight:700, fontSize:14,
-              padding:'12px 24px', borderRadius:10, textDecoration:'none', flexShrink:0,
-            }}>
-              Run Free Report →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── DEMAND VS COMPETITION GRID ────────────────────────────────────────── */}
-      <section id="positioning" style={{ padding:'64px 24px', background:C.white }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            Strategic positioning map
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            Newcastle demand vs. competition: where to focus
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 32px', maxWidth:580 }}>
-            The ideal Newcastle business location has high demand and low competition.
-            High demand + high competition requires genuine differentiation to survive.
-          </p>
-
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-            {[
-              {
-                title: 'High Demand · Low Competition',
-                subtitle: 'Best Newcastle opportunity',
-                color: C.green, bg: C.greenBg, border: C.greenBd,
-                suburbs: ['Merewether (café/retail)', 'Waratah (café — hospital precinct)', 'Wickham (café — first mover)', 'Adamstown (café — emerging)'],
-              },
-              {
-                title: 'High Demand · High Competition',
-                subtitle: 'Requires strong differentiation',
-                color: C.amber, bg: C.amberBg, border: C.amberBd,
-                suburbs: ['Cooks Hill / Darby Street (café)', 'Newcastle CBD (restaurant/retail)', 'Charlestown (retail)', 'Kotara (retail near Westfield)'],
-              },
-              {
-                title: 'Low Demand · Low Competition',
-                subtitle: 'Niche community play — low risk, low ceiling',
-                color: C.blue, bg: C.blueBg, border: C.blueBd,
-                suburbs: ['Lambton (café)', 'Carrington (café/boutique retail)', 'Elermore Vale (takeaway only)', 'Stockton (weekend café)'],
-              },
-              {
-                title: 'Low Demand · High Competition',
-                subtitle: 'Avoid — poor risk/reward',
-                color: C.red, bg: C.redBg, border: C.redBd,
-                suburbs: ['Glendale (independent café vs big-box)', 'Wallsend (chains dominate price point)', 'Jesmond (semester-only demand)'],
-              },
-            ].map(q => (
-              <div key={q.title} style={{
-                background: q.bg, border:`1px solid ${q.border}`,
-                borderRadius:16, padding:'22px 24px',
-              }}>
-                <div style={{ fontSize:13, fontWeight:800, color:q.color, marginBottom:4 }}>{q.title}</div>
-                <div style={{ fontSize:11, color:q.color, opacity:0.75, marginBottom:14, fontWeight:600 }}>{q.subtitle}</div>
-                <ul style={{ margin:0, padding:'0 0 0 16px' }}>
-                  {q.suburbs.map(s => (
-                    <li key={s} style={{ fontSize:13, color:C.sub, marginBottom:5, lineHeight:1.5 }}>{s}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── SUBURB DIRECTORY ─────────────────────────────────────────────────── */}
-      <section id="directory" style={{ padding:'64px 24px' }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            Explore suburbs in Newcastle
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            Full suburb directory
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 32px', maxWidth:560 }}>
-            All 20 Newcastle suburbs covered in this guide. Click any suburb for a dedicated
-            location intelligence page, or run a full analysis for your specific address.
-          </p>
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:10 }}>
-            {SUBURB_DIRECTORY.map(s => (
-              <Link key={s.slug} href={`/analyse/newcastle/${s.slug}`} style={{ textDecoration:'none' }}>
-                <div style={{
-                  background:C.white, border:`1px solid ${C.border}`, borderRadius:12,
-                  padding:'14px 16px', display:'flex', justifyContent:'space-between', alignItems:'center',
-                  transition:'border-color 0.15s',
-                }}>
                   <div>
-                    <div style={{ fontSize:14, fontWeight:700, color:C.text, marginBottom:4 }}>{s.name}</div>
-                    <div style={{ fontSize:11, color:C.faint }}>{s.rentRange}/mo</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                      <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
+                      <span style={{ fontSize: '12px', color: C.muted }}>From {suburb.rentFrom}</span>
+                    </div>
+                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
                   </div>
-                  <VerdictBadge v={s.verdict} />
+                  <div style={{ textAlign: 'center', minWidth: '52px' }}>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{suburb.score}</div>
+                    <div style={{ fontSize: '10px', color: C.muted, fontWeight: 600 }}>/ 100</div>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
-
-          <div style={{ marginTop:24, padding:'18px 22px', background:C.bg, border:`1px solid ${C.border}`, borderRadius:12 }}>
-            <p style={{ fontSize:13, color:C.sub, margin:0, lineHeight:1.6 }}>
-              <strong>Looking for a specific Newcastle address?</strong> Individual suburb pages show category-level data.
-              For address-level intelligence — your specific block, competitors within 500m, and real foot traffic for your street —
-              {' '}<Link href="/onboarding?ref=newcastle-directory" style={{ color:C.green, fontWeight:700 }}>run a full Locatalyze analysis</Link>.
-            </p>
-          </div>
         </div>
       </section>
 
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── HOW TO CHOOSE ────────────────────────────────────────────────────── */}
-      <section id="framework" style={{ padding:'64px 24px', background:C.white }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            Decision framework
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            How to choose the right Newcastle suburb
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 40px', maxWidth:560 }}>
-            Four variables determine whether a Newcastle location will make money. Get all four
-            right and you have a structurally sound business. Get one wrong and you&apos;ll spend
-            18 months finding out the hard way.
-          </p>
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:16 }}>
-            {[
-              {
-                num: '01',
-                title: 'Rent vs. Revenue Balance',
-                body: "Newcastle commercial rent should sit at 8–12% of your projected monthly revenue. At a $19 average café ticket, $4,000/month rent requires 56 transactions per day just to maintain a healthy rent ratio — before a dollar of profit. Inner-suburb Newcastle rents ($2,500–$5,000/month) are structurally more viable than Sydney equivalents, but the revenue ceiling per suburb also matters.",
-                accent: C.green,
-              },
-              {
-                num: '02',
-                title: 'Foot Traffic Quality',
-                body: "In Newcastle, foot traffic is not just volume — it's type. Darby Street has walkers with leisure time and spending intent. The CBD has workers with 7 minutes between meetings. Wallsend has residents who mainly drive. Each demands a different service format, menu, and price point. Do the 7am test: stand at your proposed site and count passing pedestrians for 10 minutes.",
-                accent: C.blue,
-              },
-              {
-                num: '03',
-                title: 'Competition Saturation',
-                body: "Newcastle's competitive landscape is more nuanced than the number of cafés per street. Darby Street has 15+ cafés within 800m — but it also validates that demand exists. Adamstown has almost zero competition but also less established café demand. The question is not how many competitors exist but whether you have a clear reason for customers to choose you.",
-                accent: C.amber,
-              },
-              {
-                num: '04',
-                title: 'Demographics — Spending Power',
-                body: "Merewether's $96,000 median household income supports $26 brunch plates and $6 specialty coffee without friction. Wallsend's $62,000 median income treats those same prices as a special-occasion spend. Both markets are viable — but only if your concept is correctly calibrated. Match your price point to the demographic before you match your aesthetic to your preferences.",
-                accent: C.red,
-              },
-            ].map(item => (
-              <div key={item.num} style={{
-                background:C.bg, border:`1px solid ${C.border}`, borderRadius:16, padding:'24px 26px',
-              }}>
-                <div style={{ fontSize:28, fontWeight:900, color:item.accent, opacity:0.25, lineHeight:1, marginBottom:12 }}>{item.num}</div>
-                <div style={{ fontSize:16, fontWeight:800, color:C.text, marginBottom:10 }}>{item.title}</div>
-                <p style={{ fontSize:14, color:C.sub, lineHeight:1.75, margin:0 }}>{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── COMMON MISTAKES ──────────────────────────────────────────────────── */}
-      <section style={{ padding:'64px 24px' }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.red, marginBottom:8 }}>
-            Avoid these
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 10px' }}>
-            Common mistakes Newcastle operators make
-          </h2>
-          <p style={{ fontSize:15, color:C.sub, margin:'0 0 36px', maxWidth:560 }}>
-            Most Newcastle café and restaurant failures are not product failures. They&apos;re
-            location and lease failures. These are the patterns that repeat.
-          </p>
-
-          <div style={{ display:'flex', flexDirection:'column' as const }}>
-            {[
-              {
-                title: 'Paying Darby Street rent for a non-Darby Street concept',
-                body: "Darby Street commands a premium because it delivers foot traffic and spending intent. A concept that would succeed in Adamstown at $1,800/month will break at Darby Street at $4,500/month — not because the product is wrong, but because the cost base requires volume the concept cannot achieve. Match concept ambition to suburb economics, not to suburb prestige.",
-              },
-              {
-                title: 'Modelling revenue on peak days',
-                body: "Jesmond in semester week looks like a gold mine. Jesmond in January looks like a ghost town. Always model your financial case on a conservative baseline — your average non-event, mid-week, non-peak trading day. If that number works, the business is viable. If you need every day to be a good day, the margin is too thin.",
-              },
-              {
-                title: 'Ignoring what "low competition" actually means',
-                body: "Low competition can mean two things: an untapped market, or a market that doesn't exist. Elermore Vale has low competition because demand has never been validated. Wickham has low competition because it's new and the demographic is incoming. These are structurally different. Validate that demand exists before interpreting low competition as an opportunity.",
-              },
-              {
-                title: 'Signing 5-year leases without break clauses in Newcastle\'s changing suburbs',
-                body: "Newcastle's inner suburbs are genuinely mid-transformation. The light rail, harbour renewal, and Hunter Street redevelopment will continue reshaping foot traffic patterns for 3–4 more years. A 5-year fixed lease in a suburb whose foot traffic profile is expected to change significantly is a bet on a future that hasn't arrived yet. Negotiate 3-year initial terms with options.",
-              },
-              {
-                title: 'Underestimating how long it takes to build a regular base in Newcastle',
-                body: "Sydney suburbs develop café loyal customer bases in 6–8 weeks because density and transient population are high. Newcastle's inner suburbs — outside Darby Street — build loyalty more slowly because the resident-to-visitor ratio is higher. Budget 90 days before expecting consistent revenue in any Newcastle suburb. In community-oriented suburbs, budget 150 days.",
-              },
-            ].map((m, i) => (
-              <div key={i} style={{
-                display:'flex', gap:16, padding:'22px 0',
-                borderBottom: i < 4 ? `1px solid ${C.border}` : 'none',
-                alignItems:'flex-start',
-              }}>
-                <div style={{
-                  width:28, height:28, borderRadius:999, background:C.redBg,
-                  color:C.red, fontWeight:800, fontSize:14,
-                  display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2,
-                }}>✕</div>
-                <div>
-                  <div style={{ fontSize:16, fontWeight:700, color:C.text, marginBottom:6 }}>{m.title}</div>
-                  <p style={{ fontSize:14, color:C.sub, lineHeight:1.75, margin:0 }}>{m.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── FAQ ──────────────────────────────────────────────────────────────── */}
-      <section id="faq" style={{ padding:'64px 24px', background:C.white }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase' as const, color:C.green, marginBottom:8 }}>
-            FAQ
-          </p>
-          <h2 style={{ fontSize:'clamp(22px,3vw,34px)', fontWeight:800, letterSpacing:'-0.02em', margin:'0 0 36px' }}>
-            Newcastle business location — common questions
-          </h2>
-
-          <div style={{ display:'flex', flexDirection:'column' as const, gap:0 }}>
-            {SCHEMA_FAQ.mainEntity.map((item, i) => (
-              <div key={i} style={{
-                padding:'24px 0',
-                borderBottom: i < SCHEMA_FAQ.mainEntity.length - 1 ? `1px solid ${C.border}` : 'none',
-              }}>
-                <div style={{ fontSize:16, fontWeight:700, color:C.text, marginBottom:10 }}>{item.name}</div>
-                <p style={{ fontSize:14, color:C.sub, lineHeight:1.75, margin:0 }}>{item.acceptedAnswer.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── INTERNAL LINKS ───────────────────────────────────────────────────── */}
-      <section style={{ padding:'48px 24px' }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:13, fontWeight:700, color:C.sub, marginBottom:20 }}>More Newcastle &amp; location intelligence resources</p>
-          <div style={{ display:'flex', flexWrap:'wrap' as const, gap:12 }}>
-            {[
-              { label: 'Newcastle Bakery Location Analysis', href: '/analyse/newcastle/bakery' },
-              { label: 'All Australian cities →', href: '/analyse' },
-              { label: 'Break-Even Foot Traffic Calculator', href: '/tools/break-even-foot-traffic' },
-              { label: 'Is Your Rent Overpriced?', href: '/tools/rent-overpriced-checker' },
-              { label: 'Business Viability Checker', href: '/tools/business-viability-checker' },
-              { label: 'Sydney business location guide', href: '/analyse/sydney' },
-              { label: 'Melbourne suburb intelligence', href: '/analyse/melbourne' },
-              { label: 'Brisbane location analysis', href: '/analyse/brisbane' },
-              { label: 'Perth suburb guide 2026', href: '/analyse/perth' },
-            ].map(l => (
-              <Link key={l.href} href={l.href} style={{
-                fontSize:13, fontWeight:600, color:C.green,
-                background:C.greenBg, border:`1px solid ${C.greenBd}`,
-                borderRadius:999, padding:'8px 16px', textDecoration:'none',
-              }}>
-                {l.label} →
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height:1, background:C.border }} />
-
-      {/* ── FINAL CTA ────────────────────────────────────────────────────────── */}
-      <section style={{
-        background:'linear-gradient(135deg,#059669 0%,#0F766E 100%)',
-        padding:'80px 24px', textAlign:'center' as const,
-      }}>
-        <div style={{ maxWidth:640, margin:'0 auto' }}>
-          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase' as const, color:'#A7F3D0', marginBottom:14 }}>
-            Ready for your address?
-          </p>
-          <h2 style={{
-            fontSize:'clamp(24px,3.5vw,40px)', fontWeight:800, color:C.white,
-            margin:'0 0 14px', letterSpacing:'-0.02em',
-          }}>
-            Run a full Locatalyze report for your Newcastle location
-          </h2>
-          <p style={{ fontSize:17, color:'#A7F3D0', margin:'0 0 14px', lineHeight:1.65 }}>
-            This guide gives you the suburb overview. A full Locatalyze report gives you
-            address-level intelligence — your specific block, not the suburb average.
-          </p>
-
-          <div style={{ display:'flex', justifyContent:'center', flexWrap:'wrap' as const, gap:20, margin:'28px 0 40px' }}>
-            {[
-              'Competitor names + Google ratings within 500m',
-              'Real foot traffic estimates for your block',
-              'Commercial rent benchmarks for your street',
-              'Demographic catchment breakdown',
-              'GO / CAUTION / NO verdict with specific conditions',
-            ].map(item => (
-              <div key={item} style={{ fontSize:13, color:'#D1FAE5', display:'flex', alignItems:'center', gap:6 }}>
-                <span style={{ color:'#34D399', fontWeight:700 }}>✓</span> {item}
-              </div>
-            ))}
-          </div>
-
-          <Link href="/onboarding?ref=newcastle-hub-cta" style={{
-            display:'inline-block', background:C.white, color:C.green,
-            fontWeight:800, fontSize:16, padding:'17px 44px',
-            borderRadius:100, textDecoration:'none',
-          }}>
-            Run My Newcastle Analysis →
+      <section style={{ padding: '48px 24px', background: 'linear-gradient(135deg, #1E3A5F 0%, #1E40AF 100%)', textAlign: 'center' }}>
+        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginBottom: '12px', lineHeight: '1.3' }}>Have a specific Newcastle address in mind?</h2>
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', marginBottom: '24px', lineHeight: '1.65' }}>Get a full foot traffic analysis, competitor map, rent benchmarks, and GO/CAUTION/NO verdict for any Newcastle address. Free.</p>
+          <Link href="/onboarding" style={{ display: 'inline-block', padding: '14px 30px', backgroundColor: '#DBEAFE', color: '#1E3A5F', borderRadius: '8px', textDecoration: 'none', fontSize: '15px', fontWeight: 800 }}>
+            Analyse your Newcastle address
           </Link>
-          <p style={{ fontSize:13, color:'#6EE7B7', marginTop:14 }}>
-            Takes 90 seconds. No credit card required to start.
-          </p>
         </div>
       </section>
 
-      {/* ── FOOTER NOTE ──────────────────────────────────────────────────────── */}
-      <section style={{ padding:'32px 24px', background:C.bg, borderTop:`1px solid ${C.border}` }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <p style={{ fontSize:12, color:C.faint, lineHeight:1.7, margin:0 }}>
-            <strong>Data note:</strong> Suburb scores are derived from ABS 2021 Census demographic data,
-            Newcastle City Council commercial vacancy data, publicly listed commercial lease ranges
-            on RealCommercial and CBRE Newcastle (Q1 2026), and Locatalyze industry benchmarks
-            for NSW regional hospitality. Scores represent relative market opportunity, not a
-            guarantee of business performance. For address-specific analysis, run a full Locatalyze
-            report.{' '}
-            <Link href="/methodology" style={{ color:C.green }}>Read our methodology →</Link>
-          </p>
+      <section id="suburbs" style={{ padding: '56px 24px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '12px' }}>Newcastle Suburb Directory — By Category</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px' }}>20 suburbs grouped by risk profile and market type.</p>
+          {SUBURB_CATEGORIES.map((cat) => (
+            <div key={cat.title} style={{ marginBottom: '52px' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: C.brand, marginBottom: '6px' }}>{cat.title}</h3>
+                <p style={{ fontSize: '14px', color: C.muted, margin: 0 }}>{cat.description}</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '16px' }}>
+                {cat.suburbs.map((s) => (
+                  <SuburbCard key={s.slug} name={s.name} slug={s.slug} citySlug="newcastle" description={s.description} score={s.score} verdict={s.verdict} rentRange={s.rentRange} />
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-    </main>
+      <section style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Quick Comparison — Top Newcastle Suburbs</h2>
+          <ComparisonTable rows={COMPARISON_ROWS} />
+        </div>
+      </section>
+
+      <section id="comparisons" style={{ padding: '48px 24px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>Head-to-Head: Suburb Comparisons</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+            {[
+              { title: 'Merewether vs Cooks Hill', body: "Merewether is the better unit-economics play — lower competition, higher household income, and a beach lifestyle demographic that spends generously with fewer incumbents to compete against. Break-even thresholds are among the lowest in Newcastle metro. Cooks Hill (Darby Street) has higher foot traffic depth and a food-literate street culture that drives higher average ticket and faster customer acquisition for operators who can differentiate. For operators who need immediate volume, Darby Street delivers faster. For operators who want to build a loyal community business with lower risk, Merewether is the cleaner entry." },
+              { title: 'Hamilton vs Newcastle CBD', body: "Hamilton's Beaumont Street is the better choice for most independent restaurant operators — established dining culture, diverse cuisine mix, loyal residential catchment from surrounding professional suburbs, and rents that are 30-50% lower than CBD positions. The CBD delivers higher weekday corporate trade and light rail foot traffic, but $5,000-$9,000/month rent requires either premium pricing or volume that casual dining concepts cannot sustain. Premium, high-volume concepts belong in the CBD; quality-casual and independent dining belongs on Beaumont Street." },
+              { title: 'Wickham vs Carrington vs Mayfield', body: "All three are first-mover plays at the front of Newcastle's industrial-to-creative gentrification wave. Wickham has the clearest short-term catalyst: light rail connectivity is already delivering a new residential demographic. Carrington has the highest long-term upside via its heritage waterfront position and tourism potential. Mayfield has the largest residential catchment but the longest ramp time. Operators who need cash flow within 12 months should choose Wickham. Operators with 24-month patience and a concept that benefits from boutique heritage setting should consider Carrington." },
+              { title: 'Adamstown vs Lambton vs Waratah', body: "All three are community-loyalty markets with low competition and below-market rents. The differentiator is demand source. Waratah has hospital-worker demand creating reliable weekday trade that the other two lack. Adamstown has the largest residential catchment and the most established commercial strip. Lambton has higher median incomes than both but a smaller catchment and quieter strip. For operators who want the fastest ramp with lowest competition, Waratah wins. For operators who want the biggest potential community customer pool, Adamstown." },
+            ].map((comp) => (
+              <div key={comp.title} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '10px', border: `1px solid ${C.border}` }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: C.brand, marginBottom: '12px' }}>{comp.title}</h3>
+                <p style={{ fontSize: '14px', color: C.n800, lineHeight: '1.7', margin: 0 }}>{comp.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="high-risk" style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '8px' }}>High-Risk Zones</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '28px' }}>Locations where independent operators consistently underperform relative to expectation.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {[
+              { name: 'Directly adjacent to Westfield Kotara or Charlestown Square', why: "Shopping centre gravity in Newcastle is particularly powerful. Chains dominate inside both centres and the foot traffic that enters rarely returns to street-level independents. Operators who position on commercial strips within 100m of these centres without a compelling reason to pull customers away consistently underperform versus the foot traffic numbers that pass their door." },
+              { name: 'Stockton (without a ferry-dependent strategy)', why: "Stockton's ferry isolation is a structural constraint. The customer pool is limited to local residents and visitors who specifically cross the harbour. For operators relying on passing trade or a broader catchment, the ferry bottleneck creates daily consistency challenges that conventional suburban strip locations do not face. The economics only work with very low rent and community-first positioning." },
+              { name: 'Broadmeadow (without an event-day strategy)', why: "McDonald Jones Stadium drives strong trade on event days, and operators who position for that demand can build healthy businesses. The risk is operators who project event-day revenue into mid-week periods. Non-event weekdays at Broadmeadow are sparse — a business that needs consistent daily trade to cover rent should not rely on stadium foot traffic as its primary customer source." },
+            ].map((zone) => (
+              <div key={zone.name} style={{ padding: '22px', backgroundColor: C.redBg, borderRadius: '10px', border: `1px solid ${C.redBdr}` }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: C.red, marginBottom: '10px' }}>{zone.name}</h3>
+                <p style={{ fontSize: '13px', color: C.n800, lineHeight: '1.65', margin: 0 }}>{zone.why}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="factor-directory" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: 800, color: C.n900, marginBottom: '10px', lineHeight: '1.2' }}>Newcastle Suburb Factor Breakdown — All 20 Markets</h2>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '36px', maxWidth: '760px' }}>Engine-derived scores across demand, rent pressure, competition density, seasonality, and tourism for every suburb in the dataset. Sorted by composite score. Click any suburb for the full detail page.</p>
+          <NewcastleFactorDirectory />
+        </div>
+      </section>
+
+      <FAQSection faqs={FAQS} title="Newcastle Business Location — FAQ" id="faq" />
+
+      <CTASection
+        title="Ready to find your Newcastle location?"
+        subtitle="Run a free analysis on any Newcastle address. Get foot traffic data, demographic breakdown, rent benchmarks, and competitive analysis in minutes."
+        variant="green"
+      />
+
+      <section style={{ padding: '28px 24px', backgroundColor: C.n50, borderTop: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '20px', flexWrap: 'wrap', fontSize: '13px' }}>
+          <Link href="/analyse" style={{ color: C.brand, fontWeight: 600, textDecoration: 'none' }}>All Cities</Link>
+          <Link href="/analyse/newcastle/merewether" style={{ color: C.brand, textDecoration: 'none' }}>Merewether Analysis</Link>
+          <Link href="/analyse/newcastle/cooks-hill" style={{ color: C.brand, textDecoration: 'none' }}>Cooks Hill Analysis</Link>
+          <Link href="/analyse/newcastle/hamilton" style={{ color: C.brand, textDecoration: 'none' }}>Hamilton Analysis</Link>
+        </div>
+      </section>
+    </div>
   )
 }

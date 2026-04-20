@@ -669,6 +669,9 @@ export function getAllSuburbKeys(): { citySlug: string; suburbSlug: string }[] {
     keys.add(`sydney/${suburb.slug}`)
   }
   for (const suburb of getPerthSuburbs()) {
+    // Dedicated Perth pages exist for these slugs. Excluding them here avoids
+    // dynamic-route static path collisions on hosted builds.
+    if (suburb.slug === 'mount-lawley' || suburb.slug === 'perth-cbd') continue
     keys.add(`perth/${suburb.slug}`)
   }
   return Array.from(keys).map((key) => {

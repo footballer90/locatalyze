@@ -7,6 +7,9 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { Logo } from '@/components/Logo'
+import { getSydneySuburb } from '@/lib/analyse-data/sydney'
+function sScore(n: string): number { return getSydneySuburb(n)?.compositeScore ?? 0 }
+function sVerdict(n: string): 'GO' | 'CAUTION' | 'NO' { const v = getSydneySuburb(n)?.verdict; return v === 'GO' ? 'GO' : v === 'CAUTION' ? 'CAUTION' : 'NO' }
 
 const S = {
   brand: '#0891B2', brandLight: '#06B6D4',
@@ -140,9 +143,9 @@ const SCORE_BARS: Array<{ label: string; value: number }> = [
 ]
 
 const NEARBY: Array<{ name: string; slug: string; score: number; verdict: Verdict }> = [
-  { name: 'Blacktown', slug: 'blacktown', score: 71, verdict: 'GO' },
-  { name: 'Penrith', slug: 'penrith', score: 76, verdict: 'GO' },
-  { name: 'Merrylands', slug: 'merrylands', score: 74, verdict: 'GO' },
+  { name: 'Blacktown', slug: 'blacktown', score: sScore('Blacktown'), verdict: sVerdict('Blacktown') },
+  { name: 'Penrith', slug: 'penrith', score: sScore('Penrith'), verdict: sVerdict('Penrith') },
+  { name: 'Merrylands', slug: 'merrylands', score: sScore('Merrylands'), verdict: sVerdict('Merrylands') },
 ]
 
 export default function MountDruittPage() {

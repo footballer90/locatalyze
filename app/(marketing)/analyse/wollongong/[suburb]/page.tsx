@@ -373,7 +373,7 @@ export default async function WollongongSuburbPage({
           <div style={{ background: `linear-gradient(135deg, ${S.brandDark} 0%, ${S.brand} 100%)`, borderRadius: 20, padding: '44px 36px', color: S.white, textAlign: 'center' as const }}>
             <h2 style={{ fontSize: 24, fontWeight: 900, marginBottom: 10 }}>Get a full AI report for {suburb.name}</h2>
             <p style={{ fontSize: 15, color: '#E0F2FE', marginBottom: 24, maxWidth: 500, margin: '0 auto 24px' }}>
-              Enter your specific address and business type — our AI pipeline returns competitor data, rent benchmarks, and a GO / CAUTION / NO verdict with financials.
+              Enter your specific address and business type — our AI pipeline returns competitor data, rent benchmarks, and a GO / CAUTION / RISKY verdict with financials.
             </p>
             <Link href="/onboarding" style={{ display: 'inline-block', background: S.white, color: S.brandDark, padding: '14px 32px', borderRadius: 10, fontWeight: 800, fontSize: 15, textDecoration: 'none' }}>
               Analyse My Location →

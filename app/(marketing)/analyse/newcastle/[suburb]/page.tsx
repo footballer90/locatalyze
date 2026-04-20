@@ -394,7 +394,7 @@ export default async function NewcastleSuburbPage({
               Get a Full AI Report for {suburb.name}
             </h2>
             <p style={{ fontSize: 15, color: '#E0F2FE', marginBottom: 28, maxWidth: 540, margin: '0 auto 28px' }}>
-              Enter your specific address and business type to receive competitor intelligence, exact rent benchmarks, and a GO / CAUTION / NO verdict with financial projections.
+              Enter your specific address and business type to receive competitor intelligence, exact rent benchmarks, and a GO / CAUTION / RISKY verdict with financial projections.
             </p>
             <Link
               href="/onboarding"

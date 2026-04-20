@@ -1,6 +1,6 @@
 import { C } from './AnalyseTheme'
 
-type Verdict = 'GO' | 'CAUTION' | 'NO'
+type Verdict = 'GO' | 'CAUTION' | 'NO' | 'RISKY'
 
 interface Props {
   verdict: Verdict
@@ -27,6 +27,13 @@ export function RiskBadge({ verdict, showLabel = true }: Props) {
       label: 'Moderate Risk',
     },
     NO: {
+      bg: C.redBg,
+      bdr: C.redBdr,
+      txt: C.red,
+      icon: 'X',
+      label: 'High Risk',
+    },
+    RISKY: {
       bg: C.redBg,
       bdr: C.redBdr,
       txt: C.red,

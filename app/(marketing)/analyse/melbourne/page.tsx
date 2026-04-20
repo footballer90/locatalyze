@@ -11,7 +11,8 @@ import { FAQSection } from '@/components/analyse/FAQSection'
 import { CTASection } from '@/components/analyse/CTASection'
 import { PollSection } from '@/components/analyse/PollSection'
 import { C } from '@/components/analyse/AnalyseTheme'
-import { getMelbourneSuburb } from '@/lib/analyse-data/melbourne'
+import { getMelbourneSuburb, getMelbourneSuburbs } from '@/lib/analyse-data/melbourne'
+import { FactorGrid } from '@/components/analyse/FactorGrid'
 
 function mScore(name: string): number {
   return getMelbourneSuburb(name)?.compositeScore ?? 0
@@ -134,6 +135,88 @@ const SCHEMA = {
   })),
 }
 
+// ── Full suburb factor directory (server-rendered, sorted by composite score) ──
+
+function MelbourneFactorDirectory() {
+  const suburbs = getMelbourneSuburbs().sort((a, b) => b.compositeScore - a.compositeScore)
+
+  const VERDICT_CFG = {
+    GO:      { bg: C.emeraldBg, bdr: C.emeraldBdr, txt: C.emerald },
+    CAUTION: { bg: C.amberBg,   bdr: C.amberBdr,   txt: C.amber },
+    RISKY:   { bg: C.redBg,     bdr: C.redBdr,     txt: C.red },
+  }
+
+  return (
+    <section id="factor-directory" style={{ padding: '64px 24px', backgroundColor: '#FFFFFF' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '12px' }}>
+          Melbourne Suburb Factor Breakdown — All {suburbs.length} Suburbs
+        </h2>
+        <p style={{ fontSize: '15px', color: C.muted, marginBottom: '36px', maxWidth: '760px' }}>
+          Engine-derived scores for every Melbourne suburb in the dataset. Five factors rated 1–10 feed into business-type composite scores. Sorted by overall composite score.
+        </p>
+
+        <div style={{ display: 'grid', gap: '20px' }}>
+          {suburbs.map((s) => {
+            const v = VERDICT_CFG[s.verdict]
+            return (
+              <Link
+                key={s.slug}
+                href={`/analyse/melbourne/${s.slug}`}
+                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+              >
+                <div
+                  style={{
+                    padding: '22px 24px',
+                    backgroundColor: C.white,
+                    border: `1px solid ${C.border}`,
+                    borderRadius: '14px',
+                    transition: 'box-shadow 0.15s',
+                  }}
+                >
+                  {/* Header row */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 800, color: C.n900, margin: 0 }}>{s.name}</h3>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6, backgroundColor: v.bg, color: v.txt, border: `1px solid ${v.bdr}` }}>
+                        {s.verdict}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                      {[
+                        { label: 'Café', value: s.cafe },
+                        { label: 'Rest.', value: s.restaurant },
+                        { label: 'Retail', value: s.retail },
+                      ].map(({ label, value }) => (
+                        <div key={label} style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: '16px', fontWeight: 900, color: value >= 70 ? C.emerald : value >= 58 ? C.amber : C.red, lineHeight: 1 }}>{value}</div>
+                          <div style={{ fontSize: '10px', color: C.mutedLight, marginTop: '2px' }}>{label}</div>
+                        </div>
+                      ))}
+                      <div style={{ textAlign: 'center', paddingLeft: '12px', borderLeft: `1px solid ${C.border}` }}>
+                        <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{s.compositeScore}</div>
+                        <div style={{ fontSize: '10px', color: C.mutedLight }}>/ 100</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Factor grid */}
+                  <FactorGrid factors={s.locationFactors} />
+
+                  {/* First analyst note */}
+                  <p style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', margin: '8px 0 0 0' }}>
+                    {s.why[0]}
+                  </p>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function MelbournePage() {
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
@@ -169,6 +252,7 @@ export default function MelbournePage() {
             { label: 'Top 20 Suburbs', href: '#top-20' },
             { label: 'By Business Type', href: '#by-type' },
             { label: 'Suburb Directory', href: '#suburbs' },
+            { label: 'Factor Breakdown', href: '#factor-directory' },
             { label: 'Comparisons', href: '#comparisons' },
             { label: 'High-Risk Zones', href: '#high-risk' },
             { label: 'FAQ', href: '#faq' },
@@ -527,6 +611,9 @@ export default function MelbournePage() {
         </div>
       </section>
 
+      {/* Full Factor Directory */}
+      <MelbourneFactorDirectory />
+
       {/* Comparison Table */}
       <section id="comparisons" style={{ padding: '56px 24px', backgroundColor: C.n50 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -630,6 +717,13 @@ export default function MelbournePage() {
               { name: 'Chadstone', slug: 'chadstone' },
               { name: 'Dandenong', slug: 'dandenong' },
               { name: 'Werribee', slug: 'werribee' },
+              { name: 'Abbotsford', slug: 'abbotsford' },
+              { name: 'Thornbury', slug: 'thornbury' },
+              { name: 'Coburg', slug: 'coburg' },
+              { name: 'Armadale', slug: 'armadale' },
+              { name: 'Tarneit', slug: 'tarneit' },
+              { name: 'Sunbury', slug: 'sunbury' },
+              { name: 'Essendon', slug: 'essendon' },
             ].map((s) => (
               <Link
                 key={s.slug}
