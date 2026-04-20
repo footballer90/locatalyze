@@ -18,6 +18,15 @@ const Footer = dynamic(() => import('@/components/Footer'), {
   loading: () => <div style={{ minHeight: 520, background: '#080F0E' }} />,
 })
 
+// Testimonials auto-hides when the data array is empty, so dynamically
+// importing is cheap: if no quotes are live, React receives `null` and
+// the module payload is still small. Kept non-ssr to match the rest of
+// the marketing section layout and keep the SSR manifest lean.
+const Testimonials = dynamic(() => import('@/components/Testimonials'), {
+  ssr: false,
+  loading: () => null,
+})
+
 // ── Design tokens ──────────────────────────────────────────────────
 const L = {
   white:      '#FFFFFF',
@@ -1390,6 +1399,10 @@ export default function LandingPage() {
           </p>
         </div>
       </section>
+
+      {/* TESTIMONIALS — self-hides when lib/marketing/testimonials.ts is
+          empty, so it sits idle on the page until a real quote lands. */}
+      <Testimonials isMobile={isMobile} />
 
       {/* PRICING */}
       <section id="pricing" style={{ padding: sp, background: L.mint, contentVisibility: 'auto', containIntrinsicSize: '900px' }}>
