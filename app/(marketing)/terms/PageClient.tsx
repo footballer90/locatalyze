@@ -288,7 +288,7 @@ export default function TermsPageClient() {
               The Platform uses publicly available geographic data, algorithmic financial modelling, and artificial intelligence (AI) to generate indicative feasibility reports for commercial locations in Australia. These reports are provided as a starting point for user research only.
             </p>
             <p style={S.p}>
-              The data sources used by Locatalyze include Google Maps Platform (competitor discovery and ratings), Geoapify (proximity calculations), Nominatim/OpenStreetMap (address geocoding), Australian Bureau of Statistics (demographic estimates), and OpenAI GPT-4o-mini (AI-generated analysis text). These sources may be incomplete, outdated, or inaccurate.
+              The data sources used by Locatalyze include Google Maps Platform (competitor discovery and ratings), Geoapify (secondary place-of-interest coverage), Mapbox (address geocoding and coordinate pinning), Australian Bureau of Statistics (demographic estimates), and OpenAI (AI-generated narrative analysis text — including the GPT-4 family of models). These sources may be incomplete, outdated, or inaccurate.
             </p>
           </div>
 
@@ -341,7 +341,7 @@ export default function TermsPageClient() {
 
             <h3 style={S.h3}>Paid plans</h3>
             <p style={S.p}>
-              Paid subscriptions are billed in Australian Dollars (AUD) inclusive of GST where applicable. Payments are processed securely by Stripe. We do not store your payment card details.
+              Paid plans are sold as one-off report packs (for example, a single report, 3-report pack, or 10-report pack) priced in Australian Dollars (AUD) inclusive of GST where applicable. Report credits do not expire while your account remains active. Payments are processed securely by Stripe. We do not store your payment card details.
             </p>
 
             <h3 id="refunds" style={S.h3}>Refund policy</h3>
@@ -349,10 +349,7 @@ export default function TermsPageClient() {
               Due to the digital nature of our service, all sales are generally final once a report has been generated. However, we comply with our obligations under the Australian Consumer Law (ACL). If the service has a major failure as defined under the ACL, you are entitled to a remedy including a refund.
             </p>
             <p style={S.p}>
-              If you are dissatisfied with a report, please contact us at <a href={`mailto:${EMAIL}`} style={S.emailLink}>{EMAIL}</a> and we will work to resolve your concern. Refund requests made within 7 days of purchase that have not involved generation of a report will be considered on a case-by-case basis.
-            </p>
-            <p style={S.p}>
-              Lifetime plan purchases are non-refundable after 14 days from the date of purchase, except where required by law.
+              If you are dissatisfied with a report, please contact us at <a href={`mailto:${EMAIL}`} style={S.emailLink}>{EMAIL}</a> and we will work to resolve your concern. Refund requests made within 7 days of purchase for unused report credits (where no report has been generated against the credit) will be considered on a case-by-case basis.
             </p>
           </div>
 

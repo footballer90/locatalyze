@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, FileText, Unlock, Package, Briefcase } from 'lucide-react'
-import { DEMO_SCENARIOS } from '@/lib/marketing/demo-scenarios'
+import { DEMO_SCENARIOS, rentToRevenueLabel } from '@/lib/marketing/demo-scenarios'
 import { LogoMark } from '@/components/Logo'
 
 const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'), {
@@ -110,7 +110,7 @@ const RP_CASES = [
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
     metrics: [
       { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.go.monthlyRevenue,      highlight: false },
-      { l: 'Est. rent-to-revenue', v: '~9–11%',            highlight: false },
+      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(DEMO_SCENARIOS.go),  highlight: false },
       { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.go.breakEven,        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
@@ -126,7 +126,7 @@ const RP_CASES = [
     gradHeader: 'linear-gradient(135deg, #451A03 0%, #78350F 40%, #B45309 100%)',
     metrics: [
       { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.caution.monthlyRevenue,      highlight: false },
-      { l: 'Est. rent-to-revenue', v: '~18–22%',          highlight: false },
+      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(DEMO_SCENARIOS.caution), highlight: false },
       { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.caution.breakEven,        highlight: false },
       { l: 'Note',                  v: 'Estimate only',    highlight: true },
     ],
@@ -142,7 +142,7 @@ const RP_CASES = [
     gradHeader: 'linear-gradient(135deg, #2D0000 0%, #7F1D1D 40%, #991B1B 100%)',
     metrics: [
       { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.no.monthlyRevenue,      highlight: false },
-      { l: 'Est. rent-to-revenue', v: '~30%+',            highlight: false },
+      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(DEMO_SCENARIOS.no),  highlight: false },
       { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.no.breakEven,        highlight: false },
       { l: 'Note',                  v: 'High risk',        highlight: true },
     ],
@@ -154,16 +154,30 @@ const RP_CASES = [
 function ReportPreview({ isMobile }: { isMobile: boolean }) {
   const [caseIdx, setCaseIdx]   = useState(0)
   const [animKey, setAnimKey]   = useState(0)
-  const [score, setScore]       = useState(0)          // start at 0 — animate to real value after mount
+  // Initialise to the target score — not 0 — so the very first paint shows
+  // a coherent GO / 82 pair. For 9 consecutive audits this card was shown
+  // as "GO · 0/100" because `useState(0)` briefly reconciled before the
+  // effect below could run. Fix is architectural: the hero mini-card and
+  // the full ReportDemoSection both read `score` from DEMO_SCENARIOS
+  // and both start at the target on mount.
+  const [score, setScore]       = useState(RP_CASES[0].score)
   const [snapping, setSnapping] = useState(false)
   const [visible, setVisible]   = useState(true)
   const rpRef                   = useRef<HTMLDivElement>(null)
+  // Skip the 0 → target ring animation on the very first render so the
+  // hero never flashes `0/100` to a visitor; still animate on subsequent
+  // scenario switches because that transition reads as intentional motion.
+  const firstScoreRun           = useRef(true)
 
-  // Animate score ring from 0 → target when visible and on case switch
   useEffect(() => {
     if (!visible) return
-    setScore(0)
     const target = RP_CASES[caseIdx].score
+    if (firstScoreRun.current) {
+      firstScoreRun.current = false
+      setScore(target)
+      return
+    }
+    setScore(0)
     let current = 0
     const id = setInterval(() => {
       current = Math.min(current + 2, target)
@@ -263,7 +277,7 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
                   <p style={{ fontSize:9.5, color:c.color, opacity:.75, marginTop:1 }}>{c.verdictSub}</p>
                 </div>
               </div>
-              <div style={{ textAlign:'center' as const, opacity: score > 0 ? 1 : 0, transition: 'opacity 0.2s' }}>
+              <div style={{ textAlign:'center' as const }}>
                 <div style={{ position:'relative', width:74, height:74 }}>
                   <svg width="74" height="74" style={{ transform:'rotate(-90deg)' }}>
                     <circle cx="37" cy="37" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth="6"/>
@@ -1645,7 +1659,7 @@ export default function LandingPage() {
               </span>
             </h2>
             <p style={{ fontSize: isMobile ? 14 : 16, color:'rgba(204,235,229,.55)', maxWidth:540, margin:'0 auto', lineHeight:1.75 }}>
-              Every verdict is computed from real, live sources — cross-referenced by one AI model and a deterministic scoring engine. No static databases. No educated guesses.
+              Every verdict is computed from real, live sources — the GO / CAUTION / NO call and the score come from our deterministic scoring engine, not from an AI. The written narrative (SWOT, market read, 3-year outlook) is generated by OpenAI on top of those numbers. No static databases. No educated guesses.
             </p>
           </div>
 
@@ -1654,7 +1668,7 @@ export default function LandingPage() {
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:0, marginBottom:64 }}>
               {[
                 { icon: 'globe',    label: 'Live Data' },
-                { icon: 'activity', label: '1 AI model + compute engine' },
+                { icon: 'activity', label: 'OpenAI narrative + in-house compute engine' },
                 { icon: 'barChart', label: 'Scoring Engine' },
                 { icon: 'shield',   label: 'Your Verdict' },
               ].map((step, i) => (
@@ -1707,9 +1721,9 @@ export default function LandingPage() {
                 color:'#EF4444', colorBg:'rgba(239,68,68,.08)', colorBorder:'rgba(239,68,68,.2)',
               },
               {
-                icon: 'bot', source:'AI Narrative + Compute Engine', badge:'Proprietary',
+                icon: 'bot', source:'AI Narrative + Compute Engine', badge:'OpenAI + in-house',
                 headline:'Break-even, profit and 3-year outlook',
-                body:'Input your rent and transaction value — our model calculates daily volume needed, monthly profit, payback period and a 3-year revenue projection.',
+                body:'A deterministic rules-based engine (in-house) calculates daily volume needed, monthly profit, payback period and the 3-year revenue projection from your rent and transaction value. OpenAI is used on top of those numbers to write the narrative analysis — it explains the verdict, it does not decide it.',
                 proof:'Based on ABS Census + live business data',
                 color:'#10B981', colorBg:'rgba(16,185,129,.08)', colorBorder:'rgba(16,185,129,.25)',
               },

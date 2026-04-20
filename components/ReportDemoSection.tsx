@@ -106,12 +106,12 @@ const DATA: Record<Verdict, ReportData> = {
       { l: 'Setup Cost Est.', v: '$185,000', s: 'Fit-out + equip.'  },
     ],
     finRows: [
-      { l: 'Rent',            v: '$3,800'  },
+      { l: 'Rent',            v: '$3,500'  },
       { l: 'Staff (3 FTE)',   v: '$22,000' },
       { l: 'COGS (28%)',      v: '$23,240' },
       { l: 'Utilities & ops', v: '$4,800'  },
       { l: 'Marketing',       v: '$2,000'  },
-      { l: 'Total Expenses',  v: '$55,840', div: true },
+      { l: 'Total Expenses',  v: '$55,540', div: true },
       { l: 'Est. gross revenue', v: '$78k–$88k', div: true },
       { l: 'Net Profit',      v: '$27,200', div: true, hi: true, pos: true },
     ],
@@ -130,7 +130,7 @@ const DATA: Record<Verdict, ReportData> = {
     ],
     swot: {
       s: ['High-income catchment — avg $88k household income within 500m', 'Only 4 cafes in 500m vs suburb avg of 9 — clear market gap', '580 daily commuters via Subiaco station'],
-      w: ['Rent at $3,800/mo is above suburb average', 'Limited parking on Rokeby Road'],
+      w: ['Rent at $3,500/mo sits at the upper end of the precinct average', 'Limited parking on Rokeby Road'],
       o: ['Hospital precinct drives 7-day trade', 'Underserved lunch market — no direct competitor within 500m on Rokeby'],
       t: ['Two premium independents with strong existing loyalty', 'Lease renewal risk in years 2–3'],
     },
