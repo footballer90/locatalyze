@@ -1409,8 +1409,12 @@ export default function SampleReportClient() {
                 Run my free report →
               </Link>
               {/* Checklist — for users who want to do the site visit first */}
-              <Link href="/tools/checklist" style={{ display: 'block', textAlign: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '9px', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+              <Link href="/tools/checklist" style={{ display: 'block', textAlign: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '9px', fontSize: 12, fontWeight: 600, textDecoration: 'none', marginBottom: 6 }}>
                 Before-you-sign checklist →
+              </Link>
+              {/* Lease term calculator — for users deciding 3yr vs 5yr */}
+              <Link href="/tools/lease-term-calculator" style={{ display: 'block', textAlign: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '9px', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+                3yr vs 5yr lease calculator →
               </Link>
             </div>
 

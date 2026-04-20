@@ -56,6 +56,15 @@ const TOOLS = [
     href: '/tools/checklist',
     cta: 'Open checklist',
   },
+  {
+    id: 'lease',
+    title: '3-Year vs 5-Year Lease Calculator',
+    short: 'Total committed rent, fit-out payback, and Year 1 loss if the business closes.',
+    description:
+      'Compare 3, 4, and 5-year commercial lease terms by total rent obligation, break-even timeline, and maximum loss if trading assumptions prove wrong. The question landlords never answer for you.',
+    href: '/tools/lease-term-calculator',
+    cta: 'Compare lease terms',
+  },
 ] as const
 
 function IconViability(props: { className?: string }) {
@@ -106,6 +115,16 @@ function IconChecklist(props: { className?: string }) {
   )
 }
 
+function IconLease(props: { className?: string }) {
+  return (
+    <svg className={props.className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2"/>
+      <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M8 14h4M8 17h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
 const TOOL_ICONS: Record<
   (typeof TOOLS)[number]['id'],
   ComponentType<{ className?: string }>
@@ -114,6 +133,7 @@ const TOOL_ICONS: Record<
   rent: IconRent,
   breakeven: IconBreakEven,
   checklist: IconChecklist,
+  lease: IconLease,
 }
 
 const HUB_CSS = `
