@@ -2,10 +2,10 @@
 
 
 export default function TermsPageClient() {
- const EFFECTIVE_DATE = '8 March 2025'
+ const EFFECTIVE_DATE = '20 April 2026'
  const COMPANY = 'Locatalyze'
  const EMAIL = 'legal@locatalyze.com.au'
- const JURISDICTION = 'New South Wales, Australia'
+ const JURISDICTION = 'Western Australia, Australia'
 
  const S = {
     page: {
@@ -431,7 +431,7 @@ export default function TermsPageClient() {
           <div id="governing" style={S.section}>
       <h2 style={S.h2}>12. Governing Law and Dispute Resolution</h2>
             <p style={S.p}>
-              These Terms are governed by the laws of {JURISDICTION}. You agree to submit to the non-exclusive jurisdiction of the courts of New South Wales for any dispute arising under these Terms.
+              These Terms are governed by the laws of {JURISDICTION} (the state in which the business is registered). You agree to submit to the non-exclusive jurisdiction of the courts of Western Australia for any dispute arising under these Terms.
             </p>
             <p style={S.p}>
               Before commencing legal proceedings, you agree to contact us at <a href={`mailto:${EMAIL}`} style={S.emailLink}>{EMAIL}</a> to attempt to resolve any dispute informally within 30 days.

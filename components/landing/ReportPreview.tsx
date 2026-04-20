@@ -7,7 +7,7 @@ const RP_CASES = [
  {
     id: 0,
     biz: 'Specialty Coffee Shop', emoji: '', location: 'Subiaco WA 6008',
-  verdict: 'GO', verdictSub: 'Strong Opportunity',
+  verdict: 'GO', verdictSub: 'Strong fundamentals',
   score: 82, scoreLabel: 'Feasibility Score',
   color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
   gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
