@@ -97,3 +97,11 @@ export const DARWIN_HUBS: DarwinHubEntry[] = RAW.map((row) => {
 export function getDarwinHub(slug: string): DarwinHubEntry | undefined {
   return DARWIN_HUBS.find((h) => h.slug === slug)
 }
+
+export function getDarwinHubSlugs(): string[] {
+  return DARWIN_HUBS.map((h) => h.slug)
+}
+
+export function getDarwinNearbyHubs(currentSlug: string, limit = 3): DarwinHubEntry[] {
+  return DARWIN_HUBS.filter((h) => h.slug !== currentSlug).slice(0, limit)
+}

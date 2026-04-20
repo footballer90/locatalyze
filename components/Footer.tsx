@@ -270,6 +270,21 @@ export default function Footer() {
    ],
     },
     {
+      title: 'Cities',
+      links: [
+        { label: 'Sydney',       href: '/analyse/sydney' },
+        { label: 'Melbourne',    href: '/analyse/melbourne' },
+        { label: 'Brisbane',     href: '/analyse/brisbane' },
+        { label: 'Perth',        href: '/analyse/perth' },
+        { label: 'Canberra',     href: '/analyse/canberra' },
+        { label: 'Hobart',       href: '/analyse/hobart' },
+        { label: 'Darwin',       href: '/analyse/darwin' },
+        { label: 'Gold Coast',   href: '/analyse/gold-coast' },
+        { label: 'Newcastle',    href: '/analyse/newcastle' },
+        { label: 'All cities →', href: '/analyse' },
+      ],
+    },
+    {
       title: 'Use Cases',
    links: [
        { label: 'Cafes & Coffee',  href: '/use-case/cafes' },

@@ -1,155 +1,194 @@
 import { MetadataRoute } from 'next'
+import { getCanberraSuburbSlugs } from '@/lib/analyse-data/canberra'
+import { getHobartSuburbSlugs } from '@/lib/analyse-data/hobart'
+import { getDarwinHubSlugs } from '@/lib/analyse-data/darwin-hubs'
+import { getBallaratSuburbSlugs } from '@/lib/analyse-data/ballarat'
+import { getBendigoSuburbSlugs } from '@/lib/analyse-data/bendigo'
+import { getCairnsSuburbSlugs } from '@/lib/analyse-data/cairns'
+import { getTownsvilleSuburbSlugs } from '@/lib/analyse-data/townsville'
+import { getToowoombaSuburbSlugs } from '@/lib/analyse-data/toowoomba'
+import { getBundabergSuburbSlugs } from '@/lib/analyse-data/bundaberg'
+import { getIpswichSuburbSlugs } from '@/lib/analyse-data/ipswich'
+import { getLauncestonSuburbSlugs } from '@/lib/analyse-data/launceston'
+import { getAllSuburbKeys } from '@/lib/analyse-data/suburbs'
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
+const NOW = new Date()
+
+function u(path: string, priority = 0.6, freq: MetadataRoute.Sitemap[number]['changeFrequency'] = 'monthly') {
+  return { url: `${BASE}${path}`, lastModified: NOW, changeFrequency: freq, priority }
+}
+
+function suburbUrls(citySlug: string, slugs: string[], priority = 0.65): MetadataRoute.Sitemap {
+  return slugs.map((s) => u(`/analyse/${citySlug}/${s}`, priority))
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // ── Dynamic suburb slugs ────────────────────────────────────────────────────
+  const dynamicSuburbs = getAllSuburbKeys().map(({ citySlug, suburbSlug }) =>
+    u(`/analyse/${citySlug}/${suburbSlug}`, 0.65)
+  )
+
   return [
     // ── Core pages ─────────────────────────────────────────────────────────────
-    { url: BASE,                              lastModified: new Date(), changeFrequency: 'weekly',  priority: 1   },
-    { url: `${BASE}/sample-report`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/methodology`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE}/about`,                   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${BASE}/contact`,                 lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE}/changelog`,               lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.5 },
-    { url: `${BASE}/help`,                    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    u('/', 1, 'weekly'),
+    u('/sample-report', 0.8, 'monthly'),
+    u('/methodology', 0.7, 'monthly'),
+    u('/about', 0.6, 'monthly'),
+    u('/contact', 0.5, 'monthly'),
+    u('/changelog', 0.5, 'weekly'),
+    u('/help', 0.5, 'monthly'),
 
-    // ── Free tools (SEO entry points) ───────────────────────────────────────────
-    { url: `${BASE}/tools/business-viability-checker`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
+    // ── Free tools ──────────────────────────────────────────────────────────────
+    u('/tools', 0.85, 'weekly'),
+    u('/tools/business-viability-checker', 0.95, 'weekly'),
+    u('/tools/break-even-foot-traffic', 0.85, 'weekly'),
+    u('/tools/rent-overpriced-checker', 0.85, 'weekly'),
+    u('/tools/lease-term-calculator', 0.85, 'weekly'),
+    u('/tools/checklist', 0.80, 'weekly'),
 
-    // ── Analyse hub pages ───────────────────────────────────────────────────────
-    { url: `${BASE}/analyse`,                 lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },
-    { url: `${BASE}/analyse/sydney`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
-    { url: `${BASE}/analyse/melbourne`,       lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
-    { url: `${BASE}/analyse/brisbane`,        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
-    { url: `${BASE}/analyse/perth`,           lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
-    { url: `${BASE}/analyse/adelaide`,        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.80 },
-    { url: `${BASE}/analyse/canberra`,        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.75 },
-    { url: `${BASE}/analyse/hobart`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.70 },
-    { url: `${BASE}/analyse/darwin`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.65 },
+    // ── Analyse hub ─────────────────────────────────────────────────────────────
+    u('/analyse', 0.9, 'weekly'),
 
-    // ── Sydney suburb pages ─────────────────────────────────────────────────────
-    { url: `${BASE}/analyse/sydney/surry-hills`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/analyse/sydney/newtown`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/analyse/sydney/bondi`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/analyse/sydney/bondi-junction`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/marrickville`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/chatswood`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/parramatta`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/north-sydney`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/sydney-cbd`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/sydney/blacktown`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/penrith`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/liverpool`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/campbelltown`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/bankstown`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/strathfield`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/burwood`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/ryde`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/hornsby`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/auburn`,         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/fairfield`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/lakemba`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/merrylands`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/sydney/granville`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/sydney/mount-druitt`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/sydney/alexandria`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/ultimo`,         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
+    // ── Major city hubs ─────────────────────────────────────────────────────────
+    u('/analyse/sydney', 0.85, 'weekly'),
+    u('/analyse/melbourne', 0.85, 'weekly'),
+    u('/analyse/brisbane', 0.85, 'weekly'),
+    u('/analyse/perth', 0.85, 'weekly'),
+    u('/analyse/adelaide', 0.80, 'weekly'),
+    u('/analyse/canberra', 0.80, 'weekly'),
+    u('/analyse/hobart', 0.75, 'weekly'),
+    u('/analyse/darwin', 0.70, 'weekly'),
+    u('/analyse/gold-coast', 0.75, 'weekly'),
+    u('/analyse/newcastle', 0.75, 'weekly'),
+    u('/analyse/wollongong', 0.70, 'weekly'),
+    u('/analyse/geelong', 0.65, 'weekly'),
+    u('/analyse/sunshine-coast', 0.65, 'weekly'),
 
-    // ── Sydney business-type pages ──────────────────────────────────────────────
-    { url: `${BASE}/analyse/sydney/cafe`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/restaurant`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/retail`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/sydney/gym`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/bakery`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/sydney/salon`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
+    // ── Regional city hubs ──────────────────────────────────────────────────────
+    u('/analyse/ballarat', 0.65, 'monthly'),
+    u('/analyse/bendigo', 0.65, 'monthly'),
+    u('/analyse/cairns', 0.65, 'monthly'),
+    u('/analyse/townsville', 0.65, 'monthly'),
+    u('/analyse/toowoomba', 0.65, 'monthly'),
+    u('/analyse/bundaberg', 0.60, 'monthly'),
+    u('/analyse/ipswich', 0.60, 'monthly'),
+    u('/analyse/launceston', 0.65, 'monthly'),
 
-    // ── Melbourne suburb pages ──────────────────────────────────────────────────
-    { url: `${BASE}/analyse/melbourne/melbourne-cbd`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/melbourne/fitzroy`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/melbourne/collingwood`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/melbourne/brunswick`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/melbourne/richmond`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/melbourne/south-yarra`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/melbourne/st-kilda`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/melbourne/carlton`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/melbourne/northcote`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/melbourne/footscray`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/melbourne/dandenong`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/melbourne/frankston`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/melbourne/cranbourne`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/pakenham`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/epping`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/werribee`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/sunshine`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/broadmeadows`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/hoppers-crossing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/melbourne/narre-warren`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/melbourne/cafe`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/melbourne/restaurant`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
+    // ── Sydney suburb + business-type pages ─────────────────────────────────────
+    u('/analyse/sydney/surry-hills', 0.80),
+    u('/analyse/sydney/newtown', 0.80),
+    u('/analyse/sydney/bondi', 0.80),
+    u('/analyse/sydney/bondi-junction', 0.75),
+    u('/analyse/sydney/marrickville', 0.75),
+    u('/analyse/sydney/chatswood', 0.75),
+    u('/analyse/sydney/parramatta', 0.80),
+    u('/analyse/sydney/north-sydney', 0.75),
+    u('/analyse/sydney/sydney-cbd', 0.80),
+    u('/analyse/sydney/blacktown', 0.70),
+    u('/analyse/sydney/penrith', 0.70),
+    u('/analyse/sydney/liverpool', 0.70),
+    u('/analyse/sydney/campbelltown', 0.65),
+    u('/analyse/sydney/bankstown', 0.70),
+    u('/analyse/sydney/burwood', 0.65),
+    u('/analyse/sydney/ryde', 0.65),
+    u('/analyse/sydney/hornsby', 0.65),
+    u('/analyse/sydney/auburn', 0.65),
+    u('/analyse/sydney/fairfield', 0.65),
+    u('/analyse/sydney/lakemba', 0.65),
+    u('/analyse/sydney/merrylands', 0.65),
+    u('/analyse/sydney/granville', 0.60),
+    u('/analyse/sydney/mount-druitt', 0.60),
+    u('/analyse/sydney/alexandria', 0.70),
+    u('/analyse/sydney/ultimo', 0.65),
+    u('/analyse/sydney/cafe', 0.75),
+    u('/analyse/sydney/restaurant', 0.75),
+    u('/analyse/sydney/retail', 0.75),
+    u('/analyse/sydney/gym', 0.70),
+    u('/analyse/sydney/bakery', 0.70),
+    u('/analyse/sydney/salon', 0.65),
 
-    // ── Brisbane suburb pages ───────────────────────────────────────────────────
-    { url: `${BASE}/analyse/brisbane/brisbane-cbd`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/brisbane/new-farm`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/brisbane/west-end`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/brisbane/paddington`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/brisbane/fortitude-valley`,lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/brisbane/south-brisbane`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/brisbane/chermside`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/brisbane/indooroopilly`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/brisbane/carindale`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/brisbane/mount-gravatt`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/brisbane/cafe`,            lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
+    // ── Melbourne suburb + business-type pages ───────────────────────────────────
+    u('/analyse/melbourne/melbourne-cbd', 0.80),
+    u('/analyse/melbourne/fitzroy', 0.80),
+    u('/analyse/melbourne/collingwood', 0.80),
+    u('/analyse/melbourne/brunswick', 0.80),
+    u('/analyse/melbourne/richmond', 0.75),
+    u('/analyse/melbourne/south-yarra', 0.75),
+    u('/analyse/melbourne/st-kilda', 0.75),
+    u('/analyse/melbourne/carlton', 0.75),
+    u('/analyse/melbourne/northcote', 0.70),
+    u('/analyse/melbourne/footscray', 0.70),
+    u('/analyse/melbourne/dandenong', 0.65),
+    u('/analyse/melbourne/frankston', 0.65),
+    u('/analyse/melbourne/cafe', 0.75),
+    u('/analyse/melbourne/restaurant', 0.80),
 
-    // ── Perth pages ─────────────────────────────────────────────────────────────
-    { url: `${BASE}/analyse/perth/perth-cbd`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
-    { url: `${BASE}/analyse/perth/mount-lawley`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${BASE}/analyse/perth/cafe`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/analyse/perth/restaurant`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    // ── Brisbane suburb pages ────────────────────────────────────────────────────
+    u('/analyse/brisbane/brisbane-cbd', 0.80),
+    u('/analyse/brisbane/new-farm', 0.75),
+    u('/analyse/brisbane/west-end', 0.75),
+    u('/analyse/brisbane/paddington', 0.75),
+    u('/analyse/brisbane/fortitude-valley', 0.75),
+    u('/analyse/brisbane/south-brisbane', 0.70),
+    u('/analyse/brisbane/chermside', 0.65),
+    u('/analyse/brisbane/indooroopilly', 0.65),
+    u('/analyse/brisbane/carindale', 0.60),
+    u('/analyse/brisbane/cafe', 0.70),
 
-    // ── Adelaide / other capitals ───────────────────────────────────────────────
-    { url: `${BASE}/analyse/adelaide/restaurant`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/canberra/retail`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/darwin/retail`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/hobart/cafe`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
+    // ── Perth pages ──────────────────────────────────────────────────────────────
+    u('/analyse/perth/perth-cbd', 0.80),
+    u('/analyse/perth/cafe', 0.70),
+    u('/analyse/perth/restaurant', 0.75),
 
-    // ── Regional cities ─────────────────────────────────────────────────────────
-    { url: `${BASE}/analyse/gold-coast/gym`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/analyse/newcastle/bakery`,         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/sunshine-coast/cafe`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/sunshine-coast/restaurant`,lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/wollongong/restaurant`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/geelong/cafe`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
-    { url: `${BASE}/analyse/toowoomba/cafe`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/townsville/gym`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/cairns/cafe`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/ballarat/cafe`,            lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/bendigo/restaurant`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/launceston/cafe`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${BASE}/analyse/mackay/retail`,            lastModified: new Date(), changeFrequency: 'monthly', priority: 0.50 },
-    { url: `${BASE}/analyse/rockhampton/cafe`,         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.50 },
-    { url: `${BASE}/analyse/bundaberg/cafe`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.50 },
-    { url: `${BASE}/analyse/hervey-bay/restaurant`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.50 },
-    { url: `${BASE}/analyse/ipswich/gym`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.50 },
+    // ── Canberra suburb pages (engine-derived, static) ───────────────────────────
+    ...suburbUrls('canberra', getCanberraSuburbSlugs(), 0.70),
 
-    // ── Use case pages ──────────────────────────────────────────────────────────
-    { url: `${BASE}/use-case/cafes`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/use-case/restaurants`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.70 },
-    { url: `${BASE}/use-case/gyms`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/use-case/retail`,      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/use-case/bakeries`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/use-case/takeaway`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
-    { url: `${BASE}/use-case/all`,         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.60 },
+    // ── Hobart suburb pages ──────────────────────────────────────────────────────
+    ...suburbUrls('hobart', getHobartSuburbSlugs(), 0.65),
+    u('/analyse/hobart/cafe', 0.60),
 
-    // ── Blog ────────────────────────────────────────────────────────────────────
-    { url: `${BASE}/blog`,                 lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.75 },
+    // ── Darwin hub pages ─────────────────────────────────────────────────────────
+    ...suburbUrls('darwin', getDarwinHubSlugs(), 0.60),
+    u('/analyse/darwin/retail', 0.55),
 
-    // ── Suburb hub ──────────────────────────────────────────────────────────────
-    { url: `${BASE}/suburb`,               lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.70 },
+    // ── Wollongong + Newcastle suburb pages ──────────────────────────────────────
+    u('/analyse/wollongong/restaurant', 0.60),
+    u('/analyse/newcastle/bakery', 0.60),
 
-    // ── Legal pages ─────────────────────────────────────────────────────────────
-    { url: `${BASE}/privacy`,              lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.20 },
-    { url: `${BASE}/terms`,                lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.20 },
-    { url: `${BASE}/disclaimer`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.20 },
-    { url: `${BASE}/refund`,               lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.20 },
+    // ── Gold Coast pages ─────────────────────────────────────────────────────────
+    u('/analyse/gold-coast/gym', 0.65),
+
+    // ── Regional city suburb pages ───────────────────────────────────────────────
+    ...suburbUrls('ballarat', getBallaratSuburbSlugs(), 0.60),
+    ...suburbUrls('bendigo', getBendigoSuburbSlugs(), 0.60),
+    ...suburbUrls('cairns', getCairnsSuburbSlugs(), 0.60),
+    ...suburbUrls('townsville', getTownsvilleSuburbSlugs(), 0.58),
+    ...suburbUrls('toowoomba', getToowoombaSuburbSlugs(), 0.58),
+    ...suburbUrls('bundaberg', getBundabergSuburbSlugs(), 0.55),
+    ...suburbUrls('ipswich', getIpswichSuburbSlugs(), 0.55),
+    ...suburbUrls('launceston', getLauncestonSuburbSlugs(), 0.58),
+
+    // ── Dynamic city/suburb pages from suburbs.ts ────────────────────────────────
+    ...dynamicSuburbs,
+
+    // ── Use case pages ───────────────────────────────────────────────────────────
+    u('/use-case/cafes', 0.70),
+    u('/use-case/restaurants', 0.70),
+    u('/use-case/gyms', 0.65),
+    u('/use-case/retail', 0.65),
+    u('/use-case/bakeries', 0.65),
+    u('/use-case/takeaway', 0.65),
+    u('/use-case/all', 0.60),
+
+    // ── Blog ─────────────────────────────────────────────────────────────────────
+    u('/blog', 0.75, 'weekly'),
+    u('/suburb', 0.70, 'weekly'),
+
+    // ── Legal ────────────────────────────────────────────────────────────────────
+    u('/privacy', 0.20, 'yearly'),
+    u('/terms', 0.20, 'yearly'),
+    u('/disclaimer', 0.20, 'yearly'),
+    u('/refund', 0.20, 'yearly'),
   ]
 }
