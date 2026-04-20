@@ -87,14 +87,17 @@ const DATA: Record<Verdict, ReportData> = {
       { l: 'Est. monthly revenue', v: '$78k–$88k', d: 'range estimate', c: D.e },
       { l: 'Monthly Profit',   v: '$27,200',  d: '~33% margin',       c: D.e },
       { l: 'Break-even (est.)',   v: '35–50/day', d: 'assumptions-based', c: D.e },
-      { l: 'Competitors 800m', v: '4',        d: 'Low density',       c: D.e },
+      { l: 'Competitors 500m', v: '4',        d: 'Low density',       c: D.e },
     ],
     ai: 'Strong directional signal. Competitor density is low and demographic income is above average for this category. This location is commercially viable on current assumptions — still validate foot traffic and lease terms before committing.',
+    // Canonical 5-dim model: Rent 20% · Competition 25% · Market Demand 20% · Profitability 25% · Location Quality 10%
+    // Weighted: 78×.20 + 72×.25 + 88×.20 + 90×.25 + 80×.10 = 81.7 → 82 ✓
     pentagon: [
-      { name: 'Rent Afford.',  val: 78, color: D.e     },
-      { name: 'Profitability', val: 90, color: D.e     },
-      { name: 'Competition',   val: 72, color: D.amber },
-      { name: 'Demographics',  val: 88, color: D.e     },
+      { name: 'Rent Afford.',   val: 78, color: D.e     },
+      { name: 'Competition',    val: 72, color: D.amber },
+      { name: 'Market Demand',  val: 88, color: D.e     },
+      { name: 'Profitability',  val: 90, color: D.e     },
+      { name: 'Location Qual.', val: 80, color: D.e     },
     ],
     finCards: [
       { l: 'Est. monthly revenue', v: '$78k–$88k', s: 'range estimate' },
@@ -121,21 +124,22 @@ const DATA: Record<Verdict, ReportData> = {
       { x: 57, y: 68, t: 'anc',    n: 'Subiaco Station',     c: '#60A5FA', d: '400m', note: '580 daily commuters' },
     ],
     compStats: [
-      { v: '4',   l: 'Direct (800m)', c: D.red     },
+      { v: '4',   l: 'Direct (500m)', c: D.red     },
       { v: '3',   l: 'Indirect',      c: D.amber   },
       { v: '580', l: 'Daily anchors', c: '#60A5FA' },
     ],
     swot: {
-      s: ['High-income catchment — avg $88k household income within 1km', 'Only 4 cafes in 800m vs suburb avg of 9 — clear market gap', '580 daily commuters via Subiaco station'],
+      s: ['High-income catchment — avg $88k household income within 500m', 'Only 4 cafes in 500m vs suburb avg of 9 — clear market gap', '580 daily commuters via Subiaco station'],
       w: ['Rent at $3,800/mo is above suburb average', 'Limited parking on Rokeby Road'],
-      o: ['Hospital precinct drives 7-day trade', 'Underserved lunch market — no direct competitor within 600m'],
+      o: ['Hospital precinct drives 7-day trade', 'Underserved lunch market — no direct competitor within 500m on Rokeby'],
       t: ['Two premium independents with strong existing loyalty', 'Lease renewal risk in years 2–3'],
     },
     scoreBreakdown: [
-      { n: 'Rent Affordability', v: 78, c: D.e,     w: '30%' },
-      { n: 'Profitability',      v: 90, c: D.e,     w: '25%' },
+      { n: 'Rent Affordability', v: 78, c: D.e,     w: '20%' },
       { n: 'Competition',        v: 72, c: D.amber, w: '25%' },
-      { n: 'Area Demographics',  v: 88, c: D.e,     w: '20%' },
+      { n: 'Market Demand',      v: 88, c: D.e,     w: '20%' },
+      { n: 'Profitability',      v: 90, c: D.e,     w: '25%' },
+      { n: 'Location Quality',   v: 80, c: D.e,     w: '10%' },
     ],
     locRows: [
       { k: 'Suburb',       v: 'Subiaco',  hi: ''    },
@@ -162,14 +166,16 @@ const DATA: Record<Verdict, ReportData> = {
       { l: 'Monthly Revenue',  v: '$54,400',   d: '-8% vs benchmark', c: D.amber },
       { l: 'Monthly Profit',   v: '$9,200',    d: '17% margin',       c: D.amber },
       { l: 'Break-even (est.)',   v: '60–80/day', d: 'higher risk', c: D.red },
-      { l: 'Competitors 800m', v: '11',        d: 'Moderate density', c: D.amber },
+      { l: 'Competitors 500m', v: '11',        d: 'Moderate density', c: D.amber },
     ],
     ai: 'Mixed signals. Moderate foot traffic and a competitive market create uncertainty. Revenue projections are below benchmark. This location can work with a strong concept differentiator — a generic offering will struggle here.',
+    // Weighted: 76×.20 + 45×.25 + 70×.20 + 60×.25 + 55×.10 = 60.95 → 61 ✓
     pentagon: [
-      { name: 'Rent Afford.',  val: 74, color: D.e     },
-      { name: 'Profitability', val: 58, color: D.amber },
-      { name: 'Competition',   val: 44, color: D.red   },
-      { name: 'Demographics',  val: 68, color: D.amber },
+      { name: 'Rent Afford.',   val: 76, color: D.e     },
+      { name: 'Competition',    val: 45, color: D.red   },
+      { name: 'Market Demand',  val: 70, color: D.amber },
+      { name: 'Profitability',  val: 60, color: D.amber },
+      { name: 'Location Qual.', val: 55, color: D.amber },
     ],
     finCards: [
       { l: 'Monthly Revenue', v: '$54,400',  s: 'Projected year 1'  },
@@ -196,21 +202,22 @@ const DATA: Record<Verdict, ReportData> = {
       { x: 64, y: 26, t: 'anc',    n: 'Vic Park Shopping Strip', c: '#60A5FA', d: '350m', note: 'Main retail precinct' },
     ],
     compStats: [
-      { v: '11', l: 'Direct (800m)', c: D.red     },
+      { v: '11', l: 'Direct (500m)', c: D.red     },
       { v: '6',  l: 'Indirect',      c: D.amber   },
       { v: '200',l: 'Daily anchors', c: '#60A5FA' },
     ],
     swot: {
       s: ['Low rent at $2,100/mo provides buffer in slow periods', 'Gentrifying suburb — rising resident income trend'],
-      w: ['High competition density — 11 cafes within 800m', 'Below-average foot traffic vs benchmark suburbs'],
+      w: ['High competition density — 11 cafes within 500m', 'Below-average foot traffic vs benchmark suburbs'],
       o: ['No specialty third-wave concept in suburb yet', 'Growing residential density from new apartments'],
       t: ['Market close to saturation for standard cafe format', 'Two new venues opening on Albany Highway in Q3'],
     },
     scoreBreakdown: [
-      { n: 'Rent Affordability', v: 74, c: D.e,     w: '30%' },
-      { n: 'Profitability',      v: 58, c: D.amber, w: '25%' },
-      { n: 'Competition',        v: 44, c: D.red,   w: '25%' },
-      { n: 'Area Demographics',  v: 68, c: D.amber, w: '20%' },
+      { n: 'Rent Affordability', v: 76, c: D.e,     w: '20%' },
+      { n: 'Competition',        v: 45, c: D.red,   w: '25%' },
+      { n: 'Market Demand',      v: 70, c: D.amber, w: '20%' },
+      { n: 'Profitability',      v: 60, c: D.amber, w: '25%' },
+      { n: 'Location Quality',   v: 55, c: D.amber, w: '10%' },
     ],
     locRows: [
       { k: 'Suburb',       v: 'Victoria Park', hi: ''      },
@@ -237,14 +244,16 @@ const DATA: Record<Verdict, ReportData> = {
       { l: 'Monthly Revenue',  v: '$42,100',    d: '-31% vs benchmark', c: D.red },
       { l: 'Monthly Profit',   v: '-$3,400',    d: 'Net loss',          c: D.red },
       { l: 'Break-even (est.)',   v: '80–100/day', d: 'very high risk', c: D.red },
-      { l: 'Competitors 800m', v: '22',         d: 'Saturated',         c: D.red },
+      { l: 'Competitors 500m', v: '22',         d: 'Saturated',         c: D.red },
     ],
-    ai: 'Not recommended. Saturated market with 22 direct competitors within 800m. Daytime foot traffic is weak for a cafe format — this suburb activates post 6pm. Revenue projections do not support a profitable operation within a reasonable timeframe.',
+    ai: 'Not recommended. Saturated market with 22 direct competitors within 500m. Daytime foot traffic is weak for a cafe format — this suburb activates post 6pm. Revenue projections do not support a profitable operation within a reasonable timeframe.',
+    // Weighted: 44×.20 + 24×.25 + 52×.20 + 32×.25 + 45×.10 = 37.7 → 38 ✓
     pentagon: [
-      { name: 'Rent Afford.',  val: 44, color: D.red   },
-      { name: 'Profitability', val: 32, color: D.red   },
-      { name: 'Competition',   val: 24, color: D.red   },
-      { name: 'Demographics',  val: 52, color: D.amber },
+      { name: 'Rent Afford.',   val: 44, color: D.red   },
+      { name: 'Competition',    val: 24, color: D.red   },
+      { name: 'Market Demand',  val: 52, color: D.red   },
+      { name: 'Profitability',  val: 32, color: D.red   },
+      { name: 'Location Qual.', val: 45, color: D.red   },
     ],
     finCards: [
       { l: 'Monthly Revenue', v: '$42,100',  s: 'Projected year 1'   },
@@ -272,21 +281,22 @@ const DATA: Record<Verdict, ReportData> = {
       { x: 56, y: 28, t: 'anc',    n: 'Arts Precinct NB',     c: '#60A5FA', d: '130m', note: 'Evening only' },
     ],
     compStats: [
-      { v: '22', l: 'Direct (800m)', c: D.red     },
+      { v: '22', l: 'Direct (500m)', c: D.red     },
       { v: '9',  l: 'Indirect',      c: D.amber   },
       { v: '80', l: 'Daytime foot',  c: '#60A5FA' },
     ],
     swot: {
       s: ['High foot traffic on weekends and evenings', 'Cultural diversity enables niche positioning'],
-      w: ['Market saturated — 22 cafes in 800m', 'Daytime trade weak — suburb activates post 6pm', 'Rent at $4,200/mo unviable for cafe format'],
+      w: ['Market saturated — 22 cafes within 500m', 'Daytime trade weak — suburb activates post 6pm', 'Rent at $4,200/mo unviable for cafe format'],
       o: ['Late-night dessert cafe format could differentiate'],
       t: ['3 new venues pending development approval', 'High staff turnover in entertainment precincts'],
     },
     scoreBreakdown: [
-      { n: 'Rent Affordability', v: 44, c: D.red,   w: '30%' },
-      { n: 'Profitability',      v: 32, c: D.red,   w: '25%' },
+      { n: 'Rent Affordability', v: 44, c: D.red,   w: '20%' },
       { n: 'Competition',        v: 24, c: D.red,   w: '25%' },
-      { n: 'Area Demographics',  v: 52, c: D.amber, w: '20%' },
+      { n: 'Market Demand',      v: 52, c: D.red,   w: '20%' },
+      { n: 'Profitability',      v: 32, c: D.red,   w: '25%' },
+      { n: 'Location Quality',   v: 45, c: D.red,   w: '10%' },
     ],
     locRows: [
       { k: 'Suburb',       v: 'Northbridge', hi: ''      },
@@ -307,7 +317,7 @@ const DATA: Record<Verdict, ReportData> = {
 // ─────────────────────────────────────────────────────────────────
 // Pentagon — pure JSX SVG, name + value labels at each axis tip
 // ─────────────────────────────────────────────────────────────────
-function Pentagon({ items }: { items: { name: string; val: number; color: string }[] }) {
+function Pentagon({ items, score }: { items: { name: string; val: number; color: string }[]; score?: number }) {
   const cx = 140, cy = 140, R = 82, N = items.length
   const ang = (i: number) => (i * 2 * Math.PI / N) - Math.PI / 2
   const pt  = (i: number, scale: number): [number, number] => [
@@ -315,8 +325,11 @@ function Pentagon({ items }: { items: { name: string; val: number; color: string
     cy + R * scale * Math.sin(ang(i)),
   ]
   const dataPts   = items.map((item, i) => pt(i, item.val / 100))
-  const avg       = Math.round(items.reduce((a, b) => a + b.val, 0) / N)
-  const fillColor = avg >= 75 ? D.e : avg >= 55 ? D.amber : D.red
+  // Prefer the canonical weighted score when provided — an unweighted average
+  // of the sub-scores doesn't match the hero verdict score under the 5-dim
+  // weights (20/25/20/25/10) and would read as inconsistent.
+  const centre    = score ?? Math.round(items.reduce((a, b) => a + b.val, 0) / N)
+  const fillColor = centre >= 75 ? D.e : centre >= 55 ? D.amber : D.red
 
   return (
     <svg width="280" height="280" viewBox="0 0 280 280"
@@ -372,7 +385,7 @@ function Pentagon({ items }: { items: { name: string; val: number; color: string
       <text x={cx} y={cy - 3} textAnchor="middle"
         fill={D.text1} fontSize={17} fontWeight={800}
         fontFamily="DM Sans,sans-serif">
-        {avg}
+        {centre}
       </text>
       <text x={cx} y={cy + 12} textAnchor="middle"
         fill={D.text3} fontSize={8} fontWeight={700}
@@ -436,7 +449,7 @@ function MapMock({
             <rect key={i} x={x} y={y} width={w} height={h}
               fill="rgba(15,118,110,.06)" stroke="rgba(20,184,166,.06)" strokeWidth=".4"/>
           ))}
-          {/* 800m radius ring */}
+          {/* 500m radius ring — matches the canonical competition catchment */}
           <circle cx="50" cy="50" r="32" fill="none"
             stroke={`${color}35`} strokeWidth=".8" strokeDasharray="2 2"/>
         </svg>
@@ -800,7 +813,7 @@ export default function ReportDemoSection() {
                     <div style={{ fontSize: 13, color: D.text2, lineHeight: 1.7 }}>{d.ai}</div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Pentagon items={d.pentagon}/>
+                    <Pentagon items={d.pentagon} score={d.score}/>
                   </div>
                 </div>
               )}
