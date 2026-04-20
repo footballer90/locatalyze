@@ -18,8 +18,18 @@ import { onboardingRef } from '@/lib/funnel-links'
 //   totalCosts  = fixedCosts + cogs                = 30,160 + 25,840 = 56,000
 //   netProfit   = revenue − totalCosts             = 68,000 − 56,000 = 12,000
 //   rentRatio   = rent / revenue                   = 7,600 / 68,000  = 11.2%
-//   beDaily     = (fixedCosts/mo ÷ tradingDays) ÷ (ticket × grossMarginRate)
-//               = (30,160 ÷ 26) ÷ (17.50 × 0.62) = 1,160 ÷ 10.85   ≈ 107
+//
+//   Break-even has two meaningful tiers — showing both is honest.
+//   Contribution margin per customer = ticket × grossMarginRate = 17.50 × 0.62 = 10.85
+//
+//   beDailyFull (full break-even — covers ALL fixed costs, incl. paid staff)
+//     = ((rent + staff + overheads) ÷ tradingDays) ÷ contribution
+//     = (30,160 ÷ 26) ÷ 10.85 = 1,160 ÷ 10.85 ≈ 107
+//
+//   beDailySolo (survival floor — owner runs it, zero paid staff)
+//     = ((rent + overheads)        ÷ tradingDays) ÷ contribution
+//     = (10,160 ÷ 26) ÷ 10.85 =   390.77 ÷ 10.85 ≈ 36
+//
 //   payback     = setupBudget / netProfit           = 147,200 / 12,000 = 12.3 → 12 mo
 // ─────────────────────────────────────────────────────────────────────────────
 const M = {
@@ -36,7 +46,9 @@ const M = {
   totalCosts:   56_000,
   netProfit:    12_000,
   rentRatio:    '11.2%',
-  beDaily:      107,
+  beDaily:      107, // full break-even (incl. paid staff) — alias kept for legacy refs
+  beDailyFull:  107, // covers rent + $20k/mo labour + $2,560 overhead
+  beDailySolo:  36,  // owner-operated floor: rent + overheads only
   paybackMonths: 12,
   // Scenarios (operating leverage: fixed $30,160 + variable 38%)
   best:   { label: 'Best Case',   pct: '130% demand', rev: '$88,400', costs: '$63,800', profit: '$24,600' },
@@ -309,7 +321,7 @@ export default function SampleReportClient() {
             {[
               { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'industry benchmark estimate' },
               { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'excl. owner salary' },
-              { l: 'Break-even Daily', v: `${M.beDaily} cust.`,                 s: 'zero-profit threshold · target: 150/day' },
+              { l: 'Break-even Daily', v: `${M.beDailyFull} cust.`,             s: `full break-even incl. $20k staff · ~${M.beDailySolo}/day if owner-operated` },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
               <div key={m.l} style={{ padding: '14px 16px', background: '#161D27' }}>
@@ -522,13 +534,24 @@ export default function SampleReportClient() {
               </Card>
               <Card>
                 <SectionLabel>Break-even Analysis</SectionLabel>
+                {/* Two tiers of break-even — "full" includes paid staff,
+                    "survival floor" assumes owner runs it alone. Owners
+                    shopping a lease need both numbers: the realistic target
+                    AND the worst-case downturn floor. */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
-                  <Tile label="Break-even / Day"   value="107 cust."  mono />
-                  <Tile label="Modelled / Day"     value="150 cust."  color={S.emerald} mono />
-                  <Tile label="Surplus"            value="+43 cust."  color={S.emerald} mono />
+                  <Tile label="Survival floor"       value={`~${M.beDailySolo} cust.`}  sub="rent + overheads · owner-run" mono />
+                  <Tile label="Full break-even"      value={`${M.beDailyFull} cust.`}   sub="incl. $20k/mo paid staff" mono />
+                  <Tile label="Modelled / Day"       value={`${M.customers} cust.`}    sub={`${((M.customers / M.beDailyFull)).toFixed(1)}× full BE`} color={S.emerald} mono />
                 </div>
                 <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '14px 16px' }}>
-                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>The modelled daily customer count of 150 is 1.4× the break-even threshold of 107 — calculated from fixed costs of $30,160/month ($7,600 rent + $20,000 labour + $2,560 overhead) divided by contribution margin of $10.85/customer ($17.50 × 62% gross margin). At 80% of projected demand (120 customers/day), this location remains above break-even. This provides meaningful downside protection during the ramp-up period.</p>
+                  <p style={{ fontSize: 12, color: '#047857', lineHeight: 1.8 }}>
+                    Contribution per customer is $10.85 ($17.50 × 62% gross margin).
+                    <strong style={{ fontWeight: 700 }}> Full break-even is 107 cust/day</strong> —
+                    covers $30,160/mo in fixed costs ($7,600 rent + $20,000 labour + $2,560 overhead).
+                    <strong style={{ fontWeight: 700 }}> Survival floor is ~36 cust/day</strong> —
+                    if you operate it yourself (no paid staff), you only need to cover $10,160/mo in rent + overheads.
+                    The modelled 150/day gives a 1.4× cushion on the full break-even and a 4.2× cushion on the survival floor — meaningful downside protection through ramp-up and any demand shock.
+                  </p>
                 </div>
               </Card>
               <Card>
@@ -746,7 +769,7 @@ export default function SampleReportClient() {
                 { label: 'Monthly Revenue',  value: `~$${M.revenue.toLocaleString()}`,   color: S.n900,   sub: 'benchmark est. ±20%' },
                 { label: 'Net Profit / Mo',  value: `~$${M.netProfit.toLocaleString()}`, color: S.emerald, sub: 'benchmark est. ±25% · excl. owner salary' },
                 { label: 'Rent-to-Revenue',  value: M.rentRatio,                          color: S.amber,  sub: 'of revenue' },
-                { label: 'Break-even / Day', value: `${M.beDaily} cust.`,                color: S.n900,   sub: 'zero-profit threshold' },
+                { label: 'Break-even / Day', value: `${M.beDailyFull} cust.`,            color: S.n900,   sub: `incl. paid staff · ~${M.beDailySolo}/day if owner-run` },
                 { label: 'Payback Period',   value: `${M.paybackMonths} mo †`,           color: S.n900,   sub: 'excl. ramp-up' },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '7px 0', borderBottom: `1px solid ${S.n100}` }}>
