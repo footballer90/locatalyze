@@ -225,7 +225,7 @@ export default function SydneyPage() {
       <div style={{ backgroundColor: C.amberBg, borderBottom: `1px solid ${C.amberBdr}`, padding: '12px 24px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <p style={{ fontSize: '13px', color: C.amber, margin: 0 }}>
-            <strong>Methodology:</strong> Scores based on foot traffic density, demographic income distribution, commercial rent viability, competitive density, and accessibility. Data sourced from ABS 2024, CoreLogic, CBRE Q1 2026, and Locatalyze proprietary foot traffic analysis.
+            <strong>Methodology:</strong> Suburb scores are a five-dimensional composite — Rent Affordability, Competition, Market Demand, Profitability, and Location Quality — the same model used in the individual-address report. Suburb-level inputs come from ABS 2024 (demographic income and population), CoreLogic and CBRE Q1 2026 (rent benchmarks), Google Maps / Geoapify (competitor density within 500m), and Locatalyze foot-traffic and access scoring. An individual address can score meaningfully higher or lower than its suburb average.
           </p>
         </div>
       </div>

@@ -305,7 +305,7 @@ export default function GlideShowcase() {
      <Link href="/onboarding" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#0F766E,#0B9488)', color: '#fff', borderRadius: 12, padding: '14px 30px', fontSize: 14.5, fontWeight: 800, textDecoration: 'none', fontFamily: font, boxShadow: '0 6px 28px rgba(15,118,110,.35), inset 0 1px 0 rgba(255,255,255,.12)' }}>
       Analyse my location free &nbsp;→
           </Link>
-          <p style={{ fontSize: 11.5, color: 'rgba(148,210,198,.28)', marginTop: 10 }}>No credit card required · Any Australian address · Results in 30 seconds</p>
+          <p style={{ fontSize: 11.5, color: 'rgba(148,210,198,.28)', marginTop: 10 }}>No credit card · 1 free report · ~90 seconds</p>
     </div>
       </section>
     </>
