@@ -652,16 +652,19 @@ export default function SampleReportClient() {
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 10, padding: 4, marginBottom: 14 }}>
-              {['Overview', 'Competition', 'Financials', 'Market'].map((t) => {
+              {['Overview', 'Competition', 'Financials', 'Market', 'Compare'].map((t) => {
                 const id = t.toLowerCase()
+                const isCompare = t === 'Compare'
                 return (
                   <div key={t} onClick={() => setActiveTab(id)}
                     style={{
                       flex: 1, padding: '8px 6px', borderRadius: 7,
                       background: activeTab === id ? S.headerBg : 'transparent',
-                      color: activeTab === id ? '#fff' : S.n500,
+                      color: activeTab === id ? '#fff' : isCompare ? S.brand : S.n500,
                       fontSize: 12, fontWeight: 700, textAlign: 'center', cursor: 'pointer',
                       letterSpacing: '-0.01em',
+                      // Subtle teal tint on Compare to signal it's different/new
+                      boxShadow: isCompare && activeTab !== id ? `inset 0 0 0 1px ${S.brand}22` : 'none',
                     }}>
                     {t}
                   </div>
@@ -1117,6 +1120,234 @@ export default function SampleReportClient() {
                 </div>
               </Card>
             </>}
+
+            {/* ── Compare tab ─────────────────────────────────────────────
+                Same address, same rent, four business types — four verdicts.
+                This is the product's core value proposition in one screen:
+                the location score changes depending on what you open there
+                because the revenue benchmark changes. A café at 11.2% is GO;
+                retail at the same rent is NO. The model is honest. */}
+            {activeTab === 'compare' && (() => {
+              // ── Scenario definitions (all at $7,600/mo rent, 214 Oxford St) ──
+              // Revenue benchmarks are industry averages for each category at
+              // an inner-suburban Perth location. All derived from the same
+              // 5-factor model; only Rent Affordability and Profitability
+              // sub-scores change between scenarios (market, competition, and
+              // location quality are the same address).
+              //
+              // Score formula (verified):
+              //   total = rentScore×0.20 + 80×0.25 + 85×0.20 + profitScore×0.25 + 90×0.10
+              //         = rentScore×0.20 + 20 + 17 + profitScore×0.25 + 9
+              //         = rentScore×0.20 + profitScore×0.25 + 46
+              //
+              // Café check: 90×0.20 + 80×0.25 + 46 = 18+20+46 = 84 ✓
+              const RENT = M.rent   // 7,600 — the only value shared across all scenarios
+              const scenarios = [
+                {
+                  type:        'Specialty Café',
+                  emoji:       '☕',
+                  revenue:     68_000,
+                  netProfit:   12_000,
+                  rentScore:   90,
+                  profitScore: 80,
+                  score:       84,
+                  verdict:     'GO'      as const,
+                  rentPct:     '11.2%',
+                  payback:     '12 mo',
+                  insight:     'Two competitors below 4.0 stars — quality ceiling you own on day one. Rent is 1pt from CAUTION: CPI-cap the lease.',
+                  cta:         'Run café analysis →',
+                  isActive:    true,   // this is the base report
+                },
+                {
+                  type:        'Restaurant (mid-market)',
+                  emoji:       '🍽️',
+                  revenue:     75_000,
+                  netProfit:   13_700,
+                  rentScore:   100,
+                  profitScore: 80,
+                  score:       86,
+                  verdict:     'GO'      as const,
+                  rentPct:     '10.1%',
+                  payback:     '16 mo',
+                  insight:     'Oxford Street\'s evening bar cluster drives dinner patronage. No quality mid-market restaurant competes on this strip — the gap exists.',
+                  cta:         'Run restaurant analysis →',
+                  isActive:    false,
+                },
+                {
+                  type:        'Bakery / Patisserie',
+                  emoji:       '🥐',
+                  revenue:     52_000,
+                  netProfit:   3_400,
+                  rentScore:   45,
+                  profitScore: 45,
+                  score:       66,
+                  verdict:     'CAUTION' as const,
+                  rentPct:     '14.6%',
+                  payback:     '~3 yrs',
+                  insight:     'Rent at 14.6% exceeds the 12% healthy threshold. Needs average ticket above $28 or rent negotiated below $6,200/mo to flip to GO.',
+                  cta:         'Run bakery analysis →',
+                  isActive:    false,
+                },
+                {
+                  type:        'Retail (specialty)',
+                  emoji:       '🛍️',
+                  revenue:     42_000,
+                  netProfit:   800,
+                  rentScore:   30,
+                  profitScore: 25,
+                  score:       58,
+                  verdict:     'NO'      as const,
+                  rentPct:     '18.1%',
+                  payback:     'Never',
+                  insight:     'Retail economics don\'t support $7,600/mo here. Walk-past traffic is F&B-oriented, not destination retail. This rent requires $63k+/mo retail revenue.',
+                  cta:         'Run retail analysis →',
+                  isActive:    false,
+                },
+              ]
+
+              const vColor = (v: string) => v === 'GO' ? S.emerald : v === 'CAUTION' ? S.amber : S.red
+              const vBg    = (v: string) => v === 'GO' ? S.emeraldBg : v === 'CAUTION' ? S.amberBg : S.redBg
+              const vBdr   = (v: string) => v === 'GO' ? S.emeraldBdr : v === 'CAUTION' ? S.amberBdr : S.redBdr
+              const vDk    = (v: string) => v === 'GO' ? '#065F46' : v === 'CAUTION' ? '#92400E' : '#991B1B'
+
+              return (
+                <>
+                  <Card>
+                    <div style={{ marginBottom: 18 }}>
+                      <SectionLabel>Same location, four business types</SectionLabel>
+                      <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.65, marginTop: -6 }}>
+                        214 Oxford St, Leederville — rent $7,600/mo — four concepts, four revenue benchmarks, four verdicts.
+                        The score changes because the rent-to-revenue ratio changes. The market doesn&apos;t change. The lease does.
+                      </p>
+                    </div>
+
+                    {/* 2×2 scenario grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      {scenarios.map(sc => (
+                        <div key={sc.type} style={{
+                          background: sc.isActive ? '#0B1512' : S.n50,
+                          border: `1.5px solid ${sc.isActive ? S.emeraldBdr : S.n200}`,
+                          borderRadius: 14,
+                          padding: '18px 18px 16px',
+                          position: 'relative' as const,
+                          overflow: 'hidden',
+                        }}>
+                          {/* "Current view" badge */}
+                          {sc.isActive && (
+                            <div style={{
+                              position: 'absolute', top: 12, right: 12,
+                              fontSize: 9, fontWeight: 800, color: S.emerald,
+                              background: 'rgba(5,150,105,0.15)',
+                              border: '1px solid rgba(5,150,105,0.25)',
+                              borderRadius: 4, padding: '2px 6px',
+                              textTransform: 'uppercase', letterSpacing: '0.08em',
+                            }}>
+                              This report
+                            </div>
+                          )}
+
+                          {/* Header */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                            <span style={{ fontSize: 20 }}>{sc.emoji}</span>
+                            <div>
+                              <p style={{ fontSize: 13, fontWeight: 800, color: sc.isActive ? '#F8FAFC' : S.n900, lineHeight: 1.2 }}>{sc.type}</p>
+                              <p style={{ fontSize: 10, color: sc.isActive ? 'rgba(255,255,255,0.35)' : S.n400, marginTop: 1, fontFamily: S.mono }}>
+                                ${RENT.toLocaleString()}/mo rent · {sc.rentPct} of revenue
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Verdict + score */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                            <div style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 7,
+                              background: vBg(sc.verdict), border: `1.5px solid ${vBdr(sc.verdict)}`,
+                              borderRadius: 7, padding: '6px 12px',
+                            }}>
+                              <div style={{ width: 7, height: 7, borderRadius: '50%', background: vColor(sc.verdict) }} />
+                              <span style={{ fontSize: 13, fontWeight: 900, color: vColor(sc.verdict), letterSpacing: '0.06em' }}>{sc.verdict}</span>
+                              <span style={{ width: 1, height: 12, background: vBdr(sc.verdict) }} />
+                              <span style={{ fontSize: 13, fontWeight: 800, color: vColor(sc.verdict), fontFamily: S.mono }}>{sc.score}</span>
+                            </div>
+                          </div>
+
+                          {/* Key metrics */}
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
+                            {[
+                              { label: 'Revenue',    value: `~$${(sc.revenue/1000).toFixed(0)}k` },
+                              { label: 'Net profit', value: sc.netProfit > 1000 ? `~$${(sc.netProfit/1000).toFixed(1)}k` : `~$${sc.netProfit}` },
+                              { label: 'Payback',    value: sc.payback },
+                            ].map(m => (
+                              <div key={m.label} style={{
+                                background: sc.isActive ? 'rgba(255,255,255,0.05)' : S.white,
+                                border: `1px solid ${sc.isActive ? 'rgba(255,255,255,0.08)' : S.n200}`,
+                                borderRadius: 8, padding: '8px 10px',
+                              }}>
+                                <p style={{ fontSize: 9, fontWeight: 700, color: sc.isActive ? 'rgba(255,255,255,0.3)' : S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>{m.label}</p>
+                                <p style={{ fontSize: 13, fontWeight: 900, color: sc.isActive ? '#F8FAFC' : S.n800, fontFamily: S.mono, lineHeight: 1 }}>{m.value}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Insight */}
+                          <p style={{ fontSize: 11, color: sc.isActive ? 'rgba(255,255,255,0.45)' : vDk(sc.verdict), lineHeight: 1.6, marginBottom: sc.isActive ? 0 : 12 }}>
+                            {sc.insight}
+                          </p>
+
+                          {/* CTA (non-active scenarios only) */}
+                          {!sc.isActive && (
+                            <Link href={`/onboarding?type=${encodeURIComponent(sc.type.split(' ')[0].toLowerCase())}`} style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 5,
+                              fontSize: 11, fontWeight: 700, color: vColor(sc.verdict),
+                              textDecoration: 'none',
+                            }}>
+                              {sc.cta} →
+                            </Link>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+
+                  {/* What drives the difference */}
+                  <Card>
+                    <SectionLabel>What drives the difference</SectionLabel>
+                    <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75, marginBottom: 16 }}>
+                      The location doesn&apos;t change. The rent doesn&apos;t change. What changes is the revenue benchmark for each category — and therefore how much of that revenue rent consumes.
+                    </p>
+                    <div style={{ overflowX: 'auto' as const }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                        <thead>
+                          <tr style={{ borderBottom: `2px solid ${S.n200}` }}>
+                            {['Business type', 'Benchmark revenue', 'Rent ratio', 'Verdict', 'Score'].map(h => (
+                              <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' as const }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {scenarios.map((sc, i) => (
+                            <tr key={sc.type} style={{ borderBottom: `1px solid ${S.n100}`, background: i % 2 === 0 ? S.n50 : S.white }}>
+                              <td style={{ padding: '10px', fontWeight: 700, color: S.n900 }}>{sc.emoji} {sc.type}</td>
+                              <td style={{ padding: '10px', fontFamily: S.mono, color: S.n700 }}>${sc.revenue.toLocaleString()}/mo</td>
+                              <td style={{ padding: '10px', fontFamily: S.mono, fontWeight: 700, color: vColor(sc.verdict) }}>{sc.rentPct}</td>
+                              <td style={{ padding: '10px' }}>
+                                <span style={{ fontSize: 11, fontWeight: 800, color: vColor(sc.verdict), background: vBg(sc.verdict), borderRadius: 4, padding: '2px 7px' }}>{sc.verdict}</span>
+                              </td>
+                              <td style={{ padding: '10px', fontFamily: S.mono, fontWeight: 800, color: S.n800 }}>{sc.score}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style={{ marginTop: 14, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, borderRadius: 10, padding: '12px 15px' }}>
+                      <p style={{ fontSize: 12, color: S.brand, lineHeight: 1.65 }}>
+                        <strong>The model is deterministic.</strong> The same rent ($7,600/mo) scores differently because revenue benchmarks differ by category. A café generates $68k/mo from this footfall; retail generates $42k/mo. The rent-to-revenue ratio is what the scoring engine responds to — not the rent dollar figure in isolation. Your full report uses your actual address, your actual business type, and real competitor data.
+                      </p>
+                    </div>
+                  </Card>
+                </>
+              )
+            })()}
 
           </div>
 
