@@ -178,6 +178,207 @@ function MapPlaceholder() {
   )
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Rent Sensitivity Slider
+//
+// The audit's #1 feature request: "what rent makes this GO?"
+// Every report shows a static rent-to-revenue ratio. This slider lets the user
+// drag to any rent value and see the verdict, score, net profit, and payback
+// update in real time — no new data, pure calculation, but the feature that
+// turns a report into a lease negotiation tool.
+//
+// Design decisions:
+//   - Revenue is held fixed (the market determines customers × ticket × days).
+//     Rent is the only operator-controlled variable in a lease negotiation.
+//   - Score is re-derived from just the Rent Affordability sub-score; the other
+//     four factors are held constant (the market hasn't changed, just the lease
+//     ask). This makes the score delta honest and attributable.
+//   - The track is painted in GO/CAUTION/NO zones — the user can see exactly
+//     which zone they're in without reading numbers.
+//   - One dynamic sentence at the bottom names the exact dollar flip point,
+//     which is the number the user needs at the lease table.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Rent Affordability sub-score from ratio.
+ *
+ * Calibrated so that 11.2% → 90, which produces the baseline total of 84
+ * (90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = 84).
+ * All outputs are rounded to the nearest 5 per the stated rounding rule.
+ *
+ * Verification:
+ *   calcRentAffordabilityScore(0.112)
+ *   → raw 80 + (0.12-0.112)/0.02*20 = 80+8 = 88 → rounds to 90 ✓
+ */
+function calcRentAffordabilityScore(ratio: number): number {
+  if (ratio <= 0.10) return 100
+  if (ratio <= 0.12) return Math.round((80 + (0.12 - ratio) / 0.02 * 20) / 5) * 5
+  if (ratio <= 0.15) return Math.round((40 + (0.15 - ratio) / 0.03 * 40) / 5) * 5
+  return 30
+}
+
+const REVENUE = M.revenue          // 68,000 — the market, not the lease
+const COGS    = REVENUE * M.cogsRate  // 25,840
+const BASE_FIXED_EX_RENT = 22_560   // staff $20k + overhead $2,560
+// netProfit(rent) = REVENUE - (rent + BASE_FIXED_EX_RENT + COGS)
+//                = 19,600 - rent
+const NET_PROFIT_INTERCEPT = REVENUE - BASE_FIXED_EX_RENT - COGS   // 19,600
+
+const SLIDER_MIN  = 3_000
+const SLIDER_MAX  = 15_000
+const SLIDER_STEP = 100
+
+// Verdict band dollar boundaries (derived from revenue so they agree with
+// the rest of the report; rounded to nearest $100 for a clean label)
+const CAUTION_THRESHOLD = Math.round(REVENUE * 0.12 / 100) * 100  // $8,200 (=12%)
+const NO_THRESHOLD      = Math.round(REVENUE * 0.15 / 100) * 100  // $10,200 (=15%)
+
+function RentSlider() {
+  const [rent, setRent] = useState<number>(M.rent)   // starts at the sample report's $7,600
+
+  const netProfit  = NET_PROFIT_INTERCEPT - rent
+  const rentRatio  = rent / REVENUE
+  const rentPct    = parseFloat((rentRatio * 100).toFixed(1))
+  const payback    = netProfit > 0 ? Math.round(M.setupBudget / netProfit) : null
+
+  const rentScore  = calcRentAffordabilityScore(rentRatio)
+  // Other sub-scores are held constant — only the lease term changed
+  const totalScore = Math.round(rentScore * 0.20 + 80 * 0.25 + 85 * 0.20 + 80 * 0.25 + 90 * 0.10)
+
+  const verdict     = rentRatio < 0.12 ? 'GO' : rentRatio < 0.15 ? 'CAUTION' : 'NO'
+  const vColor      = verdict === 'GO' ? S.emerald : verdict === 'CAUTION' ? S.amber : S.red
+  const vBg         = verdict === 'GO' ? S.emeraldBg : verdict === 'CAUTION' ? S.amberBg : S.redBg
+  const vBdr        = verdict === 'GO' ? S.emeraldBdr : verdict === 'CAUTION' ? S.amberBdr : S.redBdr
+  const vDarkText   = verdict === 'GO' ? '#065F46' : verdict === 'CAUTION' ? '#92400E' : '#991B1B'
+
+  // Track zone percentages
+  const pct = (v: number) => ((v - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN) * 100).toFixed(2)
+  const cautionPct = pct(CAUTION_THRESHOLD)
+  const noPct      = pct(NO_THRESHOLD)
+
+  // Flip-point insight sentence (the lease negotiation number)
+  let insight: React.ReactNode
+  if (verdict === 'GO') {
+    const flipAt = CAUTION_THRESHOLD
+    insight = <>At <strong style={{ fontFamily: S.mono }}>${rent.toLocaleString()}/mo</strong>, this location scores <strong style={{ color: S.emerald }}>GO</strong>. The rent can rise to <strong style={{ fontFamily: S.mono, color: S.amber }}>${flipAt.toLocaleString()}/mo</strong> before it flips to CAUTION. That&apos;s your maximum concession in negotiation.</>
+  } else if (verdict === 'CAUTION') {
+    const flipDown = CAUTION_THRESHOLD
+    const flipUp   = NO_THRESHOLD
+    insight = <>At <strong style={{ fontFamily: S.mono }}>${rent.toLocaleString()}/mo</strong>, this is <strong style={{ color: S.amber }}>CAUTION</strong>. Negotiate below <strong style={{ fontFamily: S.mono, color: S.emerald }}>${flipDown.toLocaleString()}/mo</strong> to get back to GO — or accept CAUTION and insist on a 12-month break clause. If rent rises above <strong style={{ fontFamily: S.mono, color: S.red }}>${flipUp.toLocaleString()}/mo</strong>, this becomes NO.</>
+  } else {
+    const revenueNeeded = Math.round(rent / 0.15)
+    const pctAbove = Math.round((revenueNeeded / REVENUE - 1) * 100)
+    insight = <>At <strong style={{ fontFamily: S.mono }}>${rent.toLocaleString()}/mo</strong>, this location scores <strong style={{ color: S.red }}>NO</strong>. You would need monthly revenue above <strong style={{ fontFamily: S.mono, color: S.red }}>${revenueNeeded.toLocaleString()}</strong> to justify this rent — {pctAbove}% above the benchmarked model. Walk away unless you have strong evidence your revenue will beat the benchmark.</>
+  }
+
+  return (
+    <Card>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 4, flexWrap: 'wrap' as const }}>
+        <div>
+          <SectionLabel>Rent Sensitivity</SectionLabel>
+          <p style={{ fontSize: 12, color: S.n500, marginBottom: 0, marginTop: -8, lineHeight: 1.6 }}>
+            Drag to see how rent changes the verdict, profit, and payback. These numbers go on the lease table.
+          </p>
+        </div>
+      </div>
+
+      {/* Rent + verdict summary row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 16, marginBottom: 16, flexWrap: 'wrap' as const }}>
+        <div>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Monthly Rent</p>
+          <p style={{ fontSize: 36, fontWeight: 900, color: vColor, fontFamily: S.mono, lineHeight: 1, letterSpacing: '-0.04em', transition: 'color 180ms' }}>
+            ${rent.toLocaleString()}
+          </p>
+          <p style={{ fontSize: 11, color: S.n400, marginTop: 3 }}>/ month</p>
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div style={{ textAlign: 'right' as const }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: vBg, border: `1.5px solid ${vBdr}`, borderRadius: 8, padding: '8px 16px',
+            transition: 'background 180ms, border-color 180ms',
+          }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: vColor, transition: 'background 180ms' }} />
+            <span style={{ fontSize: 16, fontWeight: 900, color: vColor, letterSpacing: '0.06em', transition: 'color 180ms' }}>{verdict}</span>
+            <span style={{ width: 1, height: 14, background: vBdr }} />
+            <span style={{ fontSize: 14, fontWeight: 800, color: vColor, fontFamily: S.mono, transition: 'color 180ms' }}>{totalScore}</span>
+          </div>
+          <p style={{ fontSize: 11, color: S.n500, marginTop: 6, fontFamily: S.mono }}>{rentPct}% of revenue</p>
+        </div>
+      </div>
+
+      {/* Slider track + thumb */}
+      <div style={{ position: 'relative', marginBottom: 6 }} data-verdict={verdict}>
+        {/* Coloured zone track (behind the input) */}
+        <div style={{
+          position: 'absolute', top: '50%', left: 0, right: 0, height: 8,
+          borderRadius: 4, transform: 'translateY(-50%)',
+          background: `linear-gradient(to right,
+            ${S.emerald} 0%, ${S.emerald} ${cautionPct}%,
+            ${S.amber}   ${cautionPct}%, ${S.amber} ${noPct}%,
+            ${S.red}     ${noPct}%, ${S.red} 100%
+          )`,
+          opacity: 0.3,
+        }} />
+        <input
+          type="range"
+          className="rent-slider"
+          min={SLIDER_MIN}
+          max={SLIDER_MAX}
+          step={SLIDER_STEP}
+          value={rent}
+          onChange={e => setRent(Number(e.target.value))}
+          aria-label="Monthly rent"
+          aria-valuetext={`$${rent.toLocaleString()} per month — verdict ${verdict}`}
+          style={{ '--slider-color': vColor } as React.CSSProperties}
+        />
+      </div>
+
+      {/* Zone labels */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <span style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>${(SLIDER_MIN / 1000).toFixed(0)}k</span>
+        <span style={{ fontSize: 10, color: S.emerald, fontWeight: 700, opacity: 0.8 }}>GO  &lt;12%</span>
+        <span style={{ fontSize: 10, color: S.amber, fontWeight: 700, opacity: 0.8 }}>CAUTION 12–15%</span>
+        <span style={{ fontSize: 10, color: S.red, fontWeight: 700, opacity: 0.8 }}>NO  ≥15%</span>
+        <span style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>${(SLIDER_MAX / 1000).toFixed(0)}k</span>
+      </div>
+
+      {/* Three live metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 14 }}>
+        <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px' }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Net Profit / Mo</p>
+          <p style={{ fontSize: 20, fontWeight: 900, color: netProfit > 0 ? S.emerald : S.red, fontFamily: S.mono, lineHeight: 1, transition: 'color 180ms' }}>
+            {netProfit >= 0 ? `~$${netProfit.toLocaleString()}` : `–$${Math.abs(netProfit).toLocaleString()}`}
+          </p>
+          <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>excl. owner salary</p>
+        </div>
+        <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px' }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Rent-to-Revenue</p>
+          <p style={{ fontSize: 20, fontWeight: 900, color: vColor, fontFamily: S.mono, lineHeight: 1, transition: 'color 180ms' }}>{rentPct}%</p>
+          <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>GO threshold: &lt;12%</p>
+        </div>
+        <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px' }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Payback Period</p>
+          <p style={{ fontSize: 20, fontWeight: 900, color: payback && payback > 0 ? S.n800 : S.red, fontFamily: S.mono, lineHeight: 1 }}>
+            {payback && payback > 0 ? `${payback} mo` : 'Never'}
+          </p>
+          <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>excl. ramp-up</p>
+        </div>
+      </div>
+
+      {/* Flip-point insight — the lease negotiation number */}
+      <div style={{
+        background: vBg, border: `1px solid ${vBdr}`, borderRadius: 10, padding: '12px 15px',
+        transition: 'background 180ms, border-color 180ms',
+      }}>
+        <p style={{ fontSize: 12, color: vDarkText, lineHeight: 1.65 }}>{insight}</p>
+      </div>
+    </Card>
+  )
+}
+
 export default function SampleReportClient() {
   const [activeTab, setActiveTab] = useState('overview')
   // Sticky decision strip — persists the verdict + one-line action across
@@ -204,7 +405,63 @@ export default function SampleReportClient() {
   return (
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
-      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ── Rent Sensitivity slider ────────────────────────────────────────
+           Native range inputs are notoriously hard to style cross-browser.
+           We use appearance:none to strip the default track/thumb, then
+           paint our own. The track background (the colored GO/CAUTION/NO
+           zones) is rendered as a separate div below the input in DOM order,
+           so it isn't affected by browser ::-webkit-slider-runnable-track
+           quirks. The thumb is a white circle with a border in the current
+           verdict color (passed via --slider-color CSS variable). */
+        .rent-slider {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 8px;
+          border-radius: 4px;
+          outline: none;
+          cursor: pointer;
+          background: transparent;
+          position: relative;
+          z-index: 1;
+        }
+        .rent-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #fff;
+          border: 2.5px solid var(--slider-color, #10B981);
+          cursor: grab;
+          box-shadow: 0 1px 6px rgba(0,0,0,0.18), 0 0 0 3px color-mix(in srgb, var(--slider-color, #10B981) 15%, transparent);
+          transition: border-color 180ms, box-shadow 180ms;
+        }
+        .rent-slider:active::-webkit-slider-thumb { cursor: grabbing; }
+        .rent-slider::-moz-range-thumb {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #fff;
+          border: 2.5px solid var(--slider-color, #10B981);
+          cursor: grab;
+          box-shadow: 0 1px 6px rgba(0,0,0,0.18);
+          transition: border-color 180ms;
+        }
+        .rent-slider::-webkit-slider-runnable-track {
+          background: transparent;
+          height: 8px;
+          border-radius: 4px;
+        }
+        .rent-slider::-moz-range-track {
+          background: transparent;
+          height: 8px;
+          border-radius: 4px;
+        }
+      `}</style>
 
       {/* Persistent decision strip — only visible after the hero scrolls out.
           Single source of truth for the GO/CAUTION/NO call + the one action
@@ -635,6 +892,12 @@ export default function SampleReportClient() {
 
             {/* Financials tab */}
             {activeTab === 'financials' && <>
+              {/* Rent Sensitivity slider — intentionally the FIRST thing in this
+                  tab. The user arrived here with a lease decision to make; the
+                  slider gives them the exact negotiation number immediately.
+                  The P&L, break-even, and scenarios below are the evidence for
+                  whatever rent they land on. */}
+              <RentSlider />
               <Card>
                 <SectionLabel>Monthly P&L</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
