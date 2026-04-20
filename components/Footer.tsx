@@ -446,7 +446,9 @@ export default function Footer() {
         {/* ── Legal disclaimer strip ── */}
         <div style={S.disclaimer}>
           <p style={S.disclaimerText}>
-            Locatalyze provides indicative feasibility analysis for informational purposes only. It does not constitute financial advice, investment advice, or a recommendation to enter into any lease or business arrangement. Results are estimates based on publicly available data and may not reflect actual market conditions. Always seek independent professional advice before making commercial property decisions.
+            Locatalyze is a decision-support tool for location research. Reports are not financial advice —
+            see our <Link href="/disclaimer" style={{ color: 'inherit', textDecoration: 'underline' }}>disclaimer</Link> and{' '}
+            <Link href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>terms</Link>.
           </p>
         </div>
 

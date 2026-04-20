@@ -238,7 +238,7 @@ export default function SampleReportClient() {
       {/* Sample banner */}
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-          SAMPLE REPORT — Illustrative data. Address is fictional, numbers are for demonstration only. Your live report uses your actual address and live market data.{' '}
+          SAMPLE REPORT — address is fictional. Numbers are modelled from real benchmarks for a 214 Oxford St-equivalent location. Your live report uses your actual address.{' '}
           <Link href={onboardingRef('sample_report_banner')} style={{ color: '#fff', textDecoration: 'underline', fontWeight: 800 }}>
             Run yours free →
           </Link>
@@ -267,7 +267,7 @@ export default function SampleReportClient() {
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: S.mono }}>214 Oxford Street, Leederville WA 6007</span>
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitor data · Google Maps · illustrative sample only</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Competitor data · Google Maps · ABS 2021 Census</span>
               </div>
               <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.2 }}>
                 Specialty Café
@@ -319,8 +319,8 @@ export default function SampleReportClient() {
           {/* Key metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: '#1F2937', borderRadius: 10, overflow: 'hidden', border: '1px solid #1F2937' }}>
             {[
-              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: 'industry benchmark estimate' },
-              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: 'excl. owner salary' },
+              { l: 'Monthly Revenue',  v: `~$${M.revenue.toLocaleString()}`,    s: '±20% band' },
+              { l: 'Net Profit / Mo',  v: `~$${M.netProfit.toLocaleString()}`,  s: '±25% · excl. owner salary' },
               { l: 'Break-even Daily', v: `${M.beDailyFull} cust.`,             s: `full break-even incl. $20k staff · ~${M.beDailySolo}/day if owner-operated` },
               { l: 'Payback Period',   v: `${M.paybackMonths} months`,          s: 'excl. ramp-up' },
             ].map(m => (
@@ -331,8 +331,8 @@ export default function SampleReportClient() {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4, fontStyle: 'italic' }}>
-            Numbers are benchmark estimates calibrated to your business type and location — use them to shortlist and pressure-test the economics, then validate on site.
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8, paddingLeft: 4 }}>
+            Model inputs: your address, business type, rent, AOV and operating hours. Sources: <Link href="/methodology" style={{ color: 'inherit', textDecoration: 'underline' }}>methodology</Link>.
           </p>
         </div>
       </div>
@@ -415,7 +415,7 @@ export default function SampleReportClient() {
                       <ScoreBar label="Profitability"       score={80} weight="25%" />
                       <ScoreBar label="Location Quality"    score={90} weight="10%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (90) — high footfall and excellent transit access. Each sub-score is rounded to the nearest 5 (±5pt per dimension). Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (90) — high footfall and excellent transit access. Each sub-score is rounded to the nearest 5. Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
                     <div style={{ textAlign: 'center' }}>
@@ -780,7 +780,7 @@ export default function SampleReportClient() {
                   <span style={{ fontSize: 13, fontWeight: 800, color: item.color, fontFamily: S.mono }}>{item.value}</span>
                 </div>
               ))}
-              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Excl. ramp-up. Allow 3–4 additional months to reach full volume. All figures are model estimates — not financial forecasts. Net profit excludes owner salary.</p>
+              <p style={{ fontSize: 10, color: S.n400, marginTop: 8, lineHeight: 1.5 }}>† Payback excludes ramp-up — allow 3–4 months to reach full volume. Net profit excludes owner salary.</p>
             </div>
 
             {/* CTA */}
