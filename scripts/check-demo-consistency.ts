@@ -31,6 +31,13 @@
  *   4. `rentToRevenueLabel()` in DEMO_SCENARIOS produces output
  *      within a plausible range given the declared rent and revenue
  *      bounds (sanity against the ~9–11% hardcoded era).
+ *   5. The rent value shown in each ReportDemoSection scenario matches
+ *      `DEMO_SCENARIOS[key].rent`. Prevents the cross-file drift class
+ *      where the ReportDemoSection renders one rent figure while the
+ *      hero mini-card (via DEMO_SCENARIOS) renders another. The dead
+ *      PremiumReport surface that used to hold a third rent figure
+ *      was deleted — if a new surface reintroduces drift, this
+ *      invariant will be where we extend the check.
  */
 
 import * as path from 'path'
@@ -198,11 +205,24 @@ function splitScenarios(src: string): { key: string; body: string }[] {
   return out
 }
 
+// Map the file-order label in ReportDemoSection (GO / CAUTION / NO) back
+// to the DEMO_SCENARIOS key so we can compare rent across files.
+const DEMO_BY_LABEL: Record<string, DemoFields | null> = {
+  GO: demoGo,
+  CAUTION: demoCaution,
+  NO: demoNo,
+}
+
 for (const { key, body } of splitScenarios(sectionSrc)) {
-  // Match rent-shaped dollar amounts that follow a Rent/rent/Rent/mo label.
-  // Example: { l: 'Rent', v: '$3,500' } OR { k: 'Rent/mo', v: '$3,500', hi: '' }
+  // Match rent-shaped dollar amounts that follow a Rent / Rent/mo label.
+  // The object literals in ReportDemoSection.tsx use unquoted shorthand
+  // keys (`{ l: 'Rent', v: '$3,500' }` — not `'l':` / `'v':`), which an
+  // earlier version of this regex did not handle; both rent invariants
+  // silently matched zero tokens and never fired.
+  //
+  // Accepts either `l:` / `k:` (shorthand) or `'l':` / `'k':` (quoted).
   const rentMatches = Array.from(
-    body.matchAll(/['"](?:l|k)['"]:\s*['"]Rent[^'"]*['"]\s*,\s*['"]?v['"]?:\s*['"]\$([\d,]+)['"]/g),
+    body.matchAll(/(?:['"]?)(?:l|k)(?:['"]?):\s*['"]Rent[^'"]*['"]\s*,\s*(?:['"]?)v(?:['"]?):\s*['"]\$([\d,]+)['"]/g),
   ).map((m) => m[1])
   const unique = Array.from(new Set(rentMatches))
   if (unique.length > 1) {
@@ -210,6 +230,21 @@ for (const { key, body } of splitScenarios(sectionSrc)) {
       where: `ReportDemoSection.${key}`,
       detail: `Rent drift within scenario: found ${unique.map((v) => '$' + v).join(', ')}. A single scenario must show one canonical rent figure.`,
     })
+  }
+
+  // Invariant 5: cross-file rent drift. If ReportDemoSection renders a
+  // single consistent rent figure, that figure must match
+  // DEMO_SCENARIOS[key].rent. This is the check that would have fired
+  // on the deleted PremiumReport surface had it been live.
+  const demo = DEMO_BY_LABEL[key]
+  if (unique.length === 1 && demo) {
+    const rentInt = parseInt(unique[0].replace(/,/g, ''), 10)
+    if (Number.isFinite(rentInt) && rentInt !== demo.rent) {
+      violations.push({
+        where: `cross-check (${key})`,
+        detail: `ReportDemoSection rent $${unique[0]} does not match DEMO_SCENARIOS.${key.toLowerCase()}.rent=$${demo.rent.toLocaleString()}. The hero mini-card and the full demo will show different rents for the same scenario.`,
+      })
+    }
   }
 }
 
