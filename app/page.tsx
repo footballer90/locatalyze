@@ -618,7 +618,10 @@ function CinematicWalkthrough() {
     if (!inView) return
     let dead = false
     setPhase(0); setTyped(''); setProgress(0); setSteps(0)
-    setScanLine(0); setPins([]); setScoreAnim(0); setBarsFired(false)
+    setScanLine(0); setPins([]); setBarsFired(false)
+    // scoreAnim is NOT reset here — resetting it at the top of the loop causes
+    // a 0/100 flash while phase 3 is still visible from the previous cycle.
+    // It is reset to 0 inside the phase-3 timeout, just before counting begins.
 
     const t1 = setTimeout(() => {
       if (dead) return; setPhase(1); let i = 0
@@ -648,7 +651,7 @@ function CinematicWalkthrough() {
               setTimeout(() => { if (!dead) setPins(v => [...v, idx]) }, 400 + pin.d)
             })
             const t3 = setTimeout(() => {
-              if (dead) return; setPhase(3); let s = 0
+              if (dead) return; setScoreAnim(0); setPhase(3); let s = 0
               const sa = setInterval(() => {
                 if (dead) { clearInterval(sa); return }
                 s += 2; setScoreAnim(Math.min(s, 82))
@@ -666,7 +669,7 @@ function CinematicWalkthrough() {
     return () => { dead = true; clearTimeout(t1); clearTimeout(rp) }
   }, [replay, inView])
 
-  const circ = 2 * Math.PI * 30
+  const circ = 2 * Math.PI * 28
   const phaseIdx = phase === 0 || phase === 1 ? 0 : phase === 2 ? 1 : 2
 
   return (
@@ -793,7 +796,7 @@ function CinematicWalkthrough() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 14 }}>
-                  {[{l:'Est. revenue range',v:'$78k–$88k/mo',hi:false},{l:'Break-even (est.)',v:'35–50/day',hi:false},{l:'Rent-to-revenue',v:'~9–11%',hi:false},{l:'Note',v:'Estimate only',hi:true}].map(m => (
+                  {[{l:'Est. revenue range',v:'$78k–$88k/mo',hi:false},{l:'Break-even (est.)',v:'35–50/day',hi:false},{l:'Rent-to-revenue',v:'~4.2%',hi:false},{l:'Note',v:'Estimate only',hi:true}].map(m => (
                     <div key={m.l} style={{ background: m.hi ? L.emeraldXlt : '#F8FAFC', borderRadius: 8, border: `1px solid ${m.hi ? L.emeraldLt : L.border}`, padding: '8px 10px' }}>
                       <p style={{ fontSize: 9, fontWeight: 700, color: L.muted, textTransform: 'uppercase' as const, letterSpacing: '.05em', marginBottom: 2 }}>{m.l}</p>
                       <p style={{ fontSize: 13, fontWeight: 800, color: m.hi ? L.emerald : L.slate }}>{m.v}</p>
