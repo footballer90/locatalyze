@@ -7,10 +7,11 @@ import { Menu, X } from 'lucide-react'
 import { onboardingRef } from '@/lib/funnel-links'
 import { Logo } from '@/components/Logo'
 
-/** Max 3 centre links — premium SaaS density */
+/** Centre links — premium SaaS density */
 const CENTER_NAV = [
   { label: 'How it works', href: '/#how-it-works' },
   { label: 'Pricing', href: '/#pricing' },
+  { label: 'Methodology', href: '/methodology' },
   { label: 'Sample report', href: '/sample-report' },
 ] as const
 

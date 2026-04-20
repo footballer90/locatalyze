@@ -4,7 +4,7 @@
 // Split from page.tsx so metadata stays in the Server Component
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { onboardingRef } from '@/lib/funnel-links'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -168,11 +168,60 @@ function MapPlaceholder() {
 
 export default function SampleReportClient() {
   const [activeTab, setActiveTab] = useState('overview')
+  // Sticky decision strip — persists the verdict + one-line action across
+  // the whole report, so the decision is always the loudest thing on screen.
+  const heroRef = useRef<HTMLDivElement>(null)
+  const [stickyOn, setStickyOn] = useState(false)
+
+  useEffect(() => {
+    const el = heroRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setStickyOn(!entry.isIntersecting),
+      // Fire as soon as the hero's bottom passes below the 64px nav.
+      { threshold: 0, rootMargin: '-64px 0px 0px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   return (
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font, color: S.n900 }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
+
+      {/* Persistent decision strip — only visible after the hero scrolls out.
+          Single source of truth for the GO/CAUTION/NO call + the one action
+          the user needs to take. Keeps the verdict the loudest thing on screen.
+          Sits just below the 64px marketing Navbar (z-index 60). */}
+      <div
+        aria-hidden={!stickyOn}
+        style={{
+          position: 'fixed', top: 64, left: 0, right: 0, zIndex: 50,
+          background: '#0B1512',
+          borderBottom: '1px solid rgba(167,243,208,0.15)',
+          boxShadow: stickyOn ? '0 6px 24px rgba(0,0,0,0.25)' : 'none',
+          transform: stickyOn ? 'translateY(0)' : 'translateY(-110%)',
+          opacity: stickyOn ? 1 : 0,
+          transition: 'transform 240ms cubic-bezier(.2,.7,.2,1), opacity 200ms',
+          pointerEvents: stickyOn ? 'auto' : 'none',
+        }}
+      >
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' as const }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(5,150,105,0.18)', border: '1.5px solid rgba(5,150,105,0.5)', borderRadius: 6, padding: '4px 10px', flexShrink: 0 }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: S.emerald, boxShadow: `0 0 8px ${S.emerald}` }} />
+            <span style={{ fontSize: 12, fontWeight: 900, color: S.emerald, letterSpacing: '0.06em' }}>GO</span>
+            <span style={{ width: 1, height: 11, background: 'rgba(5,150,105,0.3)' }} />
+            <span style={{ fontSize: 11, fontWeight: 800, color: S.emerald, fontFamily: S.mono }}>84</span>
+          </div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#E5E7EB', lineHeight: 1.35, flex: 1, minWidth: 240 }}>
+            Rent is <strong style={{ color: '#FCD34D', fontWeight: 800, fontFamily: S.mono }}>11.2%</strong> — 1 point from the danger zone. Book a site visit and negotiate rent down before signing, or this becomes <strong style={{ color: '#FCD34D', fontWeight: 800, letterSpacing: '0.04em' }}>CAUTION</strong>.
+          </p>
+          <Link href={onboardingRef('sample_report_sticky')} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, background: '#34D399', color: '#064E3B', borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 800, textDecoration: 'none', whiteSpace: 'nowrap' as const }}>
+            Run my address →
+          </Link>
+        </div>
+      </div>
 
       {/* Sample banner */}
       <div style={{ background: S.amber, padding: '10px 24px', textAlign: 'center' }}>
@@ -198,7 +247,7 @@ export default function SampleReportClient() {
         </div>
 
         {/* Verdict hero */}
-        <div style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
+        <div ref={heroRef} style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'start', marginBottom: 24 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' as const }}>
@@ -212,14 +261,28 @@ export default function SampleReportClient() {
                 Specialty Café
               </h1>
               {/* Verdict badge */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(5,150,105,0.15)', border: '1.5px solid rgba(5,150,105,0.4)', borderRadius: 8, padding: '8px 16px', marginBottom: 16 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(5,150,105,0.15)', border: '1.5px solid rgba(5,150,105,0.4)', borderRadius: 8, padding: '8px 16px', marginBottom: 14 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: S.emerald, boxShadow: `0 0 8px ${S.emerald}` }} />
                 <span style={{ fontSize: 14, fontWeight: 900, color: S.emerald, letterSpacing: '0.06em' }}>GO</span>
                 <span style={{ width: 1, height: 14, background: 'rgba(5,150,105,0.3)' }} />
                 <span style={{ fontSize: 11, color: 'rgba(5,150,105,0.7)', fontWeight: 600 }}>LOW RISK</span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 480 }}>
-                Leederville's Oxford Street is one of Perth's strongest café corridors. The rent-to-revenue ratio of 11.2% sits within the healthy range for specialty coffee, foot traffic density is high, and competition is manageable. The demographic profile — median income $96,000, age skew 25–44 — aligns closely with consistent specialty coffee spend.
+
+              {/* THE DECISION — one synthesised sentence the user cannot miss.
+                  Verdict + binding constraint + action + flip-trigger.
+                  Everything else in the report is evidence for this line. */}
+              <p style={{
+                fontSize: 20, fontWeight: 700, lineHeight: 1.4, letterSpacing: '-0.015em',
+                color: '#F8FAFC', maxWidth: 640, marginBottom: 14,
+              }}>
+                This location scores <span style={{ color: S.emerald, fontWeight: 900 }}>GO</span>.
+                Rent is <span style={{ color: '#FCD34D', fontWeight: 900, fontFamily: S.mono }}>11.2%</span> — 1 point from the danger zone.
+                Book a site visit and negotiate rent down before signing, or this becomes <span style={{ color: '#FCD34D', fontWeight: 900, letterSpacing: '0.03em' }}>CAUTION</span>.
+              </p>
+
+              {/* Supporting context — demoted to evidence, not lede */}
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', lineHeight: 1.7, maxWidth: 560 }}>
+                Evidence: Oxford Street is one of Perth's strongest café corridors — high foot traffic, median income $96,000, 25–44 age skew and manageable competition (4 within 500m). The full breakdown is below.
               </p>
             </div>
             {/* Score ring */}
@@ -299,23 +362,27 @@ export default function SampleReportClient() {
                   </Card>
                   <Card style={{ padding: 16 }}>
                     <SectionLabel>Rent Analysis</SectionLabel>
-                    {/* Rent ratio panel */}
-                    <div style={{ background: S.amberBg, border: `1.5px solid ${S.amberBdr}`, borderRadius: 12, padding: '16px 18px', marginBottom: 12 }}>
+                    {/* Rent ratio panel — colour agrees with the verdict.
+                        11.2% sits under the 12% healthy threshold, so the
+                        whole panel reads as PASS. The single point of margin
+                        to the danger zone is surfaced as a watch-out in the
+                        hero decision line, not as a competing warning here. */}
+                    <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 12, padding: '16px 18px', marginBottom: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                         <div>
-                          <p style={{ fontSize: 10, fontWeight: 800, color: S.amber, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Rent-to-Revenue Ratio</p>
-                          <p style={{ fontSize: 11, color: S.amber, opacity: 0.85 }}>Benchmark: under 12% healthy · 1% margin to threshold</p>
+                          <p style={{ fontSize: 10, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Rent-to-Revenue Ratio</p>
+                          <p style={{ fontSize: 11, color: S.emerald, opacity: 0.85 }}>Benchmark: under 12% healthy · 11.2% passes with 1pt to spare</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: 32, fontWeight: 900, color: S.amber, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>11.2%</div>
+                          <div style={{ fontSize: 32, fontWeight: 900, color: S.emerald, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>11.2%</div>
                           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
-                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.amber }} />
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.emerald }} />
                             <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.06em' }}>EXCELLENT</span>
                           </div>
                         </div>
                       </div>
                       <div style={{ height: 7, background: 'rgba(255,255,255,0.5)', borderRadius: 4, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: '93%', background: S.amber, borderRadius: 4, opacity: 0.7 }} />
+                        <div style={{ height: '100%', width: '93%', background: S.emerald, borderRadius: 4, opacity: 0.75 }} />
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -334,9 +401,9 @@ export default function SampleReportClient() {
                       <ScoreBar label="Competition"         score={80} weight="25%" />
                       <ScoreBar label="Market Demand"       score={85} weight="20%" />
                       <ScoreBar label="Profitability"       score={80} weight="25%" />
-                      <ScoreBar label="Location Quality"    score={88} weight="10%" />
+                      <ScoreBar label="Location Quality"    score={90} weight="10%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (88) — high footfall and excellent transit access. Model accuracy: ±5pt per dimension. Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 88×0.10 = 83.8 → rounded to <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (90) — high footfall and excellent transit access. Each sub-score is rounded to the nearest 5 (±5pt per dimension). Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
                     <div style={{ textAlign: 'center' }}>

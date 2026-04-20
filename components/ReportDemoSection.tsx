@@ -559,9 +559,11 @@ export default function ReportDemoSection() {
   const [tab,     setTab]     = useState<Tab>('overview')
   const [fading,  setFading]  = useState(false)
   const [fired,   setFired]   = useState(false)
-  const [score,   setScore]   = useState(0)
-  const [visible, setVisible] = useState(true)  // start visible so score animates immediately
+  // Start at the target score so the first paint shows a coherent number
+  // next to the verdict badge (no 0/100 or 2/100 flash on mount).
+  const [score,   setScore]   = useState<number>(() => DATA.go.score)
   const sectionRef = useRef<HTMLElement>(null)
+  const isFirstScoreEffect = useRef(true)
 
   const d  = DATA[verdict]
   const vc = VERDICT_CONFIG[verdict]
@@ -571,22 +573,18 @@ export default function ReportDemoSection() {
     setFading(true)
     setTimeout(() => {
       setVerdict(v); setTab('overview')
-      setFading(false); setFired(false); setScore(0)
+      setFading(false); setFired(false)
     }, 160)
   }
 
   useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
-      { threshold: 0.2 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
+    // Skip the animate-from-0 on the very first mount — the initial state
+    // already holds the target score and we don't want a visible dip.
+    if (isFirstScoreEffect.current) {
+      isFirstScoreEffect.current = false
+      setScore(d.score)
+      return
+    }
     setScore(0)
     const target = d.score
     let n = 0
@@ -595,7 +593,7 @@ export default function ReportDemoSection() {
       if (n >= target) clearInterval(id)
     }, 14)
     return () => clearInterval(id)
-  }, [visible, verdict])
+  }, [verdict, d.score])
 
   useEffect(() => {
     setFired(false)

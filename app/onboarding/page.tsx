@@ -141,7 +141,11 @@ export default function OnboardingPage() {
   const [mapRadius, setMapRadius] = useState<number | undefined>(undefined)
   const [showHeatmap, setShowHeatmap] = useState(false)
   const [showIsochrones, setShowIsochrones] = useState(true)
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  // Default-expanded so the "Calibrate your model" panel is visible as soon as
+  // a user starts filling the form. This matches the methodology promise that
+  // calibration lifts the Model Accuracy score — users who never expand it
+  // never get the chance to calibrate.
+  const [showAdvanced, setShowAdvanced] = useState(true)
   // Accuracy-improving optional fields
   const [operatingHours,  setOperatingHours]  = useState<string>('')
   const [seatingCapacity, setSeatingCapacity] = useState<string>('')
