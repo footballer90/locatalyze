@@ -1174,8 +1174,12 @@ export default function SampleReportClient() {
             <div style={{ background: S.headerBg, borderRadius: 14, padding: '18px' }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB', marginBottom: 8, lineHeight: 1.4 }}>Ready to analyse your address?</p>
               <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 14, lineHeight: 1.6 }}>Your report is generated live from real data. First report free, no credit card.</p>
-              <Link href={onboardingRef('sample_report_sidebar')} style={{ display: 'block', textAlign: 'center', background: S.brand, color: '#fff', borderRadius: 8, padding: '11px', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+              <Link href={onboardingRef('sample_report_sidebar')} style={{ display: 'block', textAlign: 'center', background: S.brand, color: '#fff', borderRadius: 8, padding: '11px', fontSize: 13, fontWeight: 700, textDecoration: 'none', marginBottom: 8 }}>
                 Run my free report →
+              </Link>
+              {/* Checklist — for users who want to do the site visit first */}
+              <Link href="/tools/checklist" style={{ display: 'block', textAlign: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '9px', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+                Before-you-sign checklist →
               </Link>
             </div>
 

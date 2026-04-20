@@ -47,6 +47,15 @@ const TOOLS = [
     href: '/tools/break-even-foot-traffic',
     cta: 'Use tool',
   },
+  {
+    id: 'checklist',
+    title: 'Before-You-Sign Checklist',
+    short: '12 checks · 3 phases · printable. Enter your rent to get GO / CAUTION / NO numbers.',
+    description:
+      'At your desk, at the site, and at the lease table — the complete pre-signing checklist for café and restaurant operators. Fill in your rent to calculate your walkaway numbers.',
+    href: '/tools/checklist',
+    cta: 'Open checklist',
+  },
 ] as const
 
 function IconViability(props: { className?: string }) {
@@ -86,6 +95,17 @@ function IconBreakEven(props: { className?: string }) {
   )
 }
 
+function IconChecklist(props: { className?: string }) {
+  return (
+    <svg className={props.className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
+      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9 17h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
 const TOOL_ICONS: Record<
   (typeof TOOLS)[number]['id'],
   ComponentType<{ className?: string }>
@@ -93,6 +113,7 @@ const TOOL_ICONS: Record<
   viability: IconViability,
   rent: IconRent,
   breakeven: IconBreakEven,
+  checklist: IconChecklist,
 }
 
 const HUB_CSS = `
