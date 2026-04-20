@@ -184,6 +184,10 @@ export default function SampleReportClient() {
   // the whole report, so the decision is always the loudest thing on screen.
   const heroRef = useRef<HTMLDivElement>(null)
   const [stickyOn, setStickyOn] = useState(false)
+  // Full SWOT lives in a deep-dive layer by default. The surface shows a
+  // 2-bullet "Decision Notes" — one kill risk + one reason to pursue.
+  // Twelve SWOT bullets don't make a decision; two do.
+  const [swotOpen, setSwotOpen] = useState(false)
 
   useEffect(() => {
     const el = heroRef.current
@@ -292,9 +296,11 @@ export default function SampleReportClient() {
                 Book a site visit and negotiate rent down before signing, or this becomes <span style={{ color: '#FCD34D', fontWeight: 900, letterSpacing: '0.03em' }}>CAUTION</span>.
               </p>
 
-              {/* Supporting context — demoted to evidence, not lede */}
+              {/* Supporting context — one specific, concrete observation
+                  rather than a "high / moderate / good" sweep. Every variable
+                  listed has a number or a comparator attached. */}
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', lineHeight: 1.7, maxWidth: 560 }}>
-                Evidence: Oxford Street is one of Perth's strongest café corridors — high foot traffic, median income $96,000, 25–44 age skew and manageable competition (4 within 500m). The full breakdown is below.
+                Leederville's quality ceiling is soft — two of the four competing cafés score below 4.0 on Google. A serious specialty concept clears that on day one. The binding constraint is the lease, not the market.
               </p>
             </div>
             {/* Score ring */}
@@ -343,6 +349,47 @@ export default function SampleReportClient() {
 
           {/* Main content */}
           <div style={{ flex: 1, minWidth: 0 }}>
+
+            {/* ── Analyst's read ─────────────────────────────────────────
+                The single dominant element below the hero. Everything else
+                in this column is evidence for the position stated here.
+                Written with a concrete point of view — the one lever that
+                moves the verdict, and the specific deal structure that
+                lets this location work. Persists across all tabs. */}
+            <div style={{
+              background: '#0B1512',
+              borderRadius: 12,
+              padding: '20px 22px',
+              marginBottom: 14,
+              border: `1px solid ${S.emeraldBdr}`,
+              boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Left accent — ties this block to the emerald verdict */}
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: S.emerald }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 900, color: S.emerald,
+                  textTransform: 'uppercase', letterSpacing: '0.14em',
+                }}>Analyst's read</span>
+                <span style={{ width: 1, height: 10, background: 'rgba(167,243,208,0.2)' }} />
+                <span style={{ fontSize: 10, color: 'rgba(167,243,208,0.55)', fontWeight: 600 }}>
+                  One position. One lever. What I&apos;d actually do.
+                </span>
+              </div>
+              <p style={{
+                fontSize: 15, fontWeight: 500, lineHeight: 1.65, color: '#E5E7EB',
+                maxWidth: 720, margin: 0,
+              }}>
+                The numbers support the concept — rent at{' '}
+                <strong style={{ color: '#F8FAFC', fontWeight: 800, fontFamily: S.mono }}>11.2%</strong>,{' '}
+                <strong style={{ color: '#F8FAFC', fontWeight: 800, fontFamily: S.mono }}>$96k</strong> median income, four competitors in a precinct where two are rated below 4.0. The deal hinges on one clause: the lease. You&apos;re{' '}
+                <strong style={{ color: '#FCD34D', fontWeight: 800 }}>1 point from CAUTION</strong> today, and a standard CPI review in year 2 tips you over.{' '}
+                <strong style={{ color: '#F8FAFC', fontWeight: 800 }}>Negotiate a 5-year term with CPI-capped reviews and a 12-month break clause.</strong>{' '}
+                Get those and this is a straight GO. Walk away without them — the market doesn&apos;t carry a bad lease here.
+              </p>
+            </div>
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: 2, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 10, padding: 4, marginBottom: 14 }}>
@@ -480,31 +527,67 @@ export default function SampleReportClient() {
                   </Card>
                 </div>
 
-                {/* SWOT */}
+                {/* ── Decision Notes ──────────────────────────────────
+                    Twelve SWOT bullets don't make a decision; two do.
+                    Surface the one reason to pursue and the one thing that
+                    could kill the deal. Full 4-quadrant SWOT is kept for
+                    analysts who want it, but moved behind an expand toggle
+                    so it doesn't compete with the decision for attention. */}
                 <Card>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                    <div style={{ width: 3, height: 14, background: S.brand, borderRadius: 2, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, fontWeight: 800, color: S.n700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>SWOT Analysis</span>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: S.n400, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 4, padding: '1px 6px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>AI-generated</span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    {[
-                      { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
-                      { key: 'Weaknesses', items: ['4 existing café competitors — clear positioning required', 'Weekend foot traffic noticeably lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
-                      { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Nearby apartment development expanding the residential catchment'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
-                      { key: 'Threats', items: ['Rent review clause could push costs above the 12% threshold at renewal', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
-                    ].map(s => (
-                      <div key={s.key} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: '13px 15px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-                          <div style={{ width: 5, height: 5, borderRadius: '50%', background: s.dot }} />
-                          <p style={{ fontSize: 10, fontWeight: 800, color: s.color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.key}</p>
-                        </div>
-                        {s.items.map((item, i) => (
-                          <p key={i} style={{ fontSize: 11, color: s.color, opacity: 0.85, lineHeight: 1.6, marginBottom: i < s.items.length - 1 ? 5 : 0 }}>· {item}</p>
-                        ))}
+                  <SectionLabel>Decision Notes</SectionLabel>
+                  <div style={{ display: 'grid', gap: 10 }}>
+                    <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, borderRadius: 10, padding: '13px 15px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      <span aria-hidden style={{ fontSize: 16, lineHeight: 1, color: S.emerald, marginTop: 1 }}>↑</span>
+                      <div>
+                        <p style={{ fontSize: 10, fontWeight: 900, color: '#065F46', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Reason to pursue</p>
+                        <p style={{ fontSize: 13, color: '#065F46', lineHeight: 1.6, fontWeight: 500 }}>Two of the four competing cafés score below 4.0 on Google. There&apos;s an unmet quality ceiling in the precinct — a serious specialty concept clears it on day one.</p>
                       </div>
-                    ))}
+                    </div>
+                    <div style={{ background: S.redBg, border: `1px solid ${S.redBdr}`, borderRadius: 10, padding: '13px 15px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      <span aria-hidden style={{ fontSize: 16, lineHeight: 1, color: S.red, marginTop: 1 }}>↓</span>
+                      <div>
+                        <p style={{ fontSize: 10, fontWeight: 900, color: '#991B1B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Kill risk</p>
+                        <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6, fontWeight: 500 }}>The rent review clause. At 11.2% you&apos;re 1 point from CAUTION — any CPI uplift in year 2 pushes you into negative-margin territory. Get a CPI cap or walk.</p>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Expand to full SWOT — kept available for analysts
+                      who want the full 4-quadrant breakdown, but demoted
+                      behind a toggle so the 2-bullet decision is the lede. */}
+                  <button
+                    type="button"
+                    onClick={() => setSwotOpen(o => !o)}
+                    aria-expanded={swotOpen}
+                    style={{
+                      marginTop: 12, fontSize: 11, color: S.n500, fontWeight: 700,
+                      background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                      fontFamily: S.font, letterSpacing: '0.02em',
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                    }}>
+                    <span style={{ display: 'inline-block', transform: swotOpen ? 'rotate(90deg)' : 'none', transition: 'transform 180ms' }}>▸</span>
+                    {swotOpen ? 'Hide full SWOT' : 'Show full SWOT (4 quadrants · 8 data points)'}
+                  </button>
+                  {swotOpen && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
+                      {[
+                        { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
+                        { key: 'Weaknesses', items: ['4 existing café competitors — clear positioning required', 'Weekend foot traffic noticeably lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
+                        { key: 'Opportunities', items: ['Specialty coffee quality ceiling unmet by current operators', 'Nearby apartment development expanding the residential catchment'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
+                        { key: 'Threats', items: ['Rent review clause could push costs above the 12% threshold at renewal', 'Rising COGS — green bean prices up 18% since 2024'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
+                      ].map(s => (
+                        <div key={s.key} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: '13px 15px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+                            <div style={{ width: 5, height: 5, borderRadius: '50%', background: s.dot }} />
+                            <p style={{ fontSize: 10, fontWeight: 800, color: s.color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.key}</p>
+                          </div>
+                          {s.items.map((item, i) => (
+                            <p key={i} style={{ fontSize: 11, color: s.color, opacity: 0.85, lineHeight: 1.6, marginBottom: i < s.items.length - 1 ? 5 : 0 }}>· {item}</p>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </Card>
               </>
             )}
