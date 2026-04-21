@@ -312,12 +312,15 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'p', text: 'Melbourne has more cafes per capita than almost any city in the world. The customer base is sophisticated — they can tell the difference between a 19g and a 20g extraction. The expectation of quality is higher than in other Australian cities, which means mediocre coffee will be punished faster. But the demand is also genuine and deep.' },
    { type: 'h2', text: 'Fitzroy: the benchmark for independent café culture' },
    { type: 'p', text: 'Fitzroy scores at the top of nearly every café demand metric: income demographics, age profile, foot traffic, and cultural affinity for independent hospitality. Rents are lower than the CBD. Brunswick Street has genuine seven-day trading. The challenge is that Fitzroy is also one of the most competitive streets in Melbourne — you are operating in a market that tests quality daily.' },
+   { type: 'callout', icon: '', title: 'Fitzroy data snapshot', body: 'Median household income: ~$82,000 (ABS SA2)\nRent: $390–$440/m²/yr\nCompetitor density: 3–5 cafés per 200m\nLocatalyze demand score: 84\nVerdict: GO — strong fundamentals, differentiation required', variant: 'teal' },
    { type: 'h2', text: 'Brunswick: strong demand, slightly lower rents' },
    { type: 'p', text: 'Brunswick offers a similar demographic profile to Fitzroy — young professionals, renters, high coffee spend — but with rents that are typically 15–25% lower. Sydney Road has diverse foot traffic and a loyal local base. For a new independent café with a strong concept, Brunswick may offer slightly better economics than Fitzroy.' },
-   { type: 'callout', icon: '', title: 'Melbourne inner-north café comparison', body: 'Fitzroy: highest demand, highest competition, premium rents.\nBrunswick: strong demand, slightly lower rents, more neighbourhood feel.\nCollingwood: growing fast, good rent, strong brunch culture.\nRichmond: high foot traffic, mixed demographics, strong lunch trade.', variant: 'teal' },
+   { type: 'callout', icon: '', title: 'Brunswick data snapshot', body: 'Median household income: ~$78,000 (ABS SA2)\nRent: $310–$380/m²/yr\nCompetitor density: 2–4 cafés per 200m\nLocatalyze demand score: 79\nVerdict: GO — better rent economics than Fitzroy, comparable demand', variant: 'teal' },
+   { type: 'callout', icon: '', title: 'Melbourne inner-north café comparison', body: 'Fitzroy: highest demand, highest competition, premium rents.\nBrunswick: strong demand, slightly lower rents, more neighbourhood feel.\nCollingwood: mature precinct, established rents, differentiation required.\nRichmond: high foot traffic, mixed demographics, strong lunch trade.', variant: 'amber' },
    { type: 'img', src: 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=900&q=80', caption: 'Melbourne\'s inner suburbs have the highest coffee spend per capita of any Australian city.' },
    { type: 'h2', text: 'Collingwood: established precinct, competitive but viable' },
    { type: 'p', text: 'Collingwood is a mature hospitality precinct — Smith Street and Johnston Street have been among Melbourne\'s most active dining and bar strips since at least 2015. This is not an emerging suburb; rents reflect a decade of premium positioning. The opportunity for a new café operator is not "getting in early" — it is finding the right gap in an established market. Side streets off Smith, and the quieter stretches toward Abbotsford, still offer rents 20–30% below the main strip with comparable catchments. If you\'re looking for genuinely emerging Melbourne café corridors in 2026, look at Preston, Coburg, and Thornbury — all seeing the demographic shift Collingwood experienced a decade ago.' },
+   { type: 'callout', icon: '', title: 'Collingwood data snapshot', body: 'Median household income: ~$80,000 (ABS SA2)\nRent: $370–$420/m²/yr (Smith St main strip)\nCompetitor density: 3–5 cafés per 200m\nLocatalyze demand score: 76\nVerdict: CAUTION — viable with strong differentiation; side streets offer 20–30% rent saving', variant: 'amber' },
    { type: 'h2', text: 'Areas to approach with caution' },
    { type: 'p', text: 'Outer southeastern suburbs like Dandenong and Cranbourne have lower household incomes, lower average coffee spend, and are dominated by budget chains. Independent specialty coffee concepts struggle to sustain $5.50+ pricing in these markets. The fundamentals require a different business model — high volume, lower price, faster service — to work.' },
   ],
@@ -429,9 +432,10 @@ export const POSTS: Record<string, BlogPost> = {
   metaDescription: 'Where are the best and worst suburbs to open a gym in Australia? We analyse residential density, competition and demographics across the major cities.',
   primaryKeyword: 'best suburbs to open a gym Australia',
   secondaryKeywords: ['gym location Australia', 'fitness studio location analysis', 'opening gym suburban', 'gym market gap Australia', 'gym business location'],
-  category: 'Gyms', date: 'December 5, 2025', readTime: '7 min read',
+  category: 'Gyms', date: 'December 5, 2025', readTime: '9 min read',
   heroImg: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1200&q=85',
   tags: ['Gyms', 'Location analysis', 'Australia'],
+  author: 'Locatalyze Research Team',
   intro: 'Finding a viable gym location in 2026 requires more than instinct. With 24/7 chains saturating most major suburbs, opportunity lies in the gaps — and the data shows where those gaps still exist.',
   sections: [
       { type: 'h2', text: 'The gap market: where opportunities still exist' },
@@ -439,12 +443,24 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'stats', items: [{ value: '8–12%', label: 'Annual revenue growth, boutique fitness sector 2022–24 (IBISWorld: Gym, Pilates & Yoga)' }, { value: '38%', label: 'Of Australians who exercise regularly use a gym or studio' }, { value: '$2,400–$4,800', label: 'Typical annual spend per member, boutique studio (reformer pilates, functional training)' }] },
    { type: 'h2', text: 'Characteristics of high-potential gym suburbs' },
    { type: 'list', items: ['High residential density within 2km (5,000+ households)', 'Age profile skewed 22–45 with above-average household income', 'Limited boutique fitness offering (check yoga, pilates, CrossFit within 2km)', 'Strong apartment stock — apartment dwellers are disproportionate gym users', 'Proximity to office precincts for before/after-work convenience', 'Population growth trend (check ABS data on new dwelling approvals)'] },
-   { type: 'h2', text: 'Sydney suburbs with potential (2026)' },
-   { type: 'p', text: 'Suburbs in Sydney\'s inner-west and northern beaches that have seen rapid apartment development in the last 5 years — including Waterloo, Zetland, St Leonards and Brookvale — have growing populations of young professionals without proportionate growth in boutique fitness infrastructure. These are worth analysing carefully before committing.' },
-   { type: 'h2', text: 'Melbourne growth corridors' },
-   { type: 'p', text: 'Melbourne\'s genuine growth corridors in 2026 are Tarneit, Wyndham Vale, Donnybrook and Clyde North — suburbs seeing the fastest net new dwelling completions in Victoria right now. Craigieburn and Point Cook are often cited as growth corridors but are now well-established (both have 10+ year residential histories and existing fitness infrastructure). The real opportunity is in the newer western and northern greenfield developments where population is arriving faster than retail supply. A well-positioned functional training or boutique fitness facility in a current growth corridor can build a strong community base quickly before competition arrives.' },
-   { type: 'h2', text: 'Perth: the overlooked opportunity' },
-   { type: 'p', text: 'Perth has strong income demographics driven by the resources sector. Subiaco, Nedlands, Cottesloe, and Dalkeith have the income and age profile that supports boutique fitness, and boutique studio density remains lower than equivalent Sydney or Melbourne suburbs — creating genuine entry opportunity. Cottesloe and Dalkeith in particular have high-income owner-occupier catchments with actual retail strips and commercial premises suited to studio fitout. The Perth market is worth serious consideration for boutique fitness concepts.' },
+   { type: 'h2', text: 'Sydney: apartment density without studio supply' },
+   { type: 'p', text: 'Sydney\'s apartment construction boom has created pockets of high household density without matching boutique fitness infrastructure. The most compelling opportunities are in suburbs where population has arrived faster than retail supply — specifically Waterloo and Zetland in the inner south, St Leonards on the lower north shore, and Brookvale on the northern beaches. Waterloo and Zetland alone have seen over 15,000 new apartments built in the Green Square urban renewal zone since 2018, yet boutique studio count per capita remains well below the inner-west average.' },
+   { type: 'table', headers: ['Suburb', 'Rent/month (200sqm)', 'Median HHI', 'Primary gap'], rows: [
+     ['Waterloo / Zetland', '$2,800–$3,500', '~$100K', 'Reformer pilates, functional training — 15,000+ new apartments, limited studios'],
+     ['St Leonards', '$3,200–$4,000', '~$110K', 'High-income working population, medical cluster, minimal boutique options'],
+     ['Brookvale', '$2,200–$2,800', '~$95K', 'Northern beaches growth suburb, young families, limited premium strength training'],
+   ]},
+   { type: 'h2', text: 'Melbourne: where population is outpacing supply' },
+   { type: 'p', text: 'Melbourne\'s greenfield growth corridors — Tarneit, Wyndham Vale, Donnybrook and Clyde North — are adding thousands of households annually with almost no boutique fitness infrastructure to match. Commercial rent in these corridors runs $1,500–$2,200/month for a 200sqm space, compared with $4,500–$6,000 for an equivalent site in South Yarra or Richmond. Median household incomes are in the $85,000–$100,000 range — more than sufficient to support functional training at $80–$120/month memberships. The break-even calculation is materially better: a studio in Tarneit that needs 75 members to cover costs would require 150+ members at a South Yarra rent.' },
+   { type: 'callout', icon: '', title: 'Tarneit / Wyndham Vale snapshot', body: 'New dwelling completions: 4,500+/year (fastest-growing corridor in Victoria)\nMedian household income: ~$88,000\nBoutique studios within 3km: 0–2\nCommercial rent (200sqm): $1,500–$2,200/month\nEstimated break-even: 70–90 members at $90/month', variant: 'teal' },
+   { type: 'h2', text: 'Perth: the boutique fitness gap' },
+   { type: 'p', text: 'Perth\'s boutique fitness gap is most visible in Claremont and Nedlands. Both suburbs have median household incomes above $120,000, a 30–50 age bracket skew, and limited reformer pilates or high-end strength training options despite clear demand signals. A 200sqm studio in Claremont commands $3,200–$3,800/month — roughly 40% below an equivalent site in South Yarra, Melbourne. The membership economics are compelling: at $180/month per member, you need just 55 members to cover rent, compared with 80–100 at an inner Melbourne site.' },
+   { type: 'p', text: 'Nedlands adds the University of Western Australia medical cluster — a high-income, fitness-conscious professional demographic with very limited boutique options within walking distance. Cottesloe and Dalkeith extend the opportunity further west: high owner-occupier income, strong lifestyle affinity, and commercial rents ($2,500–$3,200/month) that produce favourable unit economics for a premium studio operator.' },
+   { type: 'stats', items: [
+     { value: '$120K+', label: 'Median household income, Claremont and Nedlands' },
+     { value: '55 members', label: 'Break-even at $180/month in Claremont (vs 80–100 at South Yarra equivalent)' },
+     { value: '0–3', label: 'Boutique studios currently in Claremont, Nedlands, Cottesloe and Dalkeith combined' },
+   ]},
    { type: 'callout', icon: '', title: 'How to find your gap using data', body: 'Step 1: Map all gyms, yoga, pilates and CrossFit within 2km of target suburb.\nStep 2: Check ABS data — households within 2km aged 22–45.\nStep 3: Check income data — households above $85K/year.\nStep 4: Model your membership economics at 100, 150 and 200 members.\nStep 5: Is there a gap between demand and existing supply?', variant: 'teal' },
   ],
   },
@@ -460,6 +476,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Takeaway', date: 'November 20, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1526367790999-0150786686a2?w=1200&q=85',
   tags: ['Delivery', 'Takeaway', 'Strategy'],
+  author: 'Locatalyze Research Team',
   intro: 'Delivery-first food businesses play by a completely different set of location rules. You are not optimising for foot traffic past your door. You are optimising for household density, delivery time and cuisine gap analysis within your 3–5km radius.',
   sections: [
       { type: 'h2', text: 'Why delivery businesses need different location analysis' },
@@ -488,6 +505,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Strategy', date: 'November 8, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=85',
   tags: ['Competition', 'Strategy', 'Market analysis'],
+  author: 'Locatalyze Research Team',
   intro: 'Market saturation is the condition where the number of businesses in a category exceeds what the local demand can support. Identifying it before you enter is one of the highest-value pieces of analysis a founder can do.',
   sections: [
       { type: 'h2', text: 'What market saturation actually looks like on the ground' },
@@ -514,6 +532,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Cafes', date: 'October 25, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&q=85',
   tags: ['Bakery', 'Location strategy', 'Foot traffic'],
+  author: 'Locatalyze Research Team',
   intro: 'A bakery runs on a different clock to most food businesses. Your peak is 7–10am. Your product has a short shelf life. And your economics are built on volume sold in the first few hours of trading. Location is everything.',
   sections: [
       { type: 'h2', text: 'The bakery trading window: why location must work before 10am' },
@@ -542,6 +561,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Brisbane', date: 'December 10, 2025', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?w=1200&q=85',
   tags: ['Brisbane', 'Restaurants', 'Location analysis'],
+  author: 'Locatalyze Research Team',
   intro: 'Brisbane is the fastest growing major city in Australia. The combination of lower commercial rents than Sydney or Melbourne and rapidly growing population makes it one of the more interesting restaurant markets in the country right now.',
   sections: [
       { type: 'stats', items: [{ value: '2.6M', label: 'Population of Greater Brisbane statistical region (ABS 2024)' }, { value: '2.1%', label: 'Annual population growth rate, Brisbane LGA (ABS 2023–24)' }, { value: '$3,800/mo', label: 'Average restaurant strip rent in inner Brisbane' }] },
@@ -571,6 +591,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Perth', date: 'November 15, 2025', readTime: '14 min read',
   heroImg: 'https://images.unsplash.com/photo-1604537529428-15bcbeecfe4d?w=1200&q=85',
   tags: ['Perth', 'Retail', 'Location analysis'],
+  author: 'Locatalyze Research Team',
   intro: 'Perth is the most underanalysed retail market in Australia. Business owners from Sydney and Melbourne dismiss it as too small, too isolated, or too dependent on mining cycles. That dismissal has created real opportunity. The suburbs covered here have above-average household incomes, manageable commercial rents, and — in several cases — customer demand that is not being met by the current supply of quality retail and hospitality businesses.',
   sections: [
     { type: 'stats', items: [{ value: '$112K', label: 'Median household income, Subiaco and Claremont catchments' }, { value: '$2,800–$4,500/mo', label: 'Typical strip retail rent across Perth\'s walkable precincts' }, { value: '2.1M', label: 'Population of Greater Perth (2026), growing 2.1% annually' }] },
@@ -635,6 +656,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Strategy', date: 'October 15, 2025', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?w=1200&q=85',
   tags: ['Strategy', 'Franchises', 'Location science'],
+  author: 'Locatalyze Research Team',
   intro: 'McDonald\'s, Starbucks and Subway do not guess where to open. They run detailed trade area analyses, demographic modelling and competitive mapping before committing to any site. Here is what they look at — and how you can replicate it.',
   sections: [
       { type: 'h2', text: 'What franchise location teams actually analyse' },
@@ -715,6 +737,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Brisbane', date: 'November 28, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=1200&q=85',
   tags: ['Brisbane', 'Cafes', 'Location analysis'],
+  author: 'Locatalyze Research Team',
   intro: 'Brisbane\'s café culture has matured rapidly in the last decade. The combination of warm weather, strong income demographics in inner suburbs, and a customer base that has developed genuine coffee sophistication makes it an increasingly attractive market.',
   sections: [
       { type: 'h2', text: 'The Brisbane café opportunity in 2026' },
@@ -742,6 +765,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Data', date: 'October 5, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1534951009808-766178b47a4f?w=1200&q=85',
   tags: ['Data', 'Demographics', 'Retail'],
+  author: 'Locatalyze Research Team',
   intro: 'A suburb can have 3,000 residents but 25,000 people in it during business hours. For most retail and food businesses, that daytime population is your real customer pool — not the people who sleep there.',
   sections: [
       { type: 'h2', text: 'Resident population vs daytime population: why the difference matters' },
@@ -770,6 +794,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Perth', date: 'December 20, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1200&q=85',
   tags: ['Perth', 'Cafes', 'Location analysis'],
+  author: 'Locatalyze Research Team',
   intro: 'Perth punches above its weight as a café market. High household incomes, a culture of outdoor living that extends café trading hours year-round, and rents that are lower than equivalent Sydney or Melbourne suburbs make it one of the more attractive markets for independent café operators.',
   sections: [
       { type: 'h2', text: 'Why Perth is a strong café market in 2026' },
@@ -797,6 +822,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Retail', date: 'September 22, 2025', readTime: '5 min read',
   heroImg: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=85',
   tags: ['Retail', 'Pop-up', 'Strategy'],
+  author: 'Locatalyze Research Team',
   intro: 'A pop-up is a different beast to a permanent location. You are optimising for immediate visibility, high foot traffic and conversion in a compressed timeframe. The standard long-term location analysis does not fully apply.',
   sections: [
       { type: 'h2', text: 'What makes a good pop-up location different' },
@@ -822,6 +848,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Perth', date: 'October 30, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=85',
   tags: ['Perth', 'Restaurants', 'Location analysis'],
+  author: 'Locatalyze Research Team',
   intro: 'Perth\'s restaurant market is driven by a high-income customer base and a dining culture that has grown significantly more sophisticated in the last decade. Here is where the strongest opportunities lie in 2026.',
   sections: [
       { type: 'h2', text: 'Perth restaurant market characteristics' },
@@ -903,6 +930,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Strategy', date: 'December 28, 2025', readTime: '7 min read',
   heroImg: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=1200&q=85',
   tags: ['Mistakes', 'Strategy', 'Small business'],
+  author: 'Locatalyze Research Team',
   intro: 'The same location mistakes appear in post-mortems of failed small businesses with striking regularity. Here are the ten most common — every single one is predictable, preventable, and unnecessary.',
   sections: [
       { type: 'h2', text: 'Mistake 1: Falling in love with the space before checking the numbers' },
@@ -931,6 +959,7 @@ export const POSTS: Record<string, BlogPost> = {
   category: 'Finance', date: 'December 1, 2025', readTime: '6 min read',
   heroImg: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&q=85',
   tags: ['Finance', 'Rent analysis', 'Business planning'],
+  author: 'Locatalyze Research Team',
   intro: 'Rent is the largest fixed cost for most physical businesses. Get it wrong and no amount of great execution will save you. This is the framework for understanding whether a rent is actually affordable before you sign.',
   sections: [
       { type: 'h2', text: 'The rent-to-revenue ratio: the one number that matters most' },
@@ -1141,7 +1170,7 @@ export const POSTS: Record<string, BlogPost> = {
   author: 'Prashant Gupta',
   authorRole: 'Founder, Locatalyze',
   authorBio: 'Prashant is the founder of Locatalyze. He built the product after watching a food business he was involved with close because of a bad location decision — the kind that better data would have prevented. He launched Locatalyze in 2024 to make location analysis accessible to independent operators before they sign a lease, not after.',
-  intro: 'We built Locatalyze because we got a location wrong. The business survived — barely — but the lesson stuck. In the months since we launched, we have run the analysis across more than 200 café addresses across Australia, from Fitzroy to Fremantle, from Paddington in Brisbane to Paddington in Sydney. What follows is what the data actually shows. Not what convention says. Not what a barista on a forum thinks. The numbers.',
+  intro: 'We built Locatalyze because we got a location wrong. The business survived — barely — but the lesson stuck. Between October 2025 and March 2026, we ran our analysis across more than 200 café addresses across Australia, from Fitzroy to Fremantle, from Paddington in Brisbane to Paddington in Sydney. What follows is what the data actually shows. Not what convention says. Not what a barista on a forum thinks. The numbers.',
   sections: [
     { type: 'callout', icon: '', title: 'A note on methodology (Scoring v2.1)', body: 'This analysis was conducted under an earlier version of the Locatalyze scoring model. The current model (v2.1) uses five factors: Market Demand 20% · Competition 25% · Profitability 25% · Rent Affordability 20% · Location Quality 10%. Core findings remain valid — the rent-to-revenue and competition patterns documented here are consistent with v2.1 outputs. Scores range from 0–100. Addresses are anonymised but city and suburb classifications are accurate. Data collected between October 2025 and March 2026.', variant: 'teal' },
     { type: 'stats', items: [{ value: '213', label: 'Café addresses analysed across Australia' }, { value: '38%', label: 'Scored GO (70+) — viable without major caveats' }, { value: '3.1×', label: 'Revenue difference between top and bottom quartile suburbs' }] },
