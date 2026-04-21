@@ -1,5 +1,33 @@
 export type DemoScenarioKey = 'go' | 'caution' | 'no'
 
+/** Homepage hero + full demo tab order (single source for context index ↔ key). */
+export const DEMO_SCENARIO_KEYS_IN_ORDER: DemoScenarioKey[] = ['go', 'caution', 'no']
+
+/**
+ * Three mini-bars on the hero card — labels align with the 5-dim methodology.
+ * Values match `ReportDemoSection` pentagon vertices (Market Demand, Rent Afford., Competition).
+ */
+export const HOMEPAGE_MINI_SNAP: Record<
+  DemoScenarioKey,
+  { l: string; v: number }[]
+> = {
+  go: [
+    { l: 'Market Demand', v: 88 },
+    { l: 'Rent Afford.', v: 78 },
+    { l: 'Competition', v: 72 },
+  ],
+  caution: [
+    { l: 'Market Demand', v: 70 },
+    { l: 'Rent Afford.', v: 76 },
+    { l: 'Competition', v: 45 },
+  ],
+  no: [
+    { l: 'Market Demand', v: 52 },
+    { l: 'Rent Afford.', v: 44 },
+    { l: 'Competition', v: 24 },
+  ],
+}
+
 /**
  * Single source of truth for every demo scenario shown on marketing
  * surfaces (homepage hero mini-card, homepage interactive ReportDemoSection,

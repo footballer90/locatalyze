@@ -421,7 +421,7 @@ export default function SydneyCafePage() {
               </ResponsiveContainer>
             </div>
           </div>
-          <DataNote text="Scores: Locatalyze model (Rent 30%, Profitability 25%, Competition 25%, Demographics 20%). ABS, CBRE, Geoapify data. March 2026."/>
+          <DataNote text="Scores: Locatalyze model (Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%). ABS, CBRE, Geoapify data. April 2026."/>
     </section>
 
         {/* Suburb cards */}

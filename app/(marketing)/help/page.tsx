@@ -47,7 +47,7 @@ const FAQS = [
     items: [
       {
         q: 'What does the location score mean?',
-        a: 'The score (0–100) is a weighted composite: Rent affordability 30%, Profitability 25%, Competition intensity 25%, Area demographics 20%. Scores above 70 are GO territory. 45–70 is CAUTION. Below 45 is NO. The weighting reflects that rent and profitability are the leading causes of business failure.',
+        a: 'The score (0–100) is a weighted composite across five dimensions: Profitability 25%, Market Demand 25%, Competition intensity 20%, Rent Affordability 20%, Location Quality 10%. Scores above 70 are GO territory. 45–70 is CAUTION. Below 45 is NO.',
       },
       {
         q: 'What does GO / CAUTION / NO mean exactly?',

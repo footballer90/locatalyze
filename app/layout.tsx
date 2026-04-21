@@ -77,7 +77,7 @@ const faqSchema = {
       name: 'How does the GO/CAUTION/NO verdict work?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Scores above 70 = GO (strong opportunity). 45–69 = CAUTION (proceed carefully). Below 45 = NO (avoid this location). Scoring weights: Rent 30%, Profitability 25%, Competition 25%, Demographics 20%.',
+        text: 'Scores above 70 = GO (strong opportunity). 45–69 = CAUTION (proceed carefully). Below 45 = NO (avoid this location). Scoring weights: Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%.',
       },
     },
     {

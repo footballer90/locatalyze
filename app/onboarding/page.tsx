@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { OnboardingCapture } from '@/components/analytics/FunnelCapture'
 import { Logo } from '@/components/Logo'
+import { lzRateLimitHeaders } from '@/lib/lz-rate-limit-headers'
 
 const S = {
   font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -259,7 +260,7 @@ export default function OnboardingPage() {
 
       const res = await fetch('/api/analyse', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-id': user.id },
+        headers: { 'Content-Type': 'application/json', 'x-user-id': user.id, ...lzRateLimitHeaders() },
         body: JSON.stringify({
           businessType: biz.label,
           address: addr.trim(),
@@ -336,7 +337,7 @@ export default function OnboardingPage() {
     if (val.length <= 1) { setSuggestions([]); return }
     autocompleteTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(val)}`)
+        const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(val)}`, { headers: { ...lzRateLimitHeaders() } })
         const data = await res.json()
         setSuggestions(Array.isArray(data) ? data.slice(0, 5) : [])
       } catch (err) {
@@ -352,7 +353,7 @@ export default function OnboardingPage() {
     setGeocoding(true)
 
     try {
-      const res = await fetch(`/api/geocode?q=${encodeURIComponent(suggestion.display_name)}`)
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(suggestion.display_name)}`, { headers: { ...lzRateLimitHeaders() } })
       const data = await res.json()
       if (data?.[0]) {
         setCoords({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) })

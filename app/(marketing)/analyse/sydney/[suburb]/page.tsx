@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ComponentType } from 'react'
 import Link from 'next/link'
 import { C, ScoreBar, SuburbCard } from '@/components/analyse'
 import { FactorGrid } from '@/components/analyse/FactorGrid'
@@ -9,6 +10,54 @@ import {
   type SuburbModel,
 } from '@/lib/analyse-data/sydney'
 import type { LocationVerdict } from '@/lib/analyse-data/scoring-engine'
+import SydneyBakeryGuide from '../bakery/page'
+import SydneyCafeGuide from '../cafe/page'
+import SydneyGymGuide from '../gym/page'
+import SydneyRestaurantGuide from '../restaurant/page'
+import SydneyRetailGuide from '../retail/page'
+import SydneySalonGuide from '../salon/page'
+
+const SYDNEY_GUIDE_PAGES: Record<string, ComponentType> = {
+  bakery: SydneyBakeryGuide,
+  cafe: SydneyCafeGuide,
+  gym: SydneyGymGuide,
+  restaurant: SydneyRestaurantGuide,
+  retail: SydneyRetailGuide,
+  salon: SydneySalonGuide,
+}
+
+const SYDNEY_GUIDE_METADATA: Record<string, Metadata> = {
+  bakery: {
+    title: 'Best Suburbs to Open a Bakery in Sydney (2026)',
+    description: 'Data-driven suburb guide for Sydney bakeries...',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/bakery' },
+  },
+  cafe: {
+    title: 'Best Suburbs to Open a Café in Sydney (2026) — Location Analysis',
+    description: 'Data-driven suburb guide for Sydney coffee shops. Rent benchmarks, foot traffic, competition and income demographics scored. Based on ABS and CBRE data.',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/cafe' },
+  },
+  gym: {
+    title: 'Best Suburbs to Open a Gym in Sydney (2026)',
+    description: 'Data-driven suburb guide for Sydney gyms...',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/gym' },
+  },
+  restaurant: {
+    title: 'Best Suburbs to Open a Restaurant in Sydney (2026)',
+    description: 'Data-driven suburb guide for Sydney restaurants...',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/restaurant' },
+  },
+  retail: {
+    title: 'Best Suburbs to Open a Retail Store in Sydney (2026) — Location Analysis',
+    description: 'Data-driven suburb guide for Sydney retail stores. Rent benchmarks, foot traffic, competition and income demographics scored. Based on ABS and CBRE data.',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/retail' },
+  },
+  salon: {
+    title: 'Best Suburbs to Open a Salon in Sydney (2026)',
+    description: 'Data-driven suburb guide for Sydney salons...',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/salon' },
+  },
+}
 
 interface Props {
   params: Promise<{ suburb: string }>
@@ -109,13 +158,21 @@ function SuburbSchema({ suburb }: { suburb: SuburbModel }) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 }
 
+const SYDNEY_GUIDE_SLUGS = new Set(['bakery', 'cafe', 'gym', 'restaurant', 'retail', 'salon'])
+
 export function generateStaticParams() {
-  return getSydneySuburbSlugs().map((slug) => ({ suburb: slug }))
+  return getSydneySuburbSlugs()
+    .filter((slug) => !SYDNEY_GUIDE_SLUGS.has(slug))
+    .map((slug) => ({ suburb: slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { suburb } = await params
-  const data = getSydneySuburb(decodeURIComponent(suburb))
+  const decoded = decodeURIComponent(suburb)
+  const guideMeta = SYDNEY_GUIDE_METADATA[decoded]
+  if (guideMeta) return guideMeta
+
+  const data = getSydneySuburb(decoded)
 
   if (!data) {
     return {
@@ -139,10 +196,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SydneySuburbPage({ params }: Props) {
   const { suburb } = await params
-  const data = getSydneySuburb(decodeURIComponent(suburb))
+  const decoded = decodeURIComponent(suburb)
+  const Guide = SYDNEY_GUIDE_PAGES[decoded]
+  if (Guide) return <Guide />
+
+  const data = getSydneySuburb(decoded)
 
   if (!data) {
-    return <SuburbFallback suburbSlug={decodeURIComponent(suburb)} />
+    return <SuburbFallback suburbSlug={decoded} />
   }
 
   const verdict = verdictStyles(data.verdict)

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useCallback, useState } from 'react'
+import { lzRateLimitHeaders } from '@/lib/lz-rate-limit-headers'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface Competitor {
@@ -265,7 +266,7 @@ export default function MapboxMap({
       const radiusParam = r ? `&radius=${r}` : ''
       const res = await fetch(
         `/api/nearby-places?lat=${cLat}&lng=${cLng}&type=${type}${radiusParam}`,
-        { signal: ctrl.signal }
+        { signal: ctrl.signal, headers: { ...lzRateLimitHeaders() } },
       )
       if (!res.ok) {
         console.error('[MapboxMap] API error', res.status)

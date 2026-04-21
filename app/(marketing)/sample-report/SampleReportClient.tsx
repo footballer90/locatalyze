@@ -202,18 +202,21 @@ function MapPlaceholder() {
 /**
  * Rent Affordability sub-score from ratio.
  *
- * Calibrated so that 11.2% → 90, which produces the baseline total of 84
- * (90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = 84).
- * All outputs are rounded to the nearest 5 per the stated rounding rule.
+ * Bands match /methodology: CAUTION from 14% rent/revenue, danger (NO) from 20%.
+ * Calibrated so 11.2% → 90 → baseline weighted total 84 unchanged.
  *
- * Verification:
- *   calcRentAffordabilityScore(0.112)
- *   → raw 80 + (0.12-0.112)/0.02*20 = 80+8 = 88 → rounds to 90 ✓
+ * Verification: calcRentAffordabilityScore(0.112) → 90 ✓
  */
 function calcRentAffordabilityScore(ratio: number): number {
-  if (ratio <= 0.10) return 100
-  if (ratio <= 0.12) return Math.round((80 + (0.12 - ratio) / 0.02 * 20) / 5) * 5
-  if (ratio <= 0.15) return Math.round((40 + (0.15 - ratio) / 0.03 * 40) / 5) * 5
+  if (ratio <= 0.08) return 100
+  if (ratio < 0.14) {
+    const raw = 100 - ((ratio - 0.08) / (0.14 - 0.08)) * 20
+    return Math.round(raw / 5) * 5
+  }
+  if (ratio < 0.20) {
+    const raw = 80 - ((ratio - 0.14) / (0.20 - 0.14)) * 45
+    return Math.round(raw / 5) * 5
+  }
   return 30
 }
 
@@ -230,8 +233,11 @@ const SLIDER_STEP = 100
 
 // Verdict band dollar boundaries (derived from revenue so they agree with
 // the rest of the report; rounded to nearest $100 for a clean label)
-const CAUTION_THRESHOLD = Math.round(REVENUE * 0.12 / 100) * 100  // $8,200 (=12%)
-const NO_THRESHOLD      = Math.round(REVENUE * 0.15 / 100) * 100  // $10,200 (=15%)
+/** Rent/revenue bands — single source; matches methodology (danger at 20%). */
+const RENT_RATIO_CAUTION = 0.14
+const RENT_RATIO_DANGER  = 0.20
+const CAUTION_THRESHOLD = Math.round(REVENUE * RENT_RATIO_CAUTION / 100) * 100
+const NO_THRESHOLD      = Math.round(REVENUE * RENT_RATIO_DANGER / 100) * 100
 
 function RentSlider() {
   const [rent, setRent] = useState<number>(M.rent)   // starts at the sample report's $7,600
@@ -245,7 +251,7 @@ function RentSlider() {
   // Other sub-scores are held constant — only the lease term changed
   const totalScore = Math.round(rentScore * 0.20 + 80 * 0.25 + 85 * 0.20 + 80 * 0.25 + 90 * 0.10)
 
-  const verdict     = rentRatio < 0.12 ? 'GO' : rentRatio < 0.15 ? 'CAUTION' : 'NO'
+  const verdict     = rentRatio < RENT_RATIO_CAUTION ? 'GO' : rentRatio < RENT_RATIO_DANGER ? 'CAUTION' : 'NO'
   const vColor      = verdict === 'GO' ? S.emerald : verdict === 'CAUTION' ? S.amber : S.red
   const vBg         = verdict === 'GO' ? S.emeraldBg : verdict === 'CAUTION' ? S.amberBg : S.redBg
   const vBdr        = verdict === 'GO' ? S.emeraldBdr : verdict === 'CAUTION' ? S.amberBdr : S.redBdr
@@ -266,9 +272,9 @@ function RentSlider() {
     const flipUp   = NO_THRESHOLD
     insight = <>At <strong style={{ fontFamily: S.mono }}>${rent.toLocaleString()}/mo</strong>, this is <strong style={{ color: S.amber }}>CAUTION</strong>. Negotiate below <strong style={{ fontFamily: S.mono, color: S.emerald }}>${flipDown.toLocaleString()}/mo</strong> to get back to GO — or accept CAUTION and insist on a 12-month break clause. If rent rises above <strong style={{ fontFamily: S.mono, color: S.red }}>${flipUp.toLocaleString()}/mo</strong>, this becomes NO.</>
   } else {
-    const revenueNeeded = Math.round(rent / 0.15)
+    const revenueNeeded = Math.round(rent / RENT_RATIO_DANGER)
     const pctAbove = Math.round((revenueNeeded / REVENUE - 1) * 100)
-    insight = <>At <strong style={{ fontFamily: S.mono }}>${rent.toLocaleString()}/mo</strong>, this location scores <strong style={{ color: S.red }}>NO</strong>. You would need monthly revenue above <strong style={{ fontFamily: S.mono, color: S.red }}>${revenueNeeded.toLocaleString()}</strong> to justify this rent — {pctAbove}% above the benchmarked model. Walk away unless you have strong evidence your revenue will beat the benchmark.</>
+    insight = <>At <strong style={{ fontFamily: S.mono }}>${rent.toLocaleString()}/mo</strong>, this location scores <strong style={{ color: S.red }}>NO</strong>. You would need monthly revenue above <strong style={{ fontFamily: S.mono, color: S.red }}>${revenueNeeded.toLocaleString()}</strong> to sit at or below the <strong>20% danger threshold</strong> — {pctAbove}% above the benchmarked model. Walk away unless you have strong evidence your revenue will beat the benchmark.</>
   }
 
   return (
@@ -339,9 +345,9 @@ function RentSlider() {
       {/* Zone labels */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <span style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>${(SLIDER_MIN / 1000).toFixed(0)}k</span>
-        <span style={{ fontSize: 10, color: S.emerald, fontWeight: 700, opacity: 0.8 }}>GO  &lt;12%</span>
-        <span style={{ fontSize: 10, color: S.amber, fontWeight: 700, opacity: 0.8 }}>CAUTION 12–15%</span>
-        <span style={{ fontSize: 10, color: S.red, fontWeight: 700, opacity: 0.8 }}>NO  ≥15%</span>
+        <span style={{ fontSize: 10, color: S.emerald, fontWeight: 700, opacity: 0.8 }}>GO  &lt;14%</span>
+        <span style={{ fontSize: 10, color: S.amber, fontWeight: 700, opacity: 0.8 }}>CAUTION 14–20%</span>
+        <span style={{ fontSize: 10, color: S.red, fontWeight: 700, opacity: 0.8 }}>NO  ≥20%</span>
         <span style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>${(SLIDER_MAX / 1000).toFixed(0)}k</span>
       </div>
 
@@ -357,7 +363,7 @@ function RentSlider() {
         <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px' }}>
           <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Rent-to-Revenue</p>
           <p style={{ fontSize: 20, fontWeight: 900, color: vColor, fontFamily: S.mono, lineHeight: 1, transition: 'color 180ms' }}>{rentPct}%</p>
-          <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>GO threshold: &lt;12%</p>
+          <p style={{ fontSize: 10, color: S.n400, marginTop: 3 }}>GO: under 14% · danger: 20%</p>
         </div>
         <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px' }}>
           <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Payback Period</p>
@@ -488,7 +494,7 @@ export default function SampleReportClient() {
             <span style={{ fontSize: 11, fontWeight: 800, color: S.emerald, fontFamily: S.mono }}>84</span>
           </div>
           <p style={{ fontSize: 13, fontWeight: 600, color: '#E5E7EB', lineHeight: 1.35, flex: 1, minWidth: 240 }}>
-            Rent is <strong style={{ color: '#FCD34D', fontWeight: 800, fontFamily: S.mono }}>11.2%</strong> — 1 point from the danger zone. Book a site visit and negotiate rent down before signing, or this becomes <strong style={{ color: '#FCD34D', fontWeight: 800, letterSpacing: '0.04em' }}>CAUTION</strong>.
+            Rent is <strong style={{ color: '#FCD34D', fontWeight: 800, fontFamily: S.mono }}>11.2%</strong> — solid <strong style={{ color: S.emerald }}>GO</strong> with headroom before the <strong>14%</strong> caution band; danger is <strong>20%</strong> (methodology). Book a site visit and <strong>CPI-cap</strong> the lease — uncapped reviews are what push healthy ratios toward caution.
           </p>
           <Link href={onboardingRef('sample_report_sticky')} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, background: '#34D399', color: '#064E3B', borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 800, textDecoration: 'none', whiteSpace: 'nowrap' as const }}>
             Run my address →
@@ -549,8 +555,8 @@ export default function SampleReportClient() {
                 color: '#F8FAFC', maxWidth: 640, marginBottom: 14,
               }}>
                 This location scores <span style={{ color: S.emerald, fontWeight: 900 }}>GO</span>.
-                Rent is <span style={{ color: '#FCD34D', fontWeight: 900, fontFamily: S.mono }}>11.2%</span> — 1 point from the danger zone.
-                Book a site visit and negotiate rent down before signing, or this becomes <span style={{ color: '#FCD34D', fontWeight: 900, letterSpacing: '0.03em' }}>CAUTION</span>.
+                Rent is <span style={{ color: '#FCD34D', fontWeight: 900, fontFamily: S.mono }}>11.2%</span> — <span style={{ color: S.emerald, fontWeight: 900 }}>GO</span> today with room before the <strong>14%</strong> caution line; the documented danger zone is <strong>20%</strong>.
+                Book a site visit and lock in <strong>CPI-capped</strong> reviews so renewal doesn&apos;t drift you toward caution.
               </p>
 
               {/* Supporting context — one specific, concrete observation
@@ -643,8 +649,8 @@ export default function SampleReportClient() {
               }}>
                 The numbers support the concept — rent at{' '}
                 <strong style={{ color: '#F8FAFC', fontWeight: 800, fontFamily: S.mono }}>11.2%</strong>,{' '}
-                <strong style={{ color: '#F8FAFC', fontWeight: 800, fontFamily: S.mono }}>$96k</strong> median income, four competitors in a precinct where two are rated below 4.0. The deal hinges on one clause: the lease. You&apos;re{' '}
-                <strong style={{ color: '#FCD34D', fontWeight: 800 }}>1 point from CAUTION</strong> today, and a standard CPI review in year 2 tips you over.{' '}
+                <strong style={{ color: '#F8FAFC', fontWeight: 800, fontFamily: S.mono }}>$96k</strong> median income, four competitors in a precinct where two are rated below 4.0. The deal hinges on one clause: the lease.                 You&apos;re{' '}
+                <strong style={{ color: '#FCD34D', fontWeight: 800 }}>~2.8 percentage points below the 14% caution line</strong> (danger at 20%) — healthy, but a standard uncapped CPI review in year 2 can close that gap.{' '}
                 <strong style={{ color: '#F8FAFC', fontWeight: 800 }}>Negotiate a 5-year term with CPI-capped reviews and a 12-month break clause.</strong>{' '}
                 Get those and this is a straight GO. Walk away without them — the market doesn&apos;t carry a bad lease here.
               </p>
@@ -684,31 +690,30 @@ export default function SampleReportClient() {
                   <Card style={{ padding: 16 }}>
                     <SectionLabel>Rent Analysis</SectionLabel>
                     {/* Rent ratio panel — colour agrees with the verdict.
-                        11.2% sits under the 12% healthy threshold, so the
-                        whole panel reads as PASS. The single point of margin
-                        to the danger zone is surfaced as a watch-out in the
-                        hero decision line, not as a competing warning here. */}
+                        11.2% is GO under the 14% caution line; danger is 20%
+                        (methodology). Rating is GOOD — not EXCELLENT — so it
+                        doesn’t fight the “watch the lease” narrative in the hero. */}
                     <div style={{ background: S.emeraldBg, border: `1.5px solid ${S.emeraldBdr}`, borderRadius: 12, padding: '16px 18px', marginBottom: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                         <div>
                           <p style={{ fontSize: 10, fontWeight: 800, color: S.emerald, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Rent-to-Revenue Ratio</p>
-                          <p style={{ fontSize: 11, color: S.emerald, opacity: 0.85 }}>Benchmark: under 12% healthy · 11.2% passes with 1pt to spare</p>
+                          <p style={{ fontSize: 11, color: S.emerald, opacity: 0.85 }}>Benchmark: GO under 14% · caution 14–20% · danger ≥20%</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontSize: 32, fontWeight: 900, color: S.emerald, letterSpacing: '-0.04em', lineHeight: 1, fontFamily: S.mono }}>11.2%</div>
                           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#fff', border: `1px solid ${S.emeraldBdr}`, borderRadius: 20, padding: '3px 10px', marginTop: 5 }}>
                             <div style={{ width: 6, height: 6, borderRadius: '50%', background: S.emerald }} />
-                            <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.06em' }}>EXCELLENT</span>
+                            <span style={{ fontSize: 10, fontWeight: 800, color: S.emerald, letterSpacing: '0.06em' }}>GOOD</span>
                           </div>
                         </div>
                       </div>
                       <div style={{ height: 7, background: 'rgba(255,255,255,0.5)', borderRadius: 4, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: '93%', background: S.emerald, borderRadius: 4, opacity: 0.75 }} />
+                        <div style={{ height: '100%', width: '80%', background: S.emerald, borderRadius: 4, opacity: 0.75 }} />
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
                       <Tile label="Monthly Rent" value="$7,600" mono />
-                      <Tile label="Rating" value="Excellent" color={S.emerald} />
+                      <Tile label="Rating" value="Good" color={S.emerald} />
                     </div>
 
                     {/* ── Rent Breakpoints ────────────────────────────
@@ -719,14 +724,13 @@ export default function SampleReportClient() {
                         on the negotiation table are visible here, not
                         buried in a ratio.
 
-                        Band thresholds:
-                          <12%  GO
-                          13%   flips to CAUTION
-                          15%   flips to NO  (matches the 15% danger
-                                threshold referenced elsewhere) */}
+                        Band thresholds (same as slider + methodology):
+                          <14%  GO
+                          14%   flips to CAUTION
+                          20%   flips to NO (danger zone) */}
                     {(() => {
-                      const cautionRent = Math.round(M.revenue * 0.13 / 10) * 10
-                      const noRent      = Math.round(M.revenue * 0.15 / 10) * 10
+                      const cautionRent = Math.round(M.revenue * RENT_RATIO_CAUTION / 10) * 10
+                      const noRent      = Math.round(M.revenue * RENT_RATIO_DANGER / 10) * 10
                       const dCaution    = cautionRent - M.rent
                       const dNo         = noRent      - M.rent
                       const pctCaution  = Math.round(dCaution / M.rent * 100)
@@ -744,8 +748,8 @@ export default function SampleReportClient() {
                           <p style={{ fontSize: 10, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Rent Breakpoints</p>
                           <p style={{ fontSize: 11, color: S.n400, marginBottom: 4 }}>What it takes to flip the verdict — take this into lease negotiation.</p>
                           {row(S.emerald, '#065F46', 'GO',      `$${M.rent.toLocaleString()}/mo`,       'today · 11.2% of revenue')}
-                          {row(S.amber,   '#92400E', 'CAUTION', `$${cautionRent.toLocaleString()}/mo`, `+$${dCaution.toLocaleString()} (+${pctCaution}%) · 13% ratio`)}
-                          {row(S.red,     '#991B1B', 'NO',      `$${noRent.toLocaleString()}/mo`,      `+$${dNo.toLocaleString()} (+${pctNo}%) · 15% ratio`)}
+                          {row(S.amber,   '#92400E', 'CAUTION', `$${cautionRent.toLocaleString()}/mo`, `+$${dCaution.toLocaleString()} (+${pctCaution}%) · 14% ratio`)}
+                          {row(S.red,     '#991B1B', 'NO',      `$${noRent.toLocaleString()}/mo`,      `+$${dNo.toLocaleString()} (+${pctNo}%) · 20% ratio`)}
                         </div>
                       )
                     })()}
@@ -763,7 +767,7 @@ export default function SampleReportClient() {
                       <ScoreBar label="Profitability"       score={80} weight="25%" />
                       <ScoreBar label="Location Quality"    score={90} weight="10%" />
                       <p style={{ fontSize: 10, color: S.n400, marginTop: 10, lineHeight: 1.6 }}>
-                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue ratio of 11.2% vs 15% danger threshold. Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (90) — high footfall and excellent transit access. Each sub-score is rounded to the nearest 5. Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
+                        <strong style={{ fontWeight: 700, color: S.n500 }}>How each score is derived:</strong> Rent Affordability (90) — rent/revenue 11.2% (GO: under 14%; danger zone 20% per methodology). Competition (80) — 4 verified competitors within 500m, moderate saturation. Market Demand (85) — median household income and growth trend. Profitability (80) — net margin of 17.6% and 1.4× break-even cushion. Location Quality (90) — high footfall and excellent transit access. Each sub-score is rounded to the nearest 5. Weighted total: 90×0.20 + 80×0.25 + 85×0.20 + 80×0.25 + 90×0.10 = <strong style={{ fontWeight: 700, color: S.n500 }}>84</strong>.
                       </p>
                     </div>
                     <div style={{ textAlign: 'center' }}>
@@ -848,7 +852,7 @@ export default function SampleReportClient() {
                       <span aria-hidden style={{ fontSize: 16, lineHeight: 1, color: S.red, marginTop: 1 }}>↓</span>
                       <div>
                         <p style={{ fontSize: 10, fontWeight: 900, color: '#991B1B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Kill risk</p>
-                        <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6, fontWeight: 500 }}>The rent review clause. At 11.2% you&apos;re 1 point from CAUTION — any CPI uplift in year 2 pushes you into negative-margin territory. Get a CPI cap or walk.</p>
+                        <p style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.6, fontWeight: 500 }}>The rent review clause. At 11.2% you&apos;re still in GO — but uncapped CPI in year 2 can push you toward the 14% caution band faster than revenue grows. Get a CPI cap or walk.</p>
                       </div>
                     </div>
                   </div>
@@ -872,10 +876,10 @@ export default function SampleReportClient() {
                   {swotOpen && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
                       {[
-                        { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — within the 12% healthy threshold'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
+                        { key: 'Strengths', items: ['Oxford Street foot traffic among Perth\'s highest on weekday mornings', 'Rent-to-revenue at 11.2% — GO band (under 14%; danger at 20%)'], bg: S.emeraldBg, border: S.emeraldBdr, color: '#065F46', dot: S.emerald },
                         { key: 'Weaknesses', items: ['4 existing café competitors — clear positioning required', 'Weekend foot traffic noticeably lower than weekday commuter flow'], bg: S.amberBg, border: S.amberBdr, color: '#92400E', dot: S.amber },
                         { key: 'Opportunities', items: ['Two of four existing operators have no online ordering — Leederville Station commuter pre-order flow (7:15–8:45am) is structurally unserved', 'Bar/restaurant cluster at the north end of Oxford Street drives post-work foot traffic; a specialty concept with extended evening hours captures dinner-adjacent coffee trade uncontested'], bg: S.blueBg, border: S.blueBdr, color: '#1E3A8A', dot: S.blue },
-                        { key: 'Threats', items: ['Rent review clause could push costs above the 12% threshold at renewal — the 13% line sits at ~$8,840/mo ($1,240 above today)', 'Saturday morning coffee trade on Oxford Street runs ~30% below weekday commuter peaks — Leederville\'s weekend gravity is evening-based, not daytime'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
+                        { key: 'Threats', items: ['Rent review clause could push costs toward the 14% caution line at renewal — that band starts at ~$9,520/mo on this revenue (~$1,920 above today)', 'Saturday morning coffee trade on Oxford Street runs ~30% below weekday commuter peaks — Leederville\'s weekend gravity is evening-based, not daytime'], bg: S.redBg, border: S.redBdr, color: '#991B1B', dot: S.red },
                       ].map(s => (
                         <div key={s.key} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: '13px 15px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
@@ -916,7 +920,7 @@ export default function SampleReportClient() {
                   <Tile label="Payback Period"  value={`${M.paybackMonths} months`} color={S.brand} sub={`$${M.setupBudget.toLocaleString()} ÷ $${M.netProfit.toLocaleString()}/mo · no ramp-up`} />
                 </div>
                 <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
-                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 150 daily customers at $17.50 average spend over 26 trading days, monthly revenue of ~$68,000 gives a rent-to-revenue ratio of 11.2% — within the healthy threshold for specialty coffee. Payback of 12 months assumes a $147,200 fit-out cost ($147,200 ÷ $12,000/mo net profit). The model assumes COGS of 38% and fixed labour of $20,000/month (2 FT + 2 casual). Net profit does not include owner salary — add $60,000–$90,000/yr depending on operator involvement.</p>
+                  <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.8 }}>At $7,600/month rent and 150 daily customers at $17.50 average spend over 26 trading days, monthly revenue of ~$68,000 gives a rent-to-revenue ratio of 11.2% — in the GO band on our 14%/20% rent-to-revenue framework (see methodology). Payback of 12 months assumes a $147,200 fit-out cost ($147,200 ÷ $12,000/mo net profit). The model assumes COGS of 38% and fixed labour of $20,000/month (2 FT + 2 casual). Net profit does not include owner salary — add $60,000–$90,000/yr depending on operator involvement.</p>
                 </div>
                 <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
                   <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55 }}>⏱ Payback assumes full trading from day 1. Allow 3–4 additional months for ramp-up to full customer volume — bringing realistic payback to 15–16 months.</p>
@@ -1154,7 +1158,7 @@ export default function SampleReportClient() {
                   verdict:     'GO'      as const,
                   rentPct:     '11.2%',
                   payback:     '12 mo',
-                  insight:     'Two competitors below 4.0 stars — quality ceiling you own on day one. Rent is 1pt from CAUTION: CPI-cap the lease.',
+                  insight:     'Two competitors below 4.0 stars — quality ceiling you own on day one. Rent is GO with room before 14% caution — CPI-cap the lease.',
                   cta:         'Run café analysis →',
                   isActive:    true,   // this is the base report
                 },
@@ -1184,7 +1188,7 @@ export default function SampleReportClient() {
                   verdict:     'CAUTION' as const,
                   rentPct:     '14.6%',
                   payback:     '~3 yrs',
-                  insight:     'Rent at 14.6% exceeds the 12% healthy threshold. Needs average ticket above $28 or rent negotiated below $6,200/mo to flip to GO.',
+                  insight:     'Rent at 14.6% sits in the CAUTION band (14–20%). Needs average ticket above $28 or rent negotiated below ~$9,500/mo to get back to GO.',
                   cta:         'Run bakery analysis →',
                   isActive:    false,
                 },
@@ -1212,6 +1216,39 @@ export default function SampleReportClient() {
 
               return (
                 <>
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(15,118,110,0.12) 0%, rgba(20,184,166,0.08) 100%)',
+                    border: `1.5px solid ${S.brandBorder}`,
+                    borderRadius: 14,
+                    padding: '16px 18px',
+                    marginBottom: 14,
+                  }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.brand, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
+                      Paid feature preview
+                    </p>
+                    <p style={{ fontSize: 14, color: S.n700, lineHeight: 1.65, marginBottom: 12 }}>
+                      Compare this location against others — available in your paid report.
+                    </p>
+                    <Link
+                      href={onboardingRef('sample_report_compare_tab')}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontSize: 13,
+                        fontWeight: 800,
+                        color: '#fff',
+                        background: S.brand,
+                        textDecoration: 'none',
+                        padding: '10px 18px',
+                        borderRadius: 10,
+                        fontFamily: S.font,
+                      }}
+                    >
+                      Get a paid report to compare sites →
+                    </Link>
+                  </div>
+
                   <Card>
                     <div style={{ marginBottom: 18 }}>
                       <SectionLabel>Same location, four business types</SectionLabel>

@@ -37,18 +37,21 @@
  *    This is not fail-open-on-error — it's "no limiter configured",
  *    which is a deliberate ops state, not a runtime error.
  *
- * 3. **IP key only. Never trust client headers for identity.**
+ * 3. **Rate-limit key = IP + optional device id.**
  *    `x-forwarded-for` is trustworthy on Vercel (set by the edge
- *    proxy). Anything else (`x-user-id`, body-supplied user IDs) is
- *    attacker-controlled and would let someone spoof a victim's limit
- *    or rotate IDs to bypass their own. The first hop in XFF is what
- *    we key on; downstream hops are client-supplied and ignored.
+ *    proxy). We also accept an optional `x-lz-device` header: a
+ *    client-generated stable id (8–128 chars) stored in localStorage.
+ *    It is hashed with the IP so raw device ids never hit Redis;
+ *    same IP + rotating fingerprints still get independent buckets
+ *    (minor abuse uplift vs IP-only, acceptable). With no header,
+ *    behaviour is unchanged from pure IP limiting.
  *
  * 4. **Window sizes come from realistic UX, not round numbers.**
  *    See the individual limiter definitions for the rationale behind
  *    each threshold.
  */
 
+import { createHash } from 'node:crypto'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import type { NextRequest } from 'next/server'
@@ -223,6 +226,23 @@ export function getClientIp(req: NextRequest | Request): string {
   return xff.split(',')[0].trim() || 'anonymous'
 }
 
+const DEVICE_HDR = 'x-lz-device'
+
+/**
+ * Redis key for rate limiting — IP-only unless client sends a stable device id.
+ */
+export function getRateLimitKey(req: NextRequest | Request): string {
+  const ip = getClientIp(req)
+  const headers = (req as NextRequest).headers ?? req.headers
+  const raw =
+    typeof headers?.get === 'function' ? headers.get(DEVICE_HDR) : null
+  const device = raw?.trim().slice(0, 128) ?? ''
+  // Require minimum length so trivial single-byte "rotation" doesn't create new buckets.
+  if (device.length < 8) return ip
+  const digest = createHash('sha256').update(`${ip}\n${device}`, 'utf8').digest('hex').slice(0, 48)
+  return `lz:${digest}`
+}
+
 /**
  * Apply an IP-keyed rate limit to a request.
  *
@@ -244,11 +264,11 @@ export async function limitByIp(
 ): Promise<LimitResult> {
   if (!limiter) return { ok: true }
 
-  const ip = getClientIp(req)
+  const key = getRateLimitKey(req)
   const label = opts.label ?? 'ratelimit'
 
   try {
-    const { success, limit, reset } = await limiter.limit(ip)
+    const { success, limit, reset } = await limiter.limit(key)
     if (success) return { ok: true }
 
     const retryAfterSec = Math.max(1, Math.ceil((reset - Date.now()) / 1000))

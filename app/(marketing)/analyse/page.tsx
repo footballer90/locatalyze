@@ -9,7 +9,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Where to Open a Business in Australia — Location Analysis by City (2026)',
   description:
-    'Suburb-by-suburb scores for cafés, restaurants, retail and service businesses across 17 Australian cities. Rent benchmarks, foot traffic data, GO/CAUTION/NO verdicts and break-even analysis for 200+ locations — Sydney, Melbourne, Brisbane, Perth, Canberra, Hobart, Darwin, Gold Coast, Ballarat, Cairns and more.',
+    'Suburb-by-suburb scores for cafés, restaurants, retail and service businesses across every Australian capital plus 13 regional hubs. Rent benchmarks, foot traffic data, GO/CAUTION/NO verdicts and break-even analysis for 200+ locations — Sydney, Melbourne, Brisbane, Perth, Adelaide, Sunshine Coast, Geelong, Cairns, Mackay and more.',
   alternates: { canonical: 'https://www.locatalyze.com/analyse' },
   openGraph: {
     title: 'Where to Open a Business in Australia — Location Analysis by City (2026)',
@@ -178,6 +178,8 @@ const CITIES = [
 ]
 
 const REGIONAL_CITIES = [
+  { name: 'Sunshine Coast', slug: 'sunshine-coast', state: 'QLD', suburbs: 10, color: '#C2410C' },
+  { name: 'Geelong', slug: 'geelong', state: 'VIC', suburbs: 10, color: '#0369A1' },
   { name: 'Ballarat', slug: 'ballarat', state: 'VIC', suburbs: 10, color: '#B45309' },
   { name: 'Bendigo', slug: 'bendigo', state: 'VIC', suburbs: 10, color: '#C2410C' },
   { name: 'Cairns', slug: 'cairns', state: 'QLD', suburbs: 11, color: '#0F766E' },
@@ -186,6 +188,9 @@ const REGIONAL_CITIES = [
   { name: 'Bundaberg', slug: 'bundaberg', state: 'QLD', suburbs: 8, color: '#A16207' },
   { name: 'Ipswich', slug: 'ipswich', state: 'QLD', suburbs: 8, color: '#57534E' },
   { name: 'Launceston', slug: 'launceston', state: 'TAS', suburbs: 10, color: '#1E40AF' },
+  { name: 'Hervey Bay', slug: 'hervey-bay', state: 'QLD', suburbs: 7, color: '#0891B2' },
+  { name: 'Mackay', slug: 'mackay', state: 'QLD', suburbs: 8, color: '#7C3AED' },
+  { name: 'Rockhampton', slug: 'rockhampton', state: 'QLD', suburbs: 8, color: '#B45309' },
 ]
 
 const POPULAR_SEARCHES = [
@@ -211,6 +216,11 @@ const POPULAR_SEARCHES = [
   { label: 'Gold Coast café and restaurant location guide', href: '/analyse/gold-coast', tag: 'Gold Coast' },
   { label: 'Darwin business location — dry vs wet season', href: '/analyse/darwin', tag: 'Darwin' },
   { label: 'Launceston suburb scores for cafés and dining', href: '/analyse/launceston', tag: 'Launceston' },
+  { label: 'Sunshine Coast business location guide 2026', href: '/analyse/sunshine-coast', tag: 'Sunshine Coast' },
+  { label: 'Geelong café and retail suburb analysis', href: '/analyse/geelong', tag: 'Geelong' },
+  { label: 'Hervey Bay business location scores 2026', href: '/analyse/hervey-bay', tag: 'Hervey Bay' },
+  { label: 'Mackay suburb guide for cafés and retail', href: '/analyse/mackay', tag: 'Mackay' },
+  { label: 'Rockhampton business location analysis', href: '/analyse/rockhampton', tag: 'Rockhampton' },
 ]
 
 const HOW_IT_WORKS = [
@@ -278,7 +288,7 @@ const FAQ_SCHEMA = {
       name: 'How does Locatalyze score business locations?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Locatalyze uses a 6-factor weighted model: foot traffic density (25%), demographic income and spending patterns (20%), commercial rent viability (30%), competitive density and competition gap (15%), and accessibility score (10%). Each factor is calibrated by business type — a café model weights foot traffic higher than a professional services model.',
+        text: 'Locatalyze uses a six-factor weighted suburb model: foot traffic density (22%), demographic income and spending (18%), commercial rent viability (25%), competitive density and competition gap (15%), accessibility and transport (12%), and growth trajectory (8%). Each factor is calibrated by business type — for example a café weights foot traffic higher than a professional services fit-out.',
       },
     },
     {
@@ -553,7 +563,7 @@ export default function AnalysePage() {
       </section>
 
       {/* ── REGIONAL CITIES ── */}
-      <section style={{ padding: '0 24px 56px', backgroundColor: S.n50 }}>
+      <section id="regional" style={{ padding: '0 24px 56px', backgroundColor: S.n50 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ marginBottom: '24px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: S.n900, margin: '0 0 6px 0' }}>Regional &amp; emerging cities</h2>
@@ -944,7 +954,7 @@ export default function AnalysePage() {
               },
               {
                 q: 'How does Locatalyze score locations?',
-                a: 'Locatalyze uses a 6-factor weighted model: foot traffic density (25%), demographic income patterns (20%), commercial rent viability (30%), competitive density (15%), and accessibility (10%). Each factor is calibrated by business type — a café weights foot traffic higher; a professional services firm weights demographics higher.',
+                a: 'Locatalyze uses a six-factor weighted suburb model: foot traffic density (22%), demographic income and spending (18%), commercial rent viability (25%), competitive density and competition gap (15%), accessibility and transport (12%), and growth trajectory (8%). Each factor is calibrated by business type — for example a café weights foot traffic higher than a professional services fit-out.',
               },
               {
                 q: 'Is Parramatta a good place to open a café or restaurant?',

@@ -11,6 +11,7 @@ import { SUBURBS } from '@/lib/suburb-data'
 import { type LocationFactors } from './scoring-engine'
 import { getSydneySuburb, getSydneySuburbs } from './sydney'
 import { getPerthSuburb, getPerthSuburbs } from './melbourne'
+import { isStaticIndustryHub } from './static-industry-hubs'
 
 export type Verdict = 'GO' | 'CAUTION' | 'NO' | 'RISKY'
 export type CompetitionLevel = 'Low' | 'Medium' | 'High' | 'Very High'
@@ -674,8 +675,10 @@ export function getAllSuburbKeys(): { citySlug: string; suburbSlug: string }[] {
     if (suburb.slug === 'mount-lawley' || suburb.slug === 'perth-cbd') continue
     keys.add(`perth/${suburb.slug}`)
   }
-  return Array.from(keys).map((key) => {
-    const [citySlug, suburbSlug] = key.split('/')
-    return { citySlug, suburbSlug }
-  })
+  return Array.from(keys)
+    .map((key) => {
+      const [citySlug, suburbSlug] = key.split('/')
+      return { citySlug, suburbSlug }
+    })
+    .filter(({ citySlug, suburbSlug }) => !isStaticIndustryHub(citySlug, suburbSlug))
 }

@@ -10,6 +10,11 @@ import { getToowoombaSuburbSlugs } from '@/lib/analyse-data/toowoomba'
 import { getBundabergSuburbSlugs } from '@/lib/analyse-data/bundaberg'
 import { getIpswichSuburbSlugs } from '@/lib/analyse-data/ipswich'
 import { getLauncestonSuburbSlugs } from '@/lib/analyse-data/launceston'
+import { getGeelongSuburbSlugs } from '@/lib/analyse-data/geelong'
+import { getSunshineCoastSuburbSlugs } from '@/lib/analyse-data/sunshine-coast'
+import { getHerveyBaySuburbSlugs } from '@/lib/analyse-data/hervey-bay'
+import { getMackaySuburbSlugs } from '@/lib/analyse-data/mackay'
+import { getRockhamptonSuburbSlugs } from '@/lib/analyse-data/rockhampton'
 import { getAllSuburbKeys } from '@/lib/analyse-data/suburbs'
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
@@ -74,6 +79,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u('/analyse/bundaberg', 0.60, 'monthly'),
     u('/analyse/ipswich', 0.60, 'monthly'),
     u('/analyse/launceston', 0.65, 'monthly'),
+    u('/analyse/hervey-bay', 0.60, 'monthly'),
+    u('/analyse/mackay', 0.60, 'monthly'),
+    u('/analyse/rockhampton', 0.60, 'monthly'),
 
     // ── Sydney suburb + business-type pages ─────────────────────────────────────
     u('/analyse/sydney/surry-hills', 0.80),
@@ -168,6 +176,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...suburbUrls('bundaberg', getBundabergSuburbSlugs(), 0.55),
     ...suburbUrls('ipswich', getIpswichSuburbSlugs(), 0.55),
     ...suburbUrls('launceston', getLauncestonSuburbSlugs(), 0.58),
+    ...suburbUrls('geelong', getGeelongSuburbSlugs(), 0.60),
+    ...suburbUrls('sunshine-coast', getSunshineCoastSuburbSlugs(), 0.62),
+    ...suburbUrls('hervey-bay', getHerveyBaySuburbSlugs(), 0.55),
+    ...suburbUrls('mackay', getMackaySuburbSlugs(), 0.55),
+    ...suburbUrls('rockhampton', getRockhamptonSuburbSlugs(), 0.55),
 
     // ── Dynamic city/suburb pages from suburbs.ts ────────────────────────────────
     ...dynamicSuburbs,

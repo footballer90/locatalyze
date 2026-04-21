@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ComponentType } from 'react'
 import Link from 'next/link'
 import { C, ScoreBar, SuburbCard } from '@/components/analyse'
 import { FactorGrid } from '@/components/analyse/FactorGrid'
@@ -9,6 +10,37 @@ import {
   type SuburbModel,
 } from '@/lib/analyse-data/melbourne'
 import type { LocationVerdict } from '@/lib/analyse-data/scoring-engine'
+import MelbourneCafeGuide from '../cafe/page'
+import MelbourneRestaurantGuide from '../restaurant/page'
+
+/** If the dynamic segment matches a static industry guide slug, render that page (avoids “suburb not found” when `[suburb]` wins routing). */
+const MELBOURNE_GUIDE_PAGES: Record<string, ComponentType> = {
+  cafe: MelbourneCafeGuide,
+  restaurant: MelbourneRestaurantGuide,
+}
+
+const MELBOURNE_GUIDE_METADATA: Record<string, Metadata> = {
+  cafe: {
+    title: 'Best Suburbs to Open a Café in Melbourne (2026) — Location Analysis',
+    description: 'Data-driven suburb guide for Melbourne coffee shops. Rent benchmarks, competition density, demographics and financial viability scored. Inner-north vs inner-east breakdown.',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne/cafe' },
+    openGraph: {
+      title: 'Best Suburbs to Open a Café in Melbourne (2026)',
+      description: 'Suburb-by-suburb analysis of Melbourne\'s café market. Rent benchmarks, competition and income data scored.',
+      type: 'article',
+    },
+  },
+  restaurant: {
+    title: 'Best Suburbs to Open a Restaurant in Melbourne (2026) — Location Analysis',
+    description: 'Suburb-by-suburb restaurant location guide for Melbourne. Fitzroy, Collingwood, Richmond, Brunswick and South Yarra scored on rent, foot traffic, competition and income demographics.',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne/restaurant' },
+    openGraph: {
+      title: 'Best Suburbs to Open a Restaurant in Melbourne (2026)',
+      description: 'Fitzroy, Brunswick, Collingwood, Richmond and South Yarra scored for restaurant viability. Real rent numbers, competition data and break-even analysis.',
+      type: 'article',
+    },
+  },
+}
 
 interface Props {
   params: Promise<{ suburb: string }>
@@ -109,13 +141,22 @@ function SuburbSchema({ suburb }: { suburb: SuburbModel }) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 }
 
+/** Static industry guides under `melbourne/{slug}` — must not duplicate `[suburb]` SSG. */
+const MELBOURNE_GUIDE_SLUGS = new Set(['cafe', 'restaurant'])
+
 export function generateStaticParams() {
-  return getMelbourneSuburbSlugs().map((slug) => ({ suburb: slug }))
+  return getMelbourneSuburbSlugs()
+    .filter((slug) => !MELBOURNE_GUIDE_SLUGS.has(slug))
+    .map((slug) => ({ suburb: slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { suburb } = await params
-  const data = getMelbourneSuburb(decodeURIComponent(suburb))
+  const decoded = decodeURIComponent(suburb)
+  const guideMeta = MELBOURNE_GUIDE_METADATA[decoded]
+  if (guideMeta) return guideMeta
+
+  const data = getMelbourneSuburb(decoded)
 
   if (!data) {
     return {
@@ -139,10 +180,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MelbourneSuburbPage({ params }: Props) {
   const { suburb } = await params
-  const data = getMelbourneSuburb(decodeURIComponent(suburb))
+  const decoded = decodeURIComponent(suburb)
+  const Guide = MELBOURNE_GUIDE_PAGES[decoded]
+  if (Guide) return <Guide />
+
+  const data = getMelbourneSuburb(decoded)
 
   if (!data) {
-    return <SuburbFallback suburbSlug={decodeURIComponent(suburb)} />
+    return <SuburbFallback suburbSlug={decoded} />
   }
 
   const verdict = verdictStyles(data.verdict)

@@ -44,6 +44,10 @@ function err(msg: string, status: number) {
 export async function POST(request: NextRequest) {
   // ── 1. Authenticate ───────────────────────────────────────────────────────
   const secret = process.env.COMPUTE_SECRET
+  // On Vercel (preview or production), never leave this route open — it runs Places + full compute.
+  if (process.env.VERCEL === '1' && !secret) {
+    return err('COMPUTE_SECRET must be configured', 503)
+  }
   if (secret) {
     const provided = request.headers.get('x-compute-secret') ?? ''
     if (provided !== secret) {

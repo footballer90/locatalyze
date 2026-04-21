@@ -853,7 +853,7 @@ export default function SydneyPage() {
       {/* CTA */}
       <CTASection
         title="Ready to find your Sydney location?"
-        subtitle="Run a free analysis on any Sydney address. Get foot traffic data, demographic breakdown, rent benchmarks, and competitive analysis in minutes."
+        subtitle="First report free on any Sydney address — foot traffic, demographics, rent benchmarks, and competitive analysis in ~90 seconds. No credit card required."
         variant="green"
       />
 

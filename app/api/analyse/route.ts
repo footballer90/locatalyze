@@ -201,7 +201,10 @@ function validatePayload(body: any): { valid: true; data: any } | { valid: false
     const noHtml = stripInvisible.replace(/<[^>]*>/g, '').replace(/[<>]/g, '')
     const normalisedWs = noHtml.replace(/[\s\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+/g, ' ').trim()
     const filtered = normalisedWs.replace(
-      /ignore|forget|disregard|pretend|you are|act as|jailbreak|prompt|system:|assistant:|\\n\\n/gi,
+      /\bignore\b|\bforget\b|\bdisregard\b|\bpretend\b|\byou are\b|\bact as\b|\bjailbreak\b|\bprompt\b|system:|assistant:/gi,
+      '',
+    ).replace(
+      /previous\s*instructions?|override\s+the|reveal\s+(the\s+)?(system|model)|<\|[^|]{1,32}\|>/gi,
       '',
     )
     return filtered.slice(0, maxLen)
@@ -485,17 +488,6 @@ export async function POST(request: NextRequest) {
       locationAccess:  data.locationAccess  ?? null,
       rentSource:      data.rentSource      ?? 'benchmark',
     },
-    // ── Back-compat mirror ──────────────────────────────────────────────────
-    // The existing n8n workflow reads these at the top level. Duplicate
-    // them so this change doesn't break the deployed pipeline. Once n8n
-    // has been updated to read from `userInputs.*` exclusively, remove
-    // the mirror.
-    businessType:    data.businessType,
-    address:         data.address,
-    operatingHours:  data.operatingHours  ?? null,
-    businessMode:    data.businessMode    ?? null,
-    locationAccess:  data.locationAccess  ?? null,
-    rentSource:      data.rentSource      ?? 'benchmark',
   })
 
   after(async () => {

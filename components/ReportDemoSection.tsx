@@ -1,6 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import {
+  scenarioIndexToVerdict,
+  verdictToScenarioIndex,
+} from '@/components/homepage-demo/HomepageDemoContext'
 
 // ─────────────────────────────────────────────────────────────────
 // Design tokens — exact match to page.tsx dark sections
@@ -564,49 +568,59 @@ function ScoreBar({ n, v, c, delay, fired, w }: {
   )
 }
 
+export type ReportDemoSectionProps = {
+  /** Keeps the full-width demo in lockstep with the homepage hero mini-card */
+  homepageScenarioIndex?: number
+  onHomepageScenarioChange?: (index: number) => void
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────────────────────────
-export default function ReportDemoSection() {
+export default function ReportDemoSection({
+  homepageScenarioIndex,
+  onHomepageScenarioChange,
+}: ReportDemoSectionProps) {
   const [verdict, setVerdict] = useState<Verdict>('go')
   const [tab,     setTab]     = useState<Tab>('overview')
   const [fading,  setFading]  = useState(false)
   const [fired,   setFired]   = useState(false)
-  // Start at the target score so the first paint shows a coherent number
-  // next to the verdict badge (no 0/100 or 2/100 flash on mount).
-  const [score,   setScore]   = useState<number>(() => DATA.go.score)
   const sectionRef = useRef<HTMLElement>(null)
-  const isFirstScoreEffect = useRef(true)
+  /** When the user clicks a verdict in this section, skip the next hero→demo sync (avoids double-fade). */
+  const skipHeroSync = useRef(false)
 
   const d  = DATA[verdict]
   const vc = VERDICT_CONFIG[verdict]
 
-  function switchTo(v: Verdict) {
+  useEffect(() => {
+    if (homepageScenarioIndex === undefined) return
+    if (skipHeroSync.current) {
+      skipHeroSync.current = false
+      return
+    }
+    const v = scenarioIndexToVerdict(homepageScenarioIndex)
     if (v === verdict) return
     setFading(true)
     setTimeout(() => {
-      setVerdict(v); setTab('overview')
-      setFading(false); setFired(false)
+      setVerdict(v)
+      setTab('overview')
+      setFading(false)
+      setFired(false)
+    }, 160)
+  }, [homepageScenarioIndex, verdict])
+
+  function switchTo(v: Verdict) {
+    if (v === verdict) return
+    skipHeroSync.current = true
+    setFading(true)
+    setTimeout(() => {
+      setVerdict(v)
+      setTab('overview')
+      setFading(false)
+      setFired(false)
+      onHomepageScenarioChange?.(verdictToScenarioIndex(v))
     }, 160)
   }
-
-  useEffect(() => {
-    // Skip the animate-from-0 on the very first mount — the initial state
-    // already holds the target score and we don't want a visible dip.
-    if (isFirstScoreEffect.current) {
-      isFirstScoreEffect.current = false
-      setScore(d.score)
-      return
-    }
-    setScore(0)
-    const target = d.score
-    let n = 0
-    const id = setInterval(() => {
-      n = Math.min(n + 2, target); setScore(n)
-      if (n >= target) clearInterval(id)
-    }, 14)
-    return () => clearInterval(id)
-  }, [verdict, d.score])
 
   useEffect(() => {
     setFired(false)
@@ -759,7 +773,7 @@ export default function ReportDemoSection() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1, color: D.text1, opacity: 1 }}>
-                    {score > 0 ? score : d.score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
+                    {d.score}<span style={{ fontSize: 14, fontWeight: 400, color: D.text3 }}>/100</span>
                   </div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: D.text3, letterSpacing: '.07em', textTransform: 'uppercase' }}>
                     Feasibility Score

@@ -4,7 +4,12 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, FileText, Unlock, Package, Briefcase } from 'lucide-react'
-import { DEMO_SCENARIOS, rentToRevenueLabel } from '@/lib/marketing/demo-scenarios'
+import {
+  DEMO_SCENARIOS,
+  HOMEPAGE_MINI_SNAP,
+  rentToRevenueLabel,
+  type DemoScenarioKey,
+} from '@/lib/marketing/demo-scenarios'
 import { LogoMark } from '@/components/Logo'
 import { HomepageDemoProvider, useHomepageDemo } from '@/components/homepage-demo/HomepageDemoContext'
 
@@ -109,64 +114,67 @@ function useInView<T extends HTMLElement>(threshold = 0.15, rootMargin = '200px 
   return { ref, inView }
 }
 
-// ── ReportPreview — hero widget ───────────────────────────────────
-const RP_CASES = [
+// ── ReportPreview — hero widget (metrics + score from DEMO_SCENARIOS only) ──
+const HERO_CHROME: Record<
+  DemoScenarioKey,
   {
-    id: 0,
-    biz: DEMO_SCENARIOS.go.biz, icon: 'coffee', location: 'Subiaco WA 6008',
-    verdict: 'GO', verdictSub: 'Strong fundamentals',
-    score: DEMO_SCENARIOS.go.score, scoreLabel: 'Feasibility Score',
-    color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
+    icon: string
+    location: string
+    verdict: string
+    verdictSub: string
+    color: string
+    colorLight: string
+    colorMid: string
+    gradHeader: string
+    tags: string[]
+  }
+> = {
+  go: {
+    icon: 'coffee',
+    location: 'Subiaco WA 6008',
+    verdict: 'GO',
+    verdictSub: 'Strong fundamentals',
+    color: '#059669',
+    colorLight: '#ECFDF5',
+    colorMid: '#A7F3D0',
     gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
-    metrics: [
-      { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.go.monthlyRevenue,      highlight: false },
-      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(DEMO_SCENARIOS.go),  highlight: false },
-      { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.go.breakEven,        highlight: false },
-      { l: 'Note',                  v: 'Estimate only',    highlight: true },
-    ],
     tags: ['High Income Area', 'Low Competition', '500m Radius Checked'],
-    snap: [{ l: 'Demand', v: 85 }, { l: 'Rent Fit', v: 78 }, { l: 'Comp.', v: 72 }],
   },
-  {
-    id: 1,
-    biz: DEMO_SCENARIOS.caution.biz, icon: 'restaurant', location: 'Fremantle WA 6160',
-    verdict: 'CAUTION', verdictSub: 'Proceed Carefully',
-    score: DEMO_SCENARIOS.caution.score, scoreLabel: 'Feasibility Score',
-    color: '#D97706', colorLight: '#FFFBEB', colorMid: '#FDE68A',
+  caution: {
+    icon: 'restaurant',
+    location: 'Fremantle WA 6160',
+    verdict: 'CAUTION',
+    verdictSub: 'Proceed Carefully',
+    color: '#D97706',
+    colorLight: '#FFFBEB',
+    colorMid: '#FDE68A',
     gradHeader: 'linear-gradient(135deg, #451A03 0%, #78350F 40%, #B45309 100%)',
-    metrics: [
-      { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.caution.monthlyRevenue,      highlight: false },
-      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(DEMO_SCENARIOS.caution), highlight: false },
-      { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.caution.breakEven,        highlight: false },
-      { l: 'Note',                  v: 'Estimate only',    highlight: true },
-    ],
     tags: ['Seasonal Risk', 'High Competition', 'Review Financials'],
-    snap: [{ l: 'Demand', v: 68 }, { l: 'Rent Fit', v: 55 }, { l: 'Comp.', v: 60 }],
   },
-  {
-    id: 2,
-    biz: DEMO_SCENARIOS.no.biz, icon: 'gym', location: 'Joondalup WA 6027',
-    verdict: 'NO', verdictSub: 'Not Recommended',
-    score: DEMO_SCENARIOS.no.score, scoreLabel: 'Feasibility Score',
-    color: '#DC2626', colorLight: '#FEF2F2', colorMid: '#FECACA',
+  no: {
+    icon: 'gym',
+    location: 'Joondalup WA 6027',
+    verdict: 'NO',
+    verdictSub: 'Not Recommended',
+    color: '#DC2626',
+    colorLight: '#FEF2F2',
+    colorMid: '#FECACA',
     gradHeader: 'linear-gradient(135deg, #2D0000 0%, #7F1D1D 40%, #991B1B 100%)',
-    metrics: [
-      { l: 'Est. monthly revenue', v: DEMO_SCENARIOS.no.monthlyRevenue,      highlight: false },
-      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(DEMO_SCENARIOS.no),  highlight: false },
-      { l: 'Break-even (est.)',     v: DEMO_SCENARIOS.no.breakEven,        highlight: false },
-      { l: 'Note',                  v: 'High risk',        highlight: true },
-    ],
     tags: ['Oversaturated', 'Rent Too High', 'Not Viable'],
-    snap: [{ l: 'Demand', v: 48 }, { l: 'Rent Fit', v: 38 }, { l: 'Comp.', v: 42 }],
   },
-]
+}
+
+const HERO_KEYS: DemoScenarioKey[] = ['go', 'caution', 'no']
 
 function ReportPreview({ isMobile }: { isMobile: boolean }) {
-  const { scenarioIndex, setScenarioIndex } = useHomepageDemo()
+  const { scenarioIndex, activeKey, setScenarioIndex } = useHomepageDemo()
   const [animKey, setAnimKey]   = useState(0)
   const [snapping, setSnapping] = useState(false)
   const [visible, setVisible]   = useState(true)
+  const [ringScore, setRingScore] = useState(0)
+  const [isComputing, setIsComputing] = useState(true)
   const rpRef                   = useRef<HTMLDivElement>(null)
+  const scoreAnimRef            = useRef<number>(0)
 
   useEffect(() => {
     const el = rpRef.current
@@ -191,11 +199,51 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
 
   useEffect(() => {
     if (!visible || isMobile) return
-    const t = setInterval(() => switchTo((scenarioIndex + 1) % RP_CASES.length), 4800)
+    const t = setInterval(() => switchTo((scenarioIndex + 1) % HERO_KEYS.length), 4800)
     return () => clearInterval(t)
   }, [scenarioIndex, visible, isMobile])
 
-  const c   = RP_CASES[scenarioIndex]
+  const scenario = DEMO_SCENARIOS[activeKey]
+  const chrome = HERO_CHROME[activeKey]
+  const scoreTarget = scenario.score
+  const snap = HOMEPAGE_MINI_SNAP[activeKey]
+
+  // Circular score: 0 → target over ~1.5s on mount and whenever the demo scenario changes.
+  // Signals "calculating" instead of a static 0/100 flash.
+  useEffect(() => {
+    if (!visible) return
+    cancelAnimationFrame(scoreAnimRef.current)
+    setRingScore(0)
+    setIsComputing(true)
+    const start = performance.now()
+    const duration = 1500
+    const easeOut = (t: number) => 1 - (1 - t) ** 3
+    const tick = (now: number) => {
+      const raw = Math.min(1, (now - start) / duration)
+      setRingScore(Math.round(easeOut(raw) * scoreTarget))
+      if (raw < 1) {
+        scoreAnimRef.current = requestAnimationFrame(tick)
+      } else {
+        setIsComputing(false)
+      }
+    }
+    scoreAnimRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(scoreAnimRef.current)
+  }, [visible, activeKey, animKey, scoreTarget])
+  const noteText = activeKey === 'no' ? 'High risk' : 'Estimate only'
+  const c = {
+    ...chrome,
+    biz: scenario.biz,
+    score: ringScore,
+    scoreLabel: 'Feasibility Score' as const,
+    metrics: [
+      { l: 'Est. monthly revenue', v: scenario.monthlyRevenue, highlight: false },
+      { l: 'Est. rent-to-revenue', v: rentToRevenueLabel(scenario), highlight: false },
+      { l: 'Break-even (est.)', v: scenario.breakEven, highlight: false },
+      { l: 'Note', v: noteText, highlight: true },
+    ],
+    snap,
+  }
   const r   = 34
   const cir = 2 * Math.PI * r
   return (
@@ -203,8 +251,10 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
 
       {/* Switcher dots */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-        {RP_CASES.map((cs, i) => (
-          <button key={i} aria-label={`Show ${cs.verdict} example`} onClick={() => switchTo(i)} style={{
+        {HERO_KEYS.map((key, i) => {
+          const cs = HERO_CHROME[key]
+          return (
+          <button key={key} aria-label={`Show ${cs.verdict} example`} onClick={() => switchTo(i)} style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px 5px 8px', borderRadius: 100, border: 'none', cursor: 'pointer',
             fontFamily: font, fontSize: 11, fontWeight: i === scenarioIndex ? 700 : 500,
@@ -216,7 +266,7 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.6)' }} />
             <span>{cs.verdict}</span>
           </button>
-        ))}
+        )})}
         <div style={{ flex: 1 }}/>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: L.emerald, animation: 'pulse-dot 2s infinite' }}/>
         <span style={{ fontSize: 10, color: L.muted }}>Live demo</span>
@@ -266,15 +316,15 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
                     <circle cx="37" cy="37" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth="6"/>
                     <circle cx="37" cy="37" r={r} fill="none" stroke={c.color} strokeWidth="6"
                       strokeLinecap="round" strokeDasharray={cir}
-                      strokeDashoffset={cir - cir * c.score / 100}
-                      style={{ transition:'stroke-dashoffset 0.85s cubic-bezier(.4,0,.2,1)', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
+                      strokeDashoffset={cir - cir * Math.min(100, Math.max(0, ringScore)) / 100}
+                      style={{ transition: isComputing ? 'none' : 'stroke-dashoffset 0.35s ease', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{c.score}</span>
+                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{ringScore}</span>
                     <span style={{ fontSize:10, color:'rgba(255,255,255,.4)' }}>/100</span>
                   </div>
                 </div>
-                <p style={{ fontSize:9, color:'rgba(255,255,255,.3)', marginTop:2 }}>{c.scoreLabel}</p>
+                <p style={{ fontSize:9, color:'rgba(255,255,255,.3)', marginTop:2 }}>{isComputing ? 'Computing…' : c.scoreLabel}</p>
               </div>
             </div>
           </div>
@@ -333,7 +383,7 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
 
 // ── Showcase (dark, inline) ────────────────────────────────────────
 const SHOWCASE_TABS = [
-  { id: 'loc',  label: 'Location Analysis', headline: 'Score any location\nbefore you commit.', sub: 'Understand exactly what makes a location work — or fail. Score demand proximity, competitor density and demographic fit before you commit to a single dollar of rent.', ui: 'score' },
+  { id: 'loc',  label: 'Location Analysis', headline: 'Most lease mistakes are made\nbefore the first competitor is mapped.', sub: 'Map demand signals, competitor density and rent viability for any Australian address — before you commit to a dollar of rent.', ui: 'score' },
   { id: 'sub',  label: 'Suburb Scoring',    headline: 'Every suburb scored\nfor your business.', sub: 'Compare suburbs side by side using income data, population density, age profile and spending behaviour. Find where your concept has the strongest natural advantage.', ui: 'suburbs' },
   { id: 'comp', label: 'Competitor Mapping',headline: 'See every competitor\nbefore they see you.', sub: 'Map every direct competitor within your chosen radius. Understand their ratings, proximity and threat level — and find the gaps where your concept can own the category.', ui: 'competitors' },
   { id: 'rent', label: 'Rent Affordability',headline: 'Know if the rent\nmakes financial sense.', sub: 'Enter your expected rent and average transaction value. Locatalyze calculates the exact daily volume you need to stay profitable — and tells you if this location can deliver it.', ui: 'rent' },
@@ -341,14 +391,15 @@ const SHOWCASE_TABS = [
 ]
 
 function ShowcaseScoreUI({ ak }: { ak: number }) {
-  const [sc, setSc] = useState(84); const [bars, setBars] = useState(true)
+  const target = DEMO_SCENARIOS.go.score
+  const [sc, setSc] = useState(target); const [bars, setBars] = useState(true)
   const isFirstMount = useRef(true)
   useEffect(() => {
     // Use a ref to detect true first mount vs remount after tab cycle.
     // ak===0 guard fails when component remounts with ak already >0.
     if (isFirstMount.current) { isFirstMount.current = false; return }
-    setSc(0); setBars(false); let n=0; const t=setInterval(()=>{ n=Math.min(n+2,84); setSc(n); if(n>=84){clearInterval(t); setBars(true)} },18); return()=>clearInterval(t)
-  }, [ak])
+    setSc(0); setBars(false); let n=0; const t=setInterval(()=>{ n=Math.min(n+2,target); setSc(n); if(n>=target){clearInterval(t); setBars(true)} },18); return()=>clearInterval(t)
+  }, [ak, target])
   const off = 188-(188*sc/100)
   return (
     <div style={{ padding: 20 }}>
@@ -362,16 +413,22 @@ function ShowcaseScoreUI({ ak }: { ak: number }) {
             <circle fill="none" stroke="rgba(255,255,255,.07)" strokeWidth="6" cx="30" cy="30" r="24"/>
             <circle fill="none" stroke="url(#sg)" strokeWidth="6" strokeLinecap="round" cx="30" cy="30" r="24" strokeDasharray="188" strokeDashoffset={off} style={{ transition: 'stroke-dashoffset .05s linear' }}/>
           </svg>
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: D.text1 }}>{sc > 0 ? sc : 84}</div>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 900, color: D.text1 }}>{sc > 0 ? sc : target}</div>
         </div>
         <div style={{ background: 'rgba(52,211,153,.1)', border: '1px solid rgba(52,211,153,.28)', borderRadius: 9, padding: '7px 14px', textAlign: 'center' }}>
           <p style={{ fontSize: 17, fontWeight: 900, color: D.e }}>GO</p>
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Verdict</p>
         </div>
       </div>
-      {[{l:'Profitability',p:85,c:D.e,v:'High'},{l:'Market Demand',p:78,c:D.e,v:'Strong'},{l:'Competition',p:52,c:D.amber,v:'Moderate'},{l:'Rent Affordability',p:82,c:D.e,v:'9.2%'},{l:'Location Quality',p:84,c:D.e,v:'Strong'}].map((b,i)=>(
+      {[
+        { l: 'Rent Affordability', p: 78, c: D.e, r: '20%' },
+        { l: 'Competition', p: 72, c: D.amber, r: '25%' },
+        { l: 'Market Demand', p: 88, c: D.e, r: '20%' },
+        { l: 'Profitability', p: 90, c: D.e, r: '25%' },
+        { l: 'Location Quality', p: 80, c: D.e, r: '10%' },
+      ].map((b,i)=>(
         <div key={i} style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}><span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.l}</span><span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.v}</span></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}><span style={{ fontSize: 11, color: '#9CA3AF' }}>{b.l}</span><span style={{ fontSize: 11, fontWeight: 700, color: b.c }}>{b.r}</span></div>
           <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', background: b.c, borderRadius: 2, width: bars?`${b.p}%`:'0%', transition: `width 1.1s ease ${i*.12}s` }}/></div>
         </div>
       ))}
@@ -449,7 +506,7 @@ function ShowcaseReportUI() {
           <p style={{ fontSize: 9, color: '#6B7280', marginTop: 1 }}>Score: 88</p>
         </div>
       </div>
-      {[{dot:'#34D399',l:'Location Score',v:'88 / 100',c:D.e},{dot:'#34D399',l:'Profitability',v:'Strong',c:D.e},{dot:D.amber,l:'Competition',v:'Moderate',c:D.amber},{dot:'#34D399',l:'Rent Affordability',v:'Viable',c:D.e},{dot:'#34D399',l:'Market Demand',v:'Excellent',c:D.e}].map((r,i)=>(
+      {[{dot:'#34D399',l:'Rent Affordability',v:'78 · 20%',c:D.e},{dot:'#34D399',l:'Competition',v:'72 · 25%',c:D.amber},{dot:'#34D399',l:'Market Demand',v:'88 · 20%',c:D.e},{dot:'#34D399',l:'Profitability',v:'90 · 25%',c:D.e},{dot:'#34D399',l:'Location Quality',v:'80 · 10%',c:D.e}].map((r,i)=>(
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i<4?'1px solid rgba(255,255,255,.05)':'none' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: r.dot, flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: '#9CA3AF', flex: 1 }}>{r.l}</span>
@@ -1199,9 +1256,9 @@ function LandingPageInner() {
                 color:'#F59E0B', colorBg:'rgba(245,158,11,.08)', colorBorder:'rgba(245,158,11,.2)',
               },
               {
-                icon: 'target', source:'Competition Scoring Engine', badge:'AI-computed',
+                icon: 'target', source:'Competition Scoring Engine', badge:'Rules-based',
                 headline:'Threat rating for every nearby business',
-                body:'Our model scores competitor intensity by proximity, rating, category overlap and business count — giving you a number, not a vague "there\'s some competition."',
+                body:'Our deterministic model scores competitor intensity by proximity, rating, category overlap and business count — giving you a number, not a vague "there\'s some competition."',
                 proof:'Per-radius, per-category scoring',
                 color:'#EF4444', colorBg:'rgba(239,68,68,.08)', colorBorder:'rgba(239,68,68,.2)',
               },
@@ -1374,6 +1431,11 @@ function LandingPageInner() {
           <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 16, fontStyle: 'italic' }}>
             Based on Locatalyze analysis of 2,000+ addresses across Melbourne, Sydney, Brisbane, Perth and Adelaide · 2025–2026 · <a href="/methodology" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'underline' }}>Methodology</a>
           </p>
+          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 14, lineHeight: 1.65, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>
+            Used Locatalyze on a real site? We&apos;re collecting short quotes — suburb, business type, one specific outcome.{' '}
+            <Link href="/contact" style={{ color: '#5EEAD4', fontWeight: 700, textDecoration: 'underline' }}>Send yours via Contact</Link>
+            {' '}— no PR polish required.
+          </p>
         </div>
       </section>
 
@@ -1387,7 +1449,7 @@ function LandingPageInner() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>Pricing</div>
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>Simple, transparent pricing</h2>
-            <p style={{ fontSize: 15, color: L.muted }}>One report costs less than an hour with a consultant. It takes ~90 seconds.</p>
+            <p style={{ fontSize: 15, color: L.muted }}>One report costs less than an hour with a consultant. Takes 90 seconds.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4,1fr)', gap: 14, maxWidth: 1060, margin: '0 auto' }}>
 

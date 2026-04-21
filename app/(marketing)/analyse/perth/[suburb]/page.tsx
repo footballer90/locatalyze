@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ComponentType } from 'react'
 import Link from 'next/link'
 import { C, ScoreBar, SuburbCard } from '@/components/analyse'
 import { FactorGrid } from '@/components/analyse/FactorGrid'
@@ -9,6 +10,31 @@ import {
   type SuburbModel,
 } from '@/lib/analyse-data/melbourne'
 import type { LocationVerdict } from '@/lib/analyse-data/scoring-engine'
+import PerthCafeGuide from '../cafe/page'
+import PerthRestaurantGuide from '../restaurant/page'
+
+const PERTH_GUIDE_PAGES: Record<string, ComponentType> = {
+  cafe: PerthCafeGuide,
+  restaurant: PerthRestaurantGuide,
+}
+
+const PERTH_GUIDE_METADATA: Record<string, Metadata> = {
+  cafe: {
+    title: 'Best Suburbs to Open a Café in Perth (2026) — Location Analysis',
+    description: 'Data-driven suburb guide for Perth coffee shops. Rent benchmarks, foot traffic, demographics and competition scored. Based on ABS and REIWA data.',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/perth/cafe' },
+  },
+  restaurant: {
+    title: 'Best Suburbs to Open a Restaurant in Perth (2026) — Location Analysis',
+    description: 'Suburb-by-suburb restaurant location guide for Perth. Mount Lawley, Subiaco, Fremantle, Leederville and Perth CBD scored on rent, foot traffic, income and competition density.',
+    alternates: { canonical: 'https://www.locatalyze.com/analyse/perth/restaurant' },
+    openGraph: {
+      title: 'Best Suburbs to Open a Restaurant in Perth (2026)',
+      description: 'Mount Lawley, Subiaco, Fremantle and Leederville scored for restaurant viability. Real rent numbers, competition data and break-even analysis.',
+      type: 'article',
+    },
+  },
+}
 
 interface Props {
   params: Promise<{ suburb: string }>
@@ -109,13 +135,21 @@ function SuburbSchema({ suburb }: { suburb: SuburbModel }) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 }
 
+const PERTH_GUIDE_SLUGS = new Set(['cafe', 'restaurant'])
+
 export function generateStaticParams() {
-  return getPerthSuburbSlugs().map((slug) => ({ suburb: slug }))
+  return getPerthSuburbSlugs()
+    .filter((slug) => !PERTH_GUIDE_SLUGS.has(slug))
+    .map((slug) => ({ suburb: slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { suburb } = await params
-  const data = getPerthSuburb(decodeURIComponent(suburb))
+  const decoded = decodeURIComponent(suburb)
+  const guideMeta = PERTH_GUIDE_METADATA[decoded]
+  if (guideMeta) return guideMeta
+
+  const data = getPerthSuburb(decoded)
 
   if (!data) {
     return {
@@ -139,10 +173,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PerthSuburbPage({ params }: Props) {
   const { suburb } = await params
-  const data = getPerthSuburb(decodeURIComponent(suburb))
+  const decoded = decodeURIComponent(suburb)
+  const Guide = PERTH_GUIDE_PAGES[decoded]
+  if (Guide) return <Guide />
+
+  const data = getPerthSuburb(decoded)
 
   if (!data) {
-    return <SuburbFallback suburbSlug={decodeURIComponent(suburb)} />
+    return <SuburbFallback suburbSlug={decoded} />
   }
 
   const verdict = verdictStyles(data.verdict)

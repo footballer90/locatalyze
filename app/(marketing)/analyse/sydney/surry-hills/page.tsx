@@ -396,7 +396,7 @@ export default function SurryHillsPage() {
               <div style={{ fontSize: '13px', color: C.muted, lineHeight: '1.6', marginBottom: '8px' }}>
                 <div style={{ marginBottom: '4px' }}>Rent: $8,000-$12,000/mo</div>
                 <div style={{ marginBottom: '4px' }}>Revenue: $55,000-$90,000/mo</div>
-                <div style={{ marginBottom: '4px' }}>Break-even: 7-10 months</div>
+                <div style={{ marginBottom: '4px' }}>Break-even: 7–9 months</div>
               </div>
               <p style={{ fontSize: '12px', color: C.muted, margin: 0 }}>Modern Australian, Mediterranean, or specialized cuisine thrives. Concept-led positioning essential.</p>
             </div>
@@ -502,7 +502,7 @@ export default function SurryHillsPage() {
               </div>
               <div>
                 <div style={{ fontSize: '12px', fontWeight: '600', color: C.muted, marginBottom: '4px' }}>Break-Even</div>
-                <div style={{ fontSize: '14px', color: C.n900 }}>7-10 months</div>
+                <div style={{ fontSize: '14px', color: C.n900 }}>7–9 months</div>
               </div>
             </div>
           </div>

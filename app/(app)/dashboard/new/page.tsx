@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { whatIfCalc, breakEvenMonthsCalc } from '@/lib/compute/client-calc'
 import { Logo } from '@/components/Logo'
+import { lzRateLimitHeaders } from '@/lib/lz-rate-limit-headers'
 
 const S = {
  font:        "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -267,7 +268,7 @@ export default function OnboardingPage() {
     geocodeTimer.current = setTimeout(async () => {
       setGeocoding(true)
       try {
-        const res = await fetch(`/api/geocode?q=${encodeURIComponent(form.address)}`)
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(form.address)}`, { headers: { ...lzRateLimitHeaders() } })
         const data = await res.json()
         if (data?.[0]) setCoords({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) })
       } catch { /* silent */ } finally { setGeocoding(false) }
@@ -280,7 +281,7 @@ export default function OnboardingPage() {
     if (autocompleteTimer.current) clearTimeout(autocompleteTimer.current)
     autocompleteTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(form.address)}`)
+        const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(form.address)}`, { headers: { ...lzRateLimitHeaders() } })
         const data = await res.json()
         setSuggestions(Array.isArray(data) ? data.slice(0, 5) : [])
         setShowSuggestions(true)
@@ -337,7 +338,7 @@ export default function OnboardingPage() {
     try {
       const res = await fetch('/api/analyse', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-user-id': user.id },
+    headers: { 'Content-Type': 'application/json', 'x-user-id': user.id, ...lzRateLimitHeaders() },
     body: JSON.stringify({ businessType: biz.label, address: form.address.trim(), monthlyRent, setupBudget, avgTicketSize, userId: user.id, locationContext }),
       })
       const data = await res.json()

@@ -98,12 +98,10 @@ function extractScenario(src: string, key: 'go' | 'caution' | 'no'): DemoFields 
     return null
   }
 
-  // Derive the rent-to-revenue label the same way rentToRevenueLabel() does,
-  // so the CI check stays aligned with runtime output without importing the
-  // TS module at check time.
-  const lo = Math.round((rent / revHi) * 100)
-  const hi = Math.round((rent / revLo) * 100)
-  const rentToRev = lo === hi ? `~${lo}%` : `~${lo}–${hi}%`
+  // Derive the rent-to-revenue label the same way rentToRevenueLabel() does (midpoint band).
+  const mid = (revLo + revHi) / 2
+  const pct = Math.round((rent / mid) * 1000) / 10
+  const rentToRev = `~${pct}%`
 
   return { score, rent, revLo, revHi, rentToRev }
 }
@@ -131,21 +129,19 @@ for (const [name, s] of [
   }
 }
 
-// Invariant 4: rent-to-revenue is within a plausible single-digit-to-thirty-ish
-// range for any reasonable marketing scenario. Catches the old hardcoded
-// "~9–11%" era where the rent string didn't match the displayed revenue.
+// Invariant 4: midpoint rent-to-revenue stays in a plausible band.
 for (const [name, s] of [
   ['go', demoGo],
   ['caution', demoCaution],
   ['no', demoNo],
 ] as const) {
   if (!s) continue
-  const lo = Math.round((s.rent / s.revHi) * 100)
-  const hi = Math.round((s.rent / s.revLo) * 100)
-  if (lo < 1 || hi > 80) {
+  const mid = (s.revLo + s.revHi) / 2
+  const pct = (s.rent / mid) * 100
+  if (pct < 1 || pct > 80) {
     violations.push({
       where: `DEMO_SCENARIOS.${name}`,
-      detail: `derived rent-to-revenue ${lo}–${hi}% is outside plausible range (check rent=${s.rent}, rev=${s.revLo}–${s.revHi})`,
+      detail: `midpoint rent-to-revenue ${pct.toFixed(1)}% is outside plausible range (check rent=${s.rent}, rev=${s.revLo}–${s.revHi})`,
     })
   }
 }

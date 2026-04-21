@@ -151,7 +151,7 @@ export default function MethodologyPage() {
           </div>
 
           <div style={{ background: S.n50, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
-      <ScoreRow label="Rent Affordability" weight="20%" color={S.brand} desc="Rent as a percentage of projected revenue. Below 12% = excellent. Above 20% = danger zone. This is the single biggest predictor of long-term viability." />
+      <ScoreRow label="Rent Affordability" weight="20%" color={S.brand} desc="Rent as a percentage of projected revenue. Under 14% = GO band; 14–20% = caution; at or above 20% = danger zone (typically NO). Competition and demand scores still matter — this dimension is the single biggest predictor of long-term viability." />
       <ScoreRow label="Competition" weight="25%" color={S.amber} desc="Competitor density within 500m, weighted by their threat level (ratings, review volume, proximity). Fewer strong competitors = higher score." />
       <ScoreRow label="Market Demand" weight="20%" color={S.blue} desc="Search demand signals, population density, income fit, household growth and demographic alignment for your business category." />
       <ScoreRow label="Profitability" weight="25%" color={S.emerald} desc="Net profit margin after all costs. Calculated from your revenue estimate minus rent, COGS, labour and fixed costs." />

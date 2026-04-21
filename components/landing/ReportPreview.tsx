@@ -2,13 +2,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { L, font } from './tokens'
 import { LogoMark } from '@/components/Logo'
+import { DEMO_SCENARIOS } from '@/lib/marketing/demo-scenarios'
 
 const RP_CASES = [
  {
     id: 0,
     biz: 'Specialty Coffee Shop', emoji: '', location: 'Subiaco WA 6008',
   verdict: 'GO', verdictSub: 'Strong fundamentals',
-  score: 82, scoreLabel: 'Feasibility Score',
+  score: DEMO_SCENARIOS.go.score, scoreLabel: 'Feasibility Score',
   color: '#059669', colorLight: '#ECFDF5', colorMid: '#A7F3D0',
   gradHeader: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #059669 100%)',
   metrics: [
@@ -24,7 +25,7 @@ const RP_CASES = [
     id: 1,
     biz: 'Casual Dining Restaurant', emoji: '', location: 'Fremantle WA 6160',
   verdict: 'CAUTION', verdictSub: 'Proceed Carefully',
-  score: 61, scoreLabel: 'Feasibility Score',
+  score: DEMO_SCENARIOS.caution.score, scoreLabel: 'Feasibility Score',
   color: '#D97706', colorLight: '#FFFBEB', colorMid: '#FDE68A',
   gradHeader: 'linear-gradient(135deg, #451A03 0%, #78350F 40%, #B45309 100%)',
   metrics: [
@@ -40,7 +41,7 @@ const RP_CASES = [
     id: 2,
     biz: 'Boutique Gym', emoji: '', location: 'Joondalup WA 6027',
   verdict: 'NO', verdictSub: 'Not Recommended',
-  score: 44, scoreLabel: 'Feasibility Score',
+  score: DEMO_SCENARIOS.no.score, scoreLabel: 'Feasibility Score',
   color: '#DC2626', colorLight: '#FEF2F2', colorMid: '#FECACA',
   gradHeader: 'linear-gradient(135deg, #2D0000 0%, #7F1D1D 40%, #991B1B 100%)',
   metrics: [
@@ -57,7 +58,7 @@ const RP_CASES = [
 export default function ReportPreview() {
   const [caseIdx, setCaseIdx]   = useState(0)
   const [animKey, setAnimKey]   = useState(0)
-  const [score, setScore]       = useState(0)
+  const [score, setScore]       = useState(DEMO_SCENARIOS.go.score)
   const [snapping, setSnapping] = useState(false)
   const [visible, setVisible]   = useState(false)
   const containerRef            = useRef<HTMLDivElement>(null)
@@ -89,12 +90,10 @@ export default function ReportPreview() {
   }, [caseIdx, visible])
 
   useEffect(() => {
-    // Gate on visible — prevents 0/100 flash when component is above the fold on mount
-    if (!visible) { setScore(0); return }
+    if (!visible) return
+    const target = RP_CASES[caseIdx].score
     setScore(0)
-    // Small delay so first render paints at score=0 with opacity:0, avoiding flash
     const delay = setTimeout(() => {
-      const target = RP_CASES[caseIdx].score
       let s = 0
       const id = setInterval(() => {
         s = Math.min(s + 2, target)
@@ -103,7 +102,7 @@ export default function ReportPreview() {
       }, 14)
     }, 50)
     return () => clearTimeout(delay)
-  }, [animKey, visible])
+  }, [animKey, visible, caseIdx])
 
   const c   = RP_CASES[caseIdx]
   const r   = 34
@@ -166,7 +165,7 @@ export default function ReportPreview() {
                   <p style={{ fontSize:9.5, color:c.color, opacity:.75, marginTop:1 }}>{c.verdictSub}</p>
                 </div>
               </div>
-              <div style={{ textAlign:'center' as const, opacity: score > 0 ? 1 : 0, transition: 'opacity 0.2s' }}>
+              <div style={{ textAlign:'center' as const, transition: 'opacity 0.2s' }}>
         <div style={{ position:'relative', width:74, height:74 }}>
          <svg width="74" height="74" style={{ transform:'rotate(-90deg)' }}>
           <circle cx="37" cy="37" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth="6"/>

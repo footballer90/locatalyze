@@ -2,7 +2,7 @@
 
 
 export default function PrivacyPageClient() {
-  const EFFECTIVE_DATE = '8 March 2025'
+  const EFFECTIVE_DATE = '20 April 2026'
   const EMAIL = 'privacy@locatalyze.com.au'
 
   const S = {

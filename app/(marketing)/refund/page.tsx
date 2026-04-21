@@ -63,8 +63,8 @@ export default function RefundPage() {
        body: `You may request a full refund of your most recent monthly charge if:\n\n• The refund request is made within 7 days of the charge, AND\n• You have not generated any reports during the billing period\n\nIf you have generated one or more reports, the charge is non-refundable as the service has been delivered.\n\nYou may cancel your subscription at any time. Cancellation stops future charges. It does not entitle you to a refund of the current period.`,
             },
             {
-              title: '3. Pro Lifetime — refund eligibility',
-       body: `You may request a full refund of the lifetime purchase if:\n\n• The refund request is made within 7 days of purchase, AND\n• You have not generated any reports\n\nLifetime access is a one-time purchase. After 7 days, or after generating one or more reports, it is non-refundable.`,
+              title: '3. Report packs — refund eligibility',
+       body: `You may request a full refund of a report pack purchase if:\n\n• The refund request is made within 7 days of purchase, AND\n• No reports have been generated against the pack\n\nOnce a report has been generated from a pack, that credit is consumed and non-refundable.`,
             },
             {
               title: '4. Report quality issues',

@@ -136,9 +136,9 @@ export default async function Image() {
           <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 14 }}/>
 
      {[
-            ['Est. revenue', '$68k–$84k/mo'],
+            ['Est. revenue', '$78k–$88k/mo'],
       ['Daily target', '35–50 cust/day'],
-      ['Net profit/mo', '~$12k'],
+      ['Net profit/mo', '~$27k'],
      ].map(([label, value]) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
        <span style={{ fontSize: 12, color: 'rgba(204,235,229,0.45)' }}>{label}</span>
@@ -148,7 +148,7 @@ export default async function Image() {
 
           <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginTop: 6, marginBottom: 12 }}/>
 
-     {[['Demand', 85], ['Rent fit', 78], ['Competition', 72]].map(([label, val]) => (
+     {[['Market Demand', 88], ['Rent Afford.', 78], ['Competition', 72]].map(([label, val]) => (
       <div key={label as string} style={{ display: 'flex', flexDirection: 'column', marginBottom: 8 }}>
        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
         <span style={{ fontSize: 11, color: 'rgba(204,235,229,0.4)' }}>{label}</span>

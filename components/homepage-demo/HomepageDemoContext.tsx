@@ -8,10 +8,13 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { DEMO_SCENARIOS, type DemoScenarioKey } from '@/lib/marketing/demo-scenarios'
+import {
+  DEMO_SCENARIOS,
+  DEMO_SCENARIO_KEYS_IN_ORDER,
+  type DemoScenarioKey,
+} from '@/lib/marketing/demo-scenarios'
 
-/** Order matches hero mini-card tabs and ReportDemoSection verdicts. */
-const ORDER: DemoScenarioKey[] = ['go', 'caution', 'no']
+const ORDER = DEMO_SCENARIO_KEYS_IN_ORDER
 
 export type HomepageDemoContextValue = {
   scenarioIndex: number

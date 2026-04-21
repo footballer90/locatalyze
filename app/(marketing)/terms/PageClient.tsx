@@ -4,8 +4,9 @@
 export default function TermsPageClient() {
  const EFFECTIVE_DATE = '20 April 2026'
  const COMPANY = 'Locatalyze'
+ const LEGAL_ENTITY = 'VSG Group Australia Pty Ltd'
  const EMAIL = 'legal@locatalyze.com.au'
- const JURISDICTION = 'Western Australia, Australia'
+ const JURISDICTION = 'New South Wales, Australia'
 
  const S = {
     page: {
@@ -282,13 +283,13 @@ export default function TermsPageClient() {
           <div id="service" style={S.section}>
       <h2 style={S.h2}>2. About the Service</h2>
             <p style={S.p}>
-              Locatalyze ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>") operates an online location feasibility analysis platform accessible at locatalyze.com and associated domains (the "<strong>Platform</strong>").
+              The Platform is operated by <strong>{LEGAL_ENTITY}</strong> (trading as <strong>{COMPANY}</strong>) ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>") as an online location feasibility analysis service accessible at locatalyze.com and associated domains (the "<strong>Platform</strong>").
       </p>
             <p style={S.p}>
-              The Platform uses publicly available geographic data, algorithmic financial modelling, and artificial intelligence (AI) to generate indicative feasibility reports for commercial locations in Australia. These reports are provided as a starting point for user research only.
+              The Platform uses publicly available geographic data, a <strong>deterministic, rules-based scoring engine</strong> (versioned on each report — e.g. v2.1) to produce feasibility scores and GO / CAUTION / NO verdicts, and <strong>separate</strong> algorithmic financial modelling. Written narrative sections (such as SWOT and market commentary) may be produced using artificial intelligence (AI) on top of those computed results. The narrative explains the analysis; it does not replace the underlying scoring rules. Reports are indicative and provided as a starting point for user research only.
             </p>
             <p style={S.p}>
-              The data sources used by Locatalyze include Google Maps Platform (competitor discovery and ratings), Geoapify (secondary place-of-interest coverage), Mapbox (address geocoding and coordinate pinning), Australian Bureau of Statistics (demographic estimates), and OpenAI (AI-generated narrative analysis text — including the GPT-4 family of models). These sources may be incomplete, outdated, or inaccurate.
+              Data sources include Google Maps Platform (competitor discovery and ratings), Geoapify (secondary place-of-interest coverage), Mapbox (address geocoding and coordinate pinning), Australian Bureau of Statistics (demographic estimates), and OpenAI (AI-generated narrative analysis text — e.g. GPT-4o-mini / GPT-4 class models as disclosed in-product). These sources may be incomplete, outdated, or inaccurate.
             </p>
           </div>
 
@@ -341,7 +342,7 @@ export default function TermsPageClient() {
 
             <h3 style={S.h3}>Paid plans</h3>
             <p style={S.p}>
-              Paid plans are sold as one-off report packs (for example, a single report, 3-report pack, or 10-report pack) priced in Australian Dollars (AUD) inclusive of GST where applicable. Report credits do not expire while your account remains active. Payments are processed securely by Stripe. We do not store your payment card details.
+              Paid plans are sold as one-off report packs (for example, a single report, 3-report pack, or 10-report pack) priced in Australian Dollars (AUD) inclusive of GST where applicable. We do not sell lifetime access or general-purpose subscriptions — only report credits as shown on the pricing page. Report credits do not expire while your account remains active. Payments are processed securely by Stripe. We do not store your payment card details.
             </p>
 
             <h3 id="refunds" style={S.h3}>Refund policy</h3>
@@ -431,7 +432,7 @@ export default function TermsPageClient() {
           <div id="governing" style={S.section}>
       <h2 style={S.h2}>12. Governing Law and Dispute Resolution</h2>
             <p style={S.p}>
-              These Terms are governed by the laws of {JURISDICTION} (the state in which the business is registered). You agree to submit to the non-exclusive jurisdiction of the courts of Western Australia for any dispute arising under these Terms.
+              These Terms are governed by the laws of {JURISDICTION} (the state in which the company is incorporated). You agree to submit to the non-exclusive jurisdiction of the courts of New South Wales for any dispute arising under these Terms.
             </p>
             <p style={S.p}>
               Before commencing legal proceedings, you agree to contact us at <a href={`mailto:${EMAIL}`} style={S.emailLink}>{EMAIL}</a> to attempt to resolve any dispute informally within 30 days.
