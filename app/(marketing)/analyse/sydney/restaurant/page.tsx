@@ -38,7 +38,7 @@ const TOP_SUBURBS = [
  {
     rank: 1, name: 'Surry Hills', postcode: '2010', score: 88, verdict: 'GO' as const,
   income: '$95,000', rent: '$10,500–$15,000/mo', competition: '14 within 500m',
-  footTraffic: 89, demographics: 90, rentFit: 74, competitionScore: 68,
+  footTraffic: 89, demographics: 90, rentFit: 74, competitionScore: 68, locationQuality: 86,
     breakEven: '$4,200/day', payback: '9 months', annualProfit: '$325K–$337K',
   angle: 'Sydney\'s highest-density dining precinct — for the right concept',
   detail: [
@@ -52,7 +52,7 @@ const TOP_SUBURBS = [
   {
     rank: 2, name: 'Newtown', postcode: '2042', score: 84, verdict: 'GO' as const,
   income: '$88,000', rent: '$9,000–$13,000/mo', competition: '12 within 500m',
-  footTraffic: 87, demographics: 83, rentFit: 76, competitionScore: 71,
+  footTraffic: 87, demographics: 83, rentFit: 76, competitionScore: 71, locationQuality: 82,
     breakEven: '$3,800/day', payback: '11 months', annualProfit: '$276,000',
   angle: 'Diverse dining culture, slightly lower rents than Surry Hills',
   detail: [
@@ -66,7 +66,7 @@ const TOP_SUBURBS = [
   {
     rank: 3, name: 'Glebe', postcode: '2037', score: 80, verdict: 'GO' as const,
   income: '$82,000', rent: '$7,000–$9,500/mo', competition: '6 within 500m',
-  footTraffic: 78, demographics: 79, rentFit: 83, competitionScore: 80,
+  footTraffic: 78, demographics: 79, rentFit: 83, competitionScore: 80, locationQuality: 78,
     breakEven: '$3,200/day', payback: '12 months', annualProfit: '$252,000',
   angle: 'Best restaurant unit economics in inner Sydney',
   detail: [
@@ -80,7 +80,7 @@ const TOP_SUBURBS = [
   {
     rank: 4, name: 'Potts Point', postcode: '2011', score: 76, verdict: 'GO' as const,
   income: '$105,000', rent: '$8,500–$12,000/mo', competition: '9 within 500m',
-  footTraffic: 74, demographics: 88, rentFit: 72, competitionScore: 68,
+  footTraffic: 74, demographics: 88, rentFit: 72, competitionScore: 68, locationQuality: 79,
     breakEven: '$4,000/day', payback: '13 months', annualProfit: '$228,000',
   angle: 'Highest income demographic, destination dining supported',
   detail: [
@@ -95,10 +95,10 @@ const TOP_SUBURBS = [
 
 const RISK_SUBURBS = [
   { name: 'Sydney CBD', postcode: '2000', score: 44, verdict: 'NO' as const,
-    footTraffic: 72, demographics: 65, rentFit: 18, competitionScore: 42,
+    footTraffic: 72, demographics: 65, rentFit: 18, competitionScore: 42, locationQuality: 90,
     reason: 'Lunch trade has recovered post-COVID but evening dining in the CBD remains 30% below pre-2020 levels (Destination NSW data). High rents ($22,000+/mo), declining evening foot traffic, and intense competition from both established institutions and new entrants make this a very difficult market for new restaurants without significant capital and brand recognition.' },
   { name: 'Parramatta', postcode: '2150', score: 36, verdict: 'NO' as const,
-    footTraffic: 62, demographics: 38, rentFit: 28, competitionScore: 30,
+    footTraffic: 62, demographics: 38, rentFit: 28, competitionScore: 30, locationQuality: 70,
     reason: 'Lower average dining spend ($42 per head versus $68 Sydney inner average) combined with strong chain restaurant competition makes independent restaurant economics very challenging. Rent-to-revenue ratios for new entrants typically exceed 20%. Score breakdown: footfall is adequate but demographics, rent fit, and competition all score poorly for independent operators.' },
 ]
 
@@ -245,7 +245,7 @@ export default function SydneyRestaurantPage() {
                 </div>
                 <div style={{ minWidth: 160 }}>
                   <div style={{ textAlign: 'center', marginBottom: 14 }}><div style={{ fontSize: 52, fontWeight: 900, color: S.emerald, lineHeight: 1 }}>{sub.score}</div><div style={{ fontSize: 11, color: S.muted }}>/100</div></div>
-         <ScoreBar label="Market Demand" value={sub.footTraffic}/><ScoreBar label="Area Demographics" value={sub.demographics}/><ScoreBar label="Rent Affordability" value={sub.rentFit}/><ScoreBar label="Competition" value={sub.competitionScore}/>
+         <ScoreBar label="Market Demand" value={sub.footTraffic}/><ScoreBar label="Area Demographics" value={sub.demographics}/><ScoreBar label="Rent Affordability" value={sub.rentFit}/><ScoreBar label="Competition" value={sub.competitionScore}/><ScoreBar label="Location Quality" value={sub.locationQuality}/>
         </div>
               </div>
             </div>
@@ -275,7 +275,7 @@ export default function SydneyRestaurantPage() {
            <div style={{ fontSize: 36, fontWeight: 900, color: sub.verdict === 'NO' ? S.red : S.amber, lineHeight: 1 }}>{sub.score}</div>
            <div style={{ fontSize: 10, color: S.muted }}>/100</div>
          </div>
-         {([['Market Demand', sub.footTraffic], ['Demographics', sub.demographics], ['Rent Affordability', sub.rentFit], ['Competition', sub.competitionScore]] as [string, number][]).map(([label, val]) => {
+         {([['Market Demand', sub.footTraffic], ['Demographics', sub.demographics], ['Rent Affordability', sub.rentFit], ['Competition', sub.competitionScore], ['Location Quality', sub.locationQuality]] as [string, number][]).map(([label, val]) => {
            const barColor = val >= 70 ? S.emerald : val >= 45 ? S.amber : S.red
            return (
              <div key={label} style={{ marginBottom: 8 }}>
