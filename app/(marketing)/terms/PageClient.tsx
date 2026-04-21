@@ -6,7 +6,7 @@ export default function TermsPageClient() {
  const COMPANY = 'Locatalyze'
  const LEGAL_ENTITY = 'VSG Group Australia Pty Ltd'
  const EMAIL = 'legal@locatalyze.com.au'
- const JURISDICTION = 'Western Australia, Australia'
+ const JURISDICTION = 'New South Wales, Australia'
 
  const S = {
     page: {
@@ -432,7 +432,7 @@ export default function TermsPageClient() {
           <div id="governing" style={S.section}>
       <h2 style={S.h2}>12. Governing Law and Dispute Resolution</h2>
             <p style={S.p}>
-              These Terms are governed by the laws of {JURISDICTION} (the state in which the company is incorporated). You agree to submit to the non-exclusive jurisdiction of the courts of Western Australia for any dispute arising under these Terms.
+              These Terms are governed by the laws of {JURISDICTION} (the state in which the company is incorporated). You agree to submit to the non-exclusive jurisdiction of the courts of New South Wales for any dispute arising under these Terms.
             </p>
             <p style={S.p}>
               Before commencing legal proceedings, you agree to contact us at <a href={`mailto:${EMAIL}`} style={S.emailLink}>{EMAIL}</a> to attempt to resolve any dispute informally within 30 days.
