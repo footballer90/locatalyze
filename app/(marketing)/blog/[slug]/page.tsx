@@ -691,8 +691,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </p>
               {[
                 { href: '/analyse/sydney', label: 'Sydney' },
+                { href: '/analyse/melbourne', label: 'Melbourne' },
+                { href: '/analyse/brisbane', label: 'Brisbane' },
                 { href: '/analyse/perth', label: 'Perth' },
+                { href: '/analyse/gold-coast', label: 'Gold Coast' },
                 { href: '/analyse/newcastle', label: 'Best suburbs in Newcastle' },
+                { href: '/analyse/melbourne/cafe', label: 'Melbourne cafes' },
                 { href: '/analyse/perth/cafe', label: 'Perth cafes' },
                 { href: '/analyse/sydney/cafe', label: 'Sydney cafes' },
                 { href: '/analyse/sydney/restaurant', label: 'Sydney restaurants' },
