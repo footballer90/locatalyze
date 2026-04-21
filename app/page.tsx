@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar'
 import { MapPin, Users, Home, BarChart2, Bot, TrendingUp, Map, Globe, RefreshCw, Lightbulb, LineChart, Navigation, Zap, Shield, Trophy, Target, Activity, Coffee, UtensilsCrossed, ShoppingBag, Dumbbell, Croissant, Scissors, FileText, Unlock, Package, Briefcase } from 'lucide-react'
 import { DEMO_SCENARIOS, rentToRevenueLabel } from '@/lib/marketing/demo-scenarios'
 import { LogoMark } from '@/components/Logo'
+import { HomepageDemoProvider, useHomepageDemo } from '@/components/homepage-demo/HomepageDemoContext'
 
 const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'), {
   ssr: false,
@@ -161,40 +162,11 @@ const RP_CASES = [
 ]
 
 function ReportPreview({ isMobile }: { isMobile: boolean }) {
-  const [caseIdx, setCaseIdx]   = useState(0)
+  const { scenarioIndex, setScenarioIndex } = useHomepageDemo()
   const [animKey, setAnimKey]   = useState(0)
-  // Initialise to the target score — not 0 — so the very first paint shows
-  // a coherent GO / 82 pair. For 9 consecutive audits this card was shown
-  // as "GO · 0/100" because `useState(0)` briefly reconciled before the
-  // effect below could run. Fix is architectural: the hero mini-card and
-  // the full ReportDemoSection both read `score` from DEMO_SCENARIOS
-  // and both start at the target on mount.
-  const [score, setScore]       = useState(RP_CASES[0].score)
   const [snapping, setSnapping] = useState(false)
   const [visible, setVisible]   = useState(true)
   const rpRef                   = useRef<HTMLDivElement>(null)
-  // Skip the 0 → target ring animation on the very first render so the
-  // hero never flashes `0/100` to a visitor; still animate on subsequent
-  // scenario switches because that transition reads as intentional motion.
-  const firstScoreRun           = useRef(true)
-
-  useEffect(() => {
-    if (!visible) return
-    const target = RP_CASES[caseIdx].score
-    if (firstScoreRun.current) {
-      firstScoreRun.current = false
-      setScore(target)
-      return
-    }
-    setScore(0)
-    let current = 0
-    const id = setInterval(() => {
-      current = Math.min(current + 2, target)
-      setScore(current)
-      if (current >= target) clearInterval(id)
-    }, 16)
-    return () => clearInterval(id)
-  }, [caseIdx, visible])
 
   useEffect(() => {
     const el = rpRef.current
@@ -208,20 +180,22 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
   }, [])
 
   const switchTo = (i: number) => {
+    if (i === scenarioIndex) return
     setSnapping(true)
     setTimeout(() => {
-      setCaseIdx(i); setAnimKey(k => k + 1)
+      setScenarioIndex(i)
+      setAnimKey(k => k + 1)
       setSnapping(false)
     }, 200)
   }
 
   useEffect(() => {
     if (!visible || isMobile) return
-    const t = setInterval(() => switchTo((caseIdx + 1) % RP_CASES.length), 4800)
+    const t = setInterval(() => switchTo((scenarioIndex + 1) % RP_CASES.length), 4800)
     return () => clearInterval(t)
-  }, [caseIdx, visible, isMobile])
+  }, [scenarioIndex, visible, isMobile])
 
-  const c   = RP_CASES[caseIdx]
+  const c   = RP_CASES[scenarioIndex]
   const r   = 34
   const cir = 2 * Math.PI * r
   return (
@@ -233,11 +207,11 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
           <button key={i} aria-label={`Show ${cs.verdict} example`} onClick={() => switchTo(i)} style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '5px 12px 5px 8px', borderRadius: 100, border: 'none', cursor: 'pointer',
-            fontFamily: font, fontSize: 11, fontWeight: i === caseIdx ? 700 : 500,
-            background: i === caseIdx ? cs.color : '#F1F5F9',
-            color: i === caseIdx ? '#fff' : L.muted,
+            fontFamily: font, fontSize: 11, fontWeight: i === scenarioIndex ? 700 : 500,
+            background: i === scenarioIndex ? cs.color : '#F1F5F9',
+            color: i === scenarioIndex ? '#fff' : L.muted,
             transition: 'all .22s',
-            boxShadow: i === caseIdx ? `0 3px 12px ${cs.color}55` : 'none',
+            boxShadow: i === scenarioIndex ? `0 3px 12px ${cs.color}55` : 'none',
           }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.6)' }} />
             <span>{cs.verdict}</span>
@@ -292,11 +266,11 @@ function ReportPreview({ isMobile }: { isMobile: boolean }) {
                     <circle cx="37" cy="37" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth="6"/>
                     <circle cx="37" cy="37" r={r} fill="none" stroke={c.color} strokeWidth="6"
                       strokeLinecap="round" strokeDasharray={cir}
-                      strokeDashoffset={cir - cir * score / 100}
+                      strokeDashoffset={cir - cir * c.score / 100}
                       style={{ transition:'stroke-dashoffset 0.85s cubic-bezier(.4,0,.2,1)', filter:`drop-shadow(0 0 5px ${c.color}bb)` }}/>
                   </svg>
                   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column' as const, alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{score}</span>
+                    <span style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{c.score}</span>
                     <span style={{ fontSize:10, color:'rgba(255,255,255,.4)' }}>/100</span>
                   </div>
                 </div>
@@ -789,7 +763,7 @@ function CinematicWalkthrough() {
                         style={{ transition: 'stroke-dashoffset .04s linear' }}/>
                     </svg>
                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 16, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{scoreAnim}</span>
+                      <span style={{ fontSize: 16, fontWeight: 900, color: L.emerald, lineHeight: 1 }}>{scoreAnim > 0 ? scoreAnim : 82}</span>
                       <span style={{ fontSize: 10, color: L.muted }}>/100</span>
                     </div>
                   </div>
@@ -939,8 +913,8 @@ function CinematicWalkthrough() {
 }
 
 // ── Page ──────────────────────────────────────────────────────────
-export default function LandingPage() {
-  const [activeTab, setActiveTab] = useState<'go'|'caution'|'no'>('go')
+function LandingPageInner() {
+  const { scenarioIndex, setScenarioIndex } = useHomepageDemo()
   const isMobile = useIsMobile()
 
   const pad = isMobile ? '0 16px' : '0 40px'
@@ -1150,7 +1124,7 @@ export default function LandingPage() {
       </section>
 
       <div id="sample-report" style={{ minHeight: 920 }}>
-        <ReportDemoSection />
+        <ReportDemoSection homepageScenarioIndex={scenarioIndex} onHomepageScenarioChange={setScenarioIndex} />
       </div>
 
       {/* DATA SOURCES — Dark premium — Lucide icons throughout */}
@@ -1545,5 +1519,13 @@ export default function LandingPage() {
 
       <Footer/>
     </main>
+  )
+}
+
+export default function LandingPage() {
+  return (
+    <HomepageDemoProvider>
+      <LandingPageInner />
+    </HomepageDemoProvider>
   )
 }
