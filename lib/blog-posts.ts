@@ -1187,7 +1187,6 @@ export const POSTS: Record<string, BlogPost> = {
       ['Sydney inner west', '71', '58%', '$490', '11.1%'],
       ['Brisbane inner', '69', '54%', '$370', '10.2%'],
       ['Perth inner', '72', '61%', '$320', '9.4%'],
-      ['Adelaide inner', '67', '48%', '$280', '9.1%'],
       ['Gold Coast', '58', '31%', '$410', '14.6%'],
       ['Sunshine Coast', '63', '42%', '$340', '11.8%'],
       ['Canberra', '70', '55%', '$360', '10.5%'],

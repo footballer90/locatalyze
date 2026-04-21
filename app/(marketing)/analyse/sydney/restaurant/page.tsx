@@ -94,7 +94,7 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Sydney CBD', postcode: '2000', score: 44, verdict: 'CAUTION' as const,
+  { name: 'Sydney CBD', postcode: '2000', score: 44, verdict: 'NO' as const,
     footTraffic: 72, demographics: 65, rentFit: 18, competitionScore: 42,
     reason: 'Lunch trade has recovered post-COVID but evening dining in the CBD remains 30% below pre-2020 levels (Destination NSW data). High rents ($22,000+/mo), declining evening foot traffic, and intense competition from both established institutions and new entrants make this a very difficult market for new restaurants without significant capital and brand recognition.' },
   { name: 'Parramatta', postcode: '2150', score: 36, verdict: 'NO' as const,
@@ -220,7 +220,7 @@ export default function SydneyRestaurantPage() {
               </ResponsiveContainer>
             </div>
           </div>
-          <DataNote text="Scores: Locatalyze model (Rent 30%, Profitability 25%, Competition 25%, Demographics 20%). ABS, CBRE, Geoapify data. March 2026."/>
+          <DataNote text="Scores: Locatalyze model (Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%). ABS, CBRE, Geoapify data. April 2026."/>
     </section>
 
         <section style={{ marginBottom: 44 }}>
@@ -234,7 +234,7 @@ export default function SydneyRestaurantPage() {
          <p style={{ fontSize: 13, color: S.muted, fontStyle: 'italic', marginBottom: 14 }}>{sub.angle}</p>
          <div style={{ display: 'flex', gap: 20, marginBottom: 6, flexWrap: 'wrap' as const }}>{[['Median income',sub.income+'/yr'],['Rent range',sub.rent],['Competition',sub.competition],['Daily rev. target',sub.breakEven],['Payback',sub.payback],['Annual profit',sub.annualProfit]].map(([l,v]) => <div key={l as string}><p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>{l}</p><p style={{ fontSize: 13, fontWeight: 700, color: S.n900 }}>{v}</p></div>)}</div>
          <DataNote text={sub.name === 'Glebe'
-           ? "Income: ABS 2023–24. Rent: CBRE Q4 2025. Profit: Locatalyze model, $250,000 setup, IBISWorld benchmarks. Revenue modelled on 50 seats × $75 avg spend × 75% occupancy × 30 service days = $84,375 ≈ $85,000/mo — reflects Glebe's $65–$85/head spend profile. Surry Hills uses a different model (60 seats, $90 avg, 80% occupancy), which drives the higher $112k revenue figure. Daily rev. target represents the full-scenario revenue level — not the zero-profit threshold, which is roughly 30–35% lower."
+           ? "Income: ABS 2023–24. Rent: CBRE Q4 2025. Profit: Locatalyze model, $250,000 setup, IBISWorld benchmarks. Revenue modelled on 50 seats × $75 avg spend × 75% occupancy × 30 service days = $84,375 ≈ $85,000/mo — reflects Glebe's $65–$85/head spend profile. Surry Hills case study uses 60 seats × $90 × 80% occupancy × 30 days ≈ $130k/mo. Daily rev. target represents the full-scenario revenue level — not the zero-profit threshold, which is roughly 30–35% lower."
            : "Income: ABS 2023–24. Rent: CBRE Q4 2025. Profit: Locatalyze model, $250,000 setup, IBISWorld restaurant COGS benchmarks. Daily rev. target = the daily revenue consistent with the full modelled scenario — not the zero-profit survival point, which is significantly lower. A restaurant covers its fixed costs (rent + overhead) at roughly 30–35% of this figure; the daily revenue target represents the level needed to achieve the modelled profit."
          }/>
          <div style={{ marginTop: 14 }}>{sub.detail.map((p, i) => <p key={i} style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginBottom: 12 }}>{p}</p>)}</div>
@@ -245,7 +245,7 @@ export default function SydneyRestaurantPage() {
                 </div>
                 <div style={{ minWidth: 160 }}>
                   <div style={{ textAlign: 'center', marginBottom: 14 }}><div style={{ fontSize: 52, fontWeight: 900, color: S.emerald, lineHeight: 1 }}>{sub.score}</div><div style={{ fontSize: 11, color: S.muted }}>/100</div></div>
-         <ScoreBar label="Profitability" value={sub.footTraffic}/><ScoreBar label="Area Demographics" value={sub.demographics}/><ScoreBar label="Rent Affordability" value={sub.rentFit}/><ScoreBar label="Competition" value={sub.competitionScore}/>
+         <ScoreBar label="Market Demand" value={sub.footTraffic}/><ScoreBar label="Area Demographics" value={sub.demographics}/><ScoreBar label="Rent Affordability" value={sub.rentFit}/><ScoreBar label="Competition" value={sub.competitionScore}/>
         </div>
               </div>
             </div>
@@ -296,16 +296,16 @@ export default function SydneyRestaurantPage() {
 
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: S.n900, letterSpacing: '-0.03em', marginBottom: 8 }}>Case Study: Contemporary Restaurant, Surry Hills</h2>
-          <p style={{ fontSize: 13, color: S.muted, marginBottom: 14, lineHeight: 1.6 }}>This case study models a specific Crown Street location at <strong>$12,000/month rent</strong> — $1,000/month below the Surry Hills median of $13,000+. That $1,000/month difference accounts for the $12,000/year gap between the suburb score ($27,080/mo · $324,960/yr, median-rent assumptions) and this case study ($28,080/mo · $336,960/yr). Same suburb, different rent input.</p>
+          <p style={{ fontSize: 13, color: S.muted, marginBottom: 14, lineHeight: 1.6 }}>This case study models a specific Crown Street location at <strong>$12,000/month rent</strong> — $1,000/month below the Surry Hills median of $13,000+. Figures use <strong>30 trading days</strong> for a full calendar month (the benchmark engine defaults to 26 service days per month for six-day trading — see methodology).</p>
      <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 18, overflow: 'hidden' }}>
       <div style={{ background: 'linear-gradient(135deg,#1C0A00,#92400E)', padding: '22px 28px' }}><p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(253,230,138,0.8)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Modelled scenario — Locatalyze financial engine</p><h3 style={{ fontSize: 18, fontWeight: 800, color: '#FFFBEB' }}>60-seat contemporary restaurant, Crown Street Surry Hills NSW 2010</h3><p style={{ fontSize: 13, color: 'rgba(253,230,138,0.6)' }}>120 sqm · $12,000/mo rent · $90 avg spend · 5 nights/week · $250k setup</p></div>
       <div style={{ padding: '24px 28px' }}>
        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 10, marginBottom: 8 }}>
-        {[['Monthly revenue','$112,320',S.emerald],['Monthly costs','$84,240',S.red],['Monthly profit','$28,080',S.emerald],['Net margin','25%',S.emerald],['Annual profit','$336,960',S.emerald],['Payback','9 months',S.brand]].map(([l,v,c]) => <div key={l as string} style={{ background: S.n50, borderRadius: 10, padding: '10px 12px' }}><p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>{l}</p><p style={{ fontSize: 16, fontWeight: 900, color: c as string }}>{v}</p></div>)}
+        {[['Monthly revenue','$129,600',S.emerald],['Monthly costs','$101,800',S.red],['Monthly profit','$27,800',S.emerald],['Net margin','21%',S.emerald],['Annual profit','$333,600',S.emerald],['Payback','9 months',S.brand]].map(([l,v,c]) => <div key={l as string} style={{ background: S.n50, borderRadius: 10, padding: '10px 12px' }}><p style={{ fontSize: 10, fontWeight: 700, color: S.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>{l}</p><p style={{ fontSize: 16, fontWeight: 900, color: c as string }}>{v}</p></div>)}
        </div>
-              <DataNote text="Revenue: 60 seats × 80% occupancy × $90 avg × 26 service days = $112,320. Labour 35% of revenue ($39,312). COGS 28% ($31,450). Rent $12,000. Overheads $1,478."/>
-       <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginTop: 14, marginBottom: 12 }}>At $12,000/month rent on $112,320 revenue, the rent-to-revenue ratio is 10.7% — tight but viable. The key assumptions are 80% occupancy over 26 service days and $90 average spend. Both are achievable at Surry Hills with a well-executed concept, but neither is guaranteed in the first six months of trading.</p>
-       <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}><p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 60% occupancy</p><p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>At 60% occupancy, monthly revenue falls to $84,240. Fixed costs (rent $12,000 + overheads $1,478) stay constant; variable labour and COGS fall proportionally. Monthly profit at 60% occupancy: $17,691 — viable, but the model assumes you reach 60% quickly. The real risk is the first 3–4 months before consistent covers are established. A $50,000 working capital reserve covers that ramp-up exposure.</p></div>
+              <DataNote text="Revenue: 60 seats × 80% occupancy × $90 avg × 30 service days = $129,600. Labour 35% of revenue ($45,360). COGS 28% ($36,288). Rent $12,000. Overheads $8,152."/>
+       <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, marginTop: 14, marginBottom: 12 }}>At $12,000/month rent on $129,600 revenue, the rent-to-revenue ratio is 9.3% — healthy headroom. The key assumptions are 80% occupancy over 30 trading days and $90 average spend. Both are achievable at Surry Hills with a well-executed concept, but neither is guaranteed in the first six months of trading.</p>
+       <div style={{ background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 10, padding: '14px 16px' }}><p style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Downside: 60% occupancy</p><p style={{ fontSize: 13, color: '#78350F', lineHeight: 1.7 }}>At 60% occupancy, monthly revenue falls to $97,200. Fixed costs (rent $12,000 + overheads $8,152) stay constant; variable labour and COGS fall proportionally. Monthly profit at 60% occupancy is materially lower — the model assumes you reach 60% quickly. The real risk is the first 3–4 months before consistent covers are established. A $50,000 working capital reserve covers that ramp-up exposure.</p></div>
       </div>
           </div>
         </section>
