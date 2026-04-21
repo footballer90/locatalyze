@@ -93,7 +93,8 @@ export const DEMO_SCENARIOS: Record<DemoScenarioKey, DemoScenario> = {
  * integers.
  */
 export function rentToRevenueLabel(s: DemoScenario): string {
-  const lo = Math.round((s.rent / s.monthlyRevenueHi) * 100)
-  const hi = Math.round((s.rent / s.monthlyRevenueLo) * 100)
-  return lo === hi ? `~${lo}%` : `~${lo}–${hi}%`
+  // Midpoint of the revenue band (audit: $3,500 ÷ ~$83k ≈ 4.2% for GO scenario)
+  const mid = (s.monthlyRevenueLo + s.monthlyRevenueHi) / 2
+  const pct = Math.round((s.rent / mid) * 1000) / 10
+  return `~${pct}%`
 }
