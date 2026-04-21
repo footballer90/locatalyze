@@ -258,7 +258,7 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'h2', text: 'The floor plate and rent maths' },
    { type: 'p', text: 'Gyms need 200–500sqm of clear floor space. At $80/sqm/year, a 300sqm gym costs $24,000/year ($2,000/month) for rent alone. At $60/week membership, you need 33 members just to cover rent. At 150 active members, rent sits at roughly 22% of revenue — already dangerously high. You need 200+ members for rent to approach 12–15%.' },
    { type: 'table', headers: ['Metro tier', 'Indicative rent, 200sqm/mo', 'Notes'], rows: [
-     ['Sydney / Melbourne inner', '$4,500–$7,500', 'Strip retail & mixed-use (CBRE / Colliers market data, 2025–26)'],
+     ['Sydney / Melbourne inner', '$4,500–$7,500', 'Strip retail & mixed-use (CBRE / Colliers market data, 2025–26 — verify quotes)'],
      ['Brisbane / Perth inner', '$2,200–$4,200', 'Often 25–40% below Sydney equivalent; state agent surveys.'],
      ['Greenfield corridors (e.g. Tarneit, Ripley)', '$1,500–$2,400', 'Lower face rent; may need TI allowance for shell space.'],
    ]},
@@ -477,7 +477,7 @@ export const POSTS: Record<string, BlogPost> = {
    { type: 'stats', items: [
      { value: '$120K+', label: 'Median household income, Claremont & Nedlands SA2s (ABS Census 2021)' },
      { value: '55 members', label: 'Illustrative rent cover at $180/mo & modelled rent (Locatalyze maths — not a guarantee)' },
-     { value: '0–3', label: 'Boutique studios across Claremont, Nedlands, Cottesloe and Dalkeith combined (Geoapify/Google Maps competitor count, 2025)' },
+     { value: '0–3', label: 'Boutique studios across Claremont, Nedlands, Cottesloe and Dalkeith combined (Geoapify/Google Maps competitor count, 2025 — re-verify before signing)' },
    ]},
    { type: 'callout', icon: '', title: 'How to find your gap using data', body: 'Step 1: Map all gyms, yoga, pilates and CrossFit within 2km of target suburb.\nStep 2: Check ABS data — households within 2km aged 22–45.\nStep 3: Check income data — households above $85K/year.\nStep 4: Model your membership economics at 100, 150 and 200 members.\nStep 5: Is there a gap between demand and existing supply?', variant: 'teal' },
   ],

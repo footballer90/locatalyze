@@ -492,7 +492,7 @@ export default function GoldCoastGymPage() {
               </ResponsiveContainer>
             </div>
           </div>
-          <DataNote text="Scores: Locatalyze model (Membership Demand 35%, Rent Viability 25%, Demographics 20%, Competition 20%). Aggregated from ABS, QLD property data, Geoapify Places API. March 2026." />
+          <DataNote text="Scores: Locatalyze Scoring v2.1 — Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%. Aggregated from ABS, QLD property data, Geoapify Places API. April 2026." />
         </section>
 
         {/* Suburb detail cards */}

@@ -77,7 +77,7 @@ const releases = [
       { tag: 'Fix',         tc: 'amber', text: 'Three-year projection now accurately reflects whether years are profitable or loss-making.' },
       { tag: 'Fix',         tc: 'amber', text: 'SWOT strengths no longer claim profitability when net profit is negative.' },
       { tag: 'Improvement', tc: 'blue',  text: 'Demographics engine expanded to 400+ Australian suburbs across all major cities and regional towns.' },
-      { tag: 'Improvement', tc: 'blue',  text: 'Scoring weights updated — Rent 30%, Profitability 25%, Competition 25%, Demographics 20%.' },
+      { tag: 'Improvement', tc: 'blue',  text: 'Scoring standardized on v2.1 — Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%.' },
     ],
   },
   {

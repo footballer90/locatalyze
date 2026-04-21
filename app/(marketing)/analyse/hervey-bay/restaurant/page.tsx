@@ -460,7 +460,7 @@ export default function HerveyBayRestaurantPage() {
               </ResponsiveContainer>
             </div>
           </div>
-          <DataNote text="Scores: Locatalyze model (Rent 25%, Seasonal Viability 35%, Competition 20%, Demographics 20%). Aggregated from ABS, Queensland property surveys, Geoapify data. March 2026."/>
+          <DataNote text="Scores: Locatalyze Scoring v2.1 — Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%. (Seasonality affects inputs; same public weights.) Aggregated from ABS, Queensland property surveys, Geoapify data. April 2026."/>
         </section>
 
         {/* Top suburbs detail cards */}

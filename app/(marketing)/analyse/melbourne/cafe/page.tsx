@@ -403,7 +403,7 @@ export default function MelbourneCafePage() {
                   label={{ position: 'top', fontSize: 11, fontWeight: 700, fill: '#0F766E', fontFamily: S.font }}/>
               </BarChart>
             </ResponsiveContainer>
-            <DataNote text="Scores based on Locatalyze model: foot traffic weight 30%, rent-to-revenue 30%, demographics 25%, competition 15%. Suburb-level aggregate — individual addresses may score higher or lower."/>
+            <DataNote text="Scores: Locatalyze Scoring v2.1 — Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%. Suburb-level aggregate from ABS, Vic commercial benchmarks, Geoapify. April 2026. Individual addresses may score higher or lower."/>
           </div>
 
           {/* Rent vs revenue scatter */}

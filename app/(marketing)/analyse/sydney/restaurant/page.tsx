@@ -220,7 +220,7 @@ export default function SydneyRestaurantPage() {
               </ResponsiveContainer>
             </div>
           </div>
-          <DataNote text="Scores: Locatalyze model (Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%). ABS, CBRE, Geoapify data. April 2026."/>
+          <DataNote text="Scores: Locatalyze Scoring v2.1 — Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%. ABS, CBRE, Geoapify data. April 2026."/>
     </section>
 
         <section style={{ marginBottom: 44 }}>

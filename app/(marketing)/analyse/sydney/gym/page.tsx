@@ -124,7 +124,7 @@ export default function SydneyGymPage() {
               </ResponsiveContainer>
             </div>
           </div>
-          <DataNote text="Scores: Locatalyze model. Population data ABS 2024–26. Competitor data Geoapify Places API March 2026."/>
+          <DataNote text="Scores: Locatalyze Scoring v2.1 — Rent Affordability 20%, Competition 25%, Market Demand 20%, Profitability 25%, Location Quality 10%. ABS 2024–26, Geoapify Places API. April 2026."/>
     </section>
 
         <section style={{ marginBottom:44}}>
