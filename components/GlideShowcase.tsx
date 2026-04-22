@@ -36,7 +36,7 @@ const TABS = [
   {
     id: 'feasibility-reports', label: 'Feasibility Reports', accent: '#DC2626',
   photo: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=80',
-  headline: 'A full report,\nin 30 seconds.',
+  headline: 'A full report,\nin about 90 seconds.',
   sub: 'Get a complete feasibility report covering demand, competition, demographics and financials. Share it with your accountant, investor or landlord as a professional PDF — instantly.',
   cta: 'See a sample report', ui: 'report',
  },

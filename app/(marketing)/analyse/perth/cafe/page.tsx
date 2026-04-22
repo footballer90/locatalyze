@@ -94,7 +94,7 @@ const POLL_OPTIONS = [
 // ── Suburb data ───────────────────────────────────────────────────────────────
 const TOP_SUBURBS = [
  {
-    rank: 1, name: 'Subiaco', postcode: '6008', score: getCafeScore('Subiaco'), verdict: 'GO' as const,
+    rank: 1, name: 'Subiaco', postcode: '6008', score: getCafeScore('Subiaco'), verdict: getCafeVerdict('Subiaco'),
   income: '$105,000', rent: '$4,200–$6,500/mo', competition: '5 within 500m',
   footTraffic: 91, demographics: 88, rentFit: 82, competitionScore: 84,
     breakEven: '34/day', payback: '7 months', annualProfit: '$299,400',
@@ -108,7 +108,7 @@ const TOP_SUBURBS = [
   opportunity: 'Single-origin filter coffee and alternative milks are significantly underrepresented relative to Melbourne equivalents. Subiaco\'s demographic supports $8 filter coffees — a revenue-per-transaction uplift that compounds at scale.',
  },
   {
-    rank: 2, name: 'Leederville', postcode: '6007', score: getCafeScore('Leederville'), verdict: 'GO' as const,
+    rank: 2, name: 'Leederville', postcode: '6007', score: getCafeScore('Leederville'), verdict: getCafeVerdict('Leederville'),
   income: '$88,000', rent: '$3,200–$4,800/mo', competition: '6 within 500m',
   footTraffic: 83, demographics: 80, rentFit: 87, competitionScore: 78,
     breakEven: '31/day', payback: '8 months', annualProfit: '$228,000',
@@ -122,7 +122,7 @@ const TOP_SUBURBS = [
   opportunity: 'Afternoon trade (2–5pm) is meaningfully underserved relative to the morning peak. A hospitality business with a strong afternoon food offering — cakes, toasties, specialty drinks — captures revenue that competitors leave uncontested.',
  },
   {
-    rank: 3, name: 'Mount Lawley', postcode: '6050', score: getCafeScore('Mount Lawley'), verdict: 'GO' as const,
+    rank: 3, name: 'Mount Lawley', postcode: '6050', score: getCafeScore('Mount Lawley'), verdict: getCafeVerdict('Mount Lawley'),
   income: '$95,000', rent: '$3,000–$4,500/mo', competition: '4 within 500m',
   footTraffic: 78, demographics: 84, rentFit: 89, competitionScore: 82,
     breakEven: '29/day', payback: '9 months', annualProfit: '$204,000',
@@ -136,7 +136,7 @@ const TOP_SUBURBS = [
   opportunity: 'The first specialty coffee shop with a quality all-day menu in Mount Lawley has a clear run at market ownership. Once established, this position is very difficult for later entrants to displace.',
  },
   {
-    rank: 4, name: 'Northbridge', postcode: '6003', score: getCafeScore('Northbridge'), verdict: 'GO' as const,
+    rank: 4, name: 'Northbridge', postcode: '6003', score: getCafeScore('Northbridge'), verdict: getCafeVerdict('Northbridge'),
   income: '$72,000', rent: '$3,500–$5,500/mo', competition: '9 within 500m',
   footTraffic: 88, demographics: 68, rentFit: 64, competitionScore: 62,
     breakEven: '42/day', payback: '13 months', annualProfit: '$138,000',

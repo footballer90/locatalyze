@@ -20,7 +20,6 @@ export function PollSection({
   const displayQuestion = question ?? `Would you open a business in ${suburbName}?`
   const [voted, setVoted] = useState<number | null>(null)
   const [votes, setVotes] = useState<number[]>(initialVotes)
-  const total = votes.reduce((a, b) => a + b, 0)
 
   function handleVote(i: number) {
     if (voted !== null) return
@@ -47,20 +46,24 @@ export function PollSection({
               marginBottom: '6px',
             }}
           >
-            Community Sentiment
+            Reader poll
           </h3>
           <p
             style={{
               fontSize: '15px',
               color: C.muted,
-              marginBottom: '20px',
+              marginBottom: '8px',
             }}
           >
             {displayQuestion}
           </p>
+          <p style={{ fontSize: '12px', color: C.mutedLight, marginBottom: '18px', lineHeight: 1.5 }}>
+            Illustrative starting split for discussion — not survey research. Vote once to see how your choice shifts the chart on this visit.
+          </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {options.map((opt, i) => {
-              const pct = Math.round(((voted !== null ? votes[i] : initialVotes[i]) / (voted !== null ? votes.reduce((a,b) => a+b,0) : initialVotes.reduce((a,b) => a+b,0))) * 100)
+              const denom = votes.reduce((a, b) => a + b, 0)
+              const pct = denom > 0 ? Math.round((votes[i] / denom) * 100) : 0
               const isWinner = voted !== null && votes[i] === Math.max(...votes)
               return (
                 <button
@@ -147,9 +150,6 @@ export function PollSection({
               </p>
             </div>
           )}
-          <p style={{ fontSize: '11px', color: C.mutedLight, margin: '12px 0 0', textAlign: 'center' }}>
-            {total + (voted !== null ? 1 : 0)} community responses
-          </p>
         </div>
       </div>
     </section>

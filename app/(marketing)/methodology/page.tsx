@@ -7,6 +7,46 @@ export const metadata: Metadata = {
  description: 'See exactly how Locatalyze scores locations across five weighted dimensions: rent affordability, competition, market demand, profitability, and location quality. All based on real data, not guesses.',
 }
 
+/** FAQPage JSON-LD — aligned with on-page methodology (not a duplicate UI block). */
+const methodologyFaqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question' as const,
+      name: 'How is the GO / CAUTION / NO verdict determined?',
+      acceptedAnswer: {
+        '@type': 'Answer' as const,
+        text: 'The verdict is driven by your Location Score (0–100), a weighted composite of five dimensions: rent affordability (20%), competition (25%), market demand (20%), profitability (25%), and location quality (10%). The AI narrative explains the verdict but does not decide it — scores come from the deterministic engine.',
+      },
+    },
+    {
+      '@type': 'Question' as const,
+      name: 'What data sources does Locatalyze use?',
+      acceptedAnswer: {
+        '@type': 'Answer' as const,
+        text: 'Competitors and ratings come from Google Maps within 500m of your pinned coordinates. Demographics use ABS Census–aligned estimates (2021 base with updates where available). Rent benchmarks draw on state-appropriate listing and industry sources (e.g. REIWA in WA, RealCommercial and Domain elsewhere). Financial baselines use category industry benchmarks unless you calibrate your own inputs.',
+      },
+    },
+    {
+      '@type': 'Question' as const,
+      name: 'Does AI generate the financial numbers?',
+      acceptedAnswer: {
+        '@type': 'Answer' as const,
+        text: 'No. P&L, break-even, and profitability figures come from a rules-based compute engine. AI is used for narrative sections such as SWOT and market commentary. If critical inputs are missing, financial sections are suppressed rather than invented.',
+      },
+    },
+    {
+      '@type': 'Question' as const,
+      name: 'Is this financial or legal advice?',
+      acceptedAnswer: {
+        '@type': 'Answer' as const,
+        text: 'Locatalyze is a decision-support and directional analysis tool — not licensed financial, legal, or property advice. Use it alongside your own due diligence, accountants, and solicitors before signing a lease.',
+      },
+    },
+  ],
+}
+
 const S = {
  brand: '#0F766E', brandLight: '#14B8A6', brandFaded: '#F0FDFA', brandBorder: '#99F6E4',
  n50: '#FAFAF9', n100: '#F5F5F4', n200: '#E7E5E4', n400: '#A8A29E',
@@ -63,6 +103,10 @@ function ScoreRow({ label, weight, desc, color }: { label: string; weight: strin
 export default function MethodologyPage() {
   return (
     <div style={{ minHeight: '100vh', background: S.white, fontFamily: "'DM Sans','Helvetica Neue',Arial,sans-serif", color: S.n900 }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(methodologyFaqJsonLd) }}
+      />
    <style>{`*{box-sizing:border-box;margin:0;padding:0;} a{text-decoration:none;color:inherit;} @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');`}</style>
 
    {/* Nav */}

@@ -613,7 +613,7 @@ export default function AnalysePage() {
             Have a specific address in mind?
           </h2>
           <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.85)', marginBottom: '28px', lineHeight: '1.65' }}>
-            Don't rely on gut feel. Get a data-backed GO/CAUTION/NO verdict on any Australian address in under 3 minutes — free.
+            Don't rely on gut feel. Get a data-backed GO/CAUTION/NO verdict on any Australian address in about 90 seconds — free.
           </p>
           <Link
             href="/onboarding"
@@ -641,7 +641,7 @@ export default function AnalysePage() {
               How Locatalyze Works
             </h2>
             <p style={{ fontSize: '16px', color: S.muted, maxWidth: '560px', margin: '0 auto' }}>
-              A data model that scores 6 location factors against your specific business type, in under 3 minutes.
+              A data model that scores 6 location factors against your specific business type, in about 90 seconds.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '28px' }}>
@@ -697,7 +697,7 @@ export default function AnalysePage() {
           >
             <div>
               <div style={{ fontSize: '15px', fontWeight: 700, color: S.emerald }}>Free analysis — no card required</div>
-              <div style={{ fontSize: '13px', color: '#047857' }}>First report free. Unlock full analysis from $29 per report.</div>
+              <div style={{ fontSize: '13px', color: '#047857' }}>First report free: verdict, map & score. Full P&L, break-even, PDF & more from $29.</div>
             </div>
             <Link
               href="/onboarding"

@@ -5,10 +5,21 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { getAdelaideSuburb } from '@/lib/analyse-data/adelaide'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ScatterChart, Scatter, ZAxis, Legend,
 } from 'recharts'
+
+function getRestaurantScore(name: string): number {
+  return getAdelaideSuburb(name)?.restaurant ?? 0
+}
+function getRestaurantVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
+  const s = getRestaurantScore(name)
+  if (s >= 69) return 'GO'
+  if (s >= 60) return 'CAUTION'
+  return 'NO'
+}
 
 // ── SEO metadata exported from a separate server file ────────────────────────
 // NOTE: Because this is 'use client', metadata lives in a layout.tsx wrapper.
@@ -50,13 +61,13 @@ const SCHEMAS = [
 
 // ── Chart data ─────────────────────────────────────────────────────────────────
 const SUBURB_SCORES = [
-  { suburb: 'Norwood', score: 86, rent: 3700, traffic: 89, income: 92 },
-  { suburb: 'Prospect', score: 82, rent: 3000, traffic: 84, income: 78 },
-  { suburb: 'Henley Beach', score: 79, rent: 3500, traffic: 81, income: 88 },
-  { suburb: 'Unley', score: 75, rent: 3300, traffic: 76, income: 95 },
-  { suburb: 'Peel Street/CBD', score: 71, rent: 4800, traffic: 87, income: 72 },
-  { suburb: 'Elizabeth', score: 38, rent: 1800, traffic: 44, income: 52 },
-  { suburb: 'Modbury', score: 35, rent: 1600, traffic: 38, income: 58 },
+  { suburb: 'Norwood', score: getRestaurantScore('Norwood'), rent: 3700, traffic: 89, income: 92 },
+  { suburb: 'Prospect', score: getRestaurantScore('Prospect'), rent: 3000, traffic: 84, income: 78 },
+  { suburb: 'Henley Beach', score: getRestaurantScore('Henley Beach'), rent: 3500, traffic: 81, income: 88 },
+  { suburb: 'Unley', score: getRestaurantScore('Unley'), rent: 3300, traffic: 76, income: 95 },
+  { suburb: 'Peel Street/CBD', score: getRestaurantScore('Adelaide CBD'), rent: 4800, traffic: 87, income: 72 },
+  { suburb: 'Elizabeth', score: getRestaurantScore('Elizabeth'), rent: 1800, traffic: 44, income: 52 },
+  { suburb: 'Modbury', score: getRestaurantScore('Modbury'), rent: 1600, traffic: 38, income: 58 },
 ]
 
 const RENT_VS_REVENUE = [
@@ -81,7 +92,7 @@ const POLL_OPTIONS = [
 // ── Suburb data ───────────────────────────────────────────────────────────────
 const TOP_SUBURBS = [
   {
-    rank: 1, name: 'Norwood', postcode: '5067', score: 86, verdict: 'GO' as const,
+    rank: 1, name: 'Norwood', postcode: '5067', score: getRestaurantScore('Norwood'), verdict: getRestaurantVerdict('Norwood'),
     income: '$92,000', rent: '$3,200–$4,800/mo', competition: '6 within 500m',
     footTraffic: 89, demographics: 88, rentFit: 87, competitionScore: 82,
     breakEven: '38/day', payback: '8 months', annualProfit: '$324,000',
@@ -95,7 +106,7 @@ const TOP_SUBURBS = [
     opportunity: 'Premium wine-pairing experiences and long-form tasting menus are underserved in Adelaide relative to the region\'s wine accessibility. A 50-seat restaurant with a $95 average ticket at wine-pairing markups ($28–$45 per pairing) captures spending that typically flows to Melbourne.',
   },
   {
-    rank: 2, name: 'Prospect', postcode: '5082', score: 82, verdict: 'GO' as const,
+    rank: 2, name: 'Prospect', postcode: '5082', score: getRestaurantScore('Prospect'), verdict: getRestaurantVerdict('Prospect'),
     income: '$78,000', rent: '$2,400–$3,600/mo', competition: '3 within 500m',
     footTraffic: 84, demographics: 80, rentFit: 92, competitionScore: 86,
     breakEven: '32/day', payback: '9 months', annualProfit: '$264,000',
@@ -109,7 +120,7 @@ const TOP_SUBURBS = [
     opportunity: 'Community and all-day dining concepts are underrepresented in Prospect. A restaurant with strong weekend brunch and weekday lunch alongside dinner fills a gap that the three existing operators (all dinner-focused) leave open. This diversifies revenue across day parts.',
   },
   {
-    rank: 3, name: 'Henley Beach', postcode: '5022', score: 79, verdict: 'GO' as const,
+    rank: 3, name: 'Henley Beach', postcode: '5022', score: getRestaurantScore('Henley Beach'), verdict: getRestaurantVerdict('Henley Beach'),
     income: '$88,000', rent: '$2,800–$4,200/mo', competition: '5 within 500m',
     footTraffic: 81, demographics: 82, rentFit: 84, competitionScore: 78,
     breakEven: '35/day', payback: '10 months', annualProfit: '$288,000',
@@ -123,7 +134,7 @@ const TOP_SUBURBS = [
     opportunity: 'Beachfront casual dining with quality execution is scarce. Most Henley Beach restaurants trend toward standard pub fare. A casual fine-dining concept — 50–70 seats, $60–$80 mains, simple but refined menu — has clear market gap.',
   },
   {
-    rank: 4, name: 'Unley', postcode: '5061', score: 75, verdict: 'GO' as const,
+    rank: 4, name: 'Unley', postcode: '5061', score: getRestaurantScore('Unley'), verdict: getRestaurantVerdict('Unley'),
     income: '$95,000', rent: '$2,600–$4,000/mo', competition: '4 within 500m',
     footTraffic: 76, demographics: 86, rentFit: 88, competitionScore: 84,
     breakEven: '33/day', payback: '11 months', annualProfit: '$252,000',
@@ -139,9 +150,9 @@ const TOP_SUBURBS = [
 ]
 
 const RISK_SUBURBS = [
-  { name: 'Elizabeth', postcode: '5112', score: 38, verdict: 'NO' as const, reason: 'Median household income of $52,000 — 43% below Adelaide median. Restaurant price points ($50–$80 mains) become stretch purchases rather than habitual spending. Customer base defaults to casual dining chains or home cooking under financial pressure. Not viable for independent fine or casual-dining operators.' },
-  { name: 'Modbury', postcode: '5092', score: 35, verdict: 'NO' as const, reason: 'Car-dependent commercial strip with minimal pedestrian culture. No destination walking environment. A restaurant here lives entirely on drive-by traffic, which is highly unpredictable and requires heavy advertising. Commercial viability threshold requires 40+ covers on weekday lunch — structurally difficult.' },
-  { name: 'Salisbury', postcode: '5108', score: 32, verdict: 'NO' as const, reason: 'Commercial vacancy on commercial strips exceeds 20% — the clearest signal of insufficient customer traffic. Property values and rents are rising (gentrification pressure) while occupancy rates fall, producing negative unit economics. Not a location for new independent restaurant entry.' },
+  { name: 'Elizabeth', postcode: '5112', score: getRestaurantScore('Elizabeth'), verdict: getRestaurantVerdict('Elizabeth'), reason: 'Median household income of $52,000 — 43% below Adelaide median. Restaurant price points ($50–$80 mains) become stretch purchases rather than habitual spending. Customer base defaults to casual dining chains or home cooking under financial pressure. Not viable for independent fine or casual-dining operators.' },
+  { name: 'Modbury', postcode: '5092', score: getRestaurantScore('Modbury'), verdict: getRestaurantVerdict('Modbury'), reason: 'Car-dependent commercial strip with minimal pedestrian culture. No destination walking environment. A restaurant here lives entirely on drive-by traffic, which is highly unpredictable and requires heavy advertising. Commercial viability threshold requires 40+ covers on weekday lunch — structurally difficult.' },
+  { name: 'Salisbury', postcode: '5108', score: getRestaurantScore('Salisbury'), verdict: getRestaurantVerdict('Salisbury'), reason: 'Commercial vacancy on commercial strips exceeds 20% — the clearest signal of insufficient customer traffic. Property values and rents are rising (gentrification pressure) while occupancy rates fall, producing negative unit economics. Not a location for new independent restaurant entry.' },
 ]
 
 const S = {

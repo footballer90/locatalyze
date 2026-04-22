@@ -12,6 +12,7 @@ import {
 } from '@/lib/marketing/demo-scenarios'
 import { LogoMark } from '@/components/Logo'
 import { HomepageDemoProvider, useHomepageDemo } from '@/components/homepage-demo/HomepageDemoContext'
+import NewsletterForm from '@/components/landing/NewsletterForm'
 
 const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'), {
   ssr: false,
@@ -969,6 +970,34 @@ function CinematicWalkthrough() {
   )
 }
 
+/** Matches on-page “Common questions” (pricing FAQ) — source of truth for FAQ JSON-LD. */
+const HOMEPAGE_FAQS: { question: string; answer: string }[] = [
+  {
+    question: "What's free vs paid?",
+    answer:
+      "Free: GO/CAUTION/NO verdict, competitor map (500m), top-level location score, and a rent-to-revenue range (not a full P&L). All city and suburb marketing pages, the blog, and free tools (rent calculator, break-even checker, etc.) are free. Paid ($29+): full P&L, exact break-even customers/day, 3-year projection, full SWOT, PDF export, detailed competitor threat scores, and best/worst risk scenarios.",
+  },
+  {
+    question: 'Do credits expire?',
+    answer: "No. Report credits have no expiry date. Buy a 3-pack or 10-pack and use them whenever you're ready — across any Australian address.",
+  },
+  {
+    question: 'What is your refund policy?',
+    answer:
+      "If a report fails to generate due to a technical error on our end, we'll refund the credit or regenerate the report at no charge. Because reports are generated on demand using live data, completed reports are non-refundable.",
+  },
+  {
+    question: "What does 'Compare locations side-by-side' mean?",
+    answer:
+      'When you have two or more reports in your dashboard, you can view them together to compare scores, rent-to-revenue ratios, and verdicts across different addresses. This helps you shortlist before committing to a site visit.',
+  },
+  {
+    question: 'Is this financial advice?',
+    answer:
+      "No. Locatalyze is a directional analysis tool — not a licensed financial adviser. Use reports as a second opinion before you speak to your accountant or solicitor, not as a substitute for professional advice.",
+  },
+]
+
 // ── Page ──────────────────────────────────────────────────────────
 function LandingPageInner() {
   const { scenarioIndex, setScenarioIndex } = useHomepageDemo()
@@ -978,8 +1007,22 @@ function LandingPageInner() {
   const sp  = isMobile ? '64px 16px' : '96px 40px'
   const W   = { maxWidth: 1240, margin: '0 auto' }
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: HOMEPAGE_FAQS.map((f) => ({
+      '@type': 'Question' as const,
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer' as const, text: f.answer },
+    })),
+  }
+
   return (
     <main style={{ minHeight: '100vh', background: L.white, fontFamily: font, color: L.slate }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <Navbar />
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
@@ -1450,6 +1493,10 @@ function LandingPageInner() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: L.emeraldXlt, border: `1px solid ${L.emeraldLt}`, borderRadius: 20, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: L.emerald, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>Pricing</div>
             <h2 style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 10 }}>Simple, transparent pricing</h2>
             <p style={{ fontSize: 15, color: L.muted }}>One report costs less than an hour with a consultant. Takes 90 seconds.</p>
+            <p style={{ fontSize: 14, color: L.slate, marginTop: 14, lineHeight: 1.6 }}>
+              <Link href="/sample-report" style={{ color: L.emerald, fontWeight: 700, textDecoration: 'none' }}>View the full static sample report</Link>
+              {' '}— real suburb (Leederville), every section visible, no signup or payment.
+            </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4,1fr)', gap: 14, maxWidth: 1060, margin: '0 auto' }}>
 
@@ -1463,11 +1510,11 @@ function LandingPageInner() {
               {[
                 { label:'GO / CAUTION / NO verdict', included:true },
                 { label:'Competitor map (500m radius)', included:true },
-                { label:'Basic suburb insights', included:true },
+                { label:'Top-level location score (0–100)', included:true },
+                { label:'Rent-to-revenue band (not full P&L)', included:true },
                 { label:'Full financial model', included:false },
-                { label:'Revenue projections', included:false },
-                { label:'Break-even analysis', included:false },
-                { label:'SWOT & AI insights', included:false },
+                { label:'3-year projection & exact break-even', included:false },
+                { label:'Full SWOT & threat scores', included:false },
                 { label:'PDF export', included:false },
               ].map(f => (
                 <p key={f.label} style={{ fontSize:12, color: f.included ? '#334155' : '#CBD5E1', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>
@@ -1485,7 +1532,7 @@ function LandingPageInner() {
                 <p style={{ fontSize:34, fontWeight:900, color:L.slate, letterSpacing:'-.03em' }}>$29</p>
               </div>
               <p style={{ fontSize:12, color:L.muted, marginBottom:18 }}>One-time · per location</p>
-              {['Full financial model','Break-even analysis','Revenue projections','SWOT & AI insights','PDF export'].map(f => (
+              {['Full P&L & financial model','Exact break-even customers/day','3-year revenue projection','Full SWOT + competitor threat detail','Best/worst risk scenarios','PDF (bank & accountant ready)'].map(f => (
                 <p key={f} style={{ fontSize:12, color:'#334155', marginBottom:7, display:'flex', alignItems:'center', gap:6 }}>Check {f}</p>
               ))}
               <a href="/onboarding" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, background:L.emerald, borderRadius:11, fontSize:12, fontWeight:700, color:'#fff', textDecoration:'none' }}>Get your report — $29</a>
@@ -1518,42 +1565,39 @@ function LandingPageInner() {
               <a href="/upgrade" style={{ display:'block', marginTop:18, textAlign:'center', padding:10, border:`1.5px solid ${L.border}`, borderRadius:11, fontSize:12, fontWeight:700, color:L.muted, textDecoration:'none' }}>Get 10-Pack — $149</a>
             </div>
           </div>
-          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report is free — includes verdict, competitor map, and score. No card required.</p>
+          <p style={{ textAlign: 'center', fontSize: 12, color: L.muted, marginTop: 20 }}>Your first report is free — verdict, map, score, and rent band. City guides, blog &amp; tools stay free. No card required.</p>
 
           {/* FAQ */}
           <div style={{ maxWidth: 640, margin: '48px auto 0' }}>
             <p style={{ fontSize: 13, fontWeight: 800, color: L.slate, textTransform: 'uppercase' as const, letterSpacing: '.08em', textAlign: 'center', marginBottom: 24 }}>Common questions</p>
-            {[
-              {
-                q: "What's free vs paid?",
-                a: "The free report includes your GO / CAUTION / NO verdict, a competitor map within 500m, and a top-level feasibility score. Paid reports ($29) unlock the full financial model, break-even analysis, 3-year revenue projections, SWOT analysis, and a shareable PDF.",
-              },
-              {
-                q: "Do credits expire?",
-                a: "No. Report credits have no expiry date. Buy a 3-pack or 10-pack and use them whenever you're ready — across any Australian address.",
-              },
-              {
-                q: "What is your refund policy?",
-                a: "If a report fails to generate due to a technical error on our end, we'll refund the credit or regenerate the report at no charge. Because reports are generated on demand using live data, completed reports are non-refundable.",
-              },
-              {
-                q: "What does 'Compare locations side-by-side' mean?",
-                a: "When you have two or more reports in your dashboard, you can view them together to compare scores, rent-to-revenue ratios, and verdicts across different addresses. This helps you shortlist before committing to a site visit.",
-              },
-              {
-                q: "Is this financial advice?",
-                a: "No. Locatalyze is a directional analysis tool — not a licensed financial adviser. Use reports as a second opinion before you speak to your accountant or solicitor, not as a substitute for professional advice.",
-              },
-            ].map((item, i) => (
+            {HOMEPAGE_FAQS.map((item, i) => (
               <details key={i} style={{ borderTop: `1px solid ${L.border}`, padding: '16px 0' }}>
                 <summary style={{ fontSize: 14, fontWeight: 700, color: L.slate, cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                  {item.q}
+                  {item.question}
                   <span style={{ fontSize: 18, color: L.muted, flexShrink: 0, lineHeight: 1 }}>+</span>
                 </summary>
-                <p style={{ fontSize: 13, color: L.muted, lineHeight: 1.75, marginTop: 10, paddingRight: 24 }}>{item.a}</p>
+                <p style={{ fontSize: 13, color: L.muted, lineHeight: 1.75, marginTop: 10, paddingRight: 24 }}>{item.answer}</p>
               </details>
             ))}
             <div style={{ borderTop: `1px solid ${L.border}` }}/>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter — owned channel (warm leads, no algorithm) */}
+      <section style={{ padding: sp, background: L.slate, borderTop: `1px solid ${L.border}` }}>
+        <div style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center', padding: pad }}>
+          <p style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 12 }}>
+            Newsletter
+          </p>
+          <h2 style={{ fontSize: isMobile ? 22 : 28, fontWeight: 900, color: L.white, letterSpacing: '-0.03em', marginBottom: 10, lineHeight: 1.2 }}>
+            Weekly location intelligence
+          </h2>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, marginBottom: 24 }}>
+            Openings, failures, and where the data points — plus new guides. Unsubscribe anytime.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <NewsletterForm />
           </div>
         </div>
       </section>

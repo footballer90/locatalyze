@@ -27,7 +27,15 @@ const REPORT_PACKS = [
     perReport: '$29 per report',
     badge: null,
     primary: false,
-    features: ['Full financial model (revenue, costs, profit)', 'Break-even analysis (customers/day required)', 'Revenue & profit projections', 'Competitive positioning & SWOT', 'Downloadable PDF report', 'Location comparison'],
+    features: [
+      'Full P&L & financial model',
+      'Break-even customers/day (exact, from your inputs)',
+      '3-year revenue projection',
+      'Full SWOT analysis',
+      'PDF export (bank & accountant ready)',
+      'Per-competitor threat scores & best/worst risk scenarios',
+      'Location comparison (2+ reports)',
+    ],
     cta: 'Unlock this report — $29',
     sub: 'One-time payment · instant access',
   },
@@ -137,8 +145,13 @@ export default function UpgradePage() {
           <p style={{ fontSize: 12, fontWeight: 700, color: S.n400, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 14 }}>What you already have vs what you unlock</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
             <div style={{ paddingRight: 24, borderRight: `1px solid ${S.n200}` }}>
-              <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 10 }}>Free (you have this)</p>
-              {['GO / CAUTION / NO verdict','Competitor map (500m radius)','Basic suburb insights'].map(f => (
+              <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 10 }}>Free (lead-in)</p>
+              {[
+                'GO / CAUTION / NO verdict',
+                'Competitor map (500m radius)',
+                'Top-level location score (0–100)',
+                'Rent-to-revenue range (not exact P&L)',
+              ].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <div style={{ width: 16, height: 16, borderRadius: '50%', background: S.emeraldBg, border: `1px solid ${S.emeraldBdr}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <span style={{ fontSize: 8, color: S.emerald, fontWeight: 900 }}>Check</span>
@@ -146,10 +159,21 @@ export default function UpgradePage() {
                   <span style={{ fontSize: 13, color: S.n700 }}>{f}</span>
                 </div>
               ))}
+              <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.5, marginTop: 10, paddingRight: 8 }}>
+                City & suburb guides, the blog, and free tools (rent calculator, break-even, etc.) are free for research — no report needed.
+              </p>
             </div>
             <div style={{ paddingLeft: 24 }}>
               <p style={{ fontSize: 11, fontWeight: 800, color: S.brand, textTransform: 'uppercase' as const, letterSpacing: '.07em', marginBottom: 10 }}>Paid — unlock from $29</p>
-              {['Full financial model','Revenue projections','Break-even analysis','SWOT & AI insights','PDF export'].map(f => (
+              {[
+                'Full financial model (P&L)',
+                'Break-even customers/day (exact number)',
+                '3-year revenue projection',
+                'Full SWOT analysis',
+                'PDF export (bank / accountant ready)',
+                'Competitor threat scores (detailed)',
+                'Risk scenarios (best & worst case)',
+              ].map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#F0FDFA', border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <span style={{ fontSize: 8, color: S.brand, fontWeight: 900 }}>+</span>
@@ -210,12 +234,14 @@ export default function UpgradePage() {
           <p style={{ fontSize: 13, color: S.n400, textAlign: 'center', marginBottom: 24 }}>Every paid report includes all of the following</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             {[
-              { title: 'Full Financial Model', desc: 'Revenue, costs, profit projections with staffing and opex built in' },
-              { title: 'Break-even Analysis', desc: 'Exactly how many customers/day you need and how many months to payback' },
-              { title: '3-Year Projections', desc: 'Worst, base, and optimistic scenarios with sensitivity analysis' },
-              { title: 'Competitive Positioning', desc: 'Competitor strength scoring, market gaps, and SWOT analysis' },
-              { title: 'PDF Export', desc: 'Professionally formatted report you can share with partners and banks' },
-              { title: 'Location Comparison', desc: 'Compare up to 3 locations side by side with a recommendation' },
+              { title: 'Full P&L & financial model', desc: 'Revenue, costs, margin, and net profit from your inputs and benchmarks' },
+              { title: 'Break-even (customers/day)', desc: 'Exact daily customers required — not a range — with payback when applicable' },
+              { title: '3-year revenue projection', desc: 'Forward-looking view with best / base / worst where the model provides scenarios' },
+              { title: 'Full SWOT analysis', desc: 'Strengths, weaknesses, opportunities, and risks tied to your address' },
+              { title: 'Competitor threat (detailed)', desc: 'Per-competitor threat scores — not just a map pin count' },
+              { title: 'Risk scenarios', desc: 'Best and worst case framing around demand, rent, and competition' },
+              { title: 'PDF export', desc: 'Bank- and accountant-ready document you can forward as-is' },
+              { title: 'Location comparison', desc: 'With 2+ unlocked reports, compare shortlist sites in one view' },
             ].map(item => (
               <div key={item.title} style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 14, padding: '18px 16px' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
@@ -305,7 +331,7 @@ export default function UpgradePage() {
         <div style={{ marginTop: 52, width: '100%', maxWidth: 560 }}>
           <h3 style={{ fontSize: 18, fontWeight: 800, color: S.n900, marginBottom: 20, textAlign: 'center' }}>Common questions</h3>
           {[
-            { q: 'What does the free report include?', a: 'Your first report shows the GO / CAUTION / NO verdict, a basic competitor map with count, and your top-level location score. The full financial model, break-even analysis, and PDF are available when you unlock.' },
+            { q: 'What does the free report include?', a: 'Verdict (GO/CAUTION/NO), competitor map within 500m, headline location score (0–100), and a rent-to-revenue band — not a full P&L. Unlock ($29+) for the full financial model, exact break-even customers/day, 3-year projection, full SWOT, detailed competitor threat scores, best/worst risk scenarios, and PDF export. City hub pages, suburb SEO pages, the blog, and free tools are free to use for research.' },
             { q: 'Do report credits expire?', a: 'No. If you buy the 3 or 10 pack, your credits stay in your account until you use them. No rush.' },
             { q: 'Can I unlock just one report?', a: 'Yes. The $29 single report is the simplest way to get the full analysis for a specific location you\'re evaluating.' },
             { q: 'What if the report isn\'t useful?', a: 'We offer a 7-day refund window if no paid reports have been generated. Once a full report is generated, it\'s non-refundable — but the data is yours to keep.' },

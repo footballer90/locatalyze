@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { sydneyForStaticPage } from '@/lib/analyse-data/sydney-hub-scores'
+
+const SURRY = sydneyForStaticPage('surry-hills')
 
 const C = {
   brand: '#0891B2',
@@ -183,7 +186,7 @@ const FAQS = [
   },
   {
     question: 'How does Surry Hills compare to Newtown?',
-    answer: 'Surry Hills scores 87 (GO), Newtown scores 81 (GO). Surry Hills has higher foot traffic, higher-income demographics, and higher rents. Newtown has more niche/indie culture, lower rents, and a student population. Surry Hills favors premium hospitality; Newtown favors independent/vegan/natural wine concepts.',
+    answer: `Surry Hills composite ${SURRY.compositeScore}/100; Newtown ${sydneyForStaticPage('newtown').compositeScore}/100 on the same model. Surry Hills has higher foot traffic, higher-income demographics, and higher rents. Newtown has more niche/indie culture, lower rents, and a student population. Surry Hills favors premium hospitality; Newtown favors independent/vegan/natural wine concepts.`,
   },
 ]
 
@@ -201,14 +204,14 @@ const SCHEMA = {
 }
 
 export const metadata: Metadata = {
-  title: 'Surry Hills Business Analysis: Score 87, GO Verdict | Locatalyze',
-  description: 'Deep analysis of Surry Hills for cafe, restaurant, and retail. Score 87 (GO). Foot traffic 88, Demographics 91, Rent Viability 71. Crown Street premium real estate, $92K median income.',
+  title: `Surry Hills Business Analysis — ${SURRY.compositeScore}/100 composite | Locatalyze`,
+  description: `Deep analysis of Surry Hills for cafe, restaurant, and retail. Locatalyze composite ${SURRY.compositeScore}/100 (${SURRY.verdict}). Same five-factor model as the Sydney city guide. $92K median income (ABS 2021 Census, SA2).`,
   alternates: {
     canonical: 'https://locatalyze.com/analyse/sydney/surry-hills',
   },
   openGraph: {
-    title: 'Surry Hills Business Analysis: Score 87, GO',
-    description: 'Sydney\'s premier hospitality suburb. Foot traffic 88/100, Demographics 91/100. $10K-$14K/mo Crown Street rent.',
+    title: `Surry Hills — ${SURRY.compositeScore}/100 composite`,
+    description: `Sydney's premier hospitality suburb. ${SURRY.compositeScore}/100 composite; café ${SURRY.cafe}, restaurant ${SURRY.restaurant}, retail ${SURRY.retail}.`,
     type: 'article',
     url: 'https://locatalyze.com/analyse/sydney/surry-hills',
   },
@@ -274,10 +277,10 @@ export default function SurryHillsPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
             <h1 style={{ fontSize: '36px', fontWeight: '700', margin: 0 }}>Surry Hills</h1>
-            <span style={{ fontSize: '48px', fontWeight: '700' }}>87</span>
+            <span style={{ fontSize: '48px', fontWeight: '700' }}>{SURRY.compositeScore}</span>
           </div>
           <div style={{ marginBottom: '16px' }}>
-            <RiskBadge risk="GO" />
+            <RiskBadge risk={SURRY.verdict === 'RISKY' ? 'NO' : SURRY.verdict} />
           </div>
           <p style={{ fontSize: '16px', lineHeight: '1.6', opacity: 0.95, margin: 0, marginBottom: '8px' }}>
             Sydney's premier inner-city hospitality market. Crown Street generates 18,000+ daily foot traffic. Young professional demographic (median income $92,000) is Australia's highest café-spending cohort. Competition is intense but foot traffic is proportionate. This is a GO for strong hospitality operators.
@@ -343,14 +346,15 @@ export default function SurryHillsPage() {
 
       <section style={{ padding: '48px 24px', backgroundColor: C.n50 }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: C.n900 }}>
-            Business Scores
+          <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px', color: C.n900 }}>
+            Model scores (same engine as the Sydney hub)
           </h2>
-          <ScoreBar label="Foot Traffic" value={88} />
-          <ScoreBar label="Area Demographics" value={91} />
-          <ScoreBar label="Rent Viability" value={71} />
-          <ScoreBar label="Competition Gap" value={62} />
-          <ScoreBar label="Accessibility" value={85} />
+          <p style={{ fontSize: '13px', color: C.muted, margin: '0 0 20px 0', lineHeight: 1.6, maxWidth: 720 }}>
+            One headline composite, plus café / restaurant / retail scores — all from the same five-factor model as the city guide.
+          </p>
+          <ScoreBar label="Café" value={SURRY.cafe} />
+          <ScoreBar label="Restaurant" value={SURRY.restaurant} />
+          <ScoreBar label="Retail" value={SURRY.retail} />
         </div>
       </section>
 

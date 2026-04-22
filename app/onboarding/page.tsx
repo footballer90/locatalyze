@@ -461,7 +461,11 @@ export default function OnboardingPage() {
       <div style={{ flex: 1, display: 'flex', gap: 0 }}>
         <div style={{ width: 480, backgroundColor: S.white, borderRight: `1px solid ${S.n200}`, overflowY: 'auto', padding: 32 }}>
           <h1 style={{ fontSize: 24, fontWeight: 900, color: S.n900, marginBottom: 8, marginTop: 0 }}>Check if this location is worth it</h1>
-          <p style={{ fontSize: 14, color: S.n500, marginBottom: 24, lineHeight: 1.5 }}>Enter an address and business type to see competition data instantly. No signup needed.</p>
+          <p style={{ fontSize: 14, color: S.n500, marginBottom: 12, lineHeight: 1.5 }}>Enter an address and business type to see competition data instantly. No signup needed.</p>
+          <p style={{ fontSize: 13, color: S.brand, marginBottom: 24, lineHeight: 1.5 }}>
+            <Link href="/sample-report" style={{ color: S.brand, fontWeight: 700, textDecoration: 'none' }}>See a full sample report first</Link>
+            {' '}— static Leederville demo with every paid section, no card.
+          </p>
 
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: S.n700, marginBottom: 8 }}>Business type</label>

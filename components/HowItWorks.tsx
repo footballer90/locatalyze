@@ -206,7 +206,7 @@ export default function HowItWorks() {
        How it works
             </div>
             <h2 style={{ fontSize: 'clamp(28px,4.5vw,44px)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.1, marginBottom: 12, background: 'linear-gradient(135deg, #F0FDF9 30%, #0FDECE 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-       From address to verdict<br/>in 30 seconds.
+       From address to verdict<br/>in about 90 seconds.
             </h2>
             <p style={{ fontSize: 15.5, color: 'rgba(204,235,229,.52)', lineHeight: 1.75, maxWidth: 480 }}>No spreadsheets. No consultants. Just paste the address.</p>
      </div>

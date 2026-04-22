@@ -13,6 +13,7 @@ import { PollSection } from '@/components/analyse/PollSection'
 import { C } from '@/components/analyse/AnalyseTheme'
 import { getMelbourneSuburb, getMelbourneSuburbs } from '@/lib/analyse-data/melbourne'
 import { FactorGrid } from '@/components/analyse/FactorGrid'
+import type { LocationVerdict } from '@/lib/analyse-data/scoring-engine'
 
 function mScore(name: string): number {
   return getMelbourneSuburb(name)?.compositeScore ?? 0
@@ -22,6 +23,19 @@ function mVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
   if (v === 'GO') return 'GO'
   if (v === 'CAUTION') return 'CAUTION'
   return 'NO'
+}
+/** Engine verdict for SuburbCard / top-20 (preserves RISKY). */
+function mEngineVerdict(slug: string): LocationVerdict {
+  return getMelbourneSuburb(slug)?.verdict ?? 'CAUTION'
+}
+function melbourneTop20BadgeStyles(verdict: LocationVerdict) {
+  if (verdict === 'GO') {
+    return { bg: C.emeraldBg, color: C.emerald, bdr: C.emeraldBdr }
+  }
+  if (verdict === 'CAUTION') {
+    return { bg: C.amberBg, color: C.amber, bdr: C.amberBdr }
+  }
+  return { bg: C.redBg, color: C.red, bdr: C.redBdr }
 }
 
 export const metadata: Metadata = {
@@ -37,14 +51,14 @@ export const metadata: Metadata = {
 }
 
 const COMPARISON_ROWS = [
-  { name: 'Fitzroy', score: mScore('Fitzroy'), verdict: 'GO' as const, rent: '$9,000–$16,000', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty retail, creative' },
-  { name: 'Richmond', score: mScore('Richmond'), verdict: 'GO' as const, rent: '$7,000–$13,000', footTraffic: 'High', bestFor: 'Hospitality, specialty food, health' },
-  { name: 'South Yarra', score: mScore('South Yarra'), verdict: 'GO' as const, rent: '$12,000–$20,000', footTraffic: 'Very High', bestFor: 'Premium retail, fine dining, wellness' },
-  { name: 'Brunswick', score: mScore('Brunswick'), verdict: 'GO' as const, rent: '$6,000–$11,000', footTraffic: 'High', bestFor: 'Cafés, creative, independent retail' },
-  { name: 'Box Hill', score: mScore('Box Hill'), verdict: 'GO' as const, rent: '$4,000–$8,000', footTraffic: 'High', bestFor: 'Asian market, professional services, health' },
-  { name: 'Footscray', score: mScore('Footscray'), verdict: 'GO' as const, rent: '$4,000–$7,000', footTraffic: 'Medium-High', bestFor: 'Specialty food, cafés, value retail' },
-  { name: 'Melbourne CBD', score: mScore('Melbourne CBD'), verdict: 'CAUTION' as const, rent: '$20,000–$50,000', footTraffic: 'Very High', bestFor: 'Premium/luxury, high-volume hospitality' },
-  { name: 'Dandenong', score: mScore('Dandenong'), verdict: 'CAUTION' as const, rent: '$3,000–$6,000', footTraffic: 'Medium', bestFor: 'Multicultural food, value services' },
+  { name: 'Fitzroy', score: mScore('Fitzroy'), verdict: mVerdict('Fitzroy'), rent: '$9,000–$16,000', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty retail, creative' },
+  { name: 'Richmond', score: mScore('Richmond'), verdict: mVerdict('Richmond'), rent: '$7,000–$13,000', footTraffic: 'High', bestFor: 'Hospitality, specialty food, health' },
+  { name: 'South Yarra', score: mScore('South Yarra'), verdict: mVerdict('South Yarra'), rent: '$12,000–$20,000', footTraffic: 'Very High', bestFor: 'Premium retail, fine dining, wellness' },
+  { name: 'Brunswick', score: mScore('Brunswick'), verdict: mVerdict('Brunswick'), rent: '$6,000–$11,000', footTraffic: 'High', bestFor: 'Cafés, creative, independent retail' },
+  { name: 'Box Hill', score: mScore('Box Hill'), verdict: mVerdict('Box Hill'), rent: '$4,000–$8,000', footTraffic: 'High', bestFor: 'Asian market, professional services, health' },
+  { name: 'Footscray', score: mScore('Footscray'), verdict: mVerdict('Footscray'), rent: '$4,000–$7,000', footTraffic: 'Medium-High', bestFor: 'Specialty food, cafés, value retail' },
+  { name: 'Melbourne CBD', score: mScore('Melbourne CBD'), verdict: mVerdict('Melbourne CBD'), rent: '$20,000–$50,000', footTraffic: 'Very High', bestFor: 'Premium/luxury, high-volume hospitality' },
+  { name: 'Dandenong', score: mScore('Dandenong'), verdict: mVerdict('Dandenong'), rent: '$3,000–$6,000', footTraffic: 'Medium', bestFor: 'Multicultural food, value services' },
 ]
 
 const SUBURB_CATEGORIES = [
@@ -52,87 +66,89 @@ const SUBURB_CATEGORIES = [
     title: 'Premium — High Reward, High Risk',
     description: 'Inner ring with exceptional foot traffic and strong consumer spending. Rents are punishing — viable only for premium concepts with proven unit economics.',
     suburbs: [
-      { name: 'Fitzroy', slug: 'fitzroy', description: "Melbourne's highest-density hospitality strip. Smith Street and Gertrude Street set the national benchmark for independent food culture.", score: mScore('Fitzroy'), verdict: 'GO' as const, rentRange: '$9,000–$16,000/mo' },
-      { name: 'South Yarra', slug: 'south-yarra', description: 'Chapel Street premium. Highest average spend per customer in Melbourne outside the CBD.', score: mScore('South Yarra'), verdict: 'GO' as const, rentRange: '$12,000–$20,000/mo' },
-      { name: 'Melbourne CBD', slug: 'melbourne-cbd', description: 'Maximum foot traffic but $25K+ rent requires extreme volume. Hybrid work created structural headwinds.', score: mScore('Melbourne CBD'), verdict: 'CAUTION' as const, rentRange: '$20,000–$50,000/mo' },
-      { name: 'Collingwood', slug: 'collingwood', description: 'Smith Street spill-over. Arts and creative professional concentration with strong weekend trade.', score: mScore('Collingwood'), verdict: 'GO' as const, rentRange: '$8,000–$14,000/mo' },
+      { name: 'Fitzroy', slug: 'fitzroy', description: "Melbourne's highest-density hospitality strip. Smith Street and Gertrude Street set the national benchmark for independent food culture.", score: mScore('Fitzroy'), rentRange: '$9,000–$16,000/mo' },
+      { name: 'South Yarra', slug: 'south-yarra', description: 'Chapel Street premium. Highest average spend per customer in Melbourne outside the CBD.', score: mScore('South Yarra'), rentRange: '$12,000–$20,000/mo' },
+      { name: 'Melbourne CBD', slug: 'melbourne-cbd', description: 'Maximum foot traffic but $25K+ rent requires extreme volume. Hybrid work created structural headwinds.', score: mScore('Melbourne CBD'), rentRange: '$20,000–$50,000/mo' },
+      { name: 'Collingwood', slug: 'collingwood', description: 'Smith Street spill-over. Arts and creative professional concentration with strong weekend trade.', score: mScore('Collingwood'), rentRange: '$8,000–$14,000/mo' },
     ],
   },
   {
     title: 'Growth — Best Risk/Return Balance',
     description: 'Inner and middle suburbs where rent economics align with foot traffic and demographics. The considered choice for most independent operators.',
     suburbs: [
-      { name: 'Richmond', slug: 'richmond', description: 'Swan Street and Bridge Road offer premium catchment at materially lower rents than Fitzroy.', score: mScore('Richmond'), verdict: 'GO' as const, rentRange: '$7,000–$13,000/mo' },
-      { name: 'Brunswick', slug: 'brunswick', description: 'Sydney Road creative corridor. Strong café and independent retail culture, improving demographics.', score: mScore('Brunswick'), verdict: 'GO' as const, rentRange: '$6,000–$11,000/mo' },
-      { name: 'Carlton', slug: 'carlton', description: 'Lygon Street institution. University density drives daytime demand; evenings strong on dining.', score: mScore('Carlton'), verdict: 'GO' as const, rentRange: '$6,000–$11,000/mo' },
-      { name: 'Northcote', slug: 'northcote', description: 'High Street growth strip. Younger professional demographic with above-average café spending.', score: mScore('Northcote'), verdict: 'GO' as const, rentRange: '$5,500–$9,500/mo' },
-      { name: 'St Kilda', slug: 'st-kilda', description: 'Fitzroy Street coastal premium. Tourist-residential mix; dual-season economics require planning.', score: mScore('St Kilda'), verdict: 'GO' as const, rentRange: '$7,500–$13,000/mo' },
+      { name: 'Richmond', slug: 'richmond', description: 'Swan Street and Bridge Road offer premium catchment at materially lower rents than Fitzroy.', score: mScore('Richmond'), rentRange: '$7,000–$13,000/mo' },
+      { name: 'Brunswick', slug: 'brunswick', description: 'Sydney Road creative corridor. Strong café and independent retail culture, improving demographics.', score: mScore('Brunswick'), rentRange: '$6,000–$11,000/mo' },
+      { name: 'Carlton', slug: 'carlton', description: 'Lygon Street institution. University density drives daytime demand; evenings strong on dining.', score: mScore('Carlton'), rentRange: '$6,000–$11,000/mo' },
+      { name: 'Northcote', slug: 'northcote', description: 'High Street growth strip. Younger professional demographic with above-average café spending.', score: mScore('Northcote'), rentRange: '$5,500–$9,500/mo' },
+      { name: 'St Kilda', slug: 'st-kilda', description: 'Fitzroy Street coastal premium. Tourist-residential mix; dual-season economics require planning.', score: mScore('St Kilda'), rentRange: '$7,500–$13,000/mo' },
     ],
   },
   {
     title: 'Outer Growth — Value Plays',
     description: 'Middle and outer suburbs with lower rents and improving demographics. Earlier movers benefit from years of below-market rent before the market matures.',
     suburbs: [
-      { name: 'Box Hill', slug: 'box-hill', description: 'Best rent-to-foot-traffic ratio in Melbourne east. Asian market concentration is a structural advantage for targeted operators.', score: mScore('Box Hill'), verdict: 'GO' as const, rentRange: '$4,000–$8,000/mo' },
-      { name: 'Footscray', slug: 'footscray', description: 'Rapid demographic shift brings professional population and higher spending power to a historically value-positioned market.', score: mScore('Footscray'), verdict: 'GO' as const, rentRange: '$4,000–$7,000/mo' },
-      { name: 'Prahran', slug: 'prahran', description: 'Between South Yarra and St Kilda — premium catchment without premium rents on secondary streets.', score: mScore('Prahran'), verdict: 'GO' as const, rentRange: '$6,000–$10,500/mo' },
-      { name: 'Preston', slug: 'preston', description: 'High Street corridor improving rapidly. Early-mover advantage still available before rents catch up to demographics.', score: mScore('Preston'), verdict: 'GO' as const, rentRange: '$4,000–$7,000/mo' },
-      { name: 'Hawthorn', slug: 'hawthorn', description: "Professional enclave with one of Melbourne's highest household incomes. Underserved for premium hospitality.", score: mScore('Hawthorn'), verdict: 'GO' as const, rentRange: '$5,000–$9,000/mo' },
-      { name: 'Camberwell', slug: 'camberwell', description: 'Burke Road premium corridor. Established professional base, consistently strong weekend trade.', score: mScore('Camberwell'), verdict: 'GO' as const, rentRange: '$5,000–$9,500/mo' },
+      { name: 'Box Hill', slug: 'box-hill', description: 'Best rent-to-foot-traffic ratio in Melbourne east. Asian market concentration is a structural advantage for targeted operators.', score: mScore('Box Hill'), rentRange: '$4,000–$8,000/mo' },
+      { name: 'Footscray', slug: 'footscray', description: 'Rapid demographic shift brings professional population and higher spending power to a historically value-positioned market.', score: mScore('Footscray'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Prahran', slug: 'prahran', description: 'Between South Yarra and St Kilda — premium catchment without premium rents on secondary streets.', score: mScore('Prahran'), rentRange: '$6,000–$10,500/mo' },
+      { name: 'Preston', slug: 'preston', description: 'High Street corridor improving rapidly. Early-mover advantage still available before rents catch up to demographics.', score: mScore('Preston'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Hawthorn', slug: 'hawthorn', description: "Professional enclave with one of Melbourne's highest household incomes. Underserved for premium hospitality.", score: mScore('Hawthorn'), rentRange: '$5,000–$9,000/mo' },
+      { name: 'Camberwell', slug: 'camberwell', description: 'Burke Road premium corridor. Established professional base, consistently strong weekend trade.', score: mScore('Camberwell'), rentRange: '$5,000–$9,500/mo' },
     ],
   },
   {
     title: 'Speculative — Know Before You Go',
     description: 'Markets where specific niches work but general operators struggle. Deep local knowledge and a targeted concept are non-negotiable here.',
     suburbs: [
-      { name: 'Southbank', slug: 'southbank', description: 'Tourist and office weekend trade; weekday residential population thinner than rent implies.', score: mScore('Southbank'), verdict: 'CAUTION' as const, rentRange: '$10,000–$22,000/mo' },
-      { name: 'Docklands', slug: 'docklands', description: 'Planned precinct with residential-commercial imbalance. Weekday office trade strong; evenings and weekends underperform.', score: mScore('Docklands'), verdict: 'CAUTION' as const, rentRange: '$8,000–$18,000/mo' },
-      { name: 'Chadstone', slug: 'chadstone', description: "Shopping centre dominance concentrates spend inside the mall. Strip retail outside struggles to compete.", score: mScore('Chadstone'), verdict: 'CAUTION' as const, rentRange: '$5,000–$10,000/mo' },
-      { name: 'Dandenong', slug: 'dandenong', description: 'Multicultural strength; lower average incomes constrain premium positioning. Specialty food concepts with community focus succeed.', score: mScore('Dandenong'), verdict: 'CAUTION' as const, rentRange: '$3,000–$6,000/mo' },
-      { name: 'Werribee', slug: 'werribee', description: 'Western growth corridor. Infrastructure investment is real but commercial maturity is years away.', score: mScore('Werribee'), verdict: 'CAUTION' as const, rentRange: '$2,500–$5,000/mo' },
+      { name: 'Southbank', slug: 'southbank', description: 'Tourist and office weekend trade; weekday residential population thinner than rent implies.', score: mScore('Southbank'), rentRange: '$10,000–$22,000/mo' },
+      { name: 'Docklands', slug: 'docklands', description: 'Planned precinct with residential-commercial imbalance. Weekday office trade strong; evenings and weekends underperform.', score: mScore('Docklands'), rentRange: '$8,000–$18,000/mo' },
+      { name: 'Chadstone', slug: 'chadstone', description: "Shopping centre dominance concentrates spend inside the mall. Strip retail outside struggles to compete.", score: mScore('Chadstone'), rentRange: '$5,000–$10,000/mo' },
+      { name: 'Dandenong', slug: 'dandenong', description: 'Multicultural strength; lower average incomes constrain premium positioning. Specialty food concepts with community focus succeed.', score: mScore('Dandenong'), rentRange: '$3,000–$6,000/mo' },
+      { name: 'Werribee', slug: 'werribee', description: 'Western growth corridor. Infrastructure investment is real but commercial maturity is years away.', score: mScore('Werribee'), rentRange: '$2,500–$5,000/mo' },
     ],
   },
 ]
 
-const FAQS = [
-  {
-    question: 'What is the best suburb to open a business in Melbourne?',
-    answer: "Fitzroy (score 86) is Melbourne's benchmark for hospitality and independent retail — Smith Street and Gertrude Street have produced more successful independent businesses per square metre than anywhere else in Australia. But Fitzroy rents at $12,000–$16,000/month require premium unit economics. For most independent operators, Richmond (83) or Brunswick (80) deliver a better risk-adjusted position — comparable demographics at meaningfully lower rents. Box Hill (79) is the standout value play: best rent-to-foot-traffic ratio in Melbourne east.",
-  },
-  {
-    question: 'Is Melbourne CBD too expensive for independent businesses in 2026?',
-    answer: "For most independent operators, yes. CBD retail rents of $20,000–$50,000/month require extraordinary volume just to cover occupancy. Hybrid work has structurally reduced weekday lunchtime populations — office density on peak days sits at 65–70% of pre-2020 levels. The CBD works for high-volume QSR concepts and premium fine dining with the margin structure to absorb $30,000+ monthly rent. Independent cafés and small retailers have better economics in inner-ring suburbs like Fitzroy, Richmond, or Carlton.",
-  },
-  {
-    question: 'Which Melbourne suburbs have the best café opportunities in 2026?',
-    answer: "Brunswick and Northcote are the strongest emerging café markets by risk-adjusted economics. Both have professional demographic growth, strong café culture spending, and rents that haven't caught up to demand. Fitzroy remains the prestige address — but the customer-to-venue ratio is thin after a decade of openings. Richmond (Swan Street) has consistent high foot traffic with materially lower rents than Fitzroy. For value plays: Box Hill and Footscray have improving demographics and café customer-to-venue ratios 3–4x more favourable than the inner north.",
-  },
-  {
-    question: 'What commercial rent should I expect in Melbourne suburbs?',
-    answer: "Melbourne commercial rents vary significantly by location and zone. Inner north premium (Fitzroy, Collingwood, South Yarra): $9,000–$20,000/month. Inner middle ring (Richmond, Brunswick, Carlton): $6,000–$13,000/month. East (Box Hill, Hawthorn, Camberwell): $4,000–$9,500/month. West (Footscray, Prahran): $4,000–$10,500/month. Outer growth (Preston, Dandenong, Werribee): $2,500–$7,000/month. CBD and Southbank sit above all at $20,000–$50,000/month. These are gross rent estimates — incentives and net effective rents may vary significantly in the current market.",
-  },
-  {
-    question: 'How does Melbourne compare to Sydney for opening a business?',
-    answer: "Melbourne is generally more viable for independent operators. Inner-ring rents in Fitzroy or Richmond are 20–30% lower than equivalent Sydney suburbs like Surry Hills. Melbourne's café and hospitality culture is more established, creating deeper consumer habits around specialty coffee and independent dining. The inner north (Fitzroy, Collingwood, Brunswick) has a depth of hospitality culture that is unmatched anywhere in Australia. For Western Sydney comparisons: Box Hill ($4,000–$8,000) competes directly with Parramatta but with stronger food culture fundamentals.",
-  },
-  {
-    question: 'Is Fitzroy oversaturated for cafés and restaurants?',
-    answer: "Fitzroy has one of the highest venue densities in Australia — over 400 food and drink venues across the Smith-Gertrude-Johnston triangle. Saturation is real, but so is demand. The nuance is that Fitzroy is highly segmented: a specialty Korean barbecue restaurant does not directly compete with a specialty coffee roaster or a natural wine bar. What is saturated is the generic café category. Operators with a specific, differentiated offering continue to launch and succeed in Fitzroy because the customer base is large, educated, and experimental.",
-  },
-  {
-    question: 'What are the best Melbourne suburbs for retail in 2026?',
-    answer: "South Yarra (Chapel Street) and Fitzroy (Smith Street) are Melbourne's two highest-quality independent retail strips. Camberwell (Burke Road) serves a professional catchment with established spend patterns. Brunswick has a unique advantage for independent lifestyle retail — the creative professional demographic shops local by habit. CBD retail has struggled post-pandemic from foot traffic losses and Westfield consolidation. The growth opportunity for retail is in Box Hill (Asian market) and Hawthorn (professional enclave underserved by quality retailers).",
-  },
-]
-
-const SCHEMA = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: FAQS.map((f) => ({
-    '@type': 'Question',
-    name: f.question,
-    acceptedAnswer: { '@type': 'Answer', text: f.answer },
-  })),
+function buildMelbourneHubFaqs() {
+  const fitz = getMelbourneSuburb('Fitzroy')
+  const rich = getMelbourneSuburb('Richmond')
+  const brun = getMelbourneSuburb('Brunswick')
+  const box = getMelbourneSuburb('Box Hill')
+  return [
+    {
+      question: 'What is the best suburb to open a business in Melbourne?',
+      answer: `Fitzroy (composite score ${fitz?.compositeScore ?? 0}/100) is Melbourne's benchmark for hospitality and independent retail — Smith Street and Gertrude Street have produced more successful independent businesses per square metre than anywhere else in Australia. But Fitzroy rents at $12,000–$16,000/month require premium unit economics. For most independent operators, Richmond (${rich?.compositeScore ?? 0}/100) or Brunswick (${brun?.compositeScore ?? 0}/100) deliver a better risk-adjusted position — comparable demographics at meaningfully lower rents. Box Hill (${box?.compositeScore ?? 0}/100) is the standout value play: best rent-to-foot-traffic ratio in Melbourne east.`,
+    },
+    {
+      question: 'Is Melbourne CBD too expensive for independent businesses in 2026?',
+      answer:
+        "For most independent operators, yes. CBD retail rents of $20,000–$50,000/month require extraordinary volume just to cover occupancy. Hybrid work has structurally reduced weekday lunchtime populations — office density on peak days sits at 65–70% of pre-2020 levels. The CBD works for high-volume QSR concepts and premium fine dining with the margin structure to absorb $30,000+ monthly rent. Independent cafés and small retailers have better economics in inner-ring suburbs like Fitzroy, Richmond, or Carlton.",
+    },
+    {
+      question: 'Which Melbourne suburbs have the best café opportunities in 2026?',
+      answer:
+        "Brunswick and Northcote are the strongest emerging café markets by risk-adjusted economics. Both have professional demographic growth, strong café culture spending, and rents that haven't caught up to demand. Fitzroy remains the prestige address — but the customer-to-venue ratio is thin after a decade of openings. Richmond (Swan Street) has consistent high foot traffic with materially lower rents than Fitzroy. For value plays: Box Hill and Footscray have improving demographics and café customer-to-venue ratios 3–4x more favourable than the inner north.",
+    },
+    {
+      question: 'What commercial rent should I expect in Melbourne suburbs?',
+      answer:
+        "Melbourne commercial rents vary significantly by location and zone. Inner north premium (Fitzroy, Collingwood, South Yarra): $9,000–$20,000/month. Inner middle ring (Richmond, Brunswick, Carlton): $6,000–$13,000/month. East (Box Hill, Hawthorn, Camberwell): $4,000–$9,500/month. West (Footscray, Prahran): $4,000–$10,500/month. Outer growth (Preston, Dandenong, Werribee): $2,500–$7,000/month. CBD and Southbank sit above all at $20,000–$50,000/month. These are gross rent estimates — incentives and net effective rents may vary significantly in the current market.",
+    },
+    {
+      question: 'How does Melbourne compare to Sydney for opening a business?',
+      answer:
+        "Melbourne is generally more viable for independent operators. Inner-ring rents in Fitzroy or Richmond are 20–30% lower than equivalent Sydney suburbs like Surry Hills. Melbourne's café and hospitality culture is more established, creating deeper consumer habits around specialty coffee and independent dining. The inner north (Fitzroy, Collingwood, Brunswick) has a depth of hospitality culture that is unmatched anywhere in Australia. For Western Sydney comparisons: Box Hill ($4,000–$8,000) competes directly with Parramatta but with stronger food culture fundamentals.",
+    },
+    {
+      question: 'Is Fitzroy oversaturated for cafés and restaurants?',
+      answer:
+        "Fitzroy has one of the highest venue densities in Australia — over 400 food and drink venues across the Smith-Gertrude-Johnston triangle. Saturation is real, but so is demand. The nuance is that Fitzroy is highly segmented: a specialty Korean barbecue restaurant does not directly compete with a specialty coffee roaster or a natural wine bar. What is saturated is the generic café category. Operators with a specific, differentiated offering continue to launch and succeed in Fitzroy because the customer base is large, educated, and experimental.",
+    },
+    {
+      question: 'What are the best Melbourne suburbs for retail in 2026?',
+      answer:
+        "South Yarra (Chapel Street) and Fitzroy (Smith Street) are Melbourne's two highest-quality independent retail strips. Camberwell (Burke Road) serves a professional catchment with established spend patterns. Brunswick has a unique advantage for independent lifestyle retail — the creative professional demographic shops local by habit. CBD retail has struggled post-pandemic from foot traffic losses and Westfield consolidation. The growth opportunity for retail is in Box Hill (Asian market) and Hawthorn (professional enclave underserved by quality retailers).",
+    },
+  ]
 }
 
 // ── Full suburb factor directory (server-rendered, sorted by composite score) ──
@@ -218,11 +234,21 @@ function MelbourneFactorDirectory() {
 }
 
 export default function MelbournePage() {
+  const faqs = buildMelbourneHubFaqs()
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question' as const,
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer' as const, text: f.answer },
+    })),
+  }
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 {/* Hero */}
       <CityHero
@@ -240,7 +266,7 @@ export default function MelbournePage() {
       <div style={{ backgroundColor: C.amberBg, borderBottom: `1px solid ${C.amberBdr}`, padding: '12px 24px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <p style={{ fontSize: '13px', color: C.amber, margin: 0 }}>
-            <strong>Methodology:</strong> Scores based on foot traffic density, demographic income distribution, commercial rent viability, competitive density, and accessibility. Data sourced from ABS 2024, CoreLogic, CBRE Q1 2026, City of Melbourne, and Locatalyze proprietary foot traffic analysis.
+            <strong>Methodology:</strong> Headline numbers are a single 0–100 Locatalyze composite (café, restaurant, and retail model scores blended) from the same five factors as the table and factor directory below. Demographic baselines: ABS 2021 Census (most recent complete national census; small-area updates are blended where we layer additional signals). Rents: CoreLogic, CBRE, and valuer/listed benchmarks Q1 2026. Competition: Google Maps / Geoapify. An individual address can score above or below its suburb.
           </p>
         </div>
       </div>
@@ -286,7 +312,7 @@ export default function MelbournePage() {
               { value: '$420B', label: 'Melbourne metro GDP — second largest urban economy in Australia', source: 'DEWR 2025' },
               { value: '28%', label: 'Hospitality businesses fail in year 1 in inner Melbourne', source: 'IBISWorld 2025' },
               { value: '35%', label: 'Lower commercial rents in Box Hill vs. inner north at equivalent foot traffic', source: 'CBRE Q1 2026' },
-              { value: '$98K', label: 'Average household income in inner north (Fitzroy–Brunswick corridor)', source: 'ABS 2024' },
+              { value: '$98K', label: 'Average household income in inner north (Fitzroy–Brunswick corridor)', source: 'ABS 2021 Census' },
             ].map((s) => (
               <div key={s.value} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '12px', border: `1px solid ${C.border}`, textAlign: 'center' }}>
                 <div style={{ fontSize: '30px', fontWeight: 800, color: C.brand, marginBottom: '8px' }}>{s.value}</div>
@@ -386,159 +412,163 @@ export default function MelbournePage() {
             Top 20 Suburbs to Open a Business in Melbourne (2026)
           </h2>
           <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px', maxWidth: '760px' }}>
-            Ranked by overall viability score across foot traffic, demographics, rent economics, competition gap, and growth trajectory. No filler — what works and what doesn't.
+            The score on each card is the same Locatalyze composite (0–100) as the factor directory below. List order is editorial, not a strict re-sort of that score.
           </p>
           <div style={{ display: 'grid', gap: '16px' }}>
             {[
               {
-                rank: 1, name: 'Fitzroy', slug: 'fitzroy', score: mScore('Fitzroy'), verdict: 'GO' as const,
+                rank: 1, name: 'Fitzroy', slug: 'fitzroy',
                 rentFrom: '$9,000/mo',
                 body: "Melbourne's undisputed hospitality benchmark. Smith Street and Gertrude Street have produced more successful independent venues than anywhere in Australia. Competition is intense — the inner triangle (Smith/Johnston/Gertrude) has 400+ food and drink venues, so your concept needs a clear reason to exist. Generic cafés fail here within 18 months. Specific, differentiated operators with strong margin discipline continue to thrive.",
               },
               {
-                rank: 2, name: 'Richmond', slug: 'richmond', score: mScore('Richmond'), verdict: 'GO' as const,
+                rank: 2, name: 'Richmond', slug: 'richmond',
                 rentFrom: '$7,000/mo',
                 body: "Swan Street is Melbourne's best hospitality strip by risk-adjusted economics. Demographically equivalent to Fitzroy — household incomes $88K+, professional-heavy, café-loyal — at 20% lower rents. Bridge Road tells a more mixed story: premium furniture and homeware has recovered but fashion retail has not. Swan Street for hospitality, Bridge Road for specialty home goods only.",
               },
               {
-                rank: 3, name: 'South Yarra', slug: 'south-yarra', score: mScore('South Yarra'), verdict: 'GO' as const,
+                rank: 3, name: 'South Yarra', slug: 'south-yarra',
                 rentFrom: '$12,000/mo',
                 body: "Chapel Street has the highest average transaction value of any Melbourne retail strip. Household income in the South Yarra catchment exceeds $115K — the demographics support premium pricing across most categories. The risk is that Chapel Street's identity has fragmented since the mid-2010s: north Chapel (towards Commercial Road) is the viable premium zone; south Chapel has vacancy issues. Know exactly which block you're assessing before signing.",
               },
               {
-                rank: 4, name: 'Brunswick', slug: 'brunswick', score: mScore('Brunswick'), verdict: 'GO' as const,
+                rank: 4, name: 'Brunswick', slug: 'brunswick',
                 rentFrom: '$6,000/mo',
                 body: "Sydney Road is Melbourne's most genuinely diverse commercial strip — Turkish grocers, vintage stores, specialty coffee, Lebanese bakeries, and natural wine bars exist in a proximity that works because the customer base is educated and open. The demographic has been upgrading for a decade: younger professional renters replacing the older working-class base, bringing spending power without eliminating the cultural texture. The best remaining value play in Melbourne's inner north.",
               },
               {
-                rank: 5, name: 'Box Hill', slug: 'box-hill', score: mScore('Box Hill'), verdict: 'GO' as const,
+                rank: 5, name: 'Box Hill', slug: 'box-hill',
                 rentFrom: '$4,000/mo',
                 body: "The most underrated commercial location in Melbourne east. Box Hill Central draws 60,000+ weekly visits from a catchment that is predominantly Chinese-Australian with above-average household incomes. The specialty food market here — Chinese regional cuisine, Asian bakeries, bubble tea, Japanese food — serves a distinct community market with loyalty economics that inner-north operators rarely achieve. The opportunity for targeted operators is exceptional at these rents.",
               },
               {
-                rank: 6, name: 'Collingwood', slug: 'collingwood', score: mScore('Collingwood'), verdict: 'GO' as const,
+                rank: 6, name: 'Collingwood', slug: 'collingwood',
                 rentFrom: '$8,000/mo',
                 body: "Smith Street's continuation into Collingwood creates a near-seamless precinct for operators who can't afford Fitzroy's peak rents. The demographics are functionally identical — creative professional, high café spend, food-curious. Weekend foot traffic from Fitzroy spills south. The creative industry concentration (studio spaces, galleries, design firms) provides lunch and coffee demand that the residential population alone wouldn't generate.",
               },
               {
-                rank: 7, name: 'Carlton', slug: 'carlton', score: mScore('Carlton'), verdict: 'GO' as const,
+                rank: 7, name: 'Carlton', slug: 'carlton',
                 rentFrom: '$6,000/mo',
                 body: "Lygon Street's Italian heritage creates a permanent demand baseline that no trend can fully erode. The University of Melbourne produces 12,000+ student foot passes daily through the Carlton corridor. Evenings are strong — Lygon Street remains one of Melbourne's most consistent dinner destinations. The opportunity gap is in daytime: the student catchment is underserved for affordable, quality lunch and specialty coffee that isn't $3.50 campus drip.",
               },
               {
-                rank: 8, name: 'Footscray', slug: 'footscray', score: mScore('Footscray'), verdict: 'GO' as const,
+                rank: 8, name: 'Footscray', slug: 'footscray',
                 rentFrom: '$4,000/mo',
                 body: "Footscray is in transition — and the transition is now clearly real. Vietnamese food has anchored the suburb for 40 years; that community and its spending habits remain. The arriving cohort is younger professionals and artists priced out of the inner north, who moved here for affordability and are now pushing food culture upmarket. The result is a suburb with two customer bases at different price points creating unusual resilience. Best timing for early-mover advantage is 2025–2027.",
               },
               {
-                rank: 9, name: 'Prahran', slug: 'prahran', score: mScore('Prahran'), verdict: 'GO' as const,
+                rank: 9, name: 'Prahran', slug: 'prahran',
                 rentFrom: '$6,000/mo',
                 body: "Prahran sits between South Yarra and St Kilda and captures spending from both without paying either suburb's peak rents. The Prahran Market anchors weekend foot traffic with remarkable consistency — market-adjacent tenancies benefit from Saturday-morning crowds that rival any strip in Melbourne. Commercial Road's nightlife and restaurant concentration adds evening density. The underrated entry point to the Chapel Street precinct.",
               },
               {
-                rank: 10, name: 'Northcote', slug: 'northcote', score: mScore('Northcote'), verdict: 'GO' as const,
+                rank: 10, name: 'Northcote', slug: 'northcote',
                 rentFrom: '$5,500/mo',
                 body: "High Street Northcote has been where Fitzroy's overflow goes — the operators who love the inner north culture but couldn't justify the rent. That migration has been occurring for long enough that Northcote now has its own identity. The demographic is younger professional families: couples who moved north of Fitzroy for space, kept the income and spending habits. Strong Saturday foot traffic. Brunch is the highest-earning daypart — quality concepts here run 200+ covers on weekends.",
               },
               {
-                rank: 11, name: 'St Kilda', slug: 'st-kilda', score: mScore('St Kilda'), verdict: 'GO' as const,
+                rank: 11, name: 'St Kilda', slug: 'st-kilda',
                 rentFrom: '$7,500/mo',
                 body: "Fitzroy Street and Acland Street are Melbourne's beach-lifestyle premium strips. Summer trade from October to March runs at 130–150% of winter. The challenge: winter at 65–70% of summer revenue requires solid cash reserves and a concept that works without tourist volume. The best St Kilda operators build businesses that stand on residential trade alone and treat the tourist premium as upside, not baseline.",
               },
               {
-                rank: 12, name: 'Preston', slug: 'preston', score: mScore('Preston'), verdict: 'GO' as const,
+                rank: 12, name: 'Preston', slug: 'preston',
                 rentFrom: '$4,000/mo',
                 body: "High Street Preston is 4–5 years behind Northcote in the gentrification curve — which is exactly why early-mover rents remain available. The demographic shift is visible: the established multicultural community (Italian, Greek, Vietnamese) is being joined by younger renters priced out of Northcote and Brunswick. Quality café operators who open in Preston now will face materially higher rents in three years as the market matures around them.",
               },
               {
-                rank: 13, name: 'Hawthorn', slug: 'hawthorn', score: mScore('Hawthorn'), verdict: 'GO' as const,
+                rank: 13, name: 'Hawthorn', slug: 'hawthorn',
                 rentFrom: '$5,000/mo',
                 body: "Average household income in Hawthorn exceeds $120K — among the highest of any Melbourne suburb. Church Street has consistent professional foot traffic with limited quality hospitality supply. The Hawthorn customer is established, 35–55, income-insensitive to quality pricing, and loyal once they find a venue that meets their standards. Not a volume market — a margin market. The right café here runs fewer covers than Fitzroy at significantly higher ticket sizes.",
               },
               {
-                rank: 14, name: 'Camberwell', slug: 'camberwell', score: mScore('Camberwell'), verdict: 'GO' as const,
+                rank: 14, name: 'Camberwell', slug: 'camberwell',
                 rentFrom: '$5,000/mo',
                 body: "Burke Road Camberwell is Melbourne's gold-standard suburban professional strip. The Camberwell Junction precinct has decades of established foot traffic from a high-income (average $118K household) catchment. Weekend trade is consistently strong — Saturday morning brunch and Saturday afternoon retail both perform. This is where Melbourne's doctors, lawyers, and executives shop local. Quality hospitality and professional services succeed; discount retail does not belong here.",
               },
               {
-                rank: 15, name: 'Southbank', slug: 'southbank', score: mScore('Southbank'), verdict: 'CAUTION' as const,
+                rank: 15, name: 'Southbank', slug: 'southbank',
                 rentFrom: '$10,000/mo',
                 body: "Southbank's problem is structural rather than cyclical. The Yarra riverfront generates tourist and event trade — Crown precinct, arts venues, and MCG events move significant people — but the residential density needed to sustain consistent everyday trade is thin. Office weekday populations help, but Southbank weekday hospitality depends heavily on corporate clients who became more cost-conscious post-pandemic. Works for premium venue operators with proven event and corporate revenue channels.",
               },
               {
-                rank: 16, name: 'Dandenong', slug: 'dandenong', score: mScore('Dandenong'), verdict: 'CAUTION' as const,
+                rank: 16, name: 'Dandenong', slug: 'dandenong',
                 rentFrom: '$3,000/mo',
                 body: "Greater Dandenong's multicultural composition — Sri Lankan, Afghan, Indian, Southeast Asian communities — creates specialty food markets with genuine loyalty economics. Average household incomes ($58K) limit premium positioning significantly. The commercial area around Lonsdale Street serves community needs effectively but struggles to attract discretionary spending from outside the area. Works well for ethnic specialty food and community-targeted professional services.",
               },
               {
-                rank: 17, name: 'Docklands', slug: 'docklands', score: mScore('Docklands'), verdict: 'CAUTION' as const,
+                rank: 17, name: 'Docklands', slug: 'docklands',
                 rentFrom: '$8,000/mo',
                 body: "Docklands is Melbourne's most visible commercial planning failure. Twenty years of development has produced a suburb with residential population but without the organic street life that makes commercial strips viable. The office towers generate strong weekday lunch trade but the evenings and weekends remain quiet despite the residential component. Harbour Town and New Quay are the stronger zones. Operators need event-adjacent positioning or corporate client channels to make the economics work.",
               },
               {
-                rank: 18, name: 'Chadstone', slug: 'chadstone', score: mScore('Chadstone'), verdict: 'CAUTION' as const,
+                rank: 18, name: 'Chadstone', slug: 'chadstone',
                 rentFrom: '$5,000/mo',
                 body: "Chadstone Shopping Centre is Australia's largest; the surrounding commercial area is largely in its shadow. Strip retail outside the mall struggles to capture spend that Westfield's tenant mix has already consolidated. The exception: service categories that Westfield doesn't offer well — independent health practitioners, auto services, specialty food outside the food court. New residential development in the Chadstone precinct is improving the independent retail case, but slowly.",
               },
               {
-                rank: 19, name: 'Werribee', slug: 'werribee', score: mScore('Werribee'), verdict: 'CAUTION' as const,
+                rank: 19, name: 'Werribee', slug: 'werribee',
                 rentFrom: '$2,500/mo',
                 body: "Werribee is growing — population increased 18% from 2020–2025 and infrastructure investment is real. But commercial maturity typically lags residential growth by 5–7 years. The current catchment of young families, many first-home buyers, has lower discretionary incomes than established suburbs. Entry-level food and services perform; premium concepts are premature. The economics are compelling for patient operators who want lowest-available rent in a growing corridor.",
               },
               {
-                rank: 20, name: 'Melbourne CBD', slug: 'melbourne-cbd', score: mScore('Melbourne CBD'), verdict: 'CAUTION' as const,
+                rank: 20, name: 'Melbourne CBD', slug: 'melbourne-cbd',
                 rentFrom: '$20,000/mo',
                 body: "The paradox of Melbourne's CBD is that it was the most vibrant retail and hospitality precinct in Australia before 2020, and has had the hardest recovery since. Office vacancy at 14% and hybrid work reducing peak-day populations by 25–30% have permanently altered the CBD's commercial dynamics. High-volume QSR, premium fine dining, and liquor-led venues have adapted. The independent café model that defined Melbourne's CBD coffee culture in the 2010s is structurally challenged by current economics.",
               },
-            ].map((suburb) => (
-              <Link key={suburb.slug} href={`/analyse/melbourne/${suburb.slug}`} style={{ textDecoration: 'none' }}>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '52px 1fr auto',
-                    gap: '20px',
-                    alignItems: 'start',
-                    padding: '20px 24px',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '12px',
-                    border: `1px solid ${C.border}`,
-                  }}
-                >
-                  {/* Rank */}
-                  <div style={{ textAlign: 'center', paddingTop: '2px' }}>
-                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
-                    <div
-                      style={{
-                        marginTop: '6px',
-                        fontSize: '10px',
-                        fontWeight: 800,
-                        padding: '3px 7px',
-                        borderRadius: '4px',
-                        textAlign: 'center',
-                        backgroundColor: suburb.verdict === 'GO' ? C.emeraldBg : C.amberBg,
-                        color: suburb.verdict === 'GO' ? C.emerald : C.amber,
-                        border: `1px solid ${suburb.verdict === 'GO' ? C.emeraldBdr : C.amberBdr}`,
-                      }}
-                    >
-                      {suburb.verdict}
+            ].map((suburb) => {
+              const m = getMelbourneSuburb(suburb.slug)
+              const v = m?.verdict ?? 'CAUTION'
+              const badge = melbourneTop20BadgeStyles(v)
+              const score = m?.compositeScore ?? 0
+              const badgeLabel = v === 'RISKY' ? 'NO' : v
+              return (
+                <Link key={suburb.slug} href={`/analyse/melbourne/${suburb.slug}`} style={{ textDecoration: 'none' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '52px 1fr auto',
+                      gap: '20px',
+                      alignItems: 'start',
+                      padding: '20px 24px',
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '12px',
+                      border: `1px solid ${C.border}`,
+                    }}
+                  >
+                    <div style={{ textAlign: 'center', paddingTop: '2px' }}>
+                      <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
+                      <div
+                        style={{
+                          marginTop: '6px',
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          padding: '3px 7px',
+                          borderRadius: '4px',
+                          textAlign: 'center',
+                          backgroundColor: badge.bg,
+                          color: badge.color,
+                          border: `1px solid ${badge.bdr}`,
+                        }}
+                      >
+                        {badgeLabel}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
+                        <span style={{ fontSize: '12px', color: C.mutedLight }}>From {suburb.rentFrom}</span>
+                      </div>
+                      <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
+                    </div>
+                    <div style={{ textAlign: 'center', minWidth: '52px' }}>
+                      <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{score}</div>
+                      <div style={{ fontSize: '10px', color: C.mutedLight, fontWeight: 600 }}>/ 100</div>
                     </div>
                   </div>
-                  {/* Content */}
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                      <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
-                      <span style={{ fontSize: '12px', color: C.mutedLight }}>From {suburb.rentFrom}</span>
-                    </div>
-                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
-                  </div>
-                  {/* Score */}
-                  <div style={{ textAlign: 'center', minWidth: '52px' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{suburb.score}</div>
-                    <div style={{ fontSize: '10px', color: C.mutedLight, fontWeight: 600 }}>/ 100</div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -601,7 +631,7 @@ export default function MelbournePage() {
                     citySlug="melbourne"
                     description={s.description}
                     score={s.score}
-                    verdict={s.verdict}
+                    verdict={mEngineVerdict(s.slug)}
                     rentRange={s.rentRange}
                   />
                 ))}
@@ -685,7 +715,7 @@ export default function MelbournePage() {
           <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '32px' }}>
             Melbourne Location — Frequently Asked Questions
           </h2>
-          <FAQSection faqs={FAQS} />
+          <FAQSection faqs={faqs} />
         </div>
       </section>
 

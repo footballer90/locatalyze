@@ -98,7 +98,7 @@ const POLL_OPTIONS = [
 
 const SUBURBS = [
   {
-    rank: 1, name: 'Mount Lawley', postcode: '6050', score: getRestaurantScore('Mount Lawley'), verdict: 'GO' as const,
+    rank: 1, name: 'Mount Lawley', postcode: '6050', score: getRestaurantScore('Mount Lawley'), verdict: getRestaurantVerdict('Mount Lawley'),
     income: '$98,000', rent: '$3,200–$4,500/mo', competition: '7 within 500m',
     footTraffic: 85, demographics: 86, rentFit: 88, competitionScore: 79,
     breakEven: '28/day', payback: '7 months', annualProfit: '$218,000',
@@ -112,7 +112,7 @@ const SUBURBS = [
     opportunity: 'Mount Lawley has limited quality plant-based and health-forward dining. The demographic\'s age and income profile would support a restaurant positioned in this category — moderate price point, quality produce, strong dinner-with-friends format — with limited direct competition from existing operators.',
   },
   {
-    rank: 2, name: 'Subiaco', postcode: '6008', score: getRestaurantScore('Subiaco'), verdict: 'GO' as const,
+    rank: 2, name: 'Subiaco', postcode: '6008', score: getRestaurantScore('Subiaco'), verdict: getRestaurantVerdict('Subiaco'),
     income: '$115,000', rent: '$4,800–$6,800/mo', competition: '9 within 500m',
     footTraffic: 83, demographics: 91, rentFit: 74, competitionScore: 72,
     breakEven: '36/day', payback: '9 months', annualProfit: '$204,000',
@@ -125,7 +125,7 @@ const SUBURBS = [
     opportunity: 'Subiaco has no dedicated premium Japanese dining — omakase or high-quality izakaya format. The income demographics would support it and the competitive gap is real. The suburb\'s dining culture has matured to the point where Perth diners will seek out a specialist concept rather than defaulting to the nearest Mediterranean.',
   },
   {
-    rank: 3, name: 'Fremantle', postcode: '6160', score: getRestaurantScore('Fremantle'), verdict: 'GO' as const,
+    rank: 3, name: 'Fremantle', postcode: '6160', score: getRestaurantScore('Fremantle'), verdict: getRestaurantVerdict('Fremantle'),
     income: '$88,000', rent: '$3,800–$5,200/mo', competition: '8 within 500m',
     footTraffic: 80, demographics: 80, rentFit: 80, competitionScore: 74,
     breakEven: '32/day', payback: '8 months', annualProfit: '$196,000',
@@ -138,7 +138,7 @@ const SUBURBS = [
     opportunity: 'Fremantle has limited quality modern Australian dining. The tourism demographic is underserved by operators who genuinely showcase WA produce and wine. A restaurant with a clear "Western Australian" food identity — local seafood, Margaret River wine, seasonal produce sourcing — would have both a local following and strong tourist appeal.',
   },
   {
-    rank: 4, name: 'Leederville', postcode: '6007', score: getRestaurantScore('Leederville'), verdict: 'GO' as const,
+    rank: 4, name: 'Leederville', postcode: '6007', score: getRestaurantScore('Leederville'), verdict: getRestaurantVerdict('Leederville'),
     income: '$95,000', rent: '$2,800–$4,000/mo', competition: '6 within 500m',
     footTraffic: 77, demographics: 80, rentFit: 90, competitionScore: 80,
     breakEven: '26/day', payback: '6 months', annualProfit: '$188,000',
@@ -151,7 +151,7 @@ const SUBURBS = [
     opportunity: 'Leederville has no dedicated quality wine bar with food. The Oxford Street demographic would strongly support a natural wine, share-plate format — the model that has worked in Fitzroy and Surry Hills but has not yet arrived in this Perth suburb. Low rent makes the risk profile very favourable.',
   },
   {
-    rank: 5, name: 'Perth CBD', postcode: '6000', score: getRestaurantScore('Perth CBD'), verdict: 'CAUTION' as const,
+    rank: 5, name: 'Perth CBD', postcode: '6000', score: getRestaurantScore('Perth CBD'), verdict: getRestaurantVerdict('Perth CBD'),
     income: '$92,000', rent: '$6,500–$9,500/mo', competition: '11 within 500m',
     footTraffic: 72, demographics: 80, rentFit: 56, competitionScore: 60,
     breakEven: '48/day', payback: '12 months', annualProfit: '$162,000',

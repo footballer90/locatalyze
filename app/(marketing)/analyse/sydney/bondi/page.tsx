@@ -2,6 +2,9 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { sydneyForStaticPage } from '@/lib/analyse-data/sydney-hub-scores'
+
+const BONDI = sydneyForStaticPage('bondi')
 
 const S = {
   brand: '#0891B2',
@@ -215,10 +218,10 @@ export default function BondiPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
             <h1 style={{ fontSize: '36px', fontWeight: '700', margin: 0 }}>Bondi</h1>
-            <span style={{ fontSize: '32px', fontWeight: '700' }}>74</span>
+            <span style={{ fontSize: '32px', fontWeight: '700' }}>{BONDI.compositeScore}</span>
           </div>
           <div style={{ marginBottom: '16px' }}>
-            <VerdictBadge v="GO" />
+            <VerdictBadge v={BONDI.verdict === 'RISKY' ? 'NO' : BONDI.verdict} />
           </div>
           <p style={{ fontSize: '16px', lineHeight: '1.6', opacity: 0.95, margin: 0 }}>
             Beach culture with dual seasonal personality. Summer (October–April) delivers spectacular foot traffic. Winter reveals true local resident demographic. Operators who ignore seasonality fail; those who model both seasons properly thrive.
@@ -241,13 +244,15 @@ export default function BondiPage() {
 
       <section style={{ padding: '48px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: S.n900 }}>
-            Business Scores
+          <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px', color: S.n900 }}>
+            Model scores (same engine as the Sydney hub)
           </h2>
-          <ScoreBar label="Foot Traffic" value={85} />
-          <ScoreBar label="Area Demographics" value={78} />
-          <ScoreBar label="Rent Viability" value={62} />
-          <ScoreBar label="Competition" value={80} />
+          <p style={{ fontSize: '13px', color: S.muted, margin: '0 0 20px 0', lineHeight: 1.6, maxWidth: 720 }}>
+            The headline number is one composite; below are the café, restaurant, and retail model scores (0–100 each) from the same five factors.
+          </p>
+          <ScoreBar label="Café" value={BONDI.cafe} />
+          <ScoreBar label="Restaurant" value={BONDI.restaurant} />
+          <ScoreBar label="Retail" value={BONDI.retail} />
         </div>
       </section>
 

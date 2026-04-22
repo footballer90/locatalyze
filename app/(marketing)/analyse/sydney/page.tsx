@@ -12,6 +12,25 @@ import { CTASection } from '@/components/analyse/CTASection'
 import { C } from '@/components/analyse/AnalyseTheme'
 import { FactorGrid } from '@/components/analyse/FactorGrid'
 import { getSydneySuburbs } from '@/lib/analyse-data/sydney'
+import { sydneyModelForSlug } from '@/lib/analyse-data/sydney-hub-scores'
+import type { LocationVerdict } from '@/lib/analyse-data/scoring-engine'
+
+function comparisonTableVerdict(slug: string): 'GO' | 'CAUTION' | 'NO' {
+  const v = sydneyModelForSlug(slug)?.verdict
+  if (v === 'RISKY') return 'NO'
+  if (v === 'GO' || v === 'CAUTION') return v
+  return 'CAUTION'
+}
+
+function top20BadgeStyles(verdict: LocationVerdict) {
+  if (verdict === 'GO') {
+    return { bg: C.emeraldBg, color: C.emerald, bdr: C.emeraldBdr }
+  }
+  if (verdict === 'CAUTION') {
+    return { bg: C.amberBg, color: C.amber, bdr: C.amberBdr }
+  }
+  return { bg: C.redBg, color: C.red, bdr: C.redBdr }
+}
 
 export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Sydney — 2026 Location Guide',
@@ -25,103 +44,104 @@ export const metadata: Metadata = {
   },
 }
 
-const COMPARISON_ROWS = [
-  { name: 'Surry Hills', score: 87, verdict: 'GO' as const, rent: '$8,000–$14,000', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty retail' },
-  { name: 'Parramatta', score: 84, verdict: 'GO' as const, rent: '$3,500–$6,500', footTraffic: 'High', bestFor: 'Most categories, multicultural food' },
-  { name: 'Chatswood', score: 82, verdict: 'GO' as const, rent: '$6,000–$10,000', footTraffic: 'High', bestFor: 'Asian market, professional services' },
-  { name: 'North Sydney', score: 76, verdict: 'GO' as const, rent: '$5,500–$9,000', footTraffic: 'High (weekday)', bestFor: 'Corporate lunch, professional services' },
-  { name: 'Ryde', score: 77, verdict: 'GO' as const, rent: '$3,000–$5,500', footTraffic: 'Medium-High', bestFor: 'Everyday café, services, health' },
-  { name: 'Penrith', score: 76, verdict: 'GO' as const, rent: '$2,200–$4,000', footTraffic: 'Medium', bestFor: 'Value retail, services' },
-  { name: 'Sydney CBD', score: 78, verdict: 'CAUTION' as const, rent: '$15,000–$38,000', footTraffic: 'Very High', bestFor: 'Premium/luxury concepts only' },
-  { name: 'Ultimo', score: 68, verdict: 'CAUTION' as const, rent: '$3,500–$6,000', footTraffic: 'Medium (weekday)', bestFor: 'Budget cafés, student services' },
-]
+const COMPARISON_DEFS = [
+  { slug: 'surry-hills', name: 'Surry Hills', rent: '$8,000–$14,000', footTraffic: 'Very High', bestFor: 'Premium hospitality, specialty retail' },
+  { slug: 'parramatta', name: 'Parramatta', rent: '$3,500–$6,500', footTraffic: 'High', bestFor: 'Most categories, multicultural food' },
+  { slug: 'chatswood', name: 'Chatswood', rent: '$6,000–$10,000', footTraffic: 'High', bestFor: 'Asian market, professional services' },
+  { slug: 'north-sydney', name: 'North Sydney', rent: '$5,500–$9,000', footTraffic: 'High (weekday)', bestFor: 'Corporate lunch, professional services' },
+  { slug: 'ryde', name: 'Ryde', rent: '$3,000–$5,500', footTraffic: 'Medium-High', bestFor: 'Everyday café, services, health' },
+  { slug: 'penrith', name: 'Penrith', rent: '$2,200–$4,000', footTraffic: 'Medium', bestFor: 'Value retail, services' },
+  { slug: 'sydney-cbd', name: 'Sydney CBD', rent: '$15,000–$38,000', footTraffic: 'Very High', bestFor: 'Premium/luxury concepts only' },
+  { slug: 'ultimo', name: 'Ultimo', rent: '$3,500–$6,000', footTraffic: 'Medium (weekday)', bestFor: 'Budget cafés, student services' },
+] as const
 
 const SUBURB_CATEGORIES = [
   {
     title: 'Premium — High Reward, High Risk',
     description: 'Inner ring with exceptional foot traffic. Punishing rents require premium unit economics and proven execution.',
     suburbs: [
-      { name: 'Surry Hills', slug: 'surry-hills', description: "Sydney's premier hospitality district. 400+ food/drink venues, unmatched dining culture.", score: 87, verdict: 'GO' as const, rentRange: '$8,000–$14,000/mo' },
-      { name: 'Sydney CBD', slug: 'sydney-cbd', description: 'Maximum foot traffic but $15K+ rent demands extremely high volume.', score: 78, verdict: 'CAUTION' as const, rentRange: '$15,000–$38,000/mo' },
-      { name: 'Bondi', slug: 'bondi', description: 'Beach premium. Dual-season economics need solid off-peak planning.', score: 74, verdict: 'GO' as const, rentRange: '$7,000–$12,000/mo' },
+      { name: 'Surry Hills', slug: 'surry-hills', description: "Sydney's premier hospitality district. 400+ food/drink venues, unmatched dining culture.", rentRange: '$8,000–$14,000/mo' },
+      { name: 'Sydney CBD', slug: 'sydney-cbd', description: 'Maximum foot traffic but $15K+ rent demands extremely high volume.', rentRange: '$15,000–$38,000/mo' },
+      { name: 'Bondi', slug: 'bondi', description: 'Beach premium. Dual-season economics need solid off-peak planning.', rentRange: '$7,000–$12,000/mo' },
     ],
   },
   {
     title: 'Growth — Best Risk/Return Balance',
     description: 'Professional suburbs where rent economics align with foot traffic. The smart operator choice for most business types.',
     suburbs: [
-      { name: 'Parramatta', slug: 'parramatta', description: 'Best rent-to-foot-traffic ratio in Greater Sydney. 40,000+ daily workers.', score: 84, verdict: 'GO' as const, rentRange: '$3,500–$6,500/mo' },
-      { name: 'Chatswood', slug: 'chatswood', description: 'North Shore epicentre with unmatched Asian market concentration.', score: 82, verdict: 'GO' as const, rentRange: '$6,000–$10,000/mo' },
-      { name: 'North Sydney', slug: 'north-sydney', description: 'Corporate concentration. Under-served hospitality for worker density.', score: 76, verdict: 'GO' as const, rentRange: '$5,500–$9,000/mo' },
-      { name: 'Ryde', slug: 'ryde', description: 'Quiet achiever. Professional growth post-COVID, moderate rents.', score: 77, verdict: 'GO' as const, rentRange: '$3,000–$5,500/mo' },
-      { name: 'Burwood', slug: 'burwood', description: 'Inner west accessibility. Korean and Asian market well-established.', score: 75, verdict: 'GO' as const, rentRange: '$3,500–$6,000/mo' },
-      { name: 'Hornsby', slug: 'hornsby', description: 'Northern corridor anchor. Underpriced for its catchment.', score: 72, verdict: 'GO' as const, rentRange: '$2,800–$5,000/mo' },
+      { name: 'Parramatta', slug: 'parramatta', description: 'Best rent-to-foot-traffic ratio in Greater Sydney. 40,000+ daily workers.', rentRange: '$3,500–$6,500/mo' },
+      { name: 'Chatswood', slug: 'chatswood', description: 'North Shore epicentre with unmatched Asian market concentration.', rentRange: '$6,000–$10,000/mo' },
+      { name: 'North Sydney', slug: 'north-sydney', description: 'Corporate concentration. Under-served hospitality for worker density.', rentRange: '$5,500–$9,000/mo' },
+      { name: 'Ryde', slug: 'ryde', description: 'Quiet achiever. Professional growth post-COVID, moderate rents.', rentRange: '$3,000–$5,500/mo' },
+      { name: 'Burwood', slug: 'burwood', description: 'Inner west accessibility. Korean and Asian market well-established.', rentRange: '$3,500–$6,000/mo' },
+      { name: 'Hornsby', slug: 'hornsby', description: 'Northern corridor anchor. Underpriced for its catchment.', rentRange: '$2,800–$5,000/mo' },
     ],
   },
   {
     title: 'Outer Growth — Value Plays',
     description: 'Western and outer suburbs with lower rents and improving demographics. Patience required, but clear upside for early movers.',
     suburbs: [
-      { name: 'Penrith', slug: 'penrith', description: 'Olympics infrastructure reshaping Western Sydney. Growth trajectory strong.', score: 76, verdict: 'GO' as const, rentRange: '$2,200–$4,000/mo' },
-      { name: 'Merrylands', slug: 'merrylands', description: 'Multicultural hub, strong loyalty patterns, low rent vs. demand.', score: 74, verdict: 'GO' as const, rentRange: '$2,000–$3,800/mo' },
-      { name: 'Bankstown', slug: 'bankstown', description: 'Demographic diversity drives specialty food and services demand.', score: 70, verdict: 'GO' as const, rentRange: '$2,000–$3,500/mo' },
-      { name: 'Blacktown', slug: 'blacktown', description: 'Large Western Sydney catchment. Non-premium concepts perform well.', score: 71, verdict: 'GO' as const, rentRange: '$1,800–$3,200/mo' },
-      { name: 'Liverpool', slug: 'liverpool', description: 'Southwest anchor. Growing professional population base.', score: 73, verdict: 'GO' as const, rentRange: '$2,000–$3,800/mo' },
-      { name: 'Auburn', slug: 'auburn', description: 'Inner west value play. Strong multicultural food market.', score: 71, verdict: 'GO' as const, rentRange: '$2,200–$4,000/mo' },
-      { name: 'Campbelltown', slug: 'campbelltown', description: 'Southwest growth corridor. Healthcare and education drive employment.', score: 73, verdict: 'GO' as const, rentRange: '$1,800–$3,200/mo' },
+      { name: 'Penrith', slug: 'penrith', description: 'Olympics infrastructure reshaping Western Sydney. Growth trajectory strong.', rentRange: '$2,200–$4,000/mo' },
+      { name: 'Merrylands', slug: 'merrylands', description: 'Multicultural hub, strong loyalty patterns, low rent vs. demand.', rentRange: '$2,000–$3,800/mo' },
+      { name: 'Bankstown', slug: 'bankstown', description: 'Demographic diversity drives specialty food and services demand.', rentRange: '$2,000–$3,500/mo' },
+      { name: 'Blacktown', slug: 'blacktown', description: 'Large Western Sydney catchment. Non-premium concepts perform well.', rentRange: '$1,800–$3,200/mo' },
+      { name: 'Liverpool', slug: 'liverpool', description: 'Southwest anchor. Growing professional population base.', rentRange: '$2,000–$3,800/mo' },
+      { name: 'Auburn', slug: 'auburn', description: 'Inner west value play. Strong multicultural food market.', rentRange: '$2,200–$4,000/mo' },
+      { name: 'Campbelltown', slug: 'campbelltown', description: 'Southwest growth corridor. Healthcare and education drive employment.', rentRange: '$1,800–$3,200/mo' },
     ],
   },
   {
     title: 'Speculative — Know Before You Go',
     description: 'Developing markets where specific niches work but general retail is challenging. Deep local knowledge essential.',
     suburbs: [
-      { name: 'Ultimo', slug: 'ultimo', description: 'Student corridor near UTS. Works for daytime value concepts.', score: 68, verdict: 'CAUTION' as const, rentRange: '$3,500–$6,000/mo' },
-      { name: 'Granville', slug: 'granville', description: 'Inner west affordability. Specific demographics reward targeted concepts.', score: 69, verdict: 'CAUTION' as const, rentRange: '$1,800–$3,200/mo' },
-      { name: 'Fairfield', slug: 'fairfield', description: 'Multicultural strength; lower incomes limit some categories.', score: 67, verdict: 'CAUTION' as const, rentRange: '$1,600–$3,000/mo' },
-      { name: 'Mount Druitt', slug: 'mount-druitt', description: 'Far west value position. Infrastructure lags demographic growth.', score: 68, verdict: 'CAUTION' as const, rentRange: '$1,400–$2,600/mo' },
+      { name: 'Ultimo', slug: 'ultimo', description: 'Student corridor near UTS. Works for daytime value concepts.', rentRange: '$3,500–$6,000/mo' },
+      { name: 'Granville', slug: 'granville', description: 'Inner west affordability. Specific demographics reward targeted concepts.', rentRange: '$1,800–$3,200/mo' },
+      { name: 'Fairfield', slug: 'fairfield', description: 'Multicultural strength; lower incomes limit some categories.', rentRange: '$1,600–$3,000/mo' },
+      { name: 'Mount Druitt', slug: 'mount-druitt', description: 'Far west value position. Infrastructure lags demographic growth.', rentRange: '$1,400–$2,600/mo' },
     ],
   },
 ]
 
-const FAQS = [
-  {
-    question: 'What is the best suburb to start a business in Sydney?',
-    answer: "Parramatta (score 84) is the all-around strongest performer on our model — it delivers the best combination of foot traffic, demographics, and commercial rent viability. Surry Hills (87) scores higher but demands premium rent and proven unit economics. For hospitality, Surry Hills is the prestige market; for most other business types, Parramatta's economics are materially better.",
-  },
-  {
-    question: 'Is Sydney CBD too expensive for independent businesses?',
-    answer: "For most independent operators, yes. CBD retail rents of $15,000–$38,000/month require 300+ daily customers at average $50 spend just to cover rent. Add labour, COGS, and overheads, and break-even typically requires $450K–$600K annual revenue. Only high-volume, premium-priced concepts sustain these economics. Inner-ring alternatives like Surry Hills or North Sydney offer better risk-adjusted positions.",
-  },
-  {
-    question: 'Which Western Sydney suburbs have the best business potential in 2026?',
-    answer: "Parramatta (84) is the proven performer — established commercial precinct, strong foot traffic, improving professional demographics via Parramatta Square. Penrith (76) is the growth bet — Western Sydney Airport and Olympic infrastructure are fundamentally reshaping the Western corridor and Penrith rents haven't caught up yet. Merrylands (74) is underrated with multicultural demographic strength and low rent-to-revenue ratios.",
-  },
-  {
-    question: 'What rent should I expect for retail in Sydney suburbs?',
-    answer: 'Retail rents vary enormously. Inner ring (Surry Hills, Newtown, Bondi): $7,000–$14,000/month. North Shore (Chatswood, North Sydney): $6,000–$10,000/month. Middle ring (Ryde, Burwood, Hornsby): $3,000–$6,000/month. Western Sydney (Parramatta, Blacktown): $2,000–$5,000/month. Outer ring (Penrith, Liverpool, Campbelltown): $1,800–$4,000/month.',
-  },
-  {
-    question: 'Which Sydney suburbs are underrated for cafés in 2026?',
-    answer: "Ryde, Hornsby, and Merrylands are the three most underrated café markets in Greater Sydney. All three have professional demographics, growing residential populations, and café customer-to-venue ratios 3–4x more favourable than the oversaturated inner west. Rents are 50–60% lower than Surry Hills or Newtown with comparable or higher average household incomes.",
-  },
-  {
-    question: 'How does hybrid work affect Sydney commercial locations?',
-    answer: "The main impact is on CBD and inner-city lunch trade, which has not returned to pre-2020 levels. Office occupancy on peak Tuesdays and Wednesdays sits at 70–75%; Mondays and Fridays see 40–50% occupancy. Concepts dependent on the CBD worker lunch trade face structural headwinds. The counter-trend benefits middle-ring suburbs: professionals working from home 2–3 days/week spend more locally in their home suburb.",
-  },
-  {
-    question: 'Is Parramatta a good location for a restaurant?',
-    answer: "Yes — Parramatta is one of Sydney's best restaurant markets by risk-adjusted economics. The Parramatta Square development added 20,000+ professional and government workers with above-average household incomes ($105K+) to the Church Street precinct. Quality casual and multicultural dining have genuine supply gaps. Rents at $4,000–$7,000/month are half of comparable Surry Hills positions.",
-  },
-]
-
-const SCHEMA = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: FAQS.map((f) => ({
-    '@type': 'Question',
-    name: f.question,
-    acceptedAnswer: { '@type': 'Answer', text: f.answer },
-  })),
+function buildSydneyHubFaqs() {
+  const parramatta = sydneyModelForSlug('parramatta')!
+  const surry = sydneyModelForSlug('surry-hills')!
+  const penrith = sydneyModelForSlug('penrith')!
+  const merry = sydneyModelForSlug('merrylands')!
+  return [
+    {
+      question: 'What is the best suburb to start a business in Sydney?',
+      answer: `Parramatta (composite score ${parramatta.compositeScore}/100) is the all-around strongest performer on our model — it delivers the best combination of foot traffic, demographics, and commercial rent viability. Surry Hills (${surry.compositeScore}/100) is higher on prestige and demand, but with premium rent. For most independent operators, one suburb is not universally “best”; compare the same composite score in the table and factor breakdown below — one number, one model.`,
+    },
+    {
+      question: 'Is Sydney CBD too expensive for independent businesses?',
+      answer:
+        "For most independent operators, yes. CBD retail rents of $15,000–$38,000/month require 300+ daily customers at average $50 spend just to cover rent. Add labour, COGS, and overheads, and break-even typically requires $450K–$600K annual revenue. Only high-volume, premium-priced concepts sustain these economics. Inner-ring alternatives like Surry Hills or North Sydney offer better risk-adjusted positions.",
+    },
+    {
+      question: 'Which Western Sydney suburbs have the best business potential in 2026?',
+      answer: `Parramatta (${parramatta.compositeScore}/100) is the proven performer — established commercial precinct, strong foot traffic, improving professional demographics via Parramatta Square. Penrith (${penrith.compositeScore}/100) is the growth bet — Western Sydney Airport and Olympic infrastructure are fundamentally reshaping the Western corridor. Merrylands (${merry.compositeScore}/100) is underrated, with multicultural demographic strength and low rent-to-revenue ratios.`,
+    },
+    {
+      question: 'What rent should I expect for retail in Sydney suburbs?',
+      answer:
+        'Retail rents vary enormously. Inner ring (Surry Hills, Newtown, Bondi): $7,000–$14,000/month. North Shore (Chatswood, North Sydney): $6,000–$10,000/month. Middle ring (Ryde, Burwood, Hornsby): $3,000–$6,000/month. Western Sydney (Parramatta, Blacktown): $2,000–$5,000/month. Outer ring (Penrith, Liverpool, Campbelltown): $1,800–$4,000/month.',
+    },
+    {
+      question: 'Which Sydney suburbs are underrated for cafés in 2026?',
+      answer:
+        "Ryde, Hornsby, and Merrylands are the three most underrated café markets in Greater Sydney. All three have professional demographics, growing residential populations, and café customer-to-venue ratios 3–4x more favourable than the oversaturated inner west. Rents are 50–60% lower than Surry Hills or Newtown with comparable or higher average household incomes.",
+    },
+    {
+      question: 'How does hybrid work affect Sydney commercial locations?',
+      answer:
+        "The main impact is on CBD and inner-city lunch trade, which has not returned to pre-2020 levels. Office occupancy on peak Tuesdays and Wednesdays sits at 70–75%; Mondays and Fridays see 40–50% occupancy. Concepts dependent on the CBD worker lunch trade face structural headwinds. The counter-trend benefits middle-ring suburbs: professionals working from home 2–3 days/week spend more locally in their home suburb.",
+    },
+    {
+      question: 'Is Parramatta a good location for a restaurant?',
+      answer:
+        "Yes — Parramatta is one of Sydney's best restaurant markets by risk-adjusted economics. The Parramatta Square development added 20,000+ professional and government workers with above-average household incomes ($105K+) to the Church Street precinct. Quality casual and multicultural dining have genuine supply gaps. Rents at $4,000–$7,000/month are half of comparable Surry Hills positions.",
+    },
+  ]
 }
 
 function SydneyFactorDirectory() {
@@ -203,11 +223,35 @@ function SydneyFactorDirectory() {
 }
 
 export default function SydneyPage() {
+  const comparisonRows = COMPARISON_DEFS.map((row) => {
+    const e = sydneyModelForSlug(row.slug)
+    if (!e) {
+      throw new Error(`Sydney hub: missing model for ${row.slug}`)
+    }
+    return {
+      name: row.name,
+      score: e.compositeScore,
+      verdict: comparisonTableVerdict(row.slug),
+      rent: row.rent,
+      footTraffic: row.footTraffic,
+      bestFor: row.bestFor,
+    }
+  })
+  const faqs = buildSydneyHubFaqs()
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question' as const,
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer' as const, text: f.answer },
+    })),
+  }
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 {/* Hero */}
       <CityHero
@@ -225,7 +269,7 @@ export default function SydneyPage() {
       <div style={{ backgroundColor: C.amberBg, borderBottom: `1px solid ${C.amberBdr}`, padding: '12px 24px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <p style={{ fontSize: '13px', color: C.amber, margin: 0 }}>
-            <strong>Methodology:</strong> Suburb scores are a five-dimensional composite — Rent Affordability, Competition, Market Demand, Profitability, and Location Quality — the same model used in the individual-address report. Suburb-level inputs come from ABS 2024 (demographic income and population), CoreLogic and CBRE Q1 2026 (rent benchmarks), Google Maps / Geoapify (competitor density within 500m), and Locatalyze foot-traffic and access scoring. An individual address can score meaningfully higher or lower than its suburb average.
+            <strong>Methodology:</strong> Headline numbers are a single 0–100 Locatalyze composite (café, restaurant, and retail model scores blended) from the same five factors as the table below: demand, rent pressure, competition, seasonality, and tourism dependency. Demographic baselines: ABS 2021 Census (most recent complete national census, used for income and age structure; small-area updates are blended where we layer additional signals). Rents: CoreLogic, CBRE, and valuer/listed benchmarks Q1 2026. Competition: Google Maps / Geoapify. An individual address can score above or below its suburb.
           </p>
         </div>
       </div>
@@ -271,7 +315,7 @@ export default function SydneyPage() {
               { value: '$2.1T', label: "Sydney metro GDP — largest urban economy in Southern Hemisphere", source: 'Oxford Economics 2025' },
               { value: '31%', label: 'Hospitality businesses fail in year 1 in inner Sydney', source: 'IBISWorld 2025' },
               { value: '40%', label: 'Lower commercial rents in Western Sydney vs inner ring', source: 'CBRE Q1 2026' },
-              { value: '$92K', label: 'Average household income in Parramatta corridor', source: 'ABS 2024' },
+              { value: '$92K', label: 'Average household income in Parramatta corridor', source: 'ABS 2021 Census' },
             ].map((s) => (
               <div key={s.value} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '12px', border: `1px solid ${C.border}`, textAlign: 'center' }}>
                 <div style={{ fontSize: '30px', fontWeight: 800, color: C.brand, marginBottom: '8px' }}>{s.value}</div>
@@ -363,111 +407,120 @@ export default function SydneyPage() {
             Top 20 Suburbs to Open a Business in Sydney (2026)
           </h2>
           <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px', maxWidth: '760px' }}>
-            Ranked by overall viability score across foot traffic, demographics, rent economics, competition gap, and growth trajectory. Each entry is honest about what works and what doesn't.
+            The large score on each card is the same Locatalyze composite (0–100) as the factor directory — a blend of café, restaurant, and retail model scores from the five-factor engine. The list order is editorial (what to read first), not a strict re-sort of that score. Each entry is honest about what works and what doesn’t.
           </p>
           <div style={{ display: 'grid', gap: '16px' }}>
-            {[
-              {
-                rank: 1, name: 'Surry Hills', slug: 'surry-hills', score: 87, verdict: 'GO' as const,
-                rentFrom: '$8,000/mo',
-                body: "Sydney's benchmark hospitality address. Over 400 food and drink venues, yet demand consistently absorbs strong operators. Rents are the highest risk factor — $10,000–$14,000/month means you need to be running 280+ covers daily. Premium concept or differentiated café only. Generic concepts will be outcompeted within 18 months.",
-              },
-              {
-                rank: 2, name: 'Parramatta', slug: 'parramatta', score: 84, verdict: 'GO' as const,
-                rentFrom: '$3,500/mo',
-                body: "The clearest value-per-dollar location in Greater Sydney. Parramatta Square brought 20,000+ professional and government workers to a previously retail-dominated precinct, permanently upgrading the spending profile. At $5,500/month on Church Street, you're getting 70% of inner-Sydney foot traffic at 40% of the rent. Best for: quality casual dining, specialty coffee, multicultural food, professional services.",
-              },
-              {
-                rank: 3, name: 'Chatswood', slug: 'chatswood', score: 82, verdict: 'GO' as const,
-                rentFrom: '$6,000/mo',
-                body: "Chatswood's competitive edge is demographic specificity — it has the highest concentration of East and Southeast Asian residents in Sydney. This creates a specialty market (bubble tea, Asian bakeries, Japanese food, Korean BBQ) that is unavailable at this scale anywhere else in Greater Sydney. Non-culturally-specific operators underperform here; targeted Asian concepts are among the most profitable in the metro area.",
-              },
-              {
-                rank: 4, name: 'Ryde', slug: 'ryde', score: 77, verdict: 'GO' as const,
-                rentFrom: '$3,000/mo',
-                body: "Ryde is Sydney's quiet achiever — consistently underpriced relative to its demographic quality. Professional population grew 18% from 2020–2025 as hybrid workers settled here from the Inner North. Café customer-to-venue ratios are among the best in Sydney's middle ring. Shepherd's Bay precinct adds commercial density without proportional supply. Best for: everyday cafés, allied health, professional services.",
-              },
-              {
-                rank: 5, name: 'North Sydney', slug: 'north-sydney', score: 76, verdict: 'GO' as const,
-                rentFrom: '$5,500/mo',
-                body: "80,000 office workers — and hospitality supply that hasn't kept pace. North Sydney has the highest ratio of corporate workers to food/beverage venues of any major Sydney centre. Hybrid work reduced occupancy but peak Tuesday–Thursday remains 70–75%. The gap: quality casual restaurants and specialty coffee in the $15–$50 transaction range. Currently underserved.",
-              },
-              {
-                rank: 6, name: 'Penrith', slug: 'penrith', score: 76, verdict: 'GO' as const,
-                rentFrom: '$2,200/mo',
-                body: "Western Sydney Airport and Olympic infrastructure are the defining factors. Penrith's rent has not caught up to its 5-year growth trajectory. A quality café operator paying $3,200/month in Penrith today is getting positioning that will be worth significantly more by 2028. Risk: the growth curve is real but not yet delivered. Suits operators willing to take a 3–5 year view.",
-              },
-              {
-                rank: 7, name: 'Burwood', slug: 'burwood', score: 75, verdict: 'GO' as const,
-                rentFrom: '$3,500/mo',
-                body: "Korean food culture in Burwood has created a specialty market with customer loyalty that rivals established inner-city strips. The key demographic is Korean-Australian and broader Asian-Australian community with above-average household incomes. Burwood benefits from proximity to both Strathfield (professional) and Auburn (value market), creating a hybrid catchment.",
-              },
-              {
-                rank: 8, name: 'Liverpool', slug: 'liverpool', score: 73, verdict: 'GO' as const,
-                rentFrom: '$2,000/mo',
-                body: "Liverpool's hospital, university, and TAFE create stable anchor employment that drives consistent weekday trade. Healthcare-adjacent businesses (allied health, health food, pharmacy) are among the best performers here. Retail has been challenged by Westfield Liverpool concentration, but professional services and health businesses are underserved relative to employment density.",
-              },
-              {
-                rank: 9, name: 'Campbelltown', slug: 'campbelltown', score: 73, verdict: 'GO' as const,
-                rentFrom: '$1,800/mo',
-                body: "Southwest growth spine with dual employment anchors: Campbelltown Hospital (5,000+ workers) and Western Sydney University. The hospital workforce creates reliable weekday demand for health food, cafés, and allied health services. Commercial rent is among the lowest viable positions in Sydney's metro area. Best for: everyday hospitality, allied health, professional services.",
-              },
-              {
-                rank: 10, name: 'Merrylands', slug: 'merrylands', score: 74, verdict: 'GO' as const,
-                rentFrom: '$2,000/mo',
-                body: "Merrylands is consistently underestimated because it lacks the headline recognition of Parramatta. But the multicultural community cohesion here — Lebanese, Pacific Islander, South Asian — creates loyalty patterns that inner-city operators rarely achieve. Once a customer finds their preferred food business in Merrylands, they return weekly without the fickleness of inner-city dining trends.",
-              },
-              {
-                rank: 11, name: 'Hornsby', slug: 'hornsby', score: 72, verdict: 'GO' as const,
-                rentFrom: '$2,800/mo',
-                body: "Northern corridor anchor serving a 180,000+ catchment at prices significantly below Chatswood. The professional population is established and underserved for quality hospitality — particularly in the $20–$45 lunch range. Hornsby Westfield anchors foot traffic, but the surrounding strip has independent operator opportunity that Westfield doesn't cover.",
-              },
-              {
-                rank: 12, name: 'Auburn', slug: 'auburn', score: 71, verdict: 'GO' as const,
-                rentFrom: '$2,200/mo',
-                body: "10km from the CBD with rents at 25% of Surry Hills — Auburn's location economics are extraordinary for operators who understand the market. The Turkish and Middle Eastern specialty food market here has loyal community spending patterns. Auburn Road generates consistent foot traffic 6 days per week. Not a generic market; a specific, loyal demographic market.",
-              },
-              {
-                rank: 13, name: 'Bankstown', slug: 'bankstown', score: 70, verdict: 'GO' as const,
-                rentFrom: '$2,000/mo',
-                body: "Vietnamese, Lebanese, Cambodian, and Southeast Asian communities create a specialty food market with strong community spending. The demographic diversity is Bankstown's strength — multicultural food operators find loyal customer bases across different communities. Lower average incomes ($62K household) limit premium positioning but make value-positioned businesses highly viable.",
-              },
-              {
-                rank: 14, name: 'Blacktown', slug: 'blacktown', score: 71, verdict: 'GO' as const,
-                rentFrom: '$1,800/mo',
-                body: "Western Sydney's largest population node at 380,000+. Westpoint shopping centre anchors a significant retail catchment. Best for high-volume, value-positioned concepts serving a broad Western Sydney demographic. Not a premium market — average household income of $71K means price sensitivity is real. But the sheer population density makes volume plays viable.",
-              },
-              {
-                rank: 15, name: 'Bondi', slug: 'bondi', score: 74, verdict: 'GO' as const,
-                rentFrom: '$7,000/mo',
-                body: "Beach lifestyle premium creates an aspirational consumer base willing to pay $7 for a flat white and $30 for a brunch. The challenge is dual-season economics: January–March summer peak at 150% of normal trade, versus June–August winter at 60%. Operators who can't manage seasonal cash flow will struggle despite strong peak revenue. The market rewards precision operators.",
-              },
-              {
-                rank: 16, name: 'Ultimo', slug: 'ultimo', score: 68, verdict: 'CAUTION' as const,
-                rentFrom: '$3,500/mo',
-                body: "45,000 UTS students create consistent daytime demand Monday–Friday — but semester breaks produce 15 weeks/year of 40–50% revenue gaps. The competition gap (74) is real: only 6 independent cafés for a 45,000-student catchment. This market works for operators who plan around the academic calendar and price for a student demographic ($12–$16 average spend).",
-              },
-              {
-                rank: 17, name: 'Granville', slug: 'granville', score: 69, verdict: 'CAUTION' as const,
-                rentFrom: '$1,800/mo',
-                body: "Inner west affordability play — 12km from CBD at Western Sydney rents. The multicultural market (Middle Eastern, South Asian) creates specialty food demand but average household incomes of $67K constrain premium positioning. Works for operators who understand the specific community market; underperforms for generic concepts seeking cheap rent.",
-              },
-              {
-                rank: 18, name: 'Fairfield', slug: 'fairfield', score: 67, verdict: 'CAUTION' as const,
-                rentFrom: '$1,600/mo',
-                body: "Vietnamese and Cambodian community concentration creates a specialty food market with loyalty characteristics. Fairfield food culture is genuine and under-recognised — Vietnamese banh mi and pho operators here have operated for 20+ years. Lower average incomes ($55K) make premium positioning very difficult; value-positioned specialty food concepts succeed.",
-              },
-              {
-                rank: 19, name: 'Mount Druitt', slug: 'mount-druitt', score: 68, verdict: 'CAUTION' as const,
-                rentFrom: '$1,400/mo',
-                body: "Far west value position with improving infrastructure. Western Sydney Airport investment is beginning to impact the outer west corridor, but Mount Druitt's commercial viability is 3–5 years from maturing. For operators with patient capital and value positioning, early entry captures the asymmetric upside. Not a market for operators who need immediate returns.",
-              },
-              {
-                rank: 20, name: 'Sydney CBD', slug: 'sydney-cbd', score: 78, verdict: 'CAUTION' as const,
-                rentFrom: '$15,000/mo',
-                body: "The paradox suburb: highest foot traffic in Australia, worst unit economics for independent operators. Hybrid work has permanently reduced weekday lunchtime populations by 25–30%. Office vacancy sits at 12.5%. Premium and luxury concepts work — they have the demographics and margin structure to absorb $25,000+/month rents. Volume-dependent independent operators consistently fail here.",
-              },
-            ].map((suburb) => (
+            {(
+              [
+                {
+                  rank: 1, name: 'Surry Hills', slug: 'surry-hills',
+                  rentFrom: '$8,000/mo',
+                  body: "Sydney's benchmark hospitality address. Over 400 food and drink venues, yet demand consistently absorbs strong operators. Rents are the highest risk factor — $10,000–$14,000/month means you need to be running 280+ covers daily. Premium concept or differentiated café only. Generic concepts will be outcompeted within 18 months.",
+                },
+                {
+                  rank: 2, name: 'Parramatta', slug: 'parramatta',
+                  rentFrom: '$3,500/mo',
+                  body: "The clearest value-per-dollar location in Greater Sydney. Parramatta Square brought 20,000+ professional and government workers to a previously retail-dominated precinct, permanently upgrading the spending profile. At $5,500/month on Church Street, you're getting 70% of inner-Sydney foot traffic at 40% of the rent. Best for: quality casual dining, specialty coffee, multicultural food, professional services.",
+                },
+                {
+                  rank: 3, name: 'Chatswood', slug: 'chatswood',
+                  rentFrom: '$6,000/mo',
+                  body: "Chatswood's competitive edge is demographic specificity — it has the highest concentration of East and Southeast Asian residents in Sydney. This creates a specialty market (bubble tea, Asian bakeries, Japanese food, Korean BBQ) that is unavailable at this scale anywhere else in Greater Sydney. Non-culturally-specific operators underperform here; targeted Asian concepts are among the most profitable in the metro area.",
+                },
+                {
+                  rank: 4, name: 'Ryde', slug: 'ryde',
+                  rentFrom: '$3,000/mo',
+                  body: "Ryde is Sydney's quiet achiever — consistently underpriced relative to its demographic quality. Professional population grew 18% from 2020–2025 as hybrid workers settled here from the Inner North. Café customer-to-venue ratios are among the best in Sydney's middle ring. Shepherd's Bay precinct adds commercial density without proportional supply. Best for: everyday cafés, allied health, professional services.",
+                },
+                {
+                  rank: 5, name: 'North Sydney', slug: 'north-sydney',
+                  rentFrom: '$5,500/mo',
+                  body: "80,000 office workers — and hospitality supply that hasn't kept pace. North Sydney has the highest ratio of corporate workers to food/beverage venues of any major Sydney centre. Hybrid work reduced occupancy but peak Tuesday–Thursday remains 70–75%. The gap: quality casual restaurants and specialty coffee in the $15–$50 transaction range. Currently underserved.",
+                },
+                {
+                  rank: 6, name: 'Penrith', slug: 'penrith',
+                  rentFrom: '$2,200/mo',
+                  body: "Western Sydney Airport and Olympic infrastructure are the defining factors. Penrith's rent has not caught up to its 5-year growth trajectory. A quality café operator paying $3,200/month in Penrith today is getting positioning that will be worth significantly more by 2028. Risk: the growth curve is real but not yet delivered. Suits operators willing to take a 3–5 year view.",
+                },
+                {
+                  rank: 7, name: 'Burwood', slug: 'burwood',
+                  rentFrom: '$3,500/mo',
+                  body: "Korean food culture in Burwood has created a specialty market with customer loyalty that rivals established inner-city strips. The key demographic is Korean-Australian and broader Asian-Australian community with above-average household incomes. Burwood benefits from proximity to both Strathfield (professional) and Auburn (value market), creating a hybrid catchment.",
+                },
+                {
+                  rank: 8, name: 'Liverpool', slug: 'liverpool',
+                  rentFrom: '$2,000/mo',
+                  body: "Liverpool's hospital, university, and TAFE create stable anchor employment that drives consistent weekday trade. Healthcare-adjacent businesses (allied health, health food, pharmacy) are among the best performers here. Retail has been challenged by Westfield Liverpool concentration, but professional services and health businesses are underserved relative to employment density.",
+                },
+                {
+                  rank: 9, name: 'Campbelltown', slug: 'campbelltown',
+                  rentFrom: '$1,800/mo',
+                  body: "Southwest growth spine with dual employment anchors: Campbelltown Hospital (5,000+ workers) and Western Sydney University. The hospital workforce creates reliable weekday demand for health food, cafés, and allied health services. Commercial rent is among the lowest viable positions in Sydney's metro area. Best for: everyday hospitality, allied health, professional services.",
+                },
+                {
+                  rank: 10, name: 'Merrylands', slug: 'merrylands',
+                  rentFrom: '$2,000/mo',
+                  body: "Merrylands is consistently underestimated because it lacks the headline recognition of Parramatta. But the multicultural community cohesion here — Lebanese, Pacific Islander, South Asian — creates loyalty patterns that inner-city operators rarely achieve. Once a customer finds their preferred food business in Merrylands, they return weekly without the fickleness of inner-city dining trends.",
+                },
+                {
+                  rank: 11, name: 'Hornsby', slug: 'hornsby',
+                  rentFrom: '$2,800/mo',
+                  body: "Northern corridor anchor serving a 180,000+ catchment at prices significantly below Chatswood. The professional population is established and underserved for quality hospitality — particularly in the $20–$45 lunch range. Hornsby Westfield anchors foot traffic, but the surrounding strip has independent operator opportunity that Westfield doesn't cover.",
+                },
+                {
+                  rank: 12, name: 'Auburn', slug: 'auburn',
+                  rentFrom: '$2,200/mo',
+                  body: "10km from the CBD with rents at 25% of Surry Hills — Auburn's location economics are extraordinary for operators who understand the market. The Turkish and Middle Eastern specialty food market here has loyal community spending patterns. Auburn Road generates consistent foot traffic 6 days per week. Not a generic market; a specific, loyal demographic market.",
+                },
+                {
+                  rank: 13, name: 'Bankstown', slug: 'bankstown',
+                  rentFrom: '$2,000/mo',
+                  body: "Vietnamese, Lebanese, Cambodian, and Southeast Asian communities create a specialty food market with strong community spending. The demographic diversity is Bankstown's strength — multicultural food operators find loyal customer bases across different communities. Lower average incomes ($62K household) limit premium positioning but make value-positioned businesses highly viable.",
+                },
+                {
+                  rank: 14, name: 'Blacktown', slug: 'blacktown',
+                  rentFrom: '$1,800/mo',
+                  body: "Western Sydney's largest population node at 380,000+. Westpoint shopping centre anchors a significant retail catchment. Best for high-volume, value-positioned concepts serving a broad Western Sydney demographic. Not a premium market — average household income of $71K means price sensitivity is real. But the sheer population density makes volume plays viable.",
+                },
+                {
+                  rank: 15, name: 'Bondi', slug: 'bondi',
+                  rentFrom: '$7,000/mo',
+                  body: "Beach lifestyle premium creates an aspirational consumer base willing to pay $7 for a flat white and $30 for a brunch. The challenge is dual-season economics: January–March summer peak at 150% of normal trade, versus June–August winter at 60%. Operators who can't manage seasonal cash flow will struggle despite strong peak revenue. The market rewards precision operators.",
+                },
+                {
+                  rank: 16, name: 'Ultimo', slug: 'ultimo',
+                  rentFrom: '$3,500/mo',
+                  body: "45,000 UTS students create consistent daytime demand Monday–Friday — but semester breaks produce 15 weeks/year of 40–50% revenue gaps. The competition story is real: only a small set of independents for a 45,000-student catchment. This market works for operators who plan around the academic calendar and price for a student demographic ($12–$16 average spend).",
+                },
+                {
+                  rank: 17, name: 'Granville', slug: 'granville',
+                  rentFrom: '$1,800/mo',
+                  body: "Inner west affordability play — 12km from CBD at Western Sydney rents. The multicultural market (Middle Eastern, South Asian) creates specialty food demand but average household incomes of $67K constrain premium positioning. Works for operators who understand the specific community market; underperforms for generic concepts seeking cheap rent.",
+                },
+                {
+                  rank: 18, name: 'Fairfield', slug: 'fairfield',
+                  rentFrom: '$1,600/mo',
+                  body: "Vietnamese and Cambodian community concentration creates a specialty food market with loyalty characteristics. Fairfield food culture is genuine and under-recognised — Vietnamese banh mi and pho operators here have operated for 20+ years. Lower average incomes ($55K) make premium positioning very difficult; value-positioned specialty food concepts succeed.",
+                },
+                {
+                  rank: 19, name: 'Mount Druitt', slug: 'mount-druitt',
+                  rentFrom: '$1,400/mo',
+                  body: "Far west value position with improving infrastructure. Western Sydney Airport investment is beginning to impact the outer west corridor, but Mount Druitt's commercial viability is 3–5 years from maturing. For operators with patient capital and value positioning, early entry captures the asymmetric upside. Not a market for operators who need immediate returns.",
+                },
+                {
+                  rank: 20, name: 'Sydney CBD', slug: 'sydney-cbd',
+                  rentFrom: '$15,000/mo',
+                  body: "The paradox suburb: highest foot traffic in Australia, worst unit economics for independent operators. Hybrid work has permanently reduced weekday lunchtime populations by 25–30%. Office vacancy sits at 12.5%. Premium and luxury concepts work — they have the demographics and margin structure to absorb $25,000+/month rents. Volume-dependent independent operators consistently fail here.",
+                },
+              ] as const
+            ).map((suburb) => {
+              const m = sydneyModelForSlug(suburb.slug)
+              if (!m) {
+                return null
+              }
+              const vb = top20BadgeStyles(m.verdict)
+              const vLabel = m.verdict === 'RISKY' ? 'NO' : m.verdict
+              return (
               <Link key={suburb.slug} href={`/analyse/sydney/${suburb.slug}`} style={{ textDecoration: 'none' }}>
                 <div
                   style={{
@@ -481,7 +534,6 @@ export default function SydneyPage() {
                     border: `1px solid ${C.border}`,
                   }}
                 >
-                  {/* Rank */}
                   <div style={{ textAlign: 'center', paddingTop: '2px' }}>
                     <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
                     <div
@@ -492,15 +544,14 @@ export default function SydneyPage() {
                         padding: '3px 7px',
                         borderRadius: '4px',
                         textAlign: 'center',
-                        backgroundColor: suburb.verdict === 'GO' ? C.emeraldBg : C.amberBg,
-                        color: suburb.verdict === 'GO' ? C.emerald : C.amber,
-                        border: `1px solid ${suburb.verdict === 'GO' ? C.emeraldBdr : C.amberBdr}`,
+                        backgroundColor: vb.bg,
+                        color: vb.color,
+                        border: `1px solid ${vb.bdr}`,
                       }}
                     >
-                      {suburb.verdict}
+                      {vLabel}
                     </div>
                   </div>
-                  {/* Content */}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
                       <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
@@ -508,14 +559,14 @@ export default function SydneyPage() {
                     </div>
                     <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
                   </div>
-                  {/* Score */}
                   <div style={{ textAlign: 'center', minWidth: '52px' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{suburb.score}</div>
+                    <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{m.compositeScore}</div>
                     <div style={{ fontSize: '10px', color: C.mutedLight, fontWeight: 600 }}>/ 100</div>
                   </div>
                 </div>
               </Link>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -570,18 +621,22 @@ export default function SydneyPage() {
                 <p style={{ fontSize: '14px', color: C.muted, margin: 0 }}>{cat.description}</p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '16px' }}>
-                {cat.suburbs.map((s) => (
-                  <SuburbCard
-                    key={s.slug}
-                    name={s.name}
-                    slug={s.slug}
-                    citySlug="sydney"
-                    description={s.description}
-                    score={s.score}
-                    verdict={s.verdict}
-                    rentRange={s.rentRange}
-                  />
-                ))}
+                {cat.suburbs.map((s) => {
+                  const m = sydneyModelForSlug(s.slug)
+                  if (!m) return null
+                  return (
+                    <SuburbCard
+                      key={s.slug}
+                      name={s.name}
+                      slug={s.slug}
+                      citySlug="sydney"
+                      description={s.description}
+                      score={m.compositeScore}
+                      verdict={m.verdict}
+                      rentRange={s.rentRange}
+                    />
+                  )
+                })}
               </div>
             </div>
           ))}
@@ -594,7 +649,7 @@ export default function SydneyPage() {
           <h2 style={{ fontSize: '28px', fontWeight: 700, color: C.n900, marginBottom: '24px' }}>
             Quick Comparison — Top Sydney Suburbs
           </h2>
-          <ComparisonTable rows={COMPARISON_ROWS} />
+          <ComparisonTable rows={comparisonRows} />
         </div>
       </section>
 
@@ -645,7 +700,7 @@ export default function SydneyPage() {
             {[
               { name: 'Merrylands', slug: 'merrylands', why: "Consistently underestimated. Merrylands has multicultural community cohesion that drives higher revisit rates than comparable Western Sydney suburbs. Rents are 50% below Surry Hills with solid accessibility via Merrylands station." },
               { name: 'Auburn', slug: 'auburn', why: "Auburn's inner west location (10km from CBD) means it catches the professional spillover from Burwood and Strathfield at half the rent. Turkish and Middle Eastern community creates specialty food loyalty unavailable in most suburbs." },
-              { name: 'Ryde', slug: 'ryde', why: "Ryde is the quiet achiever of Sydney's north. Score 77 without the headline recognition. Growing professional population post-COVID, strong income demographics, and a café market that is not oversaturated." },
+              { name: 'Ryde', slug: 'ryde', why: `Ryde is the quiet achiever of Sydney's north. Composite ${sydneyModelForSlug('ryde')?.compositeScore ?? '—'}/100 without the headline recognition. Growing professional population post-COVID, strong income demographics, and a café market that is not oversaturated.` },
               { name: 'Hornsby', slug: 'hornsby', why: "Northern corridor anchor at $2,800–$5,000/month for positions serving the same demographic as suburbs charging double. Population growth and infrastructure investment make this a strong 5-year proposition." },
             ].map((gem) => (
               <Link key={gem.slug} href={`/analyse/sydney/${gem.slug}`} style={{ textDecoration: 'none' }}>
@@ -796,7 +851,7 @@ export default function SydneyPage() {
             Don't guess. Choosing the wrong Sydney location costs 6–12 months of revenue.
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', marginBottom: '28px', lineHeight: '1.65' }}>
-            Get foot traffic analysis, competitor mapping, rent benchmarks, and a GO/CAUTION/NO verdict for any Sydney address. Free. Takes 3 minutes.
+            Get foot traffic analysis, competitor mapping, rent benchmarks, and a GO/CAUTION/NO verdict for any Sydney address. Free. About 90 seconds.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
@@ -848,7 +903,7 @@ export default function SydneyPage() {
       </section>
 
       {/* FAQ — Fixed visibility with new component */}
-      <FAQSection faqs={FAQS} title="Sydney Business Location — FAQ" id="faq" />
+      <FAQSection faqs={faqs} title="Sydney Business Location — FAQ" id="faq" />
 
       {/* CTA */}
       <CTASection

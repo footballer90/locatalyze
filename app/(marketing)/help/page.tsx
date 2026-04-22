@@ -18,7 +18,7 @@ const FAQS = [
     items: [
       {
         q: 'How do I run my first analysis?',
-        a: 'Go to the Dashboard and click "New Analysis". Enter any Australian street address, select your business type, and drop a pin on the map to confirm your exact location. Add your monthly rent if you know it, then submit. Your report is usually ready in about 90 seconds and includes a GO/CAUTION/NO verdict, full financial model, competitor map, SWOT analysis, and 3-year projection.',
+        a: 'Go to the Dashboard and click "New Analysis". Enter any Australian street address, select your business type, and drop a pin on the map to confirm your exact location. Add your monthly rent if you know it, then submit. Your report is usually ready in about 90 seconds. The first report is free and includes: GO/CAUTION/NO verdict, competitor map (500m), top-level location score, and a rent-to-revenue band. Unlock ($29+) for the full P&L, exact break-even customers/day, 3-year projection, full SWOT, detailed threat scores, best/worst risk scenarios, and PDF export.',
       },
       {
         q: 'What is "Calibrate your model" and should I fill it in?',
@@ -30,7 +30,7 @@ const FAQS = [
       },
       {
         q: 'What does the free report include?',
-        a: 'Your first report is free and includes: GO/CAUTION/NO verdict, competitor map, and top-level location score. To unlock the full financial model, break-even analysis, SWOT insights, revenue projections, and PDF export, you can purchase a single report for $29 or save with a multi-report pack.',
+        a: 'Free tier (lead-in): GO/CAUTION/NO verdict, competitor map (500m), headline location score (0–100), and rent-to-revenue range — not a full P&L or exact break-even. Unlock ($29+): full financial model, break-even customers/day (exact), 3-year revenue projection, full SWOT, PDF export, per-competitor threat scores, and best/worst risk scenarios. City & suburb guide pages, blog posts, and standalone tools (rent calculator, break-even, etc.) are free to use without a paid report.',
       },
       {
         q: 'How accurate are the reports?',
@@ -109,7 +109,7 @@ const FAQS = [
       },
       {
         q: 'Can I download my report as a PDF?',
-        a: 'Yes. PDF export is included in all paid reports — Single Report ($29), 3-Pack, and 10-Pack. Click the Download button on any unlocked report page. The PDF includes all sections: verdict, score breakdown, executive narrative, financial model, competitor analysis, SWOT, and 3-year projection.',
+        a: 'Yes. PDF export is included in all paid (unlocked) reports — Single Report ($29), 3-Pack, and 10-Pack. Click the Download button on the report. The PDF is formatted for your bank or accountant: verdict, scores, P&L, break-even, 3-year projection, full SWOT, competitor threat detail, and risk scenarios as shown on the full report.',
       },
       {
         q: 'Can I compare multiple locations?',

@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { sydneyForStaticPage } from '@/lib/analyse-data/sydney-hub-scores'
+
+const CHATSWOOD = sydneyForStaticPage('chatswood')
 
 const C = {
   brand: '#0891B2',
@@ -94,8 +97,8 @@ function FAQSection({ faqs }: { faqs: Array<{ q: string; a: string }> }) {
 }
 
 export const metadata: Metadata = {
-  title: 'Chatswood Business Analysis: North Shore Asian-Australian Hub',
-  description: 'Deep analysis of Chatswood for restaurants, retail, and wellness businesses. East Asian demographic focus, food market competition, rent economics, and commercial opportunities.',
+  title: `Chatswood Business Analysis — ${CHATSWOOD.compositeScore}/100 composite | North Shore Asian-Australian hub`,
+  description: `Chatswood scores ${CHATSWOOD.compositeScore}/100 on the Locatalyze composite. Deep analysis for restaurants, retail, and wellness. East Asian demographic focus, food market competition, rent economics.`,
   alternates: {
     canonical: 'https://locatalyze.com/analyse/sydney/chatswood',
   },
@@ -211,12 +214,12 @@ export default function ChatswoodPage() {
               <p style={{ fontSize: '16px', marginTop: '8px', opacity: 0.95, margin: 0 }}>NSW 2067</p>
             </div>
             <div style={{ textAlign: 'center', padding: '16px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '56px', fontWeight: '700', lineHeight: 1 }}>86</div>
-              <div style={{ fontSize: '12px', marginTop: '8px', opacity: 0.9 }}>Business Score</div>
+              <div style={{ fontSize: '56px', fontWeight: '700', lineHeight: 1 }}>{CHATSWOOD.compositeScore}</div>
+              <div style={{ fontSize: '12px', marginTop: '8px', opacity: 0.9 }}>Locatalyze composite (0–100)</div>
             </div>
           </div>
           <div style={{ marginBottom: '16px' }}>
-            <VerdictBadge v="GO" />
+            <VerdictBadge v={CHATSWOOD.verdict === 'RISKY' ? 'NO' : CHATSWOOD.verdict} />
           </div>
           <p style={{ fontSize: '16px', lineHeight: '1.6', opacity: 0.95, margin: 0, maxWidth: '700px' }}>
             Chatswood is Sydney's most commercially dominant Asian-Australian hub with exceptional demographics ($96K median income) and a quality-sensitive market. The suburb is world-class for authentic Asian restaurants and premium food retail. The barrier to entry is not competition; it is the demographic's high culinary standards. Operators who understand and target the East Asian demographic thrive; operators who treat Chatswood like a generic suburb fail. This is a location for specialized concepts aligned to a specific market, not for generic Western positioning.
@@ -239,14 +242,15 @@ export default function ChatswoodPage() {
 
       <section style={{ padding: '48px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: C.n900 }}>
-            Business Scores
+          <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px', color: C.n900 }}>
+            Model scores (same engine as the Sydney hub)
           </h2>
-          <ScoreBar label="Foot Traffic" value={87} />
-          <ScoreBar label="Area Demographics" value={93} />
-          <ScoreBar label="Rent Viability" value={73} />
-          <ScoreBar label="Competition Gap" value={66} />
-          <ScoreBar label="Accessibility" value={92} />
+          <p style={{ fontSize: '13px', color: C.muted, margin: '0 0 20px 0', lineHeight: 1.6, maxWidth: 720 }}>
+            The headline number above is one composite, blended from the three business-type scores below — each 0–100 from the same five input factors.
+          </p>
+          <ScoreBar label="Café" value={CHATSWOOD.cafe} />
+          <ScoreBar label="Restaurant" value={CHATSWOOD.restaurant} />
+          <ScoreBar label="Retail" value={CHATSWOOD.retail} />
         </div>
       </section>
 

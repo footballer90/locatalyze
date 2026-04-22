@@ -11,6 +11,7 @@ import { CTASection } from '@/components/analyse/CTASection'
 import { C } from '@/components/analyse/AnalyseTheme'
 import { FactorGrid } from '@/components/analyse/FactorGrid'
 import { getAdelaideSuburb, getAdelaideSuburbs } from '@/lib/analyse-data/adelaide'
+import type { LocationVerdict } from '@/lib/analyse-data/scoring-engine'
 
 function aScore(slug: string): number {
   return getAdelaideSuburb(slug)?.compositeScore ?? 0
@@ -20,6 +21,19 @@ function aVerdict(slug: string): 'GO' | 'CAUTION' | 'NO' {
   if (v === 'GO') return 'GO'
   if (v === 'CAUTION') return 'CAUTION'
   return 'NO'
+}
+/** Engine verdict for SuburbCard / top list (preserves RISKY). */
+function aEngineVerdict(slug: string): LocationVerdict {
+  return getAdelaideSuburb(slug)?.verdict ?? 'CAUTION'
+}
+function adelaideTop20BadgeStyles(verdict: LocationVerdict) {
+  if (verdict === 'GO') {
+    return { bg: C.emeraldBg, color: C.emerald, bdr: C.emeraldBdr }
+  }
+  if (verdict === 'CAUTION') {
+    return { bg: C.amberBg, color: C.amber, bdr: C.amberBdr }
+  }
+  return { bg: C.redBg, color: C.red, bdr: C.redBdr }
 }
 
 export const metadata: Metadata = {
@@ -50,84 +64,84 @@ const SUBURB_CATEGORIES = [
     title: 'Premium Inner East — High Reward, High Entry',
     description: "Adelaide's benchmark hospitality strips. Strong customer quality, but rents and competition demand an operator who knows exactly what they're building.",
     suburbs: [
-      { name: 'Norwood', slug: 'norwood', description: "Adelaide's best independent strip. The Parade delivers the highest pedestrian density in SA outside the CBD.", score: aScore('norwood'), verdict: aVerdict('norwood'), rentRange: '$4,500–$8,500/mo' },
-      { name: 'North Adelaide', slug: 'north-adelaide', description: "O'Connell Street and Melbourne Street — the city's top restaurant precinct with strong AFL and event uplift.", score: aScore('north-adelaide'), verdict: aVerdict('north-adelaide'), rentRange: '$4,000–$7,500/mo' },
-      { name: 'Unley', slug: 'unley', description: 'Highest-income suburban strip. Consistent professional repeat trade, low seasonality.', score: aScore('unley'), verdict: aVerdict('unley'), rentRange: '$4,000–$7,000/mo' },
-      { name: 'Kent Town', slug: 'kent-town', description: 'CBD-adjacent at suburban rent. Captures professional lunch and Fringe festival spillover.', score: aScore('kent-town'), verdict: aVerdict('kent-town'), rentRange: '$3,500–$6,500/mo' },
+      { name: 'Norwood', slug: 'norwood', description: "Adelaide's best independent strip. The Parade delivers the highest pedestrian density in SA outside the CBD.", score: aScore('norwood'), rentRange: '$4,500–$8,500/mo' },
+      { name: 'North Adelaide', slug: 'north-adelaide', description: "O'Connell Street and Melbourne Street — the city's top restaurant precinct with strong AFL and event uplift.", score: aScore('north-adelaide'), rentRange: '$4,000–$7,500/mo' },
+      { name: 'Unley', slug: 'unley', description: 'Highest-income suburban strip. Consistent professional repeat trade, low seasonality.', score: aScore('unley'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Kent Town', slug: 'kent-town', description: 'CBD-adjacent at suburban rent. Captures professional lunch and Fringe festival spillover.', score: aScore('kent-town'), rentRange: '$3,500–$6,500/mo' },
     ],
   },
   {
     title: 'Growth Strips — Best Risk/Return',
     description: "Suburbs where demand is proven but rents haven't fully caught up. The smart operator window is open but closing.",
     suburbs: [
-      { name: 'Prospect', slug: 'prospect', description: "Adelaide's fastest-growing independent strip. Melbourne café culture at 50% of Norwood's rent.", score: aScore('prospect'), verdict: aVerdict('prospect'), rentRange: '$2,500–$4,500/mo' },
-      { name: 'Kensington', slug: 'kensington', description: 'Norwood-quality demographic at lower competition and lower rent. An underrated inner-east entry.', score: aScore('kensington'), verdict: aVerdict('kensington'), rentRange: '$3,000–$5,500/mo' },
-      { name: 'Hyde Park', slug: 'hyde-park', description: 'High-income residential, low seasonality. Strong repeat trade, moderate entry point.', score: aScore('hyde-park'), verdict: aVerdict('hyde-park'), rentRange: '$3,500–$6,000/mo' },
-      { name: 'Goodwood', slug: 'goodwood', description: 'Norwood-adjacent demographic at 35% lower rent. Loyal local base with growth trajectory.', score: aScore('goodwood'), verdict: aVerdict('goodwood'), rentRange: '$2,500–$4,500/mo' },
-      { name: 'Burnside', slug: 'burnside', description: "Adelaide's highest average income suburb. Underserved by quality independents — supply gap is real.", score: aScore('burnside'), verdict: aVerdict('burnside'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Prospect', slug: 'prospect', description: "Adelaide's fastest-growing independent strip. Melbourne café culture at 50% of Norwood's rent.", score: aScore('prospect'), rentRange: '$2,500–$4,500/mo' },
+      { name: 'Kensington', slug: 'kensington', description: 'Norwood-quality demographic at lower competition and lower rent. An underrated inner-east entry.', score: aScore('kensington'), rentRange: '$3,000–$5,500/mo' },
+      { name: 'Hyde Park', slug: 'hyde-park', description: 'High-income residential, low seasonality. Strong repeat trade, moderate entry point.', score: aScore('hyde-park'), rentRange: '$3,500–$6,000/mo' },
+      { name: 'Goodwood', slug: 'goodwood', description: 'Norwood-adjacent demographic at 35% lower rent. Loyal local base with growth trajectory.', score: aScore('goodwood'), rentRange: '$2,500–$4,500/mo' },
+      { name: 'Burnside', slug: 'burnside', description: "Adelaide's highest average income suburb. Underserved by quality independents — supply gap is real.", score: aScore('burnside'), rentRange: '$4,000–$7,000/mo' },
     ],
   },
   {
     title: 'Beachside — Seasonal Strategy Required',
     description: 'Strong peak-season revenue, genuine off-season risk. These markets reward operators with dual income streams: tourist peak plus local loyalty.',
     suburbs: [
-      { name: 'Glenelg', slug: 'glenelg', description: "SA's top tourism precinct. Summer revenue is exceptional — winter requires a strong local repeat base.", score: aScore('glenelg'), verdict: aVerdict('glenelg'), rentRange: '$4,000–$7,000/mo' },
-      { name: 'Henley Beach', slug: 'henley-beach', description: 'More balanced than Glenelg — strong local residential reduces the winter cliff.', score: aScore('henley-beach'), verdict: aVerdict('henley-beach'), rentRange: '$3,000–$5,500/mo' },
-      { name: 'Semaphore', slug: 'semaphore', description: 'Community-first beachside market. Loyal locals moderate seasonal risk.', score: aScore('semaphore'), verdict: aVerdict('semaphore'), rentRange: '$2,000–$4,000/mo' },
-      { name: 'Glenelg North', slug: 'glenelg-north', description: 'Beachside residential at lower rent than Glenelg proper. Growing and underserved.', score: aScore('glenelg-north'), verdict: aVerdict('glenelg-north'), rentRange: '$2,800–$5,000/mo' },
+      { name: 'Glenelg', slug: 'glenelg', description: "SA's top tourism precinct. Summer revenue is exceptional — winter requires a strong local repeat base.", score: aScore('glenelg'), rentRange: '$4,000–$7,000/mo' },
+      { name: 'Henley Beach', slug: 'henley-beach', description: 'More balanced than Glenelg — strong local residential reduces the winter cliff.', score: aScore('henley-beach'), rentRange: '$3,000–$5,500/mo' },
+      { name: 'Semaphore', slug: 'semaphore', description: 'Community-first beachside market. Loyal locals moderate seasonal risk.', score: aScore('semaphore'), rentRange: '$2,000–$4,000/mo' },
+      { name: 'Glenelg North', slug: 'glenelg-north', description: 'Beachside residential at lower rent than Glenelg proper. Growing and underserved.', score: aScore('glenelg-north'), rentRange: '$2,800–$5,000/mo' },
     ],
   },
   {
     title: 'Emerging — Early-Mover Opportunity',
     description: 'Gentrifying precincts where rents are low and first-mover advantage is still available.',
     suburbs: [
-      { name: 'Bowden', slug: 'bowden', description: 'Urban renewal precinct. 1,800+ new dwellings, growing young professional population, below-market leases.', score: aScore('bowden'), verdict: aVerdict('bowden'), rentRange: '$2,000–$3,800/mo' },
-      { name: 'Thebarton', slug: 'thebarton', description: 'Creative and brewery precinct. Lowest inner-ring rents with a growing young professional demographic.', score: aScore('thebarton'), verdict: aVerdict('thebarton'), rentRange: '$1,500–$3,000/mo' },
-      { name: 'Port Adelaide', slug: 'port-adelaide', description: 'Gentrification wave underway. Heritage waterfront, lowest inner-ring rents, 3–5 year growth trajectory.', score: aScore('port-adelaide'), verdict: aVerdict('port-adelaide'), rentRange: '$1,800–$3,500/mo' },
-      { name: 'Mount Barker', slug: 'mount-barker', description: "Adelaide Hills' fastest-growing satellite. Professional demographics arriving ahead of hospitality supply.", score: aScore('mount-barker'), verdict: aVerdict('mount-barker'), rentRange: '$1,800–$3,500/mo' },
+      { name: 'Bowden', slug: 'bowden', description: 'Urban renewal precinct. 1,800+ new dwellings, growing young professional population, below-market leases.', score: aScore('bowden'), rentRange: '$2,000–$3,800/mo' },
+      { name: 'Thebarton', slug: 'thebarton', description: 'Creative and brewery precinct. Lowest inner-ring rents with a growing young professional demographic.', score: aScore('thebarton'), rentRange: '$1,500–$3,000/mo' },
+      { name: 'Port Adelaide', slug: 'port-adelaide', description: 'Gentrification wave underway. Heritage waterfront, lowest inner-ring rents, 3–5 year growth trajectory.', score: aScore('port-adelaide'), rentRange: '$1,800–$3,500/mo' },
+      { name: 'Mount Barker', slug: 'mount-barker', description: "Adelaide Hills' fastest-growing satellite. Professional demographics arriving ahead of hospitality supply.", score: aScore('mount-barker'), rentRange: '$1,800–$3,500/mo' },
     ],
   },
 ]
 
-const FAQS = [
-  {
-    question: 'What is the best suburb to open a café in Adelaide?',
-    answer: "Norwood (The Parade) is Adelaide's benchmark café market — the highest pedestrian density outside the CBD, a national track record of successful independents, and a customer demographic that spends consistently. The honest caveat: competition is elevated and rents have risen to $6,000–$9,000/month. The better value play for 2026 is Prospect Road, where Melbourne-calibre café demand exists at 50% of Norwood's rent.",
-  },
-  {
-    question: 'How do Adelaide commercial rents compare to Sydney and Melbourne?',
-    answer: "Adelaide rents are 40–60% lower than equivalent Sydney positions and 30–45% lower than Melbourne. A prime Norwood position at $7,000/month would cost $12,000–$15,000 in Fitzroy or Surry Hills. This lower entry cost is Adelaide's structural advantage for independent operators — break-even is achievable at materially lower revenue thresholds, reducing first-year failure risk significantly.",
-  },
-  {
-    question: 'Is Adelaide CBD worth considering for an independent restaurant or café?',
-    answer: "The Rundle Street precinct (East End) is genuinely viable for premium concepts — rent at $10,000–$18,000/month is expensive for Adelaide but 40% below comparable Sydney positions. The CBD's tourism draw (Fringe, WOMADelaide, arts festivals) adds revenue uplifts unavailable in suburban markets. For independent operators without premium pricing or high volume, suburban strips like Norwood or Prospect offer better risk-adjusted economics.",
-  },
-  {
-    question: 'What makes Prospect Road worth considering in 2026?',
-    answer: "Prospect Road is where the demographic curve and the rent curve have not yet met. A younger professional population with Melbourne-equivalent café expectations is living in a suburb where rents are still 50% below Norwood. Operators who entered in 2022–2024 are seeing the benefit; the window for below-market entry is closing but still open in 2026.",
-  },
-  {
-    question: 'Is Glenelg a good location for a restaurant or café?',
-    answer: "Glenelg is an excellent location for operators who correctly model the seasonality. Summer revenue (November–March) can be 40–60% above the annual average. The failure mode is operators who project summer revenue across 12 months — winter softness from May to August requires a strong local customer base to sustain.",
-  },
-  {
-    question: 'Which Adelaide suburbs are underrated for business in 2026?',
-    answer: "Three markets consistently outperform their reputation: Kensington (Norwood demographic at lower rent and lower competition), Goodwood (inner-south loyal residential base at 35% below Norwood pricing), and Burnside (Adelaide's highest household income suburb with genuine supply gaps for quality independents).",
-  },
-  {
-    question: 'What is the outlook for Port Adelaide and Thebarton?',
-    answer: "Both are genuine early-mover opportunities with 3–5 year growth trajectories. Port Adelaide's Heritage Wharf precinct and government investment are bringing new residential density to a formerly commercial-only suburb. Thebarton's creative and brewery precinct is attracting a young professional demographic. In both cases, rents are among the lowest in the inner ring — the first-mover window is open but not permanent.",
-  },
-]
-
-const SCHEMA = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: FAQS.map((f) => ({
-    '@type': 'Question',
-    name: f.question,
-    acceptedAnswer: { '@type': 'Answer', text: f.answer },
-  })),
+function buildAdelaideHubFaqs() {
+  const nor = getAdelaideSuburb('norwood')
+  const pro = getAdelaideSuburb('prospect')
+  return [
+    {
+      question: 'What is the best suburb to open a café in Adelaide?',
+      answer: `Norwood (composite ${nor?.compositeScore ?? 0}/100 — The Parade) is Adelaide's benchmark café market — the highest pedestrian density outside the CBD, a national track record of successful independents, and a customer demographic that spends consistently. The honest caveat: competition is elevated and rents have risen to $6,000–$9,000/month. The better value play for 2026 is Prospect Road (composite ${pro?.compositeScore ?? 0}/100), where Melbourne-calibre café demand exists at 50% of Norwood's rent.`,
+    },
+    {
+      question: 'How do Adelaide commercial rents compare to Sydney and Melbourne?',
+      answer:
+        "Adelaide rents are 40–60% lower than equivalent Sydney positions and 30–45% lower than Melbourne. A prime Norwood position at $7,000/month would cost $12,000–$15,000 in Fitzroy or Surry Hills. This lower entry cost is Adelaide's structural advantage for independent operators — break-even is achievable at materially lower revenue thresholds, reducing first-year failure risk significantly.",
+    },
+    {
+      question: 'Is Adelaide CBD worth considering for an independent restaurant or café?',
+      answer:
+        "The Rundle Street precinct (East End) is genuinely viable for premium concepts — rent at $10,000–$18,000/month is expensive for Adelaide but 40% below comparable Sydney positions. The CBD's tourism draw (Fringe, WOMADelaide, arts festivals) adds revenue uplifts unavailable in suburban markets. For independent operators without premium pricing or high volume, suburban strips like Norwood or Prospect offer better risk-adjusted economics.",
+    },
+    {
+      question: 'What makes Prospect Road worth considering in 2026?',
+      answer:
+        "Prospect Road is where the demographic curve and the rent curve have not yet met. A younger professional population with Melbourne-equivalent café expectations is living in a suburb where rents are still 50% below Norwood. Operators who entered in 2022–2024 are seeing the benefit; the window for below-market entry is closing but still open in 2026.",
+    },
+    {
+      question: 'Is Glenelg a good location for a restaurant or café?',
+      answer:
+        "Glenelg is an excellent location for operators who correctly model the seasonality. Summer revenue (November–March) can be 40–60% above the annual average. The failure mode is operators who project summer revenue across 12 months — winter softness from May to August requires a strong local customer base to sustain.",
+    },
+    {
+      question: 'Which Adelaide suburbs are underrated for business in 2026?',
+      answer:
+        "Three markets consistently outperform their reputation: Kensington (Norwood demographic at lower rent and lower competition), Goodwood (inner-south loyal residential base at 35% below Norwood pricing), and Burnside (Adelaide's highest household income suburb with genuine supply gaps for quality independents).",
+    },
+    {
+      question: 'What is the outlook for Port Adelaide and Thebarton?',
+      answer:
+        "Both are genuine early-mover opportunities with 3–5 year growth trajectories. Port Adelaide's Heritage Wharf precinct and government investment are bringing new residential density to a formerly commercial-only suburb. Thebarton's creative and brewery precinct is attracting a young professional demographic. In both cases, rents are among the lowest in the inner ring — the first-mover window is open but not permanent.",
+    },
+  ]
 }
 
 function AdelaideFactorDirectory() {
@@ -170,9 +184,19 @@ function AdelaideFactorDirectory() {
 }
 
 export default function AdelaidePage() {
+  const faqs = buildAdelaideHubFaqs()
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question' as const,
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer' as const, text: f.answer },
+    })),
+  }
   return (
     <div style={{ backgroundColor: '#FFFFFF', color: '#1C1917', minHeight: '100vh' }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
       <CityHero
         cityName="Adelaide"
@@ -188,7 +212,7 @@ export default function AdelaidePage() {
       <div style={{ backgroundColor: C.amberBg, borderBottom: `1px solid ${C.amberBdr}`, padding: '12px 24px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <p style={{ fontSize: '13px', color: C.amber, margin: 0 }}>
-            <strong>Methodology:</strong> Scores based on foot traffic density, demographic income distribution, commercial rent viability, competitive density, and accessibility. Data sourced from ABS 2024, REISA Q1 2026, JLL Adelaide, and Locatalyze proprietary foot traffic analysis.
+            <strong>Methodology:</strong> Headline numbers are a single 0–100 Locatalyze composite (café, restaurant, and retail model scores blended) from the same five factors as the table and factor directory below. Demographic baselines: ABS 2021 Census (most recent complete national census; small-area updates are blended where we layer additional signals). Rents: REISA, JLL, and valuer/listed benchmarks Q1 2026. Competition: Google Maps / Geoapify. An individual address can score above or below its suburb.
           </p>
         </div>
       </div>
@@ -215,10 +239,10 @@ export default function AdelaidePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
             {[
-              { value: '$108K', label: 'Highest median household income in Adelaide — Burnside', source: 'ABS 2024' },
+              { value: '$108K', label: 'Highest median household income in Adelaide — Burnside', source: 'ABS 2021 Census' },
               { value: '40%', label: 'Lower commercial rents vs Sydney inner ring', source: 'JLL Adelaide Q1 2026' },
               { value: '900K+', label: 'Annual visitors to Adelaide Fringe — largest arts festival in Southern Hemisphere', source: 'Adelaide Fringe 2025' },
-              { value: '22%', label: 'Population growth in Mount Barker since 2016', source: 'ABS Census 2024' },
+              { value: '22%', label: 'Population growth in Mount Barker since 2016', source: 'ABS 2016 & 2021 Census' },
             ].map((s) => (
               <div key={s.value} style={{ padding: '24px', backgroundColor: C.white, borderRadius: '12px', border: `1px solid ${C.border}`, textAlign: 'center' }}>
                 <div style={{ fontSize: '30px', fontWeight: 800, color: C.brand, marginBottom: '8px' }}>{s.value}</div>
@@ -275,44 +299,63 @@ export default function AdelaidePage() {
       <section id="top-suburbs" style={{ padding: '64px 24px', backgroundColor: C.n50 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '32px', fontWeight: 800, color: C.n900, marginBottom: '12px', lineHeight: '1.2' }}>Top Adelaide Suburbs to Open a Business (2026)</h2>
-          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px', maxWidth: '760px' }}>Ranked by overall viability score across foot traffic, demographics, rent economics, competition gap, and growth trajectory.</p>
+          <p style={{ fontSize: '15px', color: C.muted, marginBottom: '40px', maxWidth: '760px' }}>The score on each card is the same Locatalyze composite (0–100) as the factor directory below. List order is editorial, not a strict re-sort of that score.</p>
           <div style={{ display: 'grid', gap: '16px' }}>
             {[
-              { rank: 1, name: 'Norwood', slug: 'norwood', verdict: aVerdict('norwood'), score: aScore('norwood'), rentFrom: '$4,500/mo', body: "The Parade is the clearest quality signal in South Australian hospitality — 200+ independents, a track record of nationally recognised operators, and a customer demographic that genuinely supports premium pricing. Differentiated concepts thrive; generic ones are outcompeted. Rent is elevated for Adelaide but 45% below a comparable Surry Hills or Fitzroy position." },
-              { rank: 2, name: 'Prospect', slug: 'prospect', verdict: aVerdict('prospect'), score: aScore('prospect'), rentFrom: '$2,500/mo', body: "The rent-to-demand ratio on Prospect Road is the best in Adelaide in 2026. A professional demographic with Melbourne café habits is living in a suburb where rents are still half of Norwood. The window for below-market entry is closing — Prospect rents rose 25% from 2022–2025 — but operators entering now capture better conditions than in two years." },
-              { rank: 3, name: 'Kensington', slug: 'kensington', verdict: aVerdict('kensington'), score: aScore('kensington'), rentFrom: '$3,000/mo', body: "Kensington sits in Norwood's shadow in terms of operator attention, despite sharing its demographic. The Parade corridor east of the main Norwood strip has fewer than half the competitors at 30% lower rent — a genuine gap for operators who want Norwood-quality customers without Norwood-level competition." },
-              { rank: 4, name: 'North Adelaide', slug: 'north-adelaide', verdict: aVerdict('north-adelaide'), score: aScore('north-adelaide'), rentFrom: '$4,000/mo', body: "O'Connell Street is Adelaide's primary restaurant corridor with strong AFL and cricket event uplift from Adelaide Oval. Melbourne Street serves a professional lunch and dinner market with above-average spend. Entry requires a clearly differentiated concept given the established incumbents." },
-              { rank: 5, name: 'Kent Town', slug: 'kent-town', verdict: aVerdict('kent-town'), score: aScore('kent-town'), rentFrom: '$3,500/mo', body: "Rundle Street East and the Kent Town corridor combine CBD adjacency with suburban rent. Professional lunch trade from the CBD and Fringe festival spillover (February–March) are consistent revenue drivers. At $5,000/month, a position here captures inner-city foot traffic at a fraction of CBD rent." },
-              { rank: 6, name: 'Unley', slug: 'unley', verdict: aVerdict('unley'), score: aScore('unley'), rentFrom: '$4,000/mo', body: "King William Road's highest-income suburban strip. The Unley demographic spends more per café visit than any comparable suburban strip in Adelaide. Works exceptionally well for specialty coffee and quality-casual; less suitable for high-volume value concepts." },
-              { rank: 7, name: 'Burnside', slug: 'burnside', verdict: aVerdict('burnside'), score: aScore('burnside'), rentFrom: '$4,000/mo', body: "Adelaide's highest household income suburb is conspicuously underserved by quality independent operators. Competition is 4/10 — unusual for a suburb with this income profile. A genuine first-mover opportunity for operators with a premium positioning." },
-              { rank: 8, name: 'Hyde Park', slug: 'hyde-park', verdict: aVerdict('hyde-park'), score: aScore('hyde-park'), rentFrom: '$3,500/mo', body: "King William Road south of Unley Road at 15% below Unley rents. Low seasonality, consistent repeat trade, and a growing apartment population make Hyde Park reliable. The market rewards execution quality over concept novelty." },
-              { rank: 9, name: 'Glenelg', slug: 'glenelg', verdict: aVerdict('glenelg'), score: aScore('glenelg'), rentFrom: '$4,000/mo', body: "South Australia's top tourism precinct. Summer revenue November–March can be 40–60% above the annual average. The failure mode is operators who project summer revenue forward without a viable winter strategy. Local loyalty is non-negotiable." },
-              { rank: 10, name: 'Goodwood', slug: 'goodwood', verdict: aVerdict('goodwood'), score: aScore('goodwood'), rentFrom: '$2,500/mo', body: "Goodwood Road delivers inner-south Adelaide professional demographics at 35% below Norwood pricing. Low tourism means the customer base is entirely local — requiring genuine community investment rather than destination marketing." },
-              { rank: 11, name: 'Bowden', slug: 'bowden', verdict: aVerdict('bowden'), score: aScore('bowden'), rentFrom: '$2,000/mo', body: "The Bowden urban renewal precinct is delivering new residents faster than hospitality supply is appearing. Renewal SA lease terms support independent operators. First-mover operators who build community loyalty now capture the demographic before rents reprice." },
-              { rank: 12, name: 'Henley Beach', slug: 'henley-beach', verdict: aVerdict('henley-beach'), score: aScore('henley-beach'), rentFrom: '$3,000/mo', body: "Henley Square delivers a more balanced seasonal trade profile than Glenelg. Operators who position for both the tourist peak and the local resident base achieve consistent year-round economics that pure beach-town concepts cannot." },
-            ].map((suburb) => (
-              <Link key={suburb.slug} href={`/analyse/adelaide/${suburb.slug}`} style={{ textDecoration: 'none' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr auto', gap: '20px', alignItems: 'start', padding: '20px 24px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: `1px solid ${C.border}` }}>
-                  <div style={{ textAlign: 'center', paddingTop: '2px' }}>
-                    <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
-                    <div style={{ marginTop: '6px', fontSize: '10px', fontWeight: 800, padding: '3px 7px', borderRadius: '4px', textAlign: 'center', backgroundColor: suburb.verdict === 'GO' ? C.emeraldBg : C.amberBg, color: suburb.verdict === 'GO' ? C.emerald : C.amber, border: `1px solid ${suburb.verdict === 'GO' ? C.emeraldBdr : C.amberBdr}` }}>
-                      {suburb.verdict}
+              { rank: 1, name: 'Norwood', slug: 'norwood', rentFrom: '$4,500/mo', body: "The Parade is the clearest quality signal in South Australian hospitality — 200+ independents, a track record of nationally recognised operators, and a customer demographic that genuinely supports premium pricing. Differentiated concepts thrive; generic ones are outcompeted. Rent is elevated for Adelaide but 45% below a comparable Surry Hills or Fitzroy position." },
+              { rank: 2, name: 'Prospect', slug: 'prospect', rentFrom: '$2,500/mo', body: "The rent-to-demand ratio on Prospect Road is the best in Adelaide in 2026. A professional demographic with Melbourne café habits is living in a suburb where rents are still half of Norwood. The window for below-market entry is closing — Prospect rents rose 25% from 2022–2025 — but operators entering now capture better conditions than in two years." },
+              { rank: 3, name: 'Kensington', slug: 'kensington', rentFrom: '$3,000/mo', body: "Kensington sits in Norwood's shadow in terms of operator attention, despite sharing its demographic. The Parade corridor east of the main Norwood strip has fewer than half the competitors at 30% lower rent — a genuine gap for operators who want Norwood-quality customers without Norwood-level competition." },
+              { rank: 4, name: 'North Adelaide', slug: 'north-adelaide', rentFrom: '$4,000/mo', body: "O'Connell Street is Adelaide's primary restaurant corridor with strong AFL and cricket event uplift from Adelaide Oval. Melbourne Street serves a professional lunch and dinner market with above-average spend. Entry requires a clearly differentiated concept given the established incumbents." },
+              { rank: 5, name: 'Kent Town', slug: 'kent-town', rentFrom: '$3,500/mo', body: "Rundle Street East and the Kent Town corridor combine CBD adjacency with suburban rent. Professional lunch trade from the CBD and Fringe festival spillover (February–March) are consistent revenue drivers. At $5,000/month, a position here captures inner-city foot traffic at a fraction of CBD rent." },
+              { rank: 6, name: 'Unley', slug: 'unley', rentFrom: '$4,000/mo', body: "King William Road's highest-income suburban strip. The Unley demographic spends more per café visit than any comparable suburban strip in Adelaide. Works exceptionally well for specialty coffee and quality-casual; less suitable for high-volume value concepts." },
+              { rank: 7, name: 'Burnside', slug: 'burnside', rentFrom: '$4,000/mo', body: "Adelaide's highest household income suburb is conspicuously underserved by quality independent operators. Competition is 4/10 — unusual for a suburb with this income profile. A genuine first-mover opportunity for operators with a premium positioning." },
+              { rank: 8, name: 'Hyde Park', slug: 'hyde-park', rentFrom: '$3,500/mo', body: "King William Road south of Unley Road at 15% below Unley rents. Low seasonality, consistent repeat trade, and a growing apartment population make Hyde Park reliable. The market rewards execution quality over concept novelty." },
+              { rank: 9, name: 'Glenelg', slug: 'glenelg', rentFrom: '$4,000/mo', body: "South Australia's top tourism precinct. Summer revenue November–March can be 40–60% above the annual average. The failure mode is operators who project summer revenue forward without a viable winter strategy. Local loyalty is non-negotiable." },
+              { rank: 10, name: 'Goodwood', slug: 'goodwood', rentFrom: '$2,500/mo', body: "Goodwood Road delivers inner-south Adelaide professional demographics at 35% below Norwood pricing. Low tourism means the customer base is entirely local — requiring genuine community investment rather than destination marketing." },
+              { rank: 11, name: 'Bowden', slug: 'bowden', rentFrom: '$2,000/mo', body: "The Bowden urban renewal precinct is delivering new residents faster than hospitality supply is appearing. Renewal SA lease terms support independent operators. First-mover operators who build community loyalty now capture the demographic before rents reprice." },
+              { rank: 12, name: 'Henley Beach', slug: 'henley-beach', rentFrom: '$3,000/mo', body: "Henley Square delivers a more balanced seasonal trade profile than Glenelg. Operators who position for both the tourist peak and the local resident base achieve consistent year-round economics that pure beach-town concepts cannot." },
+            ].map((suburb) => {
+              const m = getAdelaideSuburb(suburb.slug)
+              const v = m?.verdict ?? 'CAUTION'
+              const badge = adelaideTop20BadgeStyles(v)
+              const score = m?.compositeScore ?? 0
+              const badgeLabel = v === 'RISKY' ? 'NO' : v
+              return (
+                <Link key={suburb.slug} href={`/analyse/adelaide/${suburb.slug}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr auto', gap: '20px', alignItems: 'start', padding: '20px 24px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: `1px solid ${C.border}` }}>
+                    <div style={{ textAlign: 'center', paddingTop: '2px' }}>
+                      <div style={{ fontSize: '22px', fontWeight: 900, color: C.n900, lineHeight: 1 }}>#{suburb.rank}</div>
+                      <div
+                        style={{
+                          marginTop: '6px',
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          padding: '3px 7px',
+                          borderRadius: '4px',
+                          textAlign: 'center',
+                          backgroundColor: badge.bg,
+                          color: badge.color,
+                          border: `1px solid ${badge.bdr}`,
+                        }}
+                      >
+                        {badgeLabel}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
+                        <span style={{ fontSize: '12px', color: C.muted }}>From {suburb.rentFrom}</span>
+                      </div>
+                      <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
+                    </div>
+                    <div style={{ textAlign: 'center', minWidth: '52px' }}>
+                      <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{score}</div>
+                      <div style={{ fontSize: '10px', color: C.muted, fontWeight: 600 }}>/ 100</div>
                     </div>
                   </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                      <h3 style={{ fontSize: '17px', fontWeight: 700, color: C.n900, margin: 0 }}>{suburb.name}</h3>
-                      <span style={{ fontSize: '12px', color: C.muted }}>From {suburb.rentFrom}</span>
-                    </div>
-                    <p style={{ fontSize: '14px', lineHeight: '1.7', color: C.muted, margin: 0 }}>{suburb.body}</p>
-                  </div>
-                  <div style={{ textAlign: 'center', minWidth: '52px' }}>
-                    <div style={{ fontSize: '26px', fontWeight: 900, color: C.brand, lineHeight: 1 }}>{suburb.score}</div>
-                    <div style={{ fontSize: '10px', color: C.muted, fontWeight: 600 }}>/ 100</div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -339,7 +382,16 @@ export default function AdelaidePage() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '16px' }}>
                 {cat.suburbs.map((s) => (
-                  <SuburbCard key={s.slug} name={s.name} slug={s.slug} citySlug="adelaide" description={s.description} score={s.score} verdict={s.verdict} rentRange={s.rentRange} />
+                  <SuburbCard
+                    key={s.slug}
+                    name={s.name}
+                    slug={s.slug}
+                    citySlug="adelaide"
+                    description={s.description}
+                    score={s.score}
+                    verdict={aEngineVerdict(s.slug)}
+                    rentRange={s.rentRange}
+                  />
                 ))}
               </div>
             </div>
@@ -400,7 +452,7 @@ export default function AdelaidePage() {
         </div>
       </section>
 
-      <FAQSection faqs={FAQS} title="Adelaide Business Location — FAQ" id="faq" />
+      <FAQSection faqs={faqs} title="Adelaide Business Location — FAQ" id="faq" />
 
       <CTASection
         title="Ready to find your Adelaide location?"
