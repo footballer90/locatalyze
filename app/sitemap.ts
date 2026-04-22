@@ -16,6 +16,7 @@ import { getHerveyBaySuburbSlugs } from '@/lib/analyse-data/hervey-bay'
 import { getMackaySuburbSlugs } from '@/lib/analyse-data/mackay'
 import { getRockhamptonSuburbSlugs } from '@/lib/analyse-data/rockhampton'
 import { getAllSuburbKeys } from '@/lib/analyse-data/suburbs'
+import { INSIGHTS } from '@/lib/insights-posts'
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
 const NOW = new Date()
@@ -194,8 +195,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u('/use-case/takeaway', 0.65),
     u('/use-case/all', 0.60),
 
-    // ── Blog ─────────────────────────────────────────────────────────────────────
+    // ── Blog & insights ──────────────────────────────────────────────────────────
     u('/blog', 0.75, 'weekly'),
+    u('/insights', 0.75, 'weekly'),
+    ...Object.keys(INSIGHTS).map((slug) => u(`/insights/${slug}`, 0.7, 'monthly')),
     u('/suburb', 0.70, 'weekly'),
 
     // ── Legal ────────────────────────────────────────────────────────────────────

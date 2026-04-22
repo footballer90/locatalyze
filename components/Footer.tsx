@@ -3,473 +3,482 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 
-// ── Social icons ──────────────────────────────────────────────
 function TwitterIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
   )
 }
+
 function LinkedInIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-  </svg>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
   )
 }
 
+type FooterLink = { label: string; href: string; badge?: string }
+
+const PRODUCT_LINKS: FooterLink[] = [
+  { label: 'How it works', href: '/methodology' },
+  { label: 'Run an analysis', href: '/onboarding', badge: 'New' },
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Pricing', href: '/upgrade' },
+  { label: 'Changelog', href: '/changelog' },
+]
+
+const USE_CASE_LINKS: FooterLink[] = [
+  { label: 'Cafés & coffee', href: '/use-case/cafes' },
+  { label: 'Restaurants', href: '/use-case/restaurants' },
+  { label: 'Retail stores', href: '/use-case/retail' },
+  { label: 'Gyms & fitness', href: '/use-case/gyms' },
+  { label: 'Takeaway', href: '/use-case/takeaway' },
+  { label: 'All business types', href: '/use-case/all' },
+]
+
+const RESOURCE_LINKS: FooterLink[] = [
+  { label: 'Methodology', href: '/methodology' },
+  { label: 'Location guides', href: '/analyse' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Insights', href: '/insights' },
+  { label: 'Tools', href: '/tools' },
+  { label: 'Help centre', href: '/help' },
+  { label: 'Contact', href: '/contact' },
+]
+
+/** Top metro hubs only — full index at /analyse */
+const CITY_LINKS: FooterLink[] = [
+  { label: 'Sydney', href: '/analyse/sydney' },
+  { label: 'Melbourne', href: '/analyse/melbourne' },
+  { label: 'Brisbane', href: '/analyse/brisbane' },
+  { label: 'Perth', href: '/analyse/perth' },
+  { label: 'Adelaide', href: '/analyse/adelaide' },
+]
+
+const LEGAL_LINKS: FooterLink[] = [
+  { label: 'Terms of service', href: '/terms' },
+  { label: 'Privacy policy', href: '/privacy' },
+  { label: 'Disclaimer', href: '/disclaimer' },
+  { label: 'Refund policy', href: '/refund' },
+]
+
 export default function Footer() {
   const [email, setEmail] = useState('')
- const [subStatus, setSubStatus] = useState<'idle'|'ok'|'err'>('idle')
+  const [subStatus, setSubStatus] = useState<'idle' | 'ok' | 'err'>('idle')
 
- const handleSubscribe = async () => {
-    // Honeypot check is server-side via hidden field
+  const handleSubscribe = async () => {
     if (!email || !email.includes('@')) return
-  try {
+    try {
       const res = await fetch('/api/email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'newsletter', email }),
-   })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'newsletter', email }),
+      })
       setSubStatus(res.ok ? 'ok' : 'err')
-  } catch {
+    } catch {
       setSubStatus('err')
-  }
+    }
   }
 
   const S = {
     footer: {
       background: '#080F0E',
-   borderTop: '1px solid #1A2E2B',
-   fontFamily: "'DM Sans', sans-serif",
-  },
+      borderTop: '1px solid rgba(26, 46, 43, 0.85)',
+      fontFamily: "'DM Sans', sans-serif",
+    },
     inner: {
-      maxWidth: '1120px',
-   margin: '0 auto',
-   padding: '0 32px',
-  },
-
-    // ── Newsletter strip ──────────────────────────────────────
+      maxWidth: '1080px',
+      margin: '0 auto',
+      padding: '0 clamp(20px, 4vw, 32px)',
+    },
     newsletter: {
-      borderBottom: '1px solid #1A2E2B',
-   padding: '32px 0',
-   display: 'flex',
-   alignItems: 'center',
-   justifyContent: 'space-between',
-   gap: '24px',
-   flexWrap: 'wrap' as const,
-  },
-    newsletterLeft: {
+      borderBottom: '1px solid rgba(26, 46, 43, 0.85)',
+      padding: 'clamp(28px, 4vw, 36px) 0',
       display: 'flex',
-   flexDirection: 'column' as const,
-   gap: '4px',
-  },
-    newsletterTitle: {
-      fontSize: '15px',
-   fontWeight: '700',
-   color: '#F9FAFB',
-  },
-    newsletterSub: {
-      fontSize: '13px',
-   color: '#6B7280',
-  },
-    newsletterForm: {
-      display: 'flex',
-   gap: '8px',
-  },
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '24px',
+      flexWrap: 'wrap' as const,
+    },
+    newsletterLeft: { display: 'flex', flexDirection: 'column' as const, gap: '6px' },
+    newsletterTitle: { fontSize: '15px', fontWeight: '700', color: '#F9FAFB', letterSpacing: '-0.02em' },
+    newsletterSub: { fontSize: '13px', color: '#6B7280', lineHeight: 1.5 },
+    newsletterForm: { display: 'flex', gap: '8px', flexWrap: 'wrap' as const },
     newsletterInput: {
       padding: '10px 16px',
-   background: '#111827',
-   border: '1px solid #1F2937',
-   borderRadius: '8px',
-   fontSize: '13px',
-   color: '#F9FAFB',
-   fontFamily: "'DM Sans', sans-serif",
-   width: '220px',
-   outline: 'none',
-  },
+      background: '#111827',
+      border: '1px solid #1F2937',
+      borderRadius: '8px',
+      fontSize: '13px',
+      color: '#F9FAFB',
+      fontFamily: "'DM Sans', sans-serif",
+      width: 'min(240px, 100%)',
+      outline: 'none',
+    },
     newsletterBtn: {
       padding: '10px 18px',
-   background: '#0F766E',
-   border: 'none',
-   borderRadius: '8px',
-   fontSize: '13px',
-   fontWeight: '700',
-   color: '#fff',
-   cursor: 'pointer',
-   fontFamily: "'DM Sans', sans-serif",
-   whiteSpace: 'nowrap' as const,
-  },
-
-    // ── Main grid ─────────────────────────────────────────────
-    top: {
-      padding: '48px 0 40px',
-   display: 'grid',
-   gridTemplateColumns: '240px 1fr',
-   gap: '64px',
-  },
-    brand: {
+      background: '#0F766E',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '13px',
+      fontWeight: '700',
+      color: '#fff',
+      cursor: 'pointer',
+      fontFamily: "'DM Sans', sans-serif",
+      whiteSpace: 'nowrap' as const,
+    },
+    main: {
+      padding: 'clamp(40px, 5vw, 56px) 0 0',
       display: 'flex',
-   flexDirection: 'column' as const,
-   gap: '14px',
-  },
+      flexWrap: 'wrap' as const,
+      gap: 'clamp(32px, 5vw, 48px)',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+    },
+    brand: {
+      flex: '1 1 220px',
+      maxWidth: '280px',
+      display: 'flex',
+      flexDirection: 'column' as const,
+      gap: '16px',
+    },
     tagline: {
       fontSize: '13px',
-   color: '#6B7280',
-   lineHeight: '1.65',
-  },
-    statusBadge: {
+      color: '#6B7280',
+      lineHeight: 1.65,
+      margin: 0,
+    },
+    statusLink: {
       display: 'inline-flex',
-   alignItems: 'center',
-   gap: '7px',
-   width: 'fit-content',
-   background: 'rgba(5,150,105,0.1)',
-   border: '1px solid rgba(5,150,105,0.25)',
-   borderRadius: '20px',
-   padding: '5px 12px',
-   fontSize: '12px',
-   fontWeight: '600',
-   color: '#059669',
-  },
-    statusDot: {
-      width: '7px',
-   height: '7px',
-   borderRadius: '50%',
-   background: '#059669',
-   boxShadow: '0 0 6px rgba(5,150,105,0.6)',
-  },
-    socialRow: {
-      display: 'flex',
-   gap: '8px',
-   marginTop: '4px',
-  },
+      alignItems: 'center',
+      gap: 6,
+      fontSize: 12,
+      color: '#34D399',
+      textDecoration: 'none',
+      width: 'fit-content',
+    },
+    socialRow: { display: 'flex', gap: '8px' },
     socialBtn: {
       width: '32px',
-   height: '32px',
-   borderRadius: '8px',
-   background: '#111827',
-   border: '1px solid #1F2937',
-   display: 'flex',
-   alignItems: 'center',
-   justifyContent: 'center',
-   color: '#6B7280',
-   cursor: 'pointer',
-   transition: 'all 0.12s',
-   textDecoration: 'none',
-  },
-
-    // ── Link columns ──────────────────────────────────────────
-    cols: {
+      height: '32px',
+      borderRadius: '8px',
+      background: '#111827',
+      border: '1px solid #1F2937',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#6B7280',
+      textDecoration: 'none',
+      transition: 'color 0.12s, border-color 0.12s',
+    },
+    /** Four peer columns: Product, Use cases, Resources, Cities — tight gaps, equal weight */
+    navGrid: {
+      flex: '2 1 360px',
       display: 'grid',
-   gridTemplateColumns: 'repeat(4, 1fr)',
-   gap: '24px',
-  },
+      gridTemplateColumns: 'repeat(auto-fit, minmax(118px, 1fr))',
+      columnGap: 'clamp(14px, 2.2vw, 22px)',
+      rowGap: 'clamp(22px, 3.5vw, 30px)',
+      alignItems: 'start',
+      minWidth: 0,
+    },
+    navCol: {
+      minWidth: 0,
+    },
     colTitle: {
       fontSize: '11px',
-   fontWeight: '700',
-   color: '#4B5563',
-   letterSpacing: '1.2px',
-   textTransform: 'uppercase' as const,
-   marginBottom: '14px',
-  },
-    links: {
-      display: 'flex',
-   flexDirection: 'column' as const,
-   gap: '9px',
-  },
+      fontWeight: '700',
+      color: '#6B7280',
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase' as const,
+      margin: '0 0 14px',
+    },
+    links: { display: 'flex', flexDirection: 'column' as const, gap: '10px' },
     link: {
       fontSize: '13.5px',
-   color: '#9CA3AF',
-   textDecoration: 'none',
-   transition: 'color 0.12s',
-  },
+      color: '#9CA3AF',
+      textDecoration: 'none',
+      transition: 'color 0.12s',
+      lineHeight: 1.35,
+    },
     newBadge: {
       fontSize: '10px',
-   fontWeight: '700',
-   color: '#14B8A6',
-   background: 'rgba(20,184,166,0.1)',
-   border: '1px solid rgba(20,184,166,0.2)',
-   borderRadius: '4px',
-   padding: '1px 5px',
-   marginLeft: '5px',
-  },
-
-    // ── Trust strip ───────────────────────────────────────────
-    trustStrip: {
-      borderTop: '1px solid #1A2E2B',
-   padding: '20px 0',
-   display: 'flex',
-   alignItems: 'center',
-   gap: '24px',
-   flexWrap: 'wrap' as const,
-  },
-    trustItem: {
+      fontWeight: '700',
+      color: '#14B8A6',
+      background: 'rgba(20,184,166,0.1)',
+      border: '1px solid rgba(20,184,166,0.2)',
+      borderRadius: '4px',
+      padding: '1px 5px',
+      marginLeft: '6px',
+      verticalAlign: 'middle' as const,
+    },
+    viewAllCities: { fontWeight: 600, color: '#14B8A6' },
+    legalSection: {
+      marginTop: 'clamp(40px, 5vw, 48px)',
+      paddingTop: '28px',
+      borderTop: '1px solid rgba(26, 46, 43, 0.85)',
+    },
+    legalInner: {
       display: 'flex',
-   alignItems: 'flex-start',
-   gap: '8px',
-  },
-
-    // ── Bottom bar ────────────────────────────────────────────
-    bottom: {
-      borderTop: '1px solid #1A2E2B',
-   padding: '20px 0',
-   display: 'flex',
-   alignItems: 'center',
-   justifyContent: 'space-between',
-   flexWrap: 'wrap' as const,
-   gap: '12px',
-  },
-    bottomLeft: {
-      fontSize: '12.5px',
-   color: '#4B5563',
-  },
-    bottomRight: {
+      flexWrap: 'wrap' as const,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '16px 24px',
+    },
+    legalLabel: {
+      fontSize: '11px',
+      fontWeight: '700',
+      color: '#4B5563',
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase' as const,
+      margin: 0,
+      flexShrink: 0,
+    },
+    legalLinks: {
       display: 'flex',
-   alignItems: 'center',
-   gap: '0px',
-  },
-    bottomLink: {
+      flexWrap: 'wrap' as const,
+      alignItems: 'center',
+      gap: '6px 0',
+      justifyContent: 'flex-end',
+      flex: '1 1 280px',
+    },
+    legalLink: {
       fontSize: '12.5px',
-   color: '#4B5563',
-   textDecoration: 'none',
-   padding: '0 12px',
-   borderRight: '1px solid #374151',
-   transition: 'color 0.12s',
-  },
-    bottomLinkLast: {
-      fontSize: '12.5px',
-   color: '#4B5563',
-   textDecoration: 'none',
-   padding: '0 12px',
-   transition: 'color 0.12s',
-  },
-
-    // ── Disclaimer ────────────────────────────────────────────
+      fontWeight: '500',
+      color: '#9CA3AF',
+      textDecoration: 'none',
+      transition: 'color 0.12s',
+      padding: '4px 0',
+    },
+    legalSep: {
+      color: '#374151',
+      fontSize: '12px',
+      userSelect: 'none' as const,
+      padding: '0 14px',
+      flexShrink: 0,
+    },
+    copyrightBlock: {
+      marginTop: '24px',
+      paddingTop: '20px',
+      borderTop: '1px solid rgba(26, 46, 43, 0.65)',
+      paddingBottom: '20px',
+    },
+    copyright: {
+      fontSize: '11px',
+      color: 'rgba(148, 163, 184, 0.65)',
+      lineHeight: 1.65,
+      margin: 0,
+    },
     disclaimer: {
-      borderTop: '1px solid #1A2E2B',
-   padding: '16px 0 24px',
-  },
+      paddingBottom: '28px',
+    },
     disclaimerText: {
       fontSize: '11.5px',
-   color: '#374151',
-   lineHeight: '1.6',
-   maxWidth: '900px',
-  },
+      color: '#4B5563',
+      lineHeight: 1.65,
+      maxWidth: '820px',
+      margin: 0,
+    },
   }
-
-  const columns = [
-    {
-      title: 'Product',
-   links: [
-        { label: 'How it works',   href: '/methodology' },
-    { label: 'Run an analysis',  href: '/onboarding', badge: 'New' },
-    { label: 'Dashboard',     href: '/dashboard' },
-    { label: 'Pricing',      href: '/upgrade' },
-    { label: 'Changelog',     href: '/changelog' },
-   ],
-    },
-    {
-      title: 'Cities',
-      links: [
-        { label: 'Sydney',       href: '/analyse/sydney' },
-        { label: 'Melbourne',    href: '/analyse/melbourne' },
-        { label: 'Brisbane',     href: '/analyse/brisbane' },
-        { label: 'Perth',        href: '/analyse/perth' },
-        { label: 'Adelaide',     href: '/analyse/adelaide' },
-        { label: 'Canberra',     href: '/analyse/canberra' },
-        { label: 'Newcastle',    href: '/analyse/newcastle' },
-        { label: 'Gold Coast',   href: '/analyse/gold-coast' },
-        { label: 'Wollongong',   href: '/analyse/wollongong' },
-        { label: 'Hobart',       href: '/analyse/hobart' },
-        { label: 'Darwin',       href: '/analyse/darwin' },
-        { label: 'Regional hubs', href: '/analyse#regional' },
-        { label: 'All cities →', href: '/analyse' },
-      ],
-    },
-    {
-      title: 'Use Cases',
-   links: [
-       { label: 'Cafes & Coffee',  href: '/use-case/cafes' },
-{ label: 'Restaurants',    href: '/use-case/restaurants' },
-{ label: 'Retail Stores',   href: '/use-case/retail' },
-{ label: 'Gyms & Fitness',  href: '/use-case/gyms' },
-{ label: 'Takeaway',     href: '/use-case/takeaway' },
-{ label: 'All business types',href: '/use-case/all' },
-   ],
-    },
-    {
-      title: 'Resources',
-   links: [
-        { label: 'Methodology',    href: '/methodology' },
-    { label: 'Location insights', href: '/analyse' },
-    { label: 'Blog',       href: '/blog' },
-    { label: 'Tools',      href: '/tools' },
-    { label: 'Help Centre',    href: '/help' },
-    { label: 'Contact',      href: '/contact' },
-   ],
-    },
-    {
-      title: 'Legal',
-   links: [
-        { label: 'Terms of Service', href: '/terms' },
-    { label: 'Privacy Policy',  href: '/privacy' },
-    { label: 'Disclaimer',    href: '/terms#disclaimer' },
-    { label: 'Refund Policy',   href: '/terms#refunds' },
-   ],
-    },
-  ]
 
   const hoverLink = (e: React.MouseEvent<HTMLAnchorElement>, enter: boolean) => {
     e.currentTarget.style.color = enter ? '#F9FAFB' : '#9CA3AF'
- }
-  const hoverBottom = (e: React.MouseEvent<HTMLAnchorElement>, enter: boolean) => {
-    e.currentTarget.style.color = enter ? '#9CA3AF' : '#4B5563'
- }
+  }
+  const hoverLegal = (e: React.MouseEvent<HTMLAnchorElement>, enter: boolean) => {
+    e.currentTarget.style.color = enter ? '#E5E7EB' : '#9CA3AF'
+  }
   const hoverSocial = (e: React.MouseEvent<HTMLAnchorElement>, enter: boolean) => {
     e.currentTarget.style.color = enter ? '#F9FAFB' : '#6B7280'
-  e.currentTarget.style.borderColor = enter ? '#374151' : '#1F2937'
- }
+    e.currentTarget.style.borderColor = enter ? '#374151' : '#1F2937'
+  }
+
+  const renderColumn = (title: string, links: FooterLink[], opts?: { lastLinkClass?: boolean }) => (
+    <div>
+      <p style={S.colTitle}>{title}</p>
+      <div style={S.links}>
+        {links.map((l, i) => (
+          <Link
+            key={l.href + l.label}
+            href={l.href}
+            style={{
+              ...S.link,
+              ...(opts?.lastLinkClass && i === links.length - 1 ? S.viewAllCities : {}),
+            }}
+            onMouseEnter={e => hoverLink(e, true)}
+            onMouseLeave={e => hoverLink(e, false)}
+          >
+            {l.label}
+            {l.badge ? <span style={S.newBadge}>{l.badge}</span> : null}
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
 
   return (
     <footer style={S.footer}>
       <div style={S.inner}>
-
-        {/* ── Newsletter strip ── */}
         <div style={S.newsletter}>
           <div style={S.newsletterLeft}>
-            <span style={S.newsletterTitle}> Get weekly location insights</span>
+            <span style={S.newsletterTitle}>Weekly location insights</span>
             <span style={S.newsletterSub}>Where Australian businesses are opening, failing, and thriving.</span>
           </div>
           <div style={S.newsletterForm}>
-            {/* Honeypot — bots fill this, humans don't */}
-      <input
+            <input
               type="text"
-       name="website"
-       tabIndex={-1}
+              name="website"
+              tabIndex={-1}
               autoComplete="off"
-       aria-hidden="true"
-       style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}
-      />
+              aria-hidden="true"
+              style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}
+            />
             {subStatus === 'ok' ? (
-       <span style={{ color: '#10B981', fontSize: 14, fontWeight: 600 }}> You're on the list!</span>
-      ) : (
+              <span style={{ color: '#10B981', fontSize: 14, fontWeight: 600 }}>You&apos;re on the list!</span>
+            ) : (
               <>
                 <input
                   type="email"
-         placeholder="your@email.com"
-         value={email}
+                  placeholder="your@email.com"
+                  value={email}
                   onChange={e => setEmail(e.currentTarget.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
-         style={S.newsletterInput}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#0F766E' }}
-         onBlur={e => { e.currentTarget.style.borderColor = '#1F2937' }}
-        />
+                  style={S.newsletterInput}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = '#0F766E'
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.borderColor = '#1F2937'
+                  }}
+                />
                 <button
+                  type="button"
                   style={S.newsletterBtn}
                   onClick={handleSubscribe}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#0D6B63' }}
-         onMouseLeave={e => { e.currentTarget.style.background = '#0F766E' }}>
-         Subscribe
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = '#0D6B63'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = '#0F766E'
+                  }}
+                >
+                  Subscribe
                 </button>
               </>
             )}
           </div>
         </div>
 
-        {/* ── Main grid ── */}
-        <div style={S.top}>
-
-          {/* Brand column */}
+        <div style={S.main}>
           <div style={S.brand}>
             <Link href="/" style={{ textDecoration: 'none' }}>
-       <Logo variant="dark" size="lg" />
+              <Logo variant="dark" size="lg" />
             </Link>
             <p style={S.tagline}>
-              Evaluate whether a business location is worth pursuing before you sign a lease.<br />
-              Location feasibility analysis<br />
-              for Australian businesses.
+              Feasibility analysis for Australian retail, hospitality, and service locations — before you sign the lease.
             </p>
             <a
               href="https://locatalyze.betteruptime.com"
-       target="_blank"
-       rel="noopener noreferrer"
-       style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#34D399', textDecoration: 'none' }}
-      >
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#34D399', display: 'inline-block' }}/>
-       All systems operational
+              target="_blank"
+              rel="noopener noreferrer"
+              style={S.statusLink}
+            >
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: '#34D399',
+                  display: 'inline-block',
+                }}
+              />
+              All systems operational
             </a>
-            {/* Social links */}
             <div style={S.socialRow}>
-              <a href="https://twitter.com/locatalyze" target="_blank" rel="noopener noreferrer"
-        style={S.socialBtn}
+              <a
+                href="https://twitter.com/locatalyze"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={S.socialBtn}
+                aria-label="Locatalyze on X"
                 onMouseEnter={e => hoverSocial(e, true)}
-                onMouseLeave={e => hoverSocial(e, false)}>
+                onMouseLeave={e => hoverSocial(e, false)}
+              >
                 <TwitterIcon />
               </a>
-              <a href="https://linkedin.com/company/locatalyze" target="_blank" rel="noopener noreferrer"
-        style={S.socialBtn}
+              <a
+                href="https://linkedin.com/company/locatalyze"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={S.socialBtn}
+                aria-label="Locatalyze on LinkedIn"
                 onMouseEnter={e => hoverSocial(e, true)}
-                onMouseLeave={e => hoverSocial(e, false)}>
+                onMouseLeave={e => hoverSocial(e, false)}
+              >
                 <LinkedInIcon />
               </a>
             </div>
           </div>
 
-          {/* Link columns */}
-          <div style={S.cols}>
-            {columns.map(col => (
-              <div key={col.title}>
-                <p style={S.colTitle}>{col.title}</p>
-                <div style={S.links}>
-                  {col.links.map(l => (
-                    <Link key={l.label} href={l.href} style={S.link}
-                      onMouseEnter={e => hoverLink(e, true)}
-                      onMouseLeave={e => hoverLink(e, false)}>
-                      {l.label}
-                      {'badge' in l && l.badge && <span style={S.newBadge}>{l.badge}</span>}
-          </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <nav style={S.navGrid} aria-label="Footer">
+            <div key="product" style={S.navCol}>
+              {renderColumn('Product', PRODUCT_LINKS)}
+            </div>
+            <div key="use-cases" style={S.navCol}>
+              {renderColumn('Use cases', USE_CASE_LINKS)}
+            </div>
+            <div key="resources" style={S.navCol}>
+              {renderColumn('Resources', RESOURCE_LINKS)}
+            </div>
+            <div key="cities" style={S.navCol}>
+              {renderColumn('Cities', [...CITY_LINKS, { label: 'View all cities →', href: '/analyse' }], {
+                lastLinkClass: true,
+              })}
+            </div>
+          </nav>
+        </div>
+
+        <div style={S.legalSection}>
+          <div style={S.legalInner}>
+            <p style={S.legalLabel}>Legal</p>
+            <div style={S.legalLinks}>
+              {LEGAL_LINKS.map((l, i) => (
+                <span key={l.href} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  {i > 0 ? <span style={S.legalSep} aria-hidden>·</span> : null}
+                  <Link
+                    href={l.href}
+                    style={S.legalLink}
+                    onMouseEnter={e => hoverLegal(e, true)}
+                    onMouseLeave={e => hoverLegal(e, false)}
+                  >
+                    {l.label}
+                  </Link>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-
-        {/* ── Bottom bar ── */}
-        <div style={S.bottom}>
-          <span style={S.bottomLeft}>
-            <p style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)', marginTop: 8 }}>
-       © 2026 VSG GROUP AUSTRALIA PTY LTD · ABN 47 683 197 819 · Perth, Western Australia · Directional insights only — not financial or legal advice
-            </p>
-          </span>
-          <div style={S.bottomRight}>
-            {[
-              { label: 'Terms', href: '/terms' },
-       { label: 'Privacy', href: '/privacy' },
-       { label: 'Disclaimer', href: '/terms#disclaimer' },
-       { label: 'Contact', href: '/contact' },
-      ].map((item, i, arr) => (
-              <Link key={item.label} href={item.href}
-                style={i === arr.length - 1 ? S.bottomLinkLast : S.bottomLink}
-                onMouseEnter={e => hoverBottom(e, true)}
-                onMouseLeave={e => hoverBottom(e, false)}>
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Legal disclaimer strip ── */}
-        <div style={S.disclaimer}>
-          <p style={S.disclaimerText}>
-            Locatalyze is a decision-support tool for location research. Reports are not financial advice —
-            see our <Link href="/disclaimer" style={{ color: 'inherit', textDecoration: 'underline' }}>disclaimer</Link> and{' '}
-            <Link href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>terms</Link>.
+        <div style={S.copyrightBlock}>
+          <p style={S.copyright}>
+            © 2026 VSG Group Australia Pty Ltd · ABN 47 683 197 819 · Perth, Western Australia · Directional insights only — not
+            financial or legal advice
           </p>
         </div>
 
+        <div style={S.disclaimer}>
+          <p style={S.disclaimerText}>
+            Locatalyze is decision-support for location research. Reports are not financial advice — see our{' '}
+            <Link href="/disclaimer" style={{ color: '#6B7280', textDecoration: 'underline' }}>
+              disclaimer
+            </Link>{' '}
+            and{' '}
+            <Link href="/terms" style={{ color: '#6B7280', textDecoration: 'underline' }}>
+              terms
+            </Link>
+            .
+          </p>
+        </div>
       </div>
     </footer>
   )

@@ -44,6 +44,7 @@ export const BLOG_CATEGORY_COLORS: Record<string, string> = {
   Finance: '#059669',
   Strategy: '#64748B',
   Data: '#0891B2',
+  Benchmarks: '#0D9488',
   Sydney: '#1D4ED8',
   Melbourne: '#7C3AED',
   Brisbane: '#B45309',

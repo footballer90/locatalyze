@@ -228,6 +228,10 @@ export default function BlogPageClient() {
                   Free tools
                 </Link>
                 <span style={{ opacity: 0.35, margin: '0 10px' }}>·</span>
+                <Link href="/insights" className="blog-link" style={{ color: S.brandLight, fontWeight: 600 }}>
+                  Data stories
+                </Link>
+                <span style={{ opacity: 0.35, margin: '0 10px' }}>·</span>
                 <Link href={onboardingRef('blog_index_nav')} className="blog-link" style={{ color: S.brandLight, fontWeight: 600 }}>
                   Run full address analysis →
                 </Link>
