@@ -12,7 +12,6 @@ import {
 } from '@/lib/marketing/demo-scenarios'
 import { LogoMark } from '@/components/Logo'
 import { HomepageDemoProvider, useHomepageDemo } from '@/components/homepage-demo/HomepageDemoContext'
-import NewsletterForm from '@/components/landing/NewsletterForm'
 
 const ReportDemoSection = dynamic(() => import('@/components/ReportDemoSection'), {
   ssr: false,
@@ -1584,25 +1583,7 @@ function LandingPageInner() {
         </div>
       </section>
 
-      {/* Newsletter — owned channel (warm leads, no algorithm) */}
-      <section style={{ padding: sp, background: L.slate, borderTop: `1px solid ${L.border}` }}>
-        <div style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center', padding: pad }}>
-          <p style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 12 }}>
-            Newsletter
-          </p>
-          <h2 style={{ fontSize: isMobile ? 22 : 28, fontWeight: 900, color: L.white, letterSpacing: '-0.03em', marginBottom: 10, lineHeight: 1.2 }}>
-            Weekly location intelligence
-          </h2>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, marginBottom: 24 }}>
-            Openings, failures, and where the data points — plus new guides. Unsubscribe anytime.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <NewsletterForm />
-          </div>
-        </div>
-      </section>
-
-            {/* FINAL CTA */}
+      {/* FINAL CTA */}
       <section style={{ padding: sp, background: L.white, textAlign: 'center', borderTop: `1px solid ${L.border}`, contentVisibility: 'auto', containIntrinsicSize: '520px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', padding: pad }}>
           <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 900, color: L.slate, letterSpacing: '-.04em', marginBottom: 14, lineHeight: 1.1 }}>
@@ -1623,7 +1604,7 @@ function LandingPageInner() {
         </div>
       </section>
 
-      <Footer showNewsletter={false} />
+      <Footer/>
     </main>
   )
 }
