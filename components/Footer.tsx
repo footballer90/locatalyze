@@ -64,7 +64,7 @@ const LEGAL_LINKS: FooterLink[] = [
   { label: 'Refund policy', href: '/refund' },
 ]
 
-export default function Footer() {
+export default function Footer({ showNewsletter = true }: { showNewsletter?: boolean }) {
   const [email, setEmail] = useState('')
   const [subStatus, setSubStatus] = useState<'idle' | 'ok' | 'err'>('idle')
 
@@ -319,55 +319,57 @@ export default function Footer() {
   return (
     <footer style={S.footer}>
       <div style={S.inner}>
-        <div style={S.newsletter}>
-          <div style={S.newsletterLeft}>
-            <span style={S.newsletterTitle}>Weekly location insights</span>
-            <span style={S.newsletterSub}>Where Australian businesses are opening, failing, and thriving.</span>
+        {showNewsletter && (
+          <div style={S.newsletter}>
+            <div style={S.newsletterLeft}>
+              <span style={S.newsletterTitle}>Weekly location insights</span>
+              <span style={S.newsletterSub}>Where Australian businesses are opening, failing, and thriving.</span>
+            </div>
+            <div style={S.newsletterForm}>
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}
+              />
+              {subStatus === 'ok' ? (
+                <span style={{ color: '#10B981', fontSize: 14, fontWeight: 600 }}>You&apos;re on the list!</span>
+              ) : (
+                <>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={e => setEmail(e.currentTarget.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
+                    style={S.newsletterInput}
+                    onFocus={e => {
+                      e.currentTarget.style.borderColor = '#0F766E'
+                    }}
+                    onBlur={e => {
+                      e.currentTarget.style.borderColor = '#1F2937'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    style={S.newsletterBtn}
+                    onClick={handleSubscribe}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = '#0D6B63'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = '#0F766E'
+                    }}
+                  >
+                    Subscribe
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-          <div style={S.newsletterForm}>
-            <input
-              type="text"
-              name="website"
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-              style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}
-            />
-            {subStatus === 'ok' ? (
-              <span style={{ color: '#10B981', fontSize: 14, fontWeight: 600 }}>You&apos;re on the list!</span>
-            ) : (
-              <>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={e => setEmail(e.currentTarget.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
-                  style={S.newsletterInput}
-                  onFocus={e => {
-                    e.currentTarget.style.borderColor = '#0F766E'
-                  }}
-                  onBlur={e => {
-                    e.currentTarget.style.borderColor = '#1F2937'
-                  }}
-                />
-                <button
-                  type="button"
-                  style={S.newsletterBtn}
-                  onClick={handleSubscribe}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = '#0D6B63'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = '#0F766E'
-                  }}
-                >
-                  Subscribe
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+        )}
 
         <div style={S.main}>
           <div style={S.brand}>

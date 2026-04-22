@@ -1623,7 +1623,7 @@ function LandingPageInner() {
         </div>
       </section>
 
-      <Footer/>
+      <Footer showNewsletter={false} />
     </main>
   )
 }
