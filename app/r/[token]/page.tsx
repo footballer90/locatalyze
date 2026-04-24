@@ -131,7 +131,8 @@ const supabase = await createClient()
 
   if (error || !report) notFound()
 
-  const computed = safeParse<ComputedResult>(report.computed_result)
+  type ComputedResultExt = ComputedResult & { benchmarkContext?: { benchmarkNarrative?: string | null; benchmarkRentRatio?: number | null; marketSentiment?: string; timingScore?: number | null } }
+  const computed = safeParse<ComputedResultExt>(report.computed_result)
   const rd = safeParse<any>(report.result_data) ?? {}
   const vs = verdictStyle(computed?.verdict ?? report.verdict)
   const overallScore = computed?.scores?.overall ?? report.overall_score ?? 0
