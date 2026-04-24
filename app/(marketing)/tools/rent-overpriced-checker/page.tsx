@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     'retail rent above market Australia',
     'rent to revenue ratio calculator',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/tools/rent-overpriced-checker' },
+  alternates: { canonical: 'https://locatalyze.com/tools/rent-overpriced-checker' },
   openGraph: {
     title: 'Is This Rent Overpriced? | Locatalyze',
     description:
       'Free tool. Enter your city, business type and quoted monthly rent to see if you are being charged above market — with rent-to-revenue ratio and negotiation guidance.',
     type: 'website',
-    url: 'https://www.locatalyze.com/tools/rent-overpriced-checker',
+    url: 'https://locatalyze.com/tools/rent-overpriced-checker',
   },
 }
 
@@ -28,13 +28,13 @@ const JSONLD = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'Is This Rent Overpriced? — Rent Check for Australian Businesses',
-  url: 'https://www.locatalyze.com/tools/rent-overpriced-checker',
+  url: 'https://locatalyze.com/tools/rent-overpriced-checker',
   description:
     'Free tool that checks whether a quoted monthly rent is above, within, or below the typical range for a given Australian city, suburb zone, and business type.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'AUD' },
-  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
 }
 
 export default function RentOverpricedPage() {

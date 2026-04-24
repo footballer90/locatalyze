@@ -19,7 +19,7 @@ import {
 //  title: 'Best Suburbs to Open a Gym on the Gold Coast (2026) — Location Analysis',
 //  description: 'Data-driven guide to Gold Coast gym and fitness studio locations. Membership scores, foot traffic, boutique fitness demand, and rent benchmarks for Burleigh Heads, Mermaid Beach, Robina, and beyond.',
 //  keywords: ['best suburbs to open a gym on the Gold Coast','Gold Coast gym location','opening a fitness studio Burleigh Heads','Gold Coast fitness business location','gym rent Gold Coast','boutique gym locations Gold Coast','where to open a gym Gold Coast 2026','Gold Coast low competition gyms','hidden gems Gold Coast fitness business','Gold Coast foot traffic areas gym'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/gold-coast/gym' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/gold-coast/gym' },
 //  openGraph: { title: 'Best Suburbs to Open a Gym on the Gold Coast (2026)', description: 'Suburb-by-suburb analysis of Gold Coast fitness market with membership economics and seasonal impact.', type: 'article' },
 // }
 
@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Gym on the Gold Coast (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/gold-coast/gym',
+    url: 'https://locatalyze.com/analyse/gold-coast/gym',
   },
   {
     '@context': 'https://schema.org',

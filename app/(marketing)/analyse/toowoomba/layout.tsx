@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Toowoomba food business feasibility',
     'Toowoomba retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/toowoomba' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/toowoomba' },
   openGraph: {
     title: 'Toowoomba Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Toowoomba. Rent benchmarks, competition and demographics scored.',

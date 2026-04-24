@@ -31,7 +31,7 @@ function getCafeVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
 //  title: 'Best Suburbs to Open a Café in Brisbane (2026) — Location Analysis',
 //  description: 'Data-driven suburb guide for Brisbane coffee shops. Paddington, West End, New Farm scoring. Rent benchmarks, foot traffic, demographics and competition. 2032 Olympics infrastructure impact.',
 //  keywords: ['best suburbs to open a cafe in Brisbane','Brisbane coffee shop location','specialty cafe Paddington Brisbane','opening a cafe West End Brisbane','Brisbane hospitality business location','low competition areas Brisbane cafe','affordable commercial rent Brisbane','best up and coming suburbs Brisbane','Brisbane cafe rent costs','hidden gems for cafe Brisbane'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/brisbane/cafe' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/brisbane/cafe' },
 //  openGraph: { title: 'Best Suburbs to Open a Café in Brisbane (2026)', description: 'Suburb-by-suburb analysis of Brisbane\'s booming café market. Olympics infrastructure, migration wave, subtropical advantage.', type: 'article' },
 // }
 
@@ -41,11 +41,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Café in Brisbane (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/brisbane/cafe',
+    url: 'https://locatalyze.com/analyse/brisbane/cafe',
   },
   {
     '@context': 'https://schema.org',

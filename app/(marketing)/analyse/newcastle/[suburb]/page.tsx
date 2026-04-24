@@ -31,12 +31,12 @@ export async function generateMetadata({
     title: data.metaTitle,
     description: data.metaDescription,
     alternates: {
-      canonical: `https://www.locatalyze.com/analyse/newcastle/${data.slug}`,
+      canonical: `https://locatalyze.com/analyse/newcastle/${data.slug}`,
     },
     openGraph: {
       title: data.metaTitle,
       description: data.metaDescription,
-      url: `https://www.locatalyze.com/analyse/newcastle/${data.slug}`,
+      url: `https://locatalyze.com/analyse/newcastle/${data.slug}`,
       type: 'article',
     },
   }
@@ -89,11 +89,11 @@ function SuburbSchema({ suburb }: { suburb: NewcastleSuburb }) {
     '@type': 'Article',
     headline: suburb.metaTitle,
     description: suburb.metaDescription,
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-04-01',
     dateModified: '2026-04-19',
-    url: `https://www.locatalyze.com/analyse/newcastle/${suburb.slug}`,
+    url: `https://locatalyze.com/analyse/newcastle/${suburb.slug}`,
     about: {
       '@type': 'Place',
       name: `${suburb.name}, Newcastle NSW`,
@@ -110,9 +110,9 @@ function SuburbSchema({ suburb }: { suburb: NewcastleSuburb }) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.locatalyze.com' },
-      { '@type': 'ListItem', position: 2, name: 'Newcastle Business Guide', item: 'https://www.locatalyze.com/analyse/newcastle' },
-      { '@type': 'ListItem', position: 3, name: suburb.name, item: `https://www.locatalyze.com/analyse/newcastle/${suburb.slug}` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://locatalyze.com' },
+      { '@type': 'ListItem', position: 2, name: 'Newcastle Business Guide', item: 'https://locatalyze.com/analyse/newcastle' },
+      { '@type': 'ListItem', position: 3, name: suburb.name, item: `https://locatalyze.com/analyse/newcastle/${suburb.slug}` },
     ],
   }
 

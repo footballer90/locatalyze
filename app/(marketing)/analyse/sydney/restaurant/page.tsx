@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 
 const SCHEMAS = [
- { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Restaurant in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' }, datePublished: '2026-03-01', url: 'https://www.locatalyze.com/analyse/sydney/restaurant' },
+ { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Restaurant in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' }, datePublished: '2026-03-01', url: 'https://locatalyze.com/analyse/sydney/restaurant' },
  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
   { '@type': 'Question', name: 'What is the best suburb to open a restaurant in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Surry Hills scores 88/100 for restaurants — higher than for cafés — because its evening dining culture and high-income demographic ($95,000 median) fully justify premium rents. Newtown and Glebe are strong alternatives with better rent-to-revenue ratios.' } },
   { '@type': 'Question', name: 'How much does restaurant rent cost in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Sydney restaurant rents range from $6,000/month in suburbs like Glebe to $18,000+/month in prime Surry Hills or CBD locations. Restaurants have higher average tickets ($55–$85) than cafés, which means higher rents can be justified if foot traffic and demographics support it.' } },

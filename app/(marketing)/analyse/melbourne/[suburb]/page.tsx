@@ -23,7 +23,7 @@ const MELBOURNE_GUIDE_METADATA: Record<string, Metadata> = {
   cafe: {
     title: 'Best Suburbs to Open a Café in Melbourne (2026) — Location Analysis',
     description: 'Data-driven suburb guide for Melbourne coffee shops. Rent benchmarks, competition density, demographics and financial viability scored. Inner-north vs inner-east breakdown.',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne/cafe' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/melbourne/cafe' },
     openGraph: {
       title: 'Best Suburbs to Open a Café in Melbourne (2026)',
       description: 'Suburb-by-suburb analysis of Melbourne\'s café market. Rent benchmarks, competition and income data scored.',
@@ -33,7 +33,7 @@ const MELBOURNE_GUIDE_METADATA: Record<string, Metadata> = {
   restaurant: {
     title: 'Best Suburbs to Open a Restaurant in Melbourne (2026) — Location Analysis',
     description: 'Suburb-by-suburb restaurant location guide for Melbourne. Fitzroy, Collingwood, Richmond, Brunswick and South Yarra scored on rent, foot traffic, competition and income demographics.',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne/restaurant' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/melbourne/restaurant' },
     openGraph: {
       title: 'Best Suburbs to Open a Restaurant in Melbourne (2026)',
       description: 'Fitzroy, Brunswick, Collingwood, Richmond and South Yarra scored for restaurant viability. Real rent numbers, competition data and break-even analysis.',
@@ -125,7 +125,7 @@ function SuburbSchema({ suburb }: { suburb: SuburbModel }) {
     headline: `${suburb.name} Melbourne Business Location Analysis — ${suburb.verdict} (${suburb.compositeScore}/100)`,
     description: `${suburb.name} scores ${suburb.compositeScore}/100 for Melbourne business suitability with a ${suburb.verdict} verdict for cafés, restaurants, and retail.`,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-04-19',
     about: {
       '@type': 'Place',
@@ -168,11 +168,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${data.name} Melbourne Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict. Engine-derived scores for cafés, restaurants, and retail operators considering ${data.name}.`,
-    alternates: { canonical: `https://www.locatalyze.com/analyse/melbourne/${data.slug}` },
+    alternates: { canonical: `https://locatalyze.com/analyse/melbourne/${data.slug}` },
     openGraph: {
       title: `${data.name} Melbourne Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict — café ${data.cafe}, restaurant ${data.restaurant}, retail ${data.retail}.`,
-      url: `https://www.locatalyze.com/analyse/melbourne/${data.slug}`,
+      url: `https://locatalyze.com/analyse/melbourne/${data.slug}`,
       type: 'article',
     },
   }

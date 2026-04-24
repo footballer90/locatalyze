@@ -19,7 +19,7 @@ import {
 //  title: 'Best Suburbs to Open a Gym in Townsville (2026) — Fitness Location Guide',
 //  description: 'Data-driven guide to opening a gym in Townsville QLD. Suburb scores, military/FIFO demand, rent benchmarks. Lavarack Barracks + mining workers + tropical climate = peak fitness market.',
 //  keywords: ['best suburbs to open a gym in Townsville','Townsville gym location guide 2026','opening a gym Townsville QLD','best suburbs Townsville fitness business','Townsville commercial rent gym','Townsville military base gym demand','affordable gym location North Queensland','Townsville foot traffic fitness','Kirwan gym opportunity','Townsville FIFO gym members'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/townsville/gym' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/townsville/gym' },
 //  openGraph: { title: 'Best Suburbs to Open a Gym in Townsville (2026)', description: 'Suburb-by-suburb analysis of Townsville\'s gym market. Military + FIFO workers + wet season = premium demand.', type: 'article' },
 // }
 
@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Gym in Townsville (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/townsville/gym',
+    url: 'https://locatalyze.com/analyse/townsville/gym',
   },
   {
     '@context': 'https://schema.org',

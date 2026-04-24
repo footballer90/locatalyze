@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     'Melbourne inner suburb dining',
     'restaurant break-even Melbourne',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne/restaurant' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/melbourne/restaurant' },
   openGraph: {
     title: 'Best Suburbs to Open a Restaurant in Melbourne (2026)',
     description: 'Fitzroy, Brunswick, Collingwood, Richmond and South Yarra scored for restaurant viability. Real rent numbers, competition data and break-even analysis.',

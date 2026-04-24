@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Rockhampton retail location',
     'open a cafe Central Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/rockhampton' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/rockhampton' },
   openGraph: {
     title: 'Rockhampton Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Rockhampton. Rent benchmarks, foot traffic and competition scored.',

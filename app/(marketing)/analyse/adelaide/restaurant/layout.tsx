@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'restaurant feasibility Adelaide',
     'Adelaide food business location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/adelaide/restaurant' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/adelaide/restaurant' },
   openGraph: {
     title: 'Best Suburbs to Open a Restaurant in Adelaide (2026)',
     description: 'Suburb-by-suburb analysis of Adelaide\'s restaurant market. Rent benchmarks, competition and income data scored.',

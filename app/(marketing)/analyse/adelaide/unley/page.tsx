@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: 'Opening a Business in Unley, Adelaide: 2026 Location Guide',
     description: "King William Road is Adelaide's most consistent commercial strip — income-qualified, competitive without being oversaturated, and backed by one of the strongest residential catchments in metropolitan Adelaide.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

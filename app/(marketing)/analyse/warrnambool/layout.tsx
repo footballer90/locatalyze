@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'Warrnambool retail location',
     'open a cafe south west Victoria',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/warrnambool' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/warrnambool' },
   openGraph: {
     title: 'Warrnambool Business Location Analysis — Cafe, Restaurant & Retail',
     description:

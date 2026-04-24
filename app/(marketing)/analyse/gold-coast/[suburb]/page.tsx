@@ -145,7 +145,7 @@ function SuburbSchema({ suburb }: { suburb: GoldCoastSuburb }) {
     headline: `${suburb.name} Gold Coast Business Analysis`,
     description: `${suburb.name} scored ${suburb.compositeScore}/100 for Gold Coast business suitability with a ${suburb.verdict} verdict.`,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-04-19',
     about: {
       '@type': 'Place',
@@ -184,12 +184,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${data.name}, Gold Coast Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict for Gold Coast cafes, restaurants, and retail operators.`,
     alternates: {
-      canonical: `https://www.locatalyze.com/analyse/gold-coast/${data.slug}`,
+      canonical: `https://locatalyze.com/analyse/gold-coast/${data.slug}`,
     },
     openGraph: {
       title: `${data.name}, Gold Coast Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict for Gold Coast cafes, restaurants, and retail operators.`,
-      url: `https://www.locatalyze.com/analyse/gold-coast/${data.slug}`,
+      url: `https://locatalyze.com/analyse/gold-coast/${data.slug}`,
       type: 'article',
     },
   }

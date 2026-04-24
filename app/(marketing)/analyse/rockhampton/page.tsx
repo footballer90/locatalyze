@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Rockhampton — 2026 Location Guide',
   description:
     'Rockhampton business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Rockhampton suburb for your café, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/rockhampton' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/rockhampton' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Rockhampton — 2026 Location Guide',
     description: '8 Rockhampton suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/rockhampton',
+    url: 'https://locatalyze.com/analyse/rockhampton',
   },
 }
 

@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Ballarat — 2026 Location Guide',
   description:
     'Ballarat business location guide 2026. 10 suburbs scored by foot traffic, rent viability, tourism, and competition gap. Find the best Ballarat suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/ballarat' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/ballarat' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Ballarat — 2026 Location Guide',
     description: '10 Ballarat suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/ballarat',
+    url: 'https://locatalyze.com/analyse/ballarat',
   },
 }
 
@@ -22,8 +22,8 @@ const SCHEMA = {
   headline: 'Best Suburbs to Open a Business in Ballarat 2026',
   description: 'Data-driven guide to Ballarat commercial location decisions — 10 suburbs scored across rent, competition, tourism, and demand.',
   author: { '@type': 'Organization', name: 'Locatalyze' },
-  publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-  url: 'https://www.locatalyze.com/analyse/ballarat',
+  publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+  url: 'https://locatalyze.com/analyse/ballarat',
   datePublished: '2026-01-01',
   dateModified: '2026-04-20',
 }

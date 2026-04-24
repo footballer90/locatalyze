@@ -18,7 +18,7 @@ import {
 //  title: 'Best Suburbs to Open a Retail Store in Canberra (2026) — Location Analysis',
 //  description: 'Research-backed suburb guide for Canberra retail businesses. Rent benchmarks, foot traffic, demographics and competition scored. Canberra-specific town centre economics.',
 //  keywords: ['best suburbs to open a retail store in Canberra','Canberra retail location','opening a store Braddon','Canberra retail rent costs','best up and coming suburbs Canberra business','where to open a shop in Canberra 2026','low competition areas Canberra retail','hidden gems for retail in Canberra','Canberra foot traffic areas','boutique retail Kingston Canberra','affordable commercial rent Canberra','Fyshwick retail Canberra'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/canberra/retail' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/canberra/retail' },
 //  openGraph: { title: 'Best Suburbs to Open a Retail Store in Canberra (2026)', description: 'Town centre analysis of Canberra retail market. Real data, real numbers.', type: 'article' },
 // }
 
@@ -28,11 +28,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Retail Store in Canberra (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-15',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/canberra/retail',
+    url: 'https://locatalyze.com/analyse/canberra/retail',
   },
   {
     '@context': 'https://schema.org',

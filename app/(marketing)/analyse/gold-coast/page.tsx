@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business on the Gold Coast — 2026 Location Guide',
   description:
     'Gold Coast business location guide 2026. 20 suburbs scored by tourism dependency, rent viability, foot traffic, and competition gap. Find the best Gold Coast suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/gold-coast' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/gold-coast' },
   openGraph: {
     title: 'Best Suburbs to Open a Business on the Gold Coast — 2026 Location Guide',
     description: '20 Gold Coast suburbs ranked and scored. Rent benchmarks, tourism and seasonality data, best business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/gold-coast',
+    url: 'https://locatalyze.com/analyse/gold-coast',
   },
 }
 

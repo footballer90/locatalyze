@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Port Macquarie retail location',
     'open a cafe mid-North Coast NSW',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/port-macquarie' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/port-macquarie' },
   openGraph: {
     title: 'Port Macquarie Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Port Macquarie. Rent benchmarks, tourism traffic and competition scored.',

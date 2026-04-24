@@ -22,12 +22,12 @@ const PERTH_GUIDE_METADATA: Record<string, Metadata> = {
   cafe: {
     title: 'Best Suburbs to Open a Café in Perth (2026) — Location Analysis',
     description: 'Data-driven suburb guide for Perth coffee shops. Rent benchmarks, foot traffic, demographics and competition scored. Based on ABS and REIWA data.',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/perth/cafe' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/perth/cafe' },
   },
   restaurant: {
     title: 'Best Suburbs to Open a Restaurant in Perth (2026) — Location Analysis',
     description: 'Suburb-by-suburb restaurant location guide for Perth. Mount Lawley, Subiaco, Fremantle, Leederville and Perth CBD scored on rent, foot traffic, income and competition density.',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/perth/restaurant' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/perth/restaurant' },
     openGraph: {
       title: 'Best Suburbs to Open a Restaurant in Perth (2026)',
       description: 'Mount Lawley, Subiaco, Fremantle and Leederville scored for restaurant viability. Real rent numbers, competition data and break-even analysis.',
@@ -119,7 +119,7 @@ function SuburbSchema({ suburb }: { suburb: SuburbModel }) {
     headline: `${suburb.name} Perth Business Location Analysis — ${suburb.verdict} (${suburb.compositeScore}/100)`,
     description: `${suburb.name} scores ${suburb.compositeScore}/100 for Perth business suitability with a ${suburb.verdict} verdict for cafés, restaurants, and retail.`,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-04-19',
     about: {
       '@type': 'Place',
@@ -161,11 +161,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${data.name} Perth Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict. Engine-derived scores for cafés, restaurants, and retail operators considering ${data.name}, Perth WA.`,
-    alternates: { canonical: `https://www.locatalyze.com/analyse/perth/${data.slug}` },
+    alternates: { canonical: `https://locatalyze.com/analyse/perth/${data.slug}` },
     openGraph: {
       title: `${data.name} Perth Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict — café ${data.cafe}, restaurant ${data.restaurant}, retail ${data.retail}.`,
-      url: `https://www.locatalyze.com/analyse/perth/${data.slug}`,
+      url: `https://locatalyze.com/analyse/perth/${data.slug}`,
       type: 'article',
     },
   }

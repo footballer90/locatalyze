@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Hervey Bay — 2026 Location Guide',
   description:
     'Hervey Bay business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Hervey Bay suburb for your café, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/hervey-bay' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/hervey-bay' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Hervey Bay — 2026 Location Guide',
     description: '7 Hervey Bay suburbs ranked and scored. Rent benchmarks, foot traffic data, whale-watching season impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/hervey-bay',
+    url: 'https://locatalyze.com/analyse/hervey-bay',
   },
 }
 

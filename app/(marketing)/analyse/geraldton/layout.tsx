@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Geraldton retail location',
     'open a cafe Mid West WA',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/geraldton' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/geraldton' },
   openGraph: {
     title: 'Geraldton Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Geraldton. Rent benchmarks, Abrolhos Islands tourism traffic and competition scored.',

@@ -6,7 +6,7 @@ import type { Section } from '@/lib/blog-posts'
 import { onboardingRef, toolsHubRef } from '@/lib/funnel-links'
 import { BLOG_CATEGORY_COLORS, BLOG_THEME } from '@/lib/blog-theme'
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
 
 const S = {
   brand: BLOG_THEME.color.primary,

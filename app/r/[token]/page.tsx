@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Logo } from '@/components/Logo'
+import type { ComputedResult } from '@/types/computed'
 
 const S = {
  font: "'DM Sans','Helvetica Neue',Arial,sans-serif",
@@ -21,14 +22,83 @@ const card = (extra = {}) => ({
  overflow: 'hidden', ...extra,
 })
 
-function verdictStyle(v: string) {
- if (v === 'GO')   return { bg: S.emeraldBg, text: S.emerald,  border: S.emeraldBorder, dot: S.emerald,  desc: 'LOW RISK' }
- if (v === 'CAUTION') return { bg: S.amberBg,  text: S.amber,    border: S.amberBorder,   dot: S.amber,    desc: 'MEDIUM RISK' }
- return                      { bg: S.redBg,     text: S.red,      border: S.redBorder,     dot: S.red,      desc: 'HIGH RISK' }
+function normalizeVerdict(v: string | null | undefined): 'GO' | 'CAUTION' | 'NO' {
+  const raw = (v ?? '').toLowerCase().trim()
+  if (raw === 'go' || raw === 'strong go' || raw === 'conditional go') return 'GO'
+  if (raw === 'caution') return 'CAUTION'
+  return 'NO'
+}
+
+function verdictStyle(v: string | null | undefined) {
+  const n = normalizeVerdict(v)
+ if (n === 'GO')   return { label: 'GO', bg: S.emeraldBg, text: S.emerald,  border: S.emeraldBorder, dot: S.emerald,  desc: 'LOW RISK' }
+ if (n === 'CAUTION') return { label: 'CAUTION', bg: S.amberBg,  text: S.amber,    border: S.amberBorder,   dot: S.amber,    desc: 'MEDIUM RISK' }
+  return { label: 'NO', bg: S.redBg, text: S.red, border: S.redBorder, dot: S.red, desc: 'HIGH RISK' }
+}
+
+function heroVerdictLine(v: string | null | undefined, rentRatioPct: number | null): string {
+  const n = normalizeVerdict(v)
+  if (n === 'NO') return 'NOT VIABLE - economics are currently too weak'
+  if (n === 'CAUTION') return 'VIABLE - but condition-sensitive'
+  if (rentRatioPct != null && rentRatioPct >= 15) return 'VIABLE - but margin-sensitive'
+  return 'VIABLE - economics are workable'
+}
+
+function buildRealityCheck(args: {
+  rentRatioPct: number | null
+  validCompetitorCount: number | null
+  businessType: string | null | undefined
+}): string | null {
+  const bt = (args.businessType ?? 'business').toLowerCase()
+  if (args.rentRatioPct != null && args.rentRatioPct >= 20) {
+    return `Reality check: At ~${Math.round(args.rentRatioPct)}% rent-to-revenue, many comparable ${bt}s struggle to hold healthy margins without premium pricing.`
+  }
+  if (args.rentRatioPct != null && args.rentRatioPct >= 15) {
+    return `Reality check: At ~${Math.round(args.rentRatioPct)}% rent-to-revenue, this site can work, but margin buffer is thin if revenue underperforms.`
+  }
+  if (args.validCompetitorCount != null && args.validCompetitorCount >= 10) {
+    return `Reality check: Competition is dense (${args.validCompetitorCount} operators in range), so winning requires clear differentiation, not average execution.`
+  }
+  return null
+}
+
+function safeParse<T = any>(v: unknown): T | null {
+  if (v == null) return null
+  if (typeof v === 'object') return v as T
+  if (typeof v === 'string') {
+    try { return JSON.parse(v) as T } catch { return null }
+  }
+  return null
+}
+
+function fmtCurrency(n: number | null | undefined) {
+  if (n == null || !Number.isFinite(n)) return '—'
+ return '$' + n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
+}
+
+function fmtMoneyK(n: number | null | undefined) {
+  if (n == null || !Number.isFinite(n)) return '—'
+  if (Math.abs(n) >= 1000000) return `$${(n / 1000000).toFixed(1)}M`
+  return `$${Math.round(n / 1000)}K`
+}
+
+function firstSentence(text: string | null | undefined): string | null {
+  if (!text) return null
+  const trimmed = text.trim()
+  if (!trimmed) return null
+  const idx = trimmed.indexOf('. ')
+  return idx === -1 ? trimmed : trimmed.slice(0, idx + 1)
+}
+
+function scoreColor(score: number | null | undefined) {
+  const s = Number(score ?? 0)
+  if (s >= 70) return S.emerald
+  if (s >= 45) return S.amber
+ return S.red
 }
 
 function ScoreBar({ label, score, weight }: { label: string; score: number; weight: string }) {
- const color = score >= 70 ? S.emerald : score >= 45 ? S.amber : S.red
+ const color = scoreColor(score)
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -36,15 +106,10 @@ function ScoreBar({ label, score, weight }: { label: string; score: number; weig
         <span style={{ fontSize: 13, fontWeight: 700, color }}>{score}</span>
       </div>
       <div style={{ height: 6, background: S.n100, borderRadius: 100, overflow: 'hidden' }}>
-    <div style={{ height: '100%', width: `${score}%`, background: color, borderRadius: 100 }} />
+    <div style={{ height: '100%', width: `${Math.max(0, Math.min(100, score))}%`, background: color, borderRadius: 100 }} />
    </div>
     </div>
   )
-}
-
-function fmtCurrency(n: number | null) {
-  if (!n) return '—'
- return '$' + n.toLocaleString('en-AU', { maximumFractionDigits: 0 })
 }
 
 export default async function PublicReportPage({ params }: { params: { token: string } }) {
@@ -66,8 +131,42 @@ const supabase = await createClient()
 
   if (error || !report) notFound()
 
-  const vs = verdictStyle(report.verdict || 'CAUTION')
- const rd = report.result_data || {}
+  const computed = safeParse<ComputedResult>(report.computed_result)
+  const rd = safeParse<any>(report.result_data) ?? {}
+  const vs = verdictStyle(computed?.verdict ?? report.verdict)
+  const overallScore = computed?.scores?.overall ?? report.overall_score ?? 0
+  const revenueRange = computed?.revenueRange ?? null
+  const benchmarkContext = computed?.benchmarkContext ?? null
+  const monthlyRevenue = computed?.revenue ?? rd?.financials?.monthlyRevenue ?? null
+  const monthlyNetProfit = computed?.netProfit ?? rd?.financials?.monthlyNetProfit ?? null
+  const breakEvenDaily = computed?.breakEvenDaily ?? report.breakeven_daily ?? null
+  const breakEvenMonths = computed?.breakEvenMonths ?? report.breakeven_months ?? null
+  const dataCompleteness = computed?.dataCompleteness ?? null
+  const confidence = computed?.modelConfidence ?? null
+  const decisionReasons = computed?.verdictReasons ?? []
+  const decisionRisks = computed?.verdictFailureModes ?? []
+  const decisionConditions = computed?.verdictConditions ?? []
+
+  const rawA7 = rd?.a7?.outputs || rd?.a7 || rd?.a7_data?.outputs || rd?.a7_data || null
+  const rawA8 = rd?.a8?.outputs || rd?.a8 || rd?.a8_data?.outputs || rd?.a8_data || null
+  const rentBurdenPct = rawA7?.rent_burden_pct
+    ?? (computed?.revenue && computed?.costBreakdown?.rent ? Math.round((computed.costBreakdown.rent / computed.revenue) * 1000) / 10 : null)
+  const rentBurdenLabel = rawA7?.rent_burden_label
+    ?? (rentBurdenPct == null ? 'N/A' : rentBurdenPct <= 12 ? 'Healthy' : rentBurdenPct <= 20 ? 'Watch' : 'Risky')
+  const growthSignal = rawA8?.economic_verdict ?? computed?.marketSignals?.demandTrend ?? rd?.market?.demandTrend ?? 'N/A'
+  const timingSignal = rd?.market?.bestEntryTiming ?? rawA8?.timing_signal ?? 'N/A'
+  const oneLineWhy = firstSentence(benchmarkContext?.benchmarkNarrative)
+    ?? decisionReasons[0]
+    ?? report.recommendation
+    ?? null
+  const verdictHeadline = heroVerdictLine(computed?.verdict ?? report.verdict, rentBurdenPct ?? benchmarkContext?.benchmarkRentRatio ?? null)
+  const confidencePct = dataCompleteness != null ? Math.round(dataCompleteness) : null
+  const confidenceLabel = confidence ? String(confidence).charAt(0).toUpperCase() + String(confidence).slice(1) : 'Unknown'
+  const realityCheck = buildRealityCheck({
+    rentRatioPct: rentBurdenPct ?? benchmarkContext?.benchmarkRentRatio ?? null,
+    validCompetitorCount: computed?.validCompetitorCount ?? null,
+    businessType: report.business_type,
+  })
 
   // Parse SWOT safely
   function parseSwot(raw: string | null) {
@@ -98,7 +197,15 @@ const supabase = await createClient()
   { label: 'Profitability',   key: 'score_profitability', weight: '25%' },
   { label: 'Competition',    key: 'score_competition', weight: '25%' },
   { label: 'Demographics + Demand', key: 'score_demand',    weight: '20%' },
- ]
+ ].map((f) => ({
+    ...f,
+    score: computed?.scores
+      ? (f.key === 'score_rent' ? computed.scores.rent
+        : f.key === 'score_profitability' ? computed.scores.profitability
+        : f.key === 'score_competition' ? computed.scores.competition
+        : computed.scores.demand ?? 0)
+      : (report[f.key as keyof typeof report] as number | null) ?? 0,
+  }))
 
   return (
     <div style={{ fontFamily: S.font, background: S.n50, minHeight: '100vh', color: S.n900 }}>
@@ -129,17 +236,42 @@ const supabase = await createClient()
               <div style={{ textAlign: 'right' }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: vs.bg, color: vs.text, border: `1.5px solid ${vs.border}`, borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 700 }}>
          <span style={{ width: 7, height: 7, borderRadius: '50%', background: vs.dot, display: 'inline-block' }} />
-         {report.verdict} · {vs.desc}
+         {vs.label} · {vs.desc}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
-         <span style={{ fontSize: 38, fontWeight: 900, color: vs.text, lineHeight: 1, letterSpacing: '-0.04em' }}>{report.overall_score}</span>
+         <span style={{ fontSize: 38, fontWeight: 900, color: vs.text, lineHeight: 1, letterSpacing: '-0.04em' }}>{overallScore}</span>
          <span style={{ fontSize: 13, color: S.n400 }}>/100</span>
                 </div>
               </div>
             </div>
+            <div style={{ marginTop: 14, padding: '14px 16px', borderRadius: 12, border: `1px solid ${vs.border}`, background: vs.bg }}>
+              <p style={{ fontSize: 23, fontWeight: 900, color: vs.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 10 }}>
+                {normalizeVerdict(computed?.verdict ?? report.verdict) === 'GO' ? 'GO: ' : normalizeVerdict(computed?.verdict ?? report.verdict) === 'CAUTION' ? 'CAUTION: ' : 'NO-GO: '}
+                {verdictHeadline}
+              </p>
+              <p style={{ fontSize: 27, fontWeight: 900, color: S.n900, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                {revenueRange ? `${fmtMoneyK(revenueRange.low)} - ${fmtMoneyK(revenueRange.high)}` : (monthlyRevenue ? fmtMoneyK(monthlyRevenue) : '—')}
+              </p>
+              <p style={{ fontSize: 12, color: S.n500, marginTop: 5 }}>
+                {revenueRange ? `Most likely: ${fmtMoneyK(revenueRange.mid)}` : 'Revenue range currently unavailable'}
+              </p>
+              <p style={{ fontSize: 12, color: S.n700, marginTop: 8, fontWeight: 700 }}>
+                Confidence: {confidenceLabel}{confidencePct != null ? ` (${confidencePct}%)` : ''}
+              </p>
+            </div>
             {report.recommendation && (
               <div style={{ marginTop: 14, padding: '13px 16px', background: vs.bg, borderRadius: 12, border: `1px solid ${vs.border}` }}>
         <p style={{ fontSize: 13, color: vs.text, lineHeight: 1.65 }}>{report.recommendation}</p>
+              </div>
+            )}
+            {oneLineWhy && (
+              <div style={{ marginTop: 10, padding: '12px 14px', background: '#FFFFFF', borderRadius: 10, border: `1px solid ${S.n200}` }}>
+                <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.65, fontWeight: 600 }}>{oneLineWhy}</p>
+              </div>
+            )}
+            {realityCheck && (
+              <div style={{ marginTop: 10, padding: '11px 13px', background: '#F8FAFC', borderRadius: 10, border: `1px solid ${S.n200}` }}>
+                <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6, fontWeight: 600 }}>{realityCheck}</p>
               </div>
             )}
           </div>
@@ -147,10 +279,14 @@ const supabase = await createClient()
           {/* Metrics strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
       {[
-              { l: 'Monthly Revenue',  v: rd.financials?.monthlyRevenue   ? `~${fmtCurrency(rd.financials.monthlyRevenue)}`  : '—', sub: 'benchmark estimate' },
-       { l: 'Monthly Net Profit', v: rd.financials?.monthlyNetProfit ? `~${fmtCurrency(rd.financials.monthlyNetProfit)}` : '—', sub: 'excludes owner salary' },
-       { l: 'Break-even / Day',  v: report.breakeven_daily ? `${report.breakeven_daily} customers` : '—' },
-       { l: 'Payback Period',   v: report.breakeven_months ? `${report.breakeven_months} months` : '—' },
+              {
+                l: 'Revenue Range',
+                v: revenueRange ? `${fmtMoneyK(revenueRange.low)} – ${fmtMoneyK(revenueRange.high)}` : (monthlyRevenue ? `~${fmtCurrency(monthlyRevenue)}` : '—'),
+                sub: revenueRange ? `Most likely: ${fmtMoneyK(revenueRange.mid)}` : 'single estimate',
+              },
+       { l: 'Monthly Net Profit', v: monthlyNetProfit != null ? `~${fmtCurrency(monthlyNetProfit)}` : '—', sub: 'excludes owner salary' },
+       { l: 'Break-even / Day',  v: breakEvenDaily ? `${breakEvenDaily} customers` : '—' },
+       { l: 'Payback Period',   v: breakEvenMonths ? `${breakEvenMonths} months` : '—', sub: dataCompleteness != null ? `${dataCompleteness}% data · ${confidence ?? 'confidence n/a'}` : undefined },
       ].map((m, i) => (
               <div key={m.l} style={{ padding: '14px 10px', textAlign: 'center', borderRight: i < 3 ? `1px solid ${S.n100}` : 'none', borderTop: `1px solid ${S.n100}` }}>
         <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5 }}>{m.l}</p>
@@ -165,9 +301,66 @@ const supabase = await createClient()
         <div style={card({ padding: '22px 24px', marginBottom: 14 })}>
      <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Score Breakdown</p>
      {scoreFields.map(f => (
-            <ScoreBar key={f.label} label={f.label} score={report[f.key as keyof typeof report] as number || 0} weight={f.weight} />
+            <ScoreBar key={f.label} label={f.label} score={f.score || 0} weight={f.weight} />
           ))}
         </div>
+
+        {(decisionReasons.length > 0 || decisionRisks.length > 0 || decisionConditions.length > 0) && (
+          <div style={card({ padding: '22px 24px', marginBottom: 14 })}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Decision Logic</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+              <div style={{ background: S.emeraldBg, border: `1px solid ${S.emeraldBorder}`, borderRadius: 12, padding: '12px 14px', minHeight: 146 }}>
+                <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, marginBottom: 8 }}>Why this works</p>
+                <p style={{ fontSize: 10, color: S.emerald, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Checklist</p>
+                {(decisionReasons.slice(0, 3)).map((t, i) => <p key={i} style={{ fontSize: 12, color: '#065F46', lineHeight: 1.55, marginBottom: 6 }}>✔ {t}</p>)}
+              </div>
+              <div style={{ background: S.redBg, border: `1px solid ${S.redBorder}`, borderRadius: 12, padding: '12px 14px', minHeight: 146 }}>
+                <p style={{ fontSize: 12, fontWeight: 800, color: S.red, marginBottom: 8 }}>What could go wrong</p>
+                <p style={{ fontSize: 10, color: S.red, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Risk Triggers</p>
+                {(decisionRisks.slice(0, 3)).map((t, i) => <p key={i} style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.55, marginBottom: 6 }}>⚠ {t}</p>)}
+              </div>
+              <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 12, padding: '12px 14px', minHeight: 146 }}>
+                <p style={{ fontSize: 12, fontWeight: 800, color: '#1D4ED8', marginBottom: 8 }}>What must be true</p>
+                <p style={{ fontSize: 10, color: '#1D4ED8', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Non-Negotiables</p>
+                {(decisionConditions.slice(0, 3)).map((t, i) => <p key={i} style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.55, marginBottom: 6 }}>📌 {t}</p>)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {(rawA7 || rawA8 || computed) && (
+          <div style={card({ padding: '22px 24px', marginBottom: 14 })}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: S.brand, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Industry Benchmark & Market Conditions</p>
+            {benchmarkContext?.benchmarkNarrative && (
+              <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.6, marginBottom: 12 }}>{benchmarkContext.benchmarkNarrative}</p>
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+              <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, padding: '12px 14px' }}>
+                <p style={{ fontSize: 10, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Rent vs Industry</p>
+                <p style={{ fontSize: 18, fontWeight: 900, color: S.n900 }}>{rentBurdenLabel}</p>
+                <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                  {rentBurdenPct != null
+                    ? `${rentBurdenPct}% of revenue`
+                    : (benchmarkContext?.benchmarkRentRatio != null ? `${Math.round(benchmarkContext.benchmarkRentRatio)}% of revenue` : 'Industry rent ratio unavailable')}
+                </p>
+              </div>
+              <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, padding: '12px 14px' }}>
+                <p style={{ fontSize: 10, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Suburb Direction</p>
+                <p style={{ fontSize: 18, fontWeight: 900, color: S.n900 }}>{String(growthSignal ?? (benchmarkContext?.marketSentiment ?? 'N/A'))}</p>
+                <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                  {rawA8?.consumer_sentiment_label ? `Consumer sentiment: ${rawA8.consumer_sentiment_label}` : benchmarkContext?.marketSentiment ? `Sentiment: ${benchmarkContext.marketSentiment}` : 'Driven by market trend signal'}
+                </p>
+              </div>
+              <div style={{ border: `1px solid ${S.n200}`, borderRadius: 12, padding: '12px 14px' }}>
+                <p style={{ fontSize: 10, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Timing</p>
+                <p style={{ fontSize: 18, fontWeight: 900, color: S.n900 }}>{String(timingSignal ?? (benchmarkContext?.timingScore != null ? `${benchmarkContext.timingScore}/100` : 'N/A'))}</p>
+                <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                  {rawA8?.food_cpi_yoy_pct != null ? `Food CPI YoY: ${rawA8.food_cpi_yoy_pct}%` : rawA8?.wage_growth_pct != null ? `Wage growth: ${rawA8.wage_growth_pct}%` : benchmarkContext?.timingScore != null ? `Timing score: ${benchmarkContext.timingScore}/100` : 'Timing data is directional'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* SWOT */}
         {Object.keys(swot).length > 0 && (

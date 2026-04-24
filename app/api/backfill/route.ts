@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
+import { ENGINE_VERSION }            from '@/types/computed'
 
 export const maxDuration = 60  // Allow up to 60s for batch processing
 
@@ -28,30 +29,47 @@ export async function POST(request: NextRequest) {
     if (provided !== secret) return err('Unauthorized', 401)
   }
 
+  const body = await request.json().catch(() => ({} as Record<string, any>))
+  const mode = String(body?.mode ?? 'missing-only')  // missing-only | upgrade-benchmark-context
+  const requestedLimit = Number(body?.limit ?? 100)
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.max(1, Math.min(500, Math.round(requestedLimit)))
+    : 100
+
   const sb = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
 
-  // Find all reports needing compute
-  const { data: reports, error } = await sb
+  // Find reports to process.
+  // - missing-only: no computed_result yet
+  // - upgrade-benchmark-context: recompute older engine versions so benchmarkContext is present
+  let query = sb
     .from('reports')
     .select('report_id')
-    .is('computed_result', null)
     .not('result_data', 'is', null)
     .order('created_at', { ascending: false })
-    .limit(100)
+    .limit(limit)
+
+  if (mode === 'upgrade-benchmark-context') {
+    query = query.not('computed_result', 'is', null).or(`engine_version.is.null,engine_version.neq.${ENGINE_VERSION}`)
+  } else {
+    query = query.is('computed_result', null)
+  }
+
+  const { data: reports, error } = await query
 
   if (error) return err(`DB query failed: ${error.message}`, 500)
   if (!reports || reports.length === 0) {
-    return NextResponse.json({ success: true, message: 'Nothing to backfill', total: 0 })
+    return NextResponse.json({ success: true, message: 'Nothing to backfill', mode, total: 0 })
   }
 
-  const siteUrl   = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
+  const siteUrl   = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
   const computeUrl = `${siteUrl}/api/compute`
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (secret) headers['x-compute-secret'] = secret
 
+  const forceRecompute = mode === 'upgrade-benchmark-context'
   let processed = 0, failed = 0, skipped = 0
   const errors: string[] = []
 
@@ -61,7 +79,7 @@ export async function POST(request: NextRequest) {
       const res = await fetch(computeUrl, {
         method:  'POST',
         headers,
-        body:    JSON.stringify({ reportId: report_id }),
+        body:    JSON.stringify({ reportId: report_id, force: forceRecompute }),
         signal:  AbortSignal.timeout(25000),
       })
       const json = await res.json().catch(() => ({}))
@@ -85,6 +103,9 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     success:   true,
+    mode,
+    forceRecompute,
+    targetEngineVersion: ENGINE_VERSION,
     total:     reports.length,
     processed,
     skipped,

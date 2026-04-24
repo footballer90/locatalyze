@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Devonport retail location',
     'open a cafe northwest Tasmania',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/devonport' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/devonport' },
   openGraph: {
     title: 'Devonport Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Devonport. Spirit of Tasmania ferry traffic, rent benchmarks and competition scored.',

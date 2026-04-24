@@ -19,7 +19,7 @@ import {
 //  title: 'Best Suburbs to Open a Restaurant in Wollongong (2026) — Location Analysis',
 //  description: 'Data-driven suburb guide for opening restaurants in Wollongong. Rent benchmarks, foot traffic, Sydney commuter demographics, and competition analysis. Crown Street, Thirroul, Harbour precinct scored.',
 //  keywords: ['best suburbs to open a restaurant in Wollongong','Wollongong restaurant location guide 2026','opening a restaurant Wollongong NSW','best suburbs Wollongong hospitality business','Wollongong commercial rent restaurant','Crown Street Wollongong dining','affordable restaurant location Illawarra','Wollongong foot traffic areas restaurant','hidden gem suburbs Wollongong business','Thirroul restaurant opportunity'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/wollongong/restaurant' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/wollongong/restaurant' },
 //  openGraph: { title: 'Best Suburbs to Open a Restaurant in Wollongong (2026)', description: 'Suburb-by-suburb analysis of Wollongong\'s emerging restaurant market. Sydney-level income, regional-level rent.', type: 'article' },
 // }
 
@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Restaurant in Wollongong (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/wollongong/restaurant',
+    url: 'https://locatalyze.com/analyse/wollongong/restaurant',
   },
   {
     '@context': 'https://schema.org',

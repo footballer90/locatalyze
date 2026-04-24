@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Port Macquarie — 2026 Location Guide',
   description:
     'Port Macquarie business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Port Macquarie suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/port-macquarie' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/port-macquarie' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Port Macquarie — 2026 Location Guide',
     description: '8 Port Macquarie suburbs ranked and scored. Rent benchmarks, beach tourism data, Hastings region demographics, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/port-macquarie',
+    url: 'https://locatalyze.com/analyse/port-macquarie',
   },
 }
 

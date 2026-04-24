@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Bundaberg food business feasibility',
     'Bundaberg retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/bundaberg' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/bundaberg' },
   openGraph: {
     title: 'Bundaberg Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Bundaberg. Rent benchmarks, competition and demographics scored.',

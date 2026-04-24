@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Darwin retail location',
     'open a cafe Northern Territory',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/darwin' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/darwin' },
   openGraph: {
     title: 'Darwin Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Darwin. Rent benchmarks, seasonal demand and competition scored.',

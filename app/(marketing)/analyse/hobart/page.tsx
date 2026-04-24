@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Hobart — 2026 Location Guide',
   description:
     'Hobart business location guide 2026. 14 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Hobart suburb for your café, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/hobart' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/hobart' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Hobart — 2026 Location Guide',
     description: '14 Hobart suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/hobart',
+    url: 'https://locatalyze.com/analyse/hobart',
   },
 }
 

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: 'Opening a Business in Strathfield Sydney — Location Analysis 2026',
   description:
     'Strathfield business location analysis 2026. Score 72/100 — CAUTION. Sydney\'s Korea Town, $71,000 median income, The Boulevarde rents from $4,500/month. Full rent guide, best business models, revenue ranges, and break-even analysis for Strathfield NSW 2135.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/strathfield' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney/strathfield' },
   openGraph: {
     title: 'Opening a Business in Strathfield Sydney — 2026 Location Analysis',
     description: 'Strathfield scores 72/100 — CAUTION. Korea Town status, Korean-Australian concentration, best for Korean operators, excellent rent viability, Mon-Sat trading strong. Full analysis inside.',
-    url: 'https://www.locatalyze.com/analyse/sydney/strathfield',
+    url: 'https://locatalyze.com/analyse/sydney/strathfield',
   },
 }
 

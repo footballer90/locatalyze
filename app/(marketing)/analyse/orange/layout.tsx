@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'Orange NSW retail location',
     'open a cafe Central Tablelands NSW',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/orange' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/orange' },
   openGraph: {
     title: 'Orange NSW Business Location Analysis — Cafe, Restaurant & Retail',
     description:

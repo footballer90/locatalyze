@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     'best suburb café Newcastle 2026',
     'Newcastle retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/newcastle/best-suburbs' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/newcastle/best-suburbs' },
   openGraph: {
     title: 'Best Suburbs in Newcastle to Open a Café, Restaurant or Retail Business (2026)',
     description:
       'Suburb-by-suburb location intelligence for Newcastle. Rent ranges, foot traffic, competition levels, and real insights for 20 suburbs — before you sign a lease.',
     type: 'article',
-    url: 'https://www.locatalyze.com/analyse/newcastle/best-suburbs',
+    url: 'https://locatalyze.com/analyse/newcastle/best-suburbs',
   },
 }
 

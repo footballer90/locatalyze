@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: 'Opening a Business in Bowden, Adelaide: 2026 Location Guide',
     description: "Adelaide's most accessible urban renewal suburb — Bowden has transitioned faster than any other inner-ring location, with a young professional demographic and a commercial strip still in its early innings.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

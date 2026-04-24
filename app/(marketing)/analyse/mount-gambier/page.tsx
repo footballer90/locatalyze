@@ -26,12 +26,12 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Mount Gambier — 2026 Location Guide',
   description:
     'Mount Gambier business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Mount Gambier suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mount-gambier' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mount-gambier' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Mount Gambier — 2026 Location Guide',
     description:
       '7 Mount Gambier suburbs ranked and scored. Lowest commercial rents in SA, Blue Lake tourism, timber industry workforce, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/mount-gambier',
+    url: 'https://locatalyze.com/analyse/mount-gambier',
   },
 }
 

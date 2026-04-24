@@ -17,10 +17,11 @@
  * 2. Load input_data + result_data from Supabase
  * 3. Resolve missing inputs from benchmarks (avgTicketSize, setupBudget)
  * 4. Run computeEngine()
- * 5. Write computed_result (write-once / idempotent)
+ * 5. Write computed_result (idempotent by default, force-recompute optional)
  * 6. Update status to 'complete'
  *
- * Idempotency: if computed_result already exists, returns 200 immediately.
+ * Idempotency: if computed_result already exists, returns 200 immediately unless
+ * force=true is provided by an authenticated admin caller.
  */
 
 import { NextRequest, NextResponse }          from 'next/server'
@@ -58,6 +59,7 @@ export async function POST(request: NextRequest) {
   // ── 2. Parse body ─────────────────────────────────────────────────────────
   let body: {
     reportId:      string
+    force?:        boolean
     agentOutputs?: Record<string, Record<string, any>>
   }
 
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
     return err('Invalid JSON body', 400)
   }
 
-  const { reportId, agentOutputs: bodyAgentOutputs } = body
+  const { reportId, force: forceRecompute = false, agentOutputs: bodyAgentOutputs } = body
 
   if (!reportId || typeof reportId !== 'string') {
     return err('Missing reportId', 400)
@@ -89,8 +91,8 @@ export async function POST(request: NextRequest) {
     return err(`Report not found: ${reportId}`, 404)
   }
 
-  // ── 4. Idempotency — immutable once written ───────────────────────────────
-  if (report.computed_result != null) {
+  // ── 4. Idempotency — immutable once written unless force=true ─────────────
+  if (report.computed_result != null && !forceRecompute) {
     console.log(`[compute] ${reportId} already computed — skipping`)
     return NextResponse.json({ success: true, reportId, cached: true })
   }
@@ -227,6 +229,9 @@ export async function POST(request: NextRequest) {
       a3: agentOutputs.a3 ?? {},
       a4: agentOutputs.a4 ?? {},
       a5: agentOutputs.a5 ?? {},
+      a6: agentOutputs.a6 ?? {},
+      a7: agentOutputs.a7 ?? {},
+      a8: agentOutputs.a8 ?? {},
     },
   }
 
@@ -366,11 +371,16 @@ export async function POST(request: NextRequest) {
     updatePayload.result_data       = bodyAgentOutputs  // backward compat
   }
 
-  const { error: updateErr } = await sb
+  const updateQuery = sb
     .from('reports')
     .update(updatePayload)
     .eq('report_id', reportId)
-    .is('computed_result', null)   // guard: only write if still null
+
+  // Default mode protects immutability. Force mode intentionally refreshes
+  // old rows so new contract fields (for example benchmarkContext) are present.
+  if (!forceRecompute) updateQuery.is('computed_result', null)
+
+  const { error: updateErr } = await updateQuery
 
   if (updateErr) {
     console.error(`[compute] Supabase write failed for ${reportId}:`, updateErr.message)
@@ -393,6 +403,7 @@ export async function POST(request: NextRequest) {
     computeMs,
     engineVersion:        computedResult.meta.engineVersion,
     mode:                 modeLabel,
+    forced:               forceRecompute,
   })
 }
 

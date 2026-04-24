@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: 'Opening a Business in Thebarton, Adelaide: 2026 Location Guide',
     description: "Thebarton's industrial-to-creative transition is real but early — the suburb has genuine character and improving demographics, but commercial viability for mainstream business types remains dependent on the pace of gentrification.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

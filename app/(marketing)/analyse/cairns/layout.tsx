@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Cairns retail location',
     'open a cafe Far North Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/cairns' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/cairns' },
   openGraph: {
     title: 'Cairns Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Cairns. Rent benchmarks, tourist traffic and competition scored.',

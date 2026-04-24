@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const SCHEMAS = [
- { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Hair Salon in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://www.locatalyze.com/analyse/sydney/salon' },
+ { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Hair Salon in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://locatalyze.com/analyse/sydney/salon' },
  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
   { '@type': 'Question', name: 'What is the best suburb to open a hair salon in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Mosman scores 88/100 for hair salons. The suburb\'s high income ($145,000 median), captive residential catchment and strong existing salon culture make it Sydney\'s strongest location for a premium hair salon. Double Bay and Woollahra are premium alternatives.' } },
   { '@type': 'Question', name: 'How does location affect a hair salon\'s success in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Hair salons depend on repeat customers from a local residential catchment within 3km — not foot traffic. A salon in a wealthy residential suburb outperforms one on a busy shopping strip because the customer base is stable, loyal and returns every 6–8 weeks. Income demographics and local residential density are more important than pedestrian counts.' } },

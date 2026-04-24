@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Mandurah — 2026 Location Guide',
   description:
     'Mandurah business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Mandurah suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mandurah' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mandurah' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Mandurah — 2026 Location Guide',
     description: '8 Mandurah suburbs ranked and scored. Rent benchmarks, foot traffic data, estuary tourism impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/mandurah',
+    url: 'https://locatalyze.com/analyse/mandurah',
   },
 }
 

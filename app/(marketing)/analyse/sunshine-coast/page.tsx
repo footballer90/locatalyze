@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business on the Sunshine Coast — 2026 Location Guide',
   description:
     'Sunshine Coast business location guide 2026. 10 suburbs scored by foot traffic, tourism dependency, rent viability, and competition gap. Find the best Sunshine Coast suburb for your café, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sunshine-coast' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sunshine-coast' },
   openGraph: {
     title: 'Best Suburbs to Open a Business on the Sunshine Coast — 2026 Location Guide',
     description: '10 Sunshine Coast suburbs ranked and scored. Rent benchmarks, tourism seasonality, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/sunshine-coast',
+    url: 'https://locatalyze.com/analyse/sunshine-coast',
   },
 }
 
@@ -40,8 +40,8 @@ const SCHEMA = {
   headline: 'Best Suburbs to Open a Business on the Sunshine Coast 2026',
   description: 'Data-driven guide to Sunshine Coast commercial location decisions — 10 suburbs scored across tourism, rent, competition, foot traffic and demand.',
   author: { '@type': 'Organization', name: 'Locatalyze' },
-  publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-  url: 'https://www.locatalyze.com/analyse/sunshine-coast',
+  publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+  url: 'https://locatalyze.com/analyse/sunshine-coast',
   datePublished: '2026-01-01',
   dateModified: '2026-04-01',
 }

@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   description:
     'Three free tools for Australian operators: break-even foot-traffic calculator, rent-overpriced checker, and a business viability scoring tool. Use them to pressure-test a site before you sign a lease, then upgrade to a full GO / CAUTION / NO location report.',
   keywords: ['break even calculator café Australia', 'rent affordability calculator business', 'rent overpriced checker Australia', 'business viability calculator', 'foot traffic break even tool', 'commercial lease viability'],
-  alternates: { canonical: 'https://www.locatalyze.com/tools' },
+  alternates: { canonical: 'https://locatalyze.com/tools' },
   openGraph: {
     title: 'Free Break-Even, Rent & Viability Tools for Australian Businesses — Locatalyze',
     description:
       'Pressure-test any Australian site before you sign a lease: break-even foot-traffic, rent affordability, and a viability score. Free, no signup.',
     type: 'website',
-    url: 'https://www.locatalyze.com/tools',
+    url: 'https://locatalyze.com/tools',
   },
 }
 

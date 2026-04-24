@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   title: 'Where to Open a Business in Australia — Location Analysis by City (2026)',
   description:
     'Suburb-by-suburb scores for cafés, restaurants, retail and service businesses across every Australian capital plus 13 regional hubs. Rent benchmarks, foot traffic data, GO/CAUTION/NO verdicts and break-even analysis for 200+ locations — Sydney, Melbourne, Brisbane, Perth, Adelaide, Sunshine Coast, Geelong, Cairns, Mackay and more.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse' },
+  alternates: { canonical: 'https://locatalyze.com/analyse' },
   openGraph: {
     title: 'Where to Open a Business in Australia — Location Analysis by City (2026)',
     description:
       'Suburb-by-suburb scores for every major Australian city. Foot traffic, rent benchmarks, and GO/CAUTION/NO verdicts for 100+ locations.',
-    url: 'https://www.locatalyze.com/analyse',
+    url: 'https://locatalyze.com/analyse',
   },
 }
 

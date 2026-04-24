@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   description:
     'Darwin suburb-by-suburb location intelligence scored through the shared 5-factor engine for cafes, restaurants, and retail.',
   alternates: {
-    canonical: 'https://www.locatalyze.com/analyse/darwin',
+    canonical: 'https://locatalyze.com/analyse/darwin',
   },
   openGraph: {
     title: 'Darwin Business Location Analysis — Café, Restaurant & Retail',
     description:
       'Darwin suburb-by-suburb location intelligence scored through the shared 5-factor engine for cafes, restaurants, and retail.',
     type: 'website',
-    url: 'https://www.locatalyze.com/analyse/darwin',
+    url: 'https://locatalyze.com/analyse/darwin',
   },
 }
 

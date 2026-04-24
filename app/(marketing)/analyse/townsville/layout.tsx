@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Townsville retail location',
     'open a cafe North Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/townsville' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/townsville' },
   openGraph: {
     title: 'Townsville Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Townsville. Rent benchmarks, defence sector demand and competition scored.',

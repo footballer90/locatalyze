@@ -47,12 +47,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: post ? `${post.title} — Locatalyze` : 'Blog — Locatalyze',
     description: post?.metaDescription ?? 'Business location strategy for Australian entrepreneurs.',
     keywords: (post as any)?.secondaryKeywords?.join(', ') ?? '',
-    alternates: { canonical: `https://www.locatalyze.com/blog/${slug}` },
+    alternates: { canonical: `https://locatalyze.com/blog/${slug}` },
     openGraph: {
       title: post?.title ?? 'Locatalyze Blog',
       description: post?.metaDescription ?? '',
       type: 'article',
-      url: `https://www.locatalyze.com/blog/${slug}`,
+      url: `https://locatalyze.com/blog/${slug}`,
     },
   }
 }

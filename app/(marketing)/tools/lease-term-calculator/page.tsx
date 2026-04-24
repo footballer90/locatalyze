@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     'lease break-even calculator',
     'commercial lease risk calculator Australia',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/tools/lease-term-calculator' },
+  alternates: { canonical: 'https://locatalyze.com/tools/lease-term-calculator' },
   openGraph: {
     title: '3-Year vs 5-Year Lease Calculator | Locatalyze',
     description:
       'Free tool. Compare 3, 4, and 5-year commercial lease terms by total committed rent, break-even timeline, and loss exposure if the business closes early.',
     type: 'website',
-    url: 'https://www.locatalyze.com/tools/lease-term-calculator',
+    url: 'https://locatalyze.com/tools/lease-term-calculator',
   },
 }
 
@@ -28,13 +28,13 @@ const JSONLD = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: '3-Year vs 5-Year Commercial Lease Calculator',
-  url: 'https://www.locatalyze.com/tools/lease-term-calculator',
+  url: 'https://locatalyze.com/tools/lease-term-calculator',
   description:
     'Free tool for Australian business operators that compares 3, 4, and 5-year commercial lease terms by total rent commitment, fit-out payback period, full break-even timeline, and loss scenario if the business closes early.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'AUD' },
-  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
 }
 
 export default function LeaseTermPage() {

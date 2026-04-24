@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Shepparton retail location',
     'open a cafe Goulburn Valley',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/shepparton' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/shepparton' },
   openGraph: {
     title: 'Shepparton Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Shepparton. Rent benchmarks, foot traffic and competition scored.',

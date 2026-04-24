@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: 'Opening a Business in Burwood Sydney — Location Analysis 2026',
   description:
     'Burwood business location analysis 2026. Score 77/100 — CAUTION. Korean-Chinese food destination, $74,000 median income, Burwood Road rents from $5,500/month. Full rent guide, best business models, revenue ranges, and break-even analysis for Burwood NSW 2134.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/burwood' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney/burwood' },
   openGraph: {
     title: 'Opening a Business in Burwood Sydney — 2026 Location Analysis',
     description: 'Burwood scores 77/100 — CAUTION. Strong Korean-Chinese demographic, quality food destination precinct, 70-75% of revenue on Thu-Sun, rents 35-50% below Surry Hills. Full analysis inside.',
-    url: 'https://www.locatalyze.com/analyse/sydney/burwood',
+    url: 'https://locatalyze.com/analyse/sydney/burwood',
   },
 }
 

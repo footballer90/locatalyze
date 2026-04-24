@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Coffs Harbour retail location',
     'open a cafe mid-North Coast NSW',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/coffs-harbour' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/coffs-harbour' },
   openGraph: {
     title: 'Coffs Harbour Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Coffs Harbour. Rent benchmarks, tourism traffic and competition scored.',

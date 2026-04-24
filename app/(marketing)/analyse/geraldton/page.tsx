@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Geraldton — 2026 Location Guide',
   description:
     'Geraldton business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Geraldton suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/geraldton' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/geraldton' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Geraldton — 2026 Location Guide',
     description: '7 Geraldton suburbs ranked and scored. Rent benchmarks, foot traffic data, Abrolhos Islands tourism impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/geraldton',
+    url: 'https://locatalyze.com/analyse/geraldton',
   },
 }
 

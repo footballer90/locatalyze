@@ -21,7 +21,7 @@ const S = {
   font: BLOG_THEME.font.sans,
 }
 
-const BASE = 'https://www.locatalyze.com'
+const BASE = 'https://locatalyze.com'
 
 export const metadata: Metadata = {
   title: 'Insights — data stories on Australian location & rent benchmarks',

@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const SCHEMAS = [
- { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Bakery in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://www.locatalyze.com/analyse/sydney/bakery' },
+ { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Bakery in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://locatalyze.com/analyse/sydney/bakery' },
  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
   { '@type': 'Question', name: 'What is the best suburb to open a bakery in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Surry Hills scores 87/100 for artisan bakeries. The suburb\'s food culture, high income demographics ($95,000 median) and strong morning foot traffic make it Sydney\'s strongest bakery market. Newtown and Balmain are strong alternatives.' } },
   { '@type': 'Question', name: 'Is there demand for artisan bakeries in Sydney in 2026?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — Sydney\'s artisan bakery market has grown 28% over three years (ABS business counts data). Demand for sourdough, croissants and specialty bread has materially outpaced the growth in supply, particularly in inner suburbs outside the Surry Hills and Newtown corridors.' } },

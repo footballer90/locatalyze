@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Brisbane food business feasibility',
     'West End Fortitude Valley New Farm business',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/brisbane' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/brisbane' },
   openGraph: {
     title: 'Brisbane Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Brisbane. Rent benchmarks, competition and demographics scored.',

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Canberra retail location',
     'open a cafe ACT',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/canberra' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/canberra' },
   openGraph: {
     title: 'Canberra Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Canberra. Rent benchmarks, competition and ACT demographics scored.',

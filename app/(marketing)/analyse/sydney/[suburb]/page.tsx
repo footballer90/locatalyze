@@ -30,32 +30,32 @@ const SYDNEY_GUIDE_METADATA: Record<string, Metadata> = {
   bakery: {
     title: 'Best Suburbs to Open a Bakery in Sydney (2026)',
     description: 'Data-driven suburb guide for Sydney bakeries...',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/bakery' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/sydney/bakery' },
   },
   cafe: {
     title: 'Best Suburbs to Open a Café in Sydney (2026) — Location Analysis',
     description: 'Data-driven suburb guide for Sydney coffee shops. Rent benchmarks, foot traffic, competition and income demographics scored. Based on ABS and CBRE data.',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/cafe' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/sydney/cafe' },
   },
   gym: {
     title: 'Best Suburbs to Open a Gym in Sydney (2026)',
     description: 'Data-driven suburb guide for Sydney gyms...',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/gym' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/sydney/gym' },
   },
   restaurant: {
     title: 'Best Suburbs to Open a Restaurant in Sydney (2026)',
     description: 'Data-driven suburb guide for Sydney restaurants...',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/restaurant' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/sydney/restaurant' },
   },
   retail: {
     title: 'Best Suburbs to Open a Retail Store in Sydney (2026) — Location Analysis',
     description: 'Data-driven suburb guide for Sydney retail stores. Rent benchmarks, foot traffic, competition and income demographics scored. Based on ABS and CBRE data.',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/retail' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/sydney/retail' },
   },
   salon: {
     title: 'Best Suburbs to Open a Salon in Sydney (2026)',
     description: 'Data-driven suburb guide for Sydney salons...',
-    alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/salon' },
+    alternates: { canonical: 'https://locatalyze.com/analyse/sydney/salon' },
   },
 }
 
@@ -142,7 +142,7 @@ function SuburbSchema({ suburb }: { suburb: SuburbModel }) {
     headline: `${suburb.name} Sydney Business Location Analysis — ${suburb.verdict} (${suburb.compositeScore}/100)`,
     description: `${suburb.name} scores ${suburb.compositeScore}/100 for Sydney business suitability with a ${suburb.verdict} verdict for cafés, restaurants, and retail.`,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-04-19',
     about: {
       '@type': 'Place',
@@ -184,11 +184,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${data.name} Sydney Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict. Engine-derived scores for cafés, restaurants, and retail operators considering ${data.name}, NSW.`,
-    alternates: { canonical: `https://www.locatalyze.com/analyse/sydney/${data.slug}` },
+    alternates: { canonical: `https://locatalyze.com/analyse/sydney/${data.slug}` },
     openGraph: {
       title: `${data.name} Sydney Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict — café ${data.cafe}, restaurant ${data.restaurant}, retail ${data.retail}.`,
-      url: `https://www.locatalyze.com/analyse/sydney/${data.slug}`,
+      url: `https://locatalyze.com/analyse/sydney/${data.slug}`,
       type: 'article',
     },
   }

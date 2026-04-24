@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: "Opening a Business in Goodwood, Adelaide: 2026 Location Guide",
     description: "Goodwood Road is an emerging inner-south strip with authentic character, improving demographics, and rents that create a compelling opportunity for operators willing to be early.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

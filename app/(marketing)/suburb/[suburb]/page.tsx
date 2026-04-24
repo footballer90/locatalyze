@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: { params: Promise<{ suburb: s
  return {
     title: `${name} business location analysis — Locatalyze`,
     description: `Is ${name} a good location for your business? Market demand, rent ranges, and competitor density — AI analysis in about 90 seconds.`,
-    alternates: { canonical: `https://www.locatalyze.com/suburb/${slug}` },
+    alternates: { canonical: `https://locatalyze.com/suburb/${slug}` },
   }
 }
 

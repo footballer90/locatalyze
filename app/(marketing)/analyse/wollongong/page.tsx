@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Wollongong — 2026 Location Guide',
   description:
     'Wollongong business location guide 2026. 20 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Wollongong suburb for your cafe, restaurant, retail or service business in the Illawarra region.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/wollongong' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/wollongong' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Wollongong — 2026 Location Guide',
     description: '20 Wollongong suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/wollongong',
+    url: 'https://locatalyze.com/analyse/wollongong',
   },
 }
 

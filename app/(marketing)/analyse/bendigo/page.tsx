@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Bendigo — 2026 Location Guide',
   description:
     'Bendigo business location guide 2026. 10 suburbs scored by foot traffic, rent viability, tourism, and competition. Find the best Bendigo suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/bendigo' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/bendigo' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Bendigo — 2026 Location Guide',
     description: '10 Bendigo suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/bendigo',
+    url: 'https://locatalyze.com/analyse/bendigo',
   },
 }
 
@@ -25,8 +25,8 @@ export default function BendigoPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Best Suburbs to Open a Business in Bendigo 2026',
         author: { '@type': 'Organization', name: 'Locatalyze' },
-        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-        url: 'https://www.locatalyze.com/analyse/bendigo', dateModified: '2026-04-20',
+        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+        url: 'https://locatalyze.com/analyse/bendigo', dateModified: '2026-04-20',
       }) }} />
 
       <section style={{ background: 'linear-gradient(135deg, #7C2D12 0%, #C2410C 50%, #EA580C 100%)', color: '#FFFFFF', padding: '56px 24px 52px' }}>

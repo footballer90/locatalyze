@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Mackay retail location',
     'open a cafe North Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mackay' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mackay' },
   openGraph: {
     title: 'Mackay Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Mackay. Rent benchmarks, foot traffic and competition scored.',

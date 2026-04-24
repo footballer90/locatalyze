@@ -20,7 +20,7 @@ import {
 //  title: 'Best Suburbs to Open a Café in Perth (2026) — Location Analysis',
 //  description: 'Data-driven suburb guide for Perth coffee shops. Rent benchmarks, foot traffic, demographics and competition scored. Based on ABS and REIWA data.',
 //  keywords: ['best suburbs to open a cafe in Perth','Perth coffee shop location','opening a cafe Subiaco','Perth hospitality business location','cafe feasibility Perth WA','espresso bar location Perth','best Perth suburb for hospitality 2026','Perth cafe rent costs','coffee shop competition Perth inner suburbs'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/perth/cafe' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/perth/cafe' },
 //  openGraph: { title: 'Best Suburbs to Open a Café in Perth (2026)', description: 'Suburb-by-suburb analysis of Perth\'s café market. Real data, real numbers.', type: 'article' },
 // }
 
@@ -40,11 +40,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
   '@type': 'Article',
   headline: 'Best Suburbs to Open a Café in Perth (2026)',
-  author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+  author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
   publisher: { '@type': 'Organization', name: 'Locatalyze' },
   datePublished: '2026-03-01',
   dateModified: '2026-03-18',
-  url: 'https://www.locatalyze.com/analyse/perth/cafe',
+  url: 'https://locatalyze.com/analyse/perth/cafe',
  },
   {
     '@context': 'https://schema.org',

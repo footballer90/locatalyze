@@ -14,11 +14,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Restaurant in Hervey Bay (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/hervey-bay/restaurant',
+    url: 'https://locatalyze.com/analyse/hervey-bay/restaurant',
   },
   {
     '@context': 'https://schema.org',

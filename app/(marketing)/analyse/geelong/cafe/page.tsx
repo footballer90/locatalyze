@@ -19,7 +19,7 @@ import {
 //   title: 'Best Suburbs to Open a Café in Geelong (2026) — Location Analysis',
 //   description: 'Data-driven suburb guide for Geelong coffee shops. Rent benchmarks, foot traffic, demographics and competition scored. Geelong is growing 2.8% annually — the best pre-saturation window in Australia.',
 //   keywords: ['best suburbs to open a cafe in Geelong','Geelong coffee shop location','opening a cafe Pakington Street','Geelong hospitality business location','cafe feasibility Geelong Victoria','specialty coffee Geelong','best Geelong suburb for hospitality 2026','Geelong cafe rent costs','Geelong business opportunity 2026'],
-//   alternates: { canonical: 'https://www.locatalyze.com/analyse/geelong/cafe' },
+//   alternates: { canonical: 'https://locatalyze.com/analyse/geelong/cafe' },
 //   openGraph: { title: 'Best Suburbs to Open a Café in Geelong (2026)', description: 'Suburb-by-suburb analysis of Geelong\'s emerging café market. Real data, 3–5 years behind Melbourne saturation.', type: 'article' },
 // }
 
@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Café in Geelong (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/geelong/cafe',
+    url: 'https://locatalyze.com/analyse/geelong/cafe',
   },
   {
     '@context': 'https://schema.org',

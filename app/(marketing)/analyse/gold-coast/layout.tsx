@@ -16,12 +16,12 @@ export const metadata: Metadata = {
     'Gold Coast hospitality location analysis',
     'best areas for small business Gold Coast Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/gold-coast' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/gold-coast' },
   openGraph: {
     title: 'Best Suburbs to Open a Business on the Gold Coast — 2026 Location Guide',
     description:
       '20 Gold Coast suburbs ranked for cafés, restaurants and retail. Rent tiers, foot traffic, seasonality risk, and suburb-level verdicts.',
-    url: 'https://www.locatalyze.com/analyse/gold-coast',
+    url: 'https://locatalyze.com/analyse/gold-coast',
     type: 'article',
   },
 }

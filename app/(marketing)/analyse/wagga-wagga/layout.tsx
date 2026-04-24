@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'Wagga Wagga retail location',
     'open a cafe Riverina NSW',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/wagga-wagga' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/wagga-wagga' },
   openGraph: {
     title: 'Wagga Wagga Business Location Analysis — Cafe, Restaurant & Retail',
     description:

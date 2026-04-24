@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Hobart retail location',
     'open a cafe Tasmania',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/hobart' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/hobart' },
   openGraph: {
     title: 'Hobart Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Hobart. Rent benchmarks, tourist traffic and competition scored.',

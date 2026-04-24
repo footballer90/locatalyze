@@ -77,7 +77,7 @@ function SuburbSchema({ suburb }: { suburb: OrangeSuburb }) {
     headline: `${suburb.name} Orange Business Location Analysis — ${suburb.verdict} (${suburb.compositeScore}/100)`,
     description: `${suburb.name} scores ${suburb.compositeScore}/100 for Orange business suitability with a ${suburb.verdict} verdict for cafes, restaurants, and retail.`,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-04-21',
     about: {
       '@type': 'Place',
@@ -99,11 +99,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${data.name} Orange Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict. Engine-derived scores for cafes, restaurants, and retail operators considering ${data.name}, NSW.`,
-    alternates: { canonical: `https://www.locatalyze.com/analyse/orange/${data.slug}` },
+    alternates: { canonical: `https://locatalyze.com/analyse/orange/${data.slug}` },
     openGraph: {
       title: `${data.name} Orange Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 — cafe ${data.cafe}, restaurant ${data.restaurant}, retail ${data.retail}.`,
-      url: `https://www.locatalyze.com/analyse/orange/${data.slug}`,
+      url: `https://locatalyze.com/analyse/orange/${data.slug}`,
       type: 'article',
     },
   }

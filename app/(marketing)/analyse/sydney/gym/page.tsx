@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const SCHEMAS = [
- { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Gym in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://www.locatalyze.com/analyse/sydney/gym' },
+ { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Gym in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://locatalyze.com/analyse/sydney/gym' },
  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
   { '@type': 'Question', name: 'What is the best suburb to open a gym in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Chatswood scores 84/100 for gyms — strong residential density, high income demographics ($98,000 median), and only 3 direct competitors within 500m. Randwick and Leichhardt are strong alternatives with growing residential catchments.' } },
   { '@type': 'Question', name: 'How much does gym space cost to rent in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Sydney gym spaces typically require 200–400sqm and cost $8,000–$25,000/month in inner suburbs. The economics require 150–300 active members to achieve viability at standard membership pricing of $65–$85/month.' } },

@@ -64,6 +64,59 @@ function fmt(n: number | null | undefined) {
   return `A$${Math.abs(n).toLocaleString('en-AU')}`
 }
 
+function fmtMoneyK(n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return '—'
+  if (Math.abs(n) >= 1000000) return `A$${(n / 1000000).toFixed(1)}M`
+  return `A$${Math.round(n / 1000)}K`
+}
+
+function normalizeVerdict(v: string | null | undefined): 'GO' | 'CAUTION' | 'NO' {
+  const raw = String(v ?? '').toLowerCase().trim()
+  if (raw === 'go' || raw === 'strong go' || raw === 'conditional go') return 'GO'
+  if (raw === 'caution') return 'CAUTION'
+  return 'NO'
+}
+
+function heroVerdictLine(v: string | null | undefined, rentRatioPct: number | null): string {
+  const n = normalizeVerdict(v)
+  if (n === 'NO') return 'NOT VIABLE - economics are currently too weak'
+  if (n === 'CAUTION') return 'VIABLE - but condition-sensitive'
+  if (rentRatioPct != null && rentRatioPct >= 15) return 'VIABLE - but margin-sensitive'
+  return 'VIABLE - economics are workable'
+}
+
+function confidenceLabel(v: unknown): string {
+  const s = String(v ?? '').toLowerCase()
+  if (!s) return 'Unknown'
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function firstSentence(text: string | null | undefined): string | null {
+  if (!text) return null
+  const trimmed = text.trim()
+  if (!trimmed) return null
+  const idx = trimmed.indexOf('. ')
+  return idx === -1 ? trimmed : trimmed.slice(0, idx + 1)
+}
+
+function buildRealityCheck(args: {
+  rentRatioPct: number | null
+  validCompetitorCount: number | null
+  businessType: string | null | undefined
+}): string | null {
+  const bt = (args.businessType ?? 'business').toLowerCase()
+  if (args.rentRatioPct != null && args.rentRatioPct >= 20) {
+    return `Reality check: At ~${Math.round(args.rentRatioPct)}% rent-to-revenue, many comparable ${bt}s struggle to hold healthy margins without premium pricing.`
+  }
+  if (args.rentRatioPct != null && args.rentRatioPct >= 15) {
+    return `Reality check: At ~${Math.round(args.rentRatioPct)}% rent-to-revenue, this site can work, but margin buffer is thin if revenue underperforms.`
+  }
+  if (args.validCompetitorCount != null && args.validCompetitorCount >= 10) {
+    return `Reality check: Competition is dense (${args.validCompetitorCount} operators in range), so winning requires clear differentiation, not average execution.`
+  }
+  return null
+}
+
 function verdictCfg(v: string | null) {
   const u = (v ?? '').toUpperCase()
   if (u === 'GO')      return { label: 'GO',      color: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr }
@@ -124,6 +177,18 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
   const vc  = verdictCfg(report.verdict)
   const np  = C?.netProfit ?? null
   const rev = C?.revenue ?? null
+  const rr  = C?.revenueRange ?? null
+  const benchmark = C?.benchmarkContext ?? null
+  const heroRentRatio = benchmark?.benchmarkRentRatio ?? (C?.revenue && report.monthly_rent ? (Number(report.monthly_rent) / Number(C.revenue)) * 100 : null)
+  const heroLine = heroVerdictLine(C?.verdict ?? report.verdict, heroRentRatio != null ? Number(heroRentRatio) : null)
+  const advisorLine = firstSentence(benchmark?.benchmarkNarrative) ?? C?.verdictReasons?.[0] ?? null
+  const confidence = confidenceLabel(C?.modelConfidence)
+  const confidencePct = C?.dataCompleteness != null ? Math.round(Number(C.dataCompleteness)) : null
+  const realityCheck = buildRealityCheck({
+    rentRatioPct: heroRentRatio != null ? Number(heroRentRatio) : null,
+    validCompetitorCount: C?.validCompetitorCount ?? null,
+    businessType: report.business_type,
+  })
 
   const content = (
     <div style={{
@@ -156,6 +221,31 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
         </div>
         <p style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 4, lineHeight: 1.3 }}>{report.location_name ?? 'Unknown location'}</p>
         <p style={{ fontSize: 12, color: S.n400 }}>{report.business_type}</p>
+        <div style={{ marginTop: 12, padding: '10px 11px', borderRadius: 10, background: vc.bg, border: `1px solid ${vc.border}` }}>
+          <p style={{ fontSize: 15, fontWeight: 900, color: vc.color, lineHeight: 1.2, marginBottom: 8 }}>
+            {normalizeVerdict(C?.verdict ?? report.verdict) === 'GO' ? 'GO: ' : normalizeVerdict(C?.verdict ?? report.verdict) === 'CAUTION' ? 'CAUTION: ' : 'NO-GO: '}
+            {heroLine}
+          </p>
+          <p style={{ fontSize: 18, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', fontFamily: S.mono }}>
+            {rr ? `${fmtMoneyK(rr.low)} - ${fmtMoneyK(rr.high)}` : (rev != null ? fmtMoneyK(rev) : '—')}
+          </p>
+          <p style={{ fontSize: 11, color: S.n500, marginTop: 4 }}>
+            {rr ? `Most likely: ${fmtMoneyK(rr.mid)}` : 'Revenue range unavailable'}
+          </p>
+          <p style={{ fontSize: 11, color: S.n700, marginTop: 6, fontWeight: 700 }}>
+            Confidence: {confidence}{confidencePct != null ? ` (${confidencePct}%)` : ''}
+          </p>
+        </div>
+        {advisorLine && (
+          <div style={{ marginTop: 10, padding: '9px 10px', borderRadius: 9, border: `1px solid ${S.n200}`, background: S.white }}>
+            <p style={{ fontSize: 12, color: S.n800, lineHeight: 1.5, fontWeight: 600 }}>{advisorLine}</p>
+          </div>
+        )}
+        {realityCheck && (
+          <div style={{ marginTop: 8, padding: '8px 10px', borderRadius: 9, border: `1px solid ${S.n200}`, background: S.n50 }}>
+            <p style={{ fontSize: 11, color: S.n700, lineHeight: 1.5, fontWeight: 600 }}>{realityCheck}</p>
+          </div>
+        )}
       </div>
 
       {/* Financial snapshot */}
@@ -255,6 +345,7 @@ function WinnerRow({ label, reports, getValue, higherIsBetter = true }: {
   reports: (ReportSummary | null)[]
   getValue: (r: ReportSummary) => number | null
   higherIsBetter?: boolean
+  formatValue?: (v: number) => string
 }) {
   const values = reports.map(r => r ? getValue(r) : null)
   const nonNull = values.filter(v => v != null) as number[]
@@ -273,7 +364,7 @@ function WinnerRow({ label, reports, getValue, higherIsBetter = true }: {
           color: values[i] == null ? S.n300 : i === winnerIdx ? S.emerald : S.n700,
           background: i === winnerIdx && values[i] != null ? S.emeraldBg : 'transparent',
         }}>
-          {values[i] != null ? String(values[i]) : '—'}
+          {values[i] != null ? (formatValue ? formatValue(values[i] as number) : String(values[i])) : '—'}
           {i === winnerIdx && values[i] != null && <span style={{ marginLeft: 4, fontSize: 10 }}>Check</span>}
         </td>
       ))}
@@ -409,6 +500,14 @@ export default function ComparePage() {
                 <WinnerRow label="Rent score"          reports={selected} getValue={r => r.score_rent}                                         higherIsBetter />
                 <WinnerRow label="Competition score"   reports={selected} getValue={r => r.score_competition}                                  higherIsBetter />
                 <WinnerRow label="Demand score"        reports={selected} getValue={r => r.score_demand}                                       higherIsBetter />
+                <WinnerRow label="Timing score"        reports={selected} getValue={r => {
+                  const v = r.computed_result?.benchmarkContext?.timingScore
+                  return v == null ? null : Number(v)
+                }}                                                                                                                               higherIsBetter formatValue={(v) => `${Math.round(v)}/100`} />
+                <WinnerRow label="Benchmark rent %"    reports={selected} getValue={r => {
+                  const v = r.computed_result?.benchmarkContext?.benchmarkRentRatio
+                  return v == null ? null : Math.round(Number(v) * 10) / 10
+                }}                                                                                                                               higherIsBetter={false} formatValue={(v) => `${v.toFixed(1)}%`} />
                 <WinnerRow label="Net profit / mo"     reports={selected} getValue={r => r.computed_result?.netProfit ?? null}                 higherIsBetter />
                 <WinnerRow label="Monthly rent"        reports={selected} getValue={r => r.monthly_rent}                                       higherIsBetter={false} />
                 <WinnerRow label="Break-even (days)"   reports={selected} getValue={r => r.breakeven_daily}                                   higherIsBetter={false} />

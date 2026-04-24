@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Launceston food business feasibility',
     'Launceston retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/launceston' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/launceston' },
   openGraph: {
     title: 'Launceston Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Launceston. Rent benchmarks, competition and demographics scored.',

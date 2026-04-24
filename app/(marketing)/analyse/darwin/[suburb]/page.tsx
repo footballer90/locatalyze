@@ -134,13 +134,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${data.name}, Darwin Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict for Darwin cafes, restaurants, and retail operators.`,
     alternates: {
-      canonical: `https://www.locatalyze.com/analyse/darwin/${data.slug}`,
+      canonical: `https://locatalyze.com/analyse/darwin/${data.slug}`,
     },
     openGraph: {
       title: `${data.name}, Darwin Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict for Darwin cafes, restaurants, and retail operators.`,
       type: 'article',
-      url: `https://www.locatalyze.com/analyse/darwin/${data.slug}`,
+      url: `https://locatalyze.com/analyse/darwin/${data.slug}`,
     },
   }
 }

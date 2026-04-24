@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Mandurah retail location',
     'open a cafe Peel region WA',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mandurah' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mandurah' },
   openGraph: {
     title: 'Mandurah Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Mandurah. Rent benchmarks, estuary tourism traffic and competition scored.',

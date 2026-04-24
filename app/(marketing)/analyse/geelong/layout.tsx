@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Geelong retail location',
     'open a cafe Geelong Victoria',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/geelong' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/geelong' },
   openGraph: {
     title: 'Geelong Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Geelong. Rent benchmarks, foot traffic and competition scored.',

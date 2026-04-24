@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Geelong — 2026 Location Guide',
   description:
     'Geelong business location guide 2026. 10 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Geelong suburb for your café, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/geelong' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/geelong' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Geelong — 2026 Location Guide',
     description: '10 Geelong suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/geelong',
+    url: 'https://locatalyze.com/analyse/geelong',
   },
 }
 

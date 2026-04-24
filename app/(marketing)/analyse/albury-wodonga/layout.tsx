@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'Albury Wodonga retail location',
     'open a cafe Albury NSW',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/albury-wodonga' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/albury-wodonga' },
   openGraph: {
     title: 'Albury-Wodonga Business Location Analysis — Cafe, Restaurant & Retail',
     description:

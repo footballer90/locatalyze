@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Canberra — 2026 Location Guide',
   description:
     'Canberra business location guide 2026. 19 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Canberra suburb for your café, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/canberra' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/canberra' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Canberra — 2026 Location Guide',
     description: '19 Canberra suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/canberra',
+    url: 'https://locatalyze.com/analyse/canberra',
   },
 }
 
@@ -40,8 +40,8 @@ const SCHEMA = {
   headline: 'Best Suburbs to Open a Business in Canberra 2026',
   description: 'Data-driven guide to Canberra commercial location decisions — 19 suburbs scored across rent, competition, foot traffic and demand.',
   author: { '@type': 'Organization', name: 'Locatalyze' },
-  publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-  url: 'https://www.locatalyze.com/analyse/canberra',
+  publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+  url: 'https://locatalyze.com/analyse/canberra',
   datePublished: '2026-01-01',
   dateModified: '2026-04-01',
 }

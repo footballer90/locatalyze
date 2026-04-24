@@ -114,7 +114,7 @@ function buildWelcomeEmail(email: string): string {
 
     <!-- CTA -->
     <div style="text-align:center;margin-bottom:28px;">
-   <a href="https://www.locatalyze.com" style="display:inline-block;background:#0F766E;color:#ffffff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">
+   <a href="https://locatalyze.com" style="display:inline-block;background:#0F766E;color:#ffffff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em;">
     Analyse a location free →
       </a>
     </div>
@@ -129,7 +129,7 @@ function buildWelcomeEmail(email: string): string {
   <div style="padding:20px 40px;border-top:1px solid #F3F4F6;background:#FAFAFA;">
   <p style="font-size:11px;color:#9CA3AF;margin:0;line-height:1.6;">
    You subscribed at locatalyze.com · 
-      <a href="https://www.locatalyze.com/unsubscribe?email=${encodeURIComponent(email)}" style="color:#9CA3AF;">Unsubscribe</a>
+      <a href="https://locatalyze.com/unsubscribe?email=${encodeURIComponent(email)}" style="color:#9CA3AF;">Unsubscribe</a>
   </p>
   </div>
 </div>

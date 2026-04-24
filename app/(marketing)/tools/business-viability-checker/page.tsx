@@ -13,13 +13,13 @@ export const metadata: Metadata = {
   title: 'Business Viability Checker — Will Your Café, Restaurant or Shop Work in This Suburb?',
   description:
     'Free Australian business viability checker. Enter your business type, suburb, rent and budget and get an instant GO / CAUTION / NO verdict with estimated monthly revenue, profit and break-even — before you sign a lease.',
-  alternates: { canonical: 'https://www.locatalyze.com/tools/business-viability-checker' },
+  alternates: { canonical: 'https://locatalyze.com/tools/business-viability-checker' },
   openGraph: {
     title: 'Business Viability Checker — Locatalyze',
     description:
       'Free tool. Will your café, restaurant, gym or retail shop actually work in that suburb? Get a 10-second verdict with revenue, profit and break-even estimates.',
     type: 'website',
-    url: 'https://www.locatalyze.com/tools/business-viability-checker',
+    url: 'https://locatalyze.com/tools/business-viability-checker',
   },
   twitter: {
     card: 'summary_large_image',
@@ -523,7 +523,7 @@ export default function Page() {
               {
                 '@type': 'WebApplication',
                 name: 'Locatalyze Business Viability Checker',
-                url: 'https://www.locatalyze.com/tools/business-viability-checker',
+                url: 'https://locatalyze.com/tools/business-viability-checker',
                 applicationCategory: 'BusinessApplication',
                 operatingSystem: 'Any',
                 offers: { '@type': 'Offer', price: '0', priceCurrency: 'AUD' },

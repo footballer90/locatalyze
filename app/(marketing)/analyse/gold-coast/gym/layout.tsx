@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Gold Coast health business',
     'open a fitness studio Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/gold-coast/gym' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/gold-coast/gym' },
   openGraph: {
     title: 'Best Suburbs to Open a Gym on the Gold Coast (2026)',
     description: 'Suburb-by-suburb analysis of Gold Coast\'s gym and fitness market. Rent benchmarks, competition and demand scored.',

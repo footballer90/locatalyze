@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Townsville — 2026 Location Guide',
   description:
     'Townsville business location guide 2026. 10 suburbs scored by foot traffic, rent viability, defence sector demand, and competition. Find the best Townsville suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/townsville' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/townsville' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Townsville — 2026 Location Guide',
     description: '10 Townsville suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/townsville',
+    url: 'https://locatalyze.com/analyse/townsville',
   },
 }
 
@@ -25,8 +25,8 @@ export default function TownsvillePage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Best Suburbs to Open a Business in Townsville 2026',
         author: { '@type': 'Organization', name: 'Locatalyze' },
-        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-        url: 'https://www.locatalyze.com/analyse/townsville', dateModified: '2026-04-20',
+        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+        url: 'https://locatalyze.com/analyse/townsville', dateModified: '2026-04-20',
       }) }} />
 
       <section style={{ background: 'linear-gradient(135deg, #1E3A5F 0%, #1D4ED8 50%, #2563EB 100%)', color: '#FFFFFF', padding: '56px 24px 52px' }}>

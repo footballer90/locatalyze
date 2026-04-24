@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Adelaide retail location',
     'open a cafe South Australia',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/adelaide' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/adelaide' },
   openGraph: {
     title: 'Adelaide Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Adelaide. Rent benchmarks, competition and demographics scored.',

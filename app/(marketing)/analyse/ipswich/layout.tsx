@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Ipswich food business feasibility',
     'Ipswich retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/ipswich' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/ipswich' },
   openGraph: {
     title: 'Ipswich Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Ipswich. Rent benchmarks, competition and demographics scored.',

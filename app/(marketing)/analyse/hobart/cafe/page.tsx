@@ -19,7 +19,7 @@ import {
 //   title: 'Best Suburbs to Open a Café in Hobart (2026)  —  Location Analysis',
 //   description: 'Data-driven suburb guide for Hobart coffee shops. Farm-to-table economics, tourism density, seasonal foot traffic and rent benchmarks. Based on ABS and REIWA data.',
 //   keywords: ['best suburbs to open a cafe in Hobart','Hobart coffee shop location','opening a cafe Hobart Tasmania','best suburbs Hobart small business','Hobart commercial rent cafe','Salamanca Place cafe competition','Battery Point coffee shop','affordable cafe location Hobart','North Hobart restaurant strip cafe','Hobart tourism cafe demand','hidden gem suburbs Hobart business'],
-//   alternates: { canonical: 'https://www.locatalyze.com/analyse/hobart/cafe' },
+//   alternates: { canonical: 'https://locatalyze.com/analyse/hobart/cafe' },
 //   openGraph: { title: 'Best Suburbs to Open a Café in Hobart (2026)', description: 'Suburb-by-suburb analysis of Hobart\'s tourism-driven café market. Real data, real numbers.', type: 'article' },
 // }
 
@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Café in Hobart (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/hobart/cafe',
+    url: 'https://locatalyze.com/analyse/hobart/cafe',
   },
   {
     '@context': 'https://schema.org',

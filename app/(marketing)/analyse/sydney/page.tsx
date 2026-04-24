@@ -36,11 +36,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Sydney — 2026 Location Guide',
   description:
     'Sydney business location guide 2026. 20 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Sydney suburb for your café, restaurant, retail or service business — with honest analysis of what works and what fails.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Sydney — 2026 Location Guide',
     description: '20 Sydney suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/sydney',
+    url: 'https://locatalyze.com/analyse/sydney',
   },
 }
 

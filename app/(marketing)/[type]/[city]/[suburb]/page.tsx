@@ -32,11 +32,11 @@ export async function generateMetadata({
   return {
     title       : d.metaTitle,
     description : d.metaDescription,
-    alternates  : { canonical: `https://www.locatalyze.com/${type}/${city}/${suburb}` },
+    alternates  : { canonical: `https://locatalyze.com/${type}/${city}/${suburb}` },
     openGraph   : {
       title      : d.metaTitle,
       description: d.metaDescription,
-      url        : `https://www.locatalyze.com/${type}/${city}/${suburb}`,
+      url        : `https://locatalyze.com/${type}/${city}/${suburb}`,
       type       : 'website',
     },
   }

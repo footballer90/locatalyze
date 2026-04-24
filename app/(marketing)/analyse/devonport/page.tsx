@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Devonport — 2026 Location Guide',
   description:
     'Devonport business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Devonport suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/devonport' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/devonport' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Devonport — 2026 Location Guide',
     description: '7 Devonport suburbs ranked and scored. Rent benchmarks, Spirit of Tasmania ferry foot traffic, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/devonport',
+    url: 'https://locatalyze.com/analyse/devonport',
   },
 }
 

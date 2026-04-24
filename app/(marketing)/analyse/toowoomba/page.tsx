@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Toowoomba — 2026 Location Guide',
   description:
     'Toowoomba business location guide 2026. 10 suburbs scored by foot traffic, rent viability, flower festival demand, and competition. Find the best Toowoomba suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/toowoomba' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/toowoomba' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Toowoomba — 2026 Location Guide',
     description: '10 Toowoomba suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/toowoomba',
+    url: 'https://locatalyze.com/analyse/toowoomba',
   },
 }
 
@@ -25,8 +25,8 @@ export default function ToowoombaPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Best Suburbs to Open a Business in Toowoomba 2026',
         author: { '@type': 'Organization', name: 'Locatalyze' },
-        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-        url: 'https://www.locatalyze.com/analyse/toowoomba', dateModified: '2026-04-20',
+        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+        url: 'https://locatalyze.com/analyse/toowoomba', dateModified: '2026-04-20',
       }) }} />
 
       <section style={{ background: 'linear-gradient(135deg, #14532D 0%, #166534 50%, #16A34A 100%)', color: '#FFFFFF', padding: '56px 24px 52px' }}>

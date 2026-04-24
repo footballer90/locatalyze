@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Hobart hospitality location',
     'open a food business Hobart',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/hobart/cafe' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/hobart/cafe' },
   openGraph: {
     title: 'Best Suburbs to Open a Café in Hobart (2026)',
     description: 'Suburb-by-suburb analysis of Hobart\'s café market. Rent benchmarks, competition and tourist traffic scored.',

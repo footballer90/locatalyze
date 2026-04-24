@@ -29,11 +29,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Brisbane — 2026 Location Guide',
   description:
     'Brisbane business location guide 2026. 20 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Brisbane suburb for your café, restaurant, retail or service business — with honest analysis of what works and what fails.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/brisbane' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/brisbane' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Brisbane — 2026 Location Guide',
     description: '20 Brisbane suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/brisbane',
+    url: 'https://locatalyze.com/analyse/brisbane',
   },
 }
 

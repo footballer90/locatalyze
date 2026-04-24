@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: 'Opening a Business in Ultimo Sydney — Location Analysis 2026',
   description:
     'Ultimo business location analysis 2026. Score 68/100 — CAUTION. 45,000+ UTS students, only 6 independent cafés in the catchment, Harris Street rents from $4,500/month. Full rent guide, best business models, revenue ranges, and break-even analysis for Ultimo NSW 2007.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/ultimo' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney/ultimo' },
   openGraph: {
     title: 'Opening a Business in Ultimo Sydney — 2026 Location Analysis',
     description: 'Ultimo scores 68/100 — CAUTION. 45,000 UTS students, 6 cafés for the entire catchment, and Harris Street rents 45% below Surry Hills. Full analysis inside.',
-    url: 'https://www.locatalyze.com/analyse/sydney/ultimo',
+    url: 'https://locatalyze.com/analyse/sydney/ultimo',
   },
 }
 

@@ -136,6 +136,12 @@ function fmtRange(base: number | null | undefined, prefix = '$', variance = 0.2)
   return `${prefix}${lo.toLocaleString('en-AU')} – ${prefix}${hi.toLocaleString('en-AU')}`
 }
 
+function formatMoneyK(n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return 'N/A'
+  if (Math.abs(n) >= 1000000) return `$${(n / 1000000).toFixed(1)}M`
+  return `$${Math.round(n / 1000)}K`
+}
+
 // Normalise verdict from n8n ('Strong Go', 'Conditional Go', 'Caution', 'No Go')
 // or legacy ('GO', 'CAUTION', 'NO') to a canonical form for comparisons
 function normalizeVerdict(v: string | null): 'GO' | 'CAUTION' | 'NO' {
@@ -154,6 +160,40 @@ function verdictCfg(v: string | null) {
   if (norm === 'GO')      return { label, desc: 'LOW RISK',    bg: S.emeraldBg, text: S.emerald, border: S.emeraldBdr, headerAccent: '#059669', headerText: '#ECFDF5' }
   if (norm === 'CAUTION') return { label, desc: 'MEDIUM RISK', bg: S.amberBg,   text: S.amber,   border: S.amberBdr,   headerAccent: '#D97706', headerText: '#FFFBEB' }
   return                         { label, desc: 'HIGH RISK',   bg: S.redBg,     text: S.red,     border: S.redBdr,     headerAccent: '#DC2626', headerText: '#FEF2F2' }
+}
+
+function heroVerdictLine(v: string | null, rentRatioPct: number | null): string {
+  const norm = normalizeVerdict(v)
+  if (norm === 'NO') return 'NOT VIABLE - economics are currently too weak'
+  if (norm === 'CAUTION') return 'VIABLE - but condition-sensitive'
+  if (rentRatioPct != null && rentRatioPct >= 15) return 'VIABLE - but margin-sensitive'
+  return 'VIABLE - economics are workable'
+}
+
+function buildRealityCheck(args: {
+  rentRatioPct: number | null
+  validCompetitorCount: number | null
+  businessType: string | null
+}): string | null {
+  const bt = (args.businessType ?? 'business').toLowerCase()
+  if (args.rentRatioPct != null && args.rentRatioPct >= 20) {
+    return `Reality check: At ~${Math.round(args.rentRatioPct)}% rent-to-revenue, many comparable ${bt}s struggle to hold healthy margins without premium pricing.`
+  }
+  if (args.rentRatioPct != null && args.rentRatioPct >= 15) {
+    return `Reality check: At ~${Math.round(args.rentRatioPct)}% rent-to-revenue, this site can work, but margin buffer is thin if revenue underperforms.`
+  }
+  if (args.validCompetitorCount != null && args.validCompetitorCount >= 10) {
+    return `Reality check: Competition is dense (${args.validCompetitorCount} operators in range), so winning requires clear differentiation, not average execution.`
+  }
+  return null
+}
+
+function firstSentence(text: string | null | undefined): string | null {
+  if (!text) return null
+  const trimmed = text.trim()
+  if (!trimmed) return null
+  const idx = trimmed.indexOf('. ')
+  return idx === -1 ? trimmed : trimmed.slice(0, idx + 1)
 }
 
 function scoreColor(s: number) {
@@ -3084,6 +3124,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const competitorDataQuality   = competitors?.dataQuality   || null
   const demographicsDataQuality = demographics?.dataQuality  || null
   const confidence = confidenceLevel(report, C)
+  const rawA7 = (_rd?.a7?.outputs || _rd?.a7 || _rd?.a7_data?.outputs || _rd?.a7_data || null) as any
+  const rawA8 = (_rd?.a8?.outputs || _rd?.a8 || _rd?.a8_data?.outputs || _rd?.a8_data || null) as any
 
   const projections  = fin.projections  || {}
   const riskScenarios = fin.riskScenarios || {}
@@ -3151,6 +3193,16 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const _dNetProfit = displayMoney(displayNetProfit, _confidenceTier)
   const _dMargin    = displayPercent(fin.profitMargin ? parseFloat(fin.profitMargin) : null, _confidenceTier)
   const _dCustomers = displayCustomers(fin.baselineCustomers, _confidenceTier)
+  const _revenueRange = C?.revenueRange ?? null
+  const _benchmarkContext = C?.benchmarkContext ?? null
+  const _heroAdvisorLine = firstSentence(_benchmarkContext?.benchmarkNarrative)
+  const _heroRentRatioPct = _benchmarkContext?.benchmarkRentRatio ?? fin?.rent?.toRevenuePercent ?? null
+  const _heroVerdictLine = heroVerdictLine(report.verdict, _heroRentRatioPct != null ? Number(_heroRentRatioPct) : null)
+  const _realityCheck = buildRealityCheck({
+    rentRatioPct: _heroRentRatioPct != null ? Number(_heroRentRatioPct) : null,
+    validCompetitorCount: C?.validCompetitorCount ?? null,
+    businessType: report.business_type ?? null,
+  })
 
   // Profitability score — from computed_result.scores when available, else derived
   const computedScoreProfitability: number = C
@@ -3441,6 +3493,20 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6 }}>
                 {(report.business_type ?? 'Business')} feasibility report · Updated {new Date(report.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
+              <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 12, border: `1px solid ${verdictCfg(report.verdict).border}`, background: verdictCfg(report.verdict).bg }}>
+                <p style={{ fontSize: 22, fontWeight: 900, color: verdictCfg(report.verdict).text, lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+                  {verdictCfg(report.verdict).label} - {_heroVerdictLine.replace(/^VIABLE - |^NOT VIABLE - /, '')}
+                </p>
+                <p style={{ fontSize: 28, fontWeight: 900, color: S.n900, lineHeight: 1, letterSpacing: '-0.03em', marginTop: 10, fontFamily: S.mono }}>
+                  {_revenueRange ? `${formatMoneyK(_revenueRange.low)} - ${formatMoneyK(_revenueRange.high)}` : _dRevenue.display}
+                </p>
+                <p style={{ fontSize: 12, color: S.n500, marginTop: 6 }}>
+                  {_revenueRange ? `Most likely: ${formatMoneyK(_revenueRange.mid)}` : 'Revenue range unavailable'}
+                </p>
+                <p style={{ fontSize: 12, color: S.n700, marginTop: 8, fontWeight: 700 }}>
+                  Confidence: {String(confidence.level).charAt(0).toUpperCase() + String(confidence.level).slice(1)} {C?.dataCompleteness != null ? `(${Math.round(C.dataCompleteness)}%)` : ''}
+                </p>
+              </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(120px,1fr))', gap: 10, minWidth: 290 }}>
               <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
@@ -3450,10 +3516,22 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
                 <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Confidence</p>
                 <p style={{ fontSize: 16, fontWeight: 900, color: S.n900 }}>{String(confidence.level).toUpperCase()}</p>
+                {C?.dataCompleteness != null && (
+                  <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>{C.dataCompleteness}% data</p>
+                )}
               </div>
               <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Revenue / mo</p>
-                <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{_dRevenue.display}</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Revenue Range</p>
+                {_revenueRange ? (
+                  <>
+                    <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>
+                      {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
+                    </p>
+                    <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>Most likely: {formatMoneyK(_revenueRange.mid)}</p>
+                  </>
+                ) : (
+                  <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{_dRevenue.display}</p>
+                )}
               </div>
               <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
                 <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Net / mo</p>
@@ -3461,6 +3539,18 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               </div>
             </div>
           </div>
+          {(_heroAdvisorLine || C?.verdictReasons?.[0]) && (
+            <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 10, background: '#FFFFFFD9', border: '1px solid rgba(148,163,184,0.26)' }}>
+              <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.55, fontWeight: 600 }}>
+                {_heroAdvisorLine ?? C?.verdictReasons?.[0]}
+              </p>
+            </div>
+          )}
+          {_realityCheck && (
+            <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 10, background: S.n50, border: `1px solid ${S.n200}` }}>
+              <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6, fontWeight: 600 }}>{_realityCheck}</p>
+            </div>
+          )}
         </div>
 
         {/* ═══ SECTION 1: DECISION-FIRST LAYER ═══ */}
@@ -3521,6 +3611,36 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )
             })()}
           </Card>
+          {(C?.verdictReasons?.length || C?.verdictFailureModes?.length || C?.verdictConditions?.length) ? (
+            <Card style={{ marginBottom: 18 }}>
+              <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+                Advisor Decision Logic
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+                <div style={{ border: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 10, padding: '10px 12px', minHeight: 150 }}>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, marginBottom: 8 }}>Why this works</p>
+                  <p style={{ fontSize: 10, color: S.emerald, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Checklist</p>
+                  {(C?.verdictReasons ?? []).slice(0, 2).map((txt: string, i: number) => (
+                    <p key={i} style={{ fontSize: 12, color: '#065F46', lineHeight: 1.5, marginBottom: 6 }}>✔ {txt}</p>
+                  ))}
+                </div>
+                <div style={{ border: `1px solid ${S.amberBdr}`, background: S.amberBg, borderRadius: 10, padding: '10px 12px', minHeight: 150 }}>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: S.amber, marginBottom: 8 }}>What could go wrong</p>
+                  <p style={{ fontSize: 10, color: S.amber, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Risk Triggers</p>
+                  {(C?.verdictFailureModes ?? []).slice(0, 2).map((txt: string, i: number) => (
+                    <p key={i} style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, marginBottom: 6 }}>⚠ {txt}</p>
+                  ))}
+                </div>
+                <div style={{ border: `1px solid ${S.blueBdr}`, background: S.blueBg, borderRadius: 10, padding: '10px 12px', minHeight: 150 }}>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: S.blue, marginBottom: 8 }}>What must be true</p>
+                  <p style={{ fontSize: 10, color: S.blue, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Non-Negotiables</p>
+                  {(C?.verdictConditions ?? []).slice(0, 2).map((txt: string, i: number) => (
+                    <p key={i} style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.5, marginBottom: 6 }}>📌 {txt}</p>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          ) : null}
           <KeyDriversGrid
             drivers={[
               { label: 'Rent', score: report.score_rent },
@@ -3715,7 +3835,18 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${S.n100}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Monthly Revenue</p>
-                    <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>{_dRevenue.display}</p>
+                    {_revenueRange ? (
+                      <>
+                        <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>
+                          {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
+                        </p>
+                        <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
+                          Most likely: {formatMoneyK(_revenueRange.mid)}
+                        </p>
+                      </>
+                    ) : (
+                      <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>{_dRevenue.display}</p>
+                    )}
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
@@ -3789,6 +3920,58 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   )
                 })()}
               </Card>
+
+              {(rawA7 || rawA8 || _benchmarkContext) ? (
+                <Card style={{ padding: '24px 28px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
+                    Industry Benchmark & Market Conditions
+                  </p>
+                  <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.6, marginBottom: 12 }}>
+                    {_benchmarkContext?.benchmarkNarrative
+                      ?? 'Market context is directional. Validate local demand and lease terms before signing.'}
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
+                    <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px', background: S.white }}>
+                      <p style={{ fontSize: 11, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Rent vs Industry</p>
+                      <p style={{ fontSize: 18, fontWeight: 900, color: S.n900 }}>
+                        {rawA7?.rent_burden_label ?? (fin?.rent?.label ?? (_benchmarkContext?.benchmarkRentRatio != null && _benchmarkContext.benchmarkRentRatio > 20 ? 'Risky' : _benchmarkContext?.benchmarkRentRatio != null && _benchmarkContext.benchmarkRentRatio > 15 ? 'Watch' : _benchmarkContext?.benchmarkRentRatio != null ? 'Healthy' : 'N/A'))}
+                      </p>
+                      <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                        {rawA7?.rent_burden_pct != null
+                          ? `${rawA7.rent_burden_pct}% of revenue`
+                          : (_benchmarkContext?.benchmarkRentRatio != null
+                            ? `${Math.round(_benchmarkContext.benchmarkRentRatio)}% of revenue`
+                            : (fin?.rent?.toRevenuePercent != null ? `${fin.rent.toRevenuePercent}% of revenue` : 'Benchmark ratio unavailable'))}
+                      </p>
+                    </div>
+                    <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px', background: S.white }}>
+                      <p style={{ fontSize: 11, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Suburb Direction</p>
+                      <p style={{ fontSize: 18, fontWeight: 900, color: S.n900 }}>
+                        {rawA8?.economic_verdict
+                          ?? (_benchmarkContext?.marketSentiment ? _benchmarkContext.marketSentiment.toUpperCase() : null)
+                          ?? market?.demandTrend
+                          ?? 'N/A'}
+                      </p>
+                      <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                        {rawA8?.consumer_sentiment_label
+                          ? `Consumer sentiment: ${rawA8.consumer_sentiment_label}`
+                          : (_benchmarkContext?.marketSentiment ? `Sentiment: ${_benchmarkContext.marketSentiment}` : 'Derived from market demand trend')}
+                      </p>
+                    </div>
+                    <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px', background: S.white }}>
+                      <p style={{ fontSize: 11, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Timing Signal</p>
+                      <p style={{ fontSize: 18, fontWeight: 900, color: S.n900 }}>
+                        {market?.bestEntryTiming ?? rawA8?.timing_signal ?? (_benchmarkContext?.timingScore != null ? `${_benchmarkContext.timingScore}/100` : 'Now / Verify')}
+                      </p>
+                      <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                        {rawA8?.food_cpi_yoy_pct != null
+                          ? `Food CPI YoY: ${rawA8.food_cpi_yoy_pct}%`
+                          : (rawA8?.wage_growth_pct != null ? `Wage growth: ${rawA8.wage_growth_pct}%` : (_benchmarkContext?.timingScore != null ? `Timing score: ${_benchmarkContext.timingScore}/100` : 'Macro timing data limited'))}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ) : null}
             </div>
 
             {(areaContext?.medianRent || areaContext?.topListings?.length > 0) && (

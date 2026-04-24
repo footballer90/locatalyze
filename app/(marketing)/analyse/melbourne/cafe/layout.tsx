@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'hospitality location Melbourne inner north',
     'Melbourne coffee shop competition',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne/cafe' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/melbourne/cafe' },
   openGraph: {
     title: 'Best Suburbs to Open a Café in Melbourne (2026)',
     description: 'Suburb-by-suburb analysis of Melbourne\'s café market. Rent benchmarks, competition and income data scored.',

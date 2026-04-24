@@ -26,12 +26,12 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Wagga Wagga — 2026 Location Guide',
   description:
     'Wagga Wagga business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Wagga Wagga suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/wagga-wagga' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/wagga-wagga' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Wagga Wagga — 2026 Location Guide',
     description:
       '8 Wagga Wagga suburbs ranked and scored. Rent benchmarks, foot traffic data, Defence and university economy, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/wagga-wagga',
+    url: 'https://locatalyze.com/analyse/wagga-wagga',
   },
 }
 

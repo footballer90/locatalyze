@@ -28,11 +28,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Perth — 2026 Location Guide',
   description:
     'Perth business location guide 2026. 10 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Mining-driven income advantage, 30–45% lower rents than Sydney — find the best Perth suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/perth' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/perth' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Perth — 2026 Location Guide',
     description: '10 Perth suburbs ranked and scored. Rent benchmarks, foot traffic data, best business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/perth',
+    url: 'https://locatalyze.com/analyse/perth',
   },
 }
 

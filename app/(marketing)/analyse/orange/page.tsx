@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Orange NSW — 2026 Location Guide',
   description:
     'Orange business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Orange suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/orange' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/orange' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Orange NSW — 2026 Location Guide',
     description: '7 Orange suburbs ranked and scored. Rent benchmarks, foot traffic data, FOOD Week impact, wine tourism season, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/orange',
+    url: 'https://locatalyze.com/analyse/orange',
   },
 }
 

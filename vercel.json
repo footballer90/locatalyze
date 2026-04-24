@@ -11,6 +11,17 @@
       "has": [
         {
           "type": "host",
+          "value": "www.locatalyze.com"
+        }
+      ],
+      "destination": "https://locatalyze.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
           "value": "locatalyze.vercel.app"
         }
       ],

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     'where to open a restaurant Perth',
     'Western Australia restaurant business',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/perth/restaurant' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/perth/restaurant' },
   openGraph: {
     title: 'Best Suburbs to Open a Restaurant in Perth (2026)',
     description: 'Mount Lawley, Subiaco, Fremantle and Leederville scored for restaurant viability. Real rent numbers, competition data and break-even analysis.',

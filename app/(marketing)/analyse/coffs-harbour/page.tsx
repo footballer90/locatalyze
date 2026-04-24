@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Coffs Harbour — 2026 Location Guide',
   description:
     'Coffs Harbour business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Coffs Harbour suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/coffs-harbour' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/coffs-harbour' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Coffs Harbour — 2026 Location Guide',
     description: '8 Coffs Harbour suburbs ranked and scored. Rent benchmarks, foot traffic data, tourism season impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/coffs-harbour',
+    url: 'https://locatalyze.com/analyse/coffs-harbour',
   },
 }
 

@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Bundaberg — 2026 Location Guide',
   description:
     'Bundaberg business location guide 2026. Suburbs scored by foot traffic, rum tourism, rent viability, and competition. Find the best Bundaberg suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/bundaberg' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/bundaberg' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Bundaberg — 2026 Location Guide',
     description: 'Bundaberg suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/bundaberg',
+    url: 'https://locatalyze.com/analyse/bundaberg',
   },
 }
 
@@ -25,8 +25,8 @@ export default function BundabergPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Best Suburbs to Open a Business in Bundaberg 2026',
         author: { '@type': 'Organization', name: 'Locatalyze' },
-        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-        url: 'https://www.locatalyze.com/analyse/bundaberg', dateModified: '2026-04-20',
+        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+        url: 'https://locatalyze.com/analyse/bundaberg', dateModified: '2026-04-20',
       }) }} />
 
       <section style={{ background: 'linear-gradient(135deg, #713F12 0%, #A16207 50%, #CA8A04 100%)', color: '#FFFFFF', padding: '56px 24px 52px' }}>

@@ -19,7 +19,7 @@ import {
 //  title: 'Best Suburbs to Open a Bakery in Newcastle (2026) — Location Analysis',
 //  description: 'Data-driven suburb guide for Newcastle bakeries. Rent benchmarks, foot traffic, demographics and competition scored. Artisan bread market analysis for NSW.',
 //  keywords: ['best suburbs to open a bakery in Newcastle','Newcastle bakery location','opening a bakery Newcastle NSW','Newcastle small business location','artisan bakery Newcastle','sourdough shop location Newcastle','best Newcastle suburb bakery 2026','Newcastle commercial rent bakery','Darby Street bakery','bakery foot traffic Newcastle suburbs'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/newcastle/bakery' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/newcastle/bakery' },
 //  openGraph: { title: 'Best Suburbs to Open a Bakery in Newcastle (2026)', description: 'Suburb-by-suburb analysis of Newcastle\'s artisan bakery market. Real data, real numbers.', type: 'article' },
 // }
 
@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Bakery in Newcastle (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-15',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/newcastle/bakery',
+    url: 'https://locatalyze.com/analyse/newcastle/bakery',
   },
   {
     '@context': 'https://schema.org',

@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Mildura — 2026 Location Guide',
   description:
     'Mildura business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Mildura suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mildura' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mildura' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Mildura — 2026 Location Guide',
     description: '8 Mildura suburbs ranked and scored. Rent benchmarks, Murray River tourism, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/mildura',
+    url: 'https://locatalyze.com/analyse/mildura',
   },
 }
 

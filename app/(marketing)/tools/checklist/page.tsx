@@ -5,13 +5,13 @@ const JSONLD = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'Before-You-Sign Location Checklist — Café & Restaurant Operators',
-  url: 'https://www.locatalyze.com/tools/checklist',
+  url: 'https://locatalyze.com/tools/checklist',
   description:
     '12 checks across three phases (desk, site, lease table) for Australian café and restaurant operators. Includes interactive rent and AOV inputs to calculate GO / CAUTION / NO thresholds. Free and printable.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'AUD' },
-  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
 }
 
 export const metadata: Metadata = {
@@ -27,13 +27,13 @@ export const metadata: Metadata = {
     'commercial tenancy checklist Australia',
     'rent affordability check Australia',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/tools/checklist' },
+  alternates: { canonical: 'https://locatalyze.com/tools/checklist' },
   openGraph: {
     title: 'Before-You-Sign Location Checklist | Locatalyze',
     description:
       '12 checks · 3 phases · café & restaurant operators. Fill in your rent to get your GO / CAUTION / NO threshold numbers. Free and printable.',
     type: 'website',
-    url: 'https://www.locatalyze.com/tools/checklist',
+    url: 'https://locatalyze.com/tools/checklist',
   },
 }
 

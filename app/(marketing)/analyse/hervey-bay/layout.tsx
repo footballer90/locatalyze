@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Hervey Bay retail location',
     'open a cafe Fraser Coast',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/hervey-bay' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/hervey-bay' },
   openGraph: {
     title: 'Hervey Bay Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Hervey Bay. Rent benchmarks, tourism traffic and competition scored.',

@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: 'How Many Customers Do You Need to Survive? | Break-Even Calculator',
   description:
     'Calculate the exact number of daily customers you need to break even. Enter your rent, staff costs, and average ticket to get your survival number instantly — free.',
-  alternates: { canonical: 'https://www.locatalyze.com/tools/break-even-foot-traffic' },
+  alternates: { canonical: 'https://locatalyze.com/tools/break-even-foot-traffic' },
   openGraph: {
     title: 'Break-Even Foot Traffic Calculator | Locatalyze',
     description:
       'How many customers do you need every day to survive? Find out instantly with this free tool for Australian café, retail, restaurant, gym, and salon operators.',
     type: 'website',
-    url: 'https://www.locatalyze.com/tools/break-even-foot-traffic',
+    url: 'https://locatalyze.com/tools/break-even-foot-traffic',
   },
 }
 
@@ -476,13 +476,13 @@ const JSONLD = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'Break-Even Foot Traffic Calculator',
-  url: 'https://www.locatalyze.com/tools/break-even-foot-traffic',
+  url: 'https://locatalyze.com/tools/break-even-foot-traffic',
   description:
     'Free calculator to find how many customers you need per day to break even. Covers café, restaurant, retail, gym and salon in Australia.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'AUD' },
-  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+  provider: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
 }
 
 // Inline SVG icons — no emoji, no external deps

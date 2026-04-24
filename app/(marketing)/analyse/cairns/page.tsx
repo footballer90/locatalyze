@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Cairns — 2026 Location Guide',
   description:
     'Cairns business location guide 2026. 11 suburbs scored by tourism, foot traffic, rent viability, and competition. Find the best Cairns suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/cairns' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/cairns' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Cairns — 2026 Location Guide',
     description: '11 Cairns suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/cairns',
+    url: 'https://locatalyze.com/analyse/cairns',
   },
 }
 
@@ -25,8 +25,8 @@ export default function CairnsPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Best Suburbs to Open a Business in Cairns 2026',
         author: { '@type': 'Organization', name: 'Locatalyze' },
-        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-        url: 'https://www.locatalyze.com/analyse/cairns', dateModified: '2026-04-20',
+        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+        url: 'https://locatalyze.com/analyse/cairns', dateModified: '2026-04-20',
       }) }} />
 
       <section style={{ background: 'linear-gradient(135deg, #134E4A 0%, #0F766E 50%, #0D9488 100%)', color: '#FFFFFF', padding: '56px 24px 52px' }}>

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Geelong hospitality location',
     'open a business Geelong',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/geelong/cafe' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/geelong/cafe' },
   openGraph: {
     title: 'Best Suburbs to Open a Café in Geelong (2026)',
     description: 'Suburb-by-suburb analysis of Geelong\'s café market. Rent benchmarks, competition and demographic data scored.',

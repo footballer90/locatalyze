@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Sunshine Coast food business',
     'open a cafe Queensland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sunshine-coast/cafe' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sunshine-coast/cafe' },
   openGraph: {
     title: 'Best Suburbs to Open a Café on the Sunshine Coast (2026)',
     description: 'Suburb-by-suburb analysis of the Sunshine Coast café market. Rent, competition and tourist traffic scored.',

@@ -30,7 +30,7 @@ function getRestaurantVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
 //  title: 'Best Suburbs to Open a Restaurant in Adelaide (2026) — Location Analysis',
 //  description: 'Data-driven suburb guide for Adelaide restaurants. Rent benchmarks, foot traffic, demographics and competition scored. Lowest rents in Australia, thriving food culture.',
 //  keywords: ['best suburbs to open a restaurant in Adelaide','Adelaide restaurant location','opening a restaurant Norwood Adelaide','Adelaide hospitality business location','restaurant feasibility Adelaide','where to open a restaurant Adelaide','Adelaide food city','small bar venue Adelaide','Adelaide rent costs restaurant','Adelaide up and coming suburbs','hidden gems Adelaide restaurant','Adelaide food culture','Barossa wine region','affordable commercial rent Adelaide'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/adelaide/restaurant' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/adelaide/restaurant' },
 //  openGraph: { title: 'Best Suburbs to Open a Restaurant in Adelaide (2026)', description: 'Suburb-by-suburb analysis of Adelaide\'s restaurant market. Australia\'s most underrated food city.', type: 'article' },
 // }
 
@@ -40,11 +40,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Restaurant in Adelaide (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-03-23',
-    url: 'https://www.locatalyze.com/analyse/adelaide/restaurant',
+    url: 'https://locatalyze.com/analyse/adelaide/restaurant',
   },
   {
     '@context': 'https://schema.org',

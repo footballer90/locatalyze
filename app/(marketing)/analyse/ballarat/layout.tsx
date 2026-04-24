@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Ballarat food business feasibility',
     'Ballarat retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/ballarat' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/ballarat' },
   openGraph: {
     title: 'Ballarat Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Ballarat. Rent benchmarks, competition and demographics scored.',

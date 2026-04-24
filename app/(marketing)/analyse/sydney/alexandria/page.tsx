@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: 'Opening a Business in Alexandria Sydney — Location Analysis 2026',
   description:
     'Alexandria business location analysis 2026. Score 78/100 — GO. Commercial gentrification, 25,000+ daytime workforce, $84,000 median income, Botany Road rents from $5,000/month. Full rent guide, best business models, revenue ranges, and break-even analysis for Alexandria NSW 2015.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/alexandria' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney/alexandria' },
   openGraph: {
     title: 'Opening a Business in Alexandria Sydney — 2026 Location Analysis',
     description: 'Alexandria scores 78/100 — GO. Most significant commercial gentrification story, 25,000+ daily workers, highest competition gap 78, warehouse economics, weekday strong. Full analysis inside.',
-    url: 'https://www.locatalyze.com/analyse/sydney/alexandria',
+    url: 'https://locatalyze.com/analyse/sydney/alexandria',
   },
 }
 

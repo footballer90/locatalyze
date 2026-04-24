@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Alice Springs retail location',
     'open a cafe Red Centre NT',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/alice-springs' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/alice-springs' },
   openGraph: {
     title: 'Alice Springs Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Alice Springs. Rent benchmarks, tourism traffic and competition scored.',

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Bunbury retail location',
     'open a cafe South West WA',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/bunbury' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/bunbury' },
   openGraph: {
     title: 'Bunbury Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Bunbury. Rent benchmarks, South West gateway tourism traffic and competition scored.',

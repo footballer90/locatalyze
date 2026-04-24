@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Bunbury — 2026 Location Guide',
   description:
     'Bunbury business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Bunbury suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/bunbury' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/bunbury' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Bunbury — 2026 Location Guide',
     description: '8 Bunbury suburbs ranked and scored. Rent benchmarks, foot traffic data, South West gateway tourism impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/bunbury',
+    url: 'https://locatalyze.com/analyse/bunbury',
   },
 }
 

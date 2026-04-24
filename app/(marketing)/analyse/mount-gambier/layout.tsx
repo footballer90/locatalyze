@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'Mount Gambier retail location',
     'open a cafe Limestone Coast SA',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mount-gambier' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mount-gambier' },
   openGraph: {
     title: 'Mount Gambier Business Location Analysis — Cafe, Restaurant & Retail',
     description:

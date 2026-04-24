@@ -29,11 +29,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Café in Melbourne (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-15',
     dateModified: '2026-04-01',
-    url: 'https://www.locatalyze.com/analyse/melbourne/cafe',
+    url: 'https://locatalyze.com/analyse/melbourne/cafe',
   },
   {
     '@context': 'https://schema.org',

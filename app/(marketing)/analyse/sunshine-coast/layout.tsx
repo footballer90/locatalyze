@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Sunshine Coast retail location',
     'open a cafe Noosa',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sunshine-coast' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sunshine-coast' },
   openGraph: {
     title: 'Sunshine Coast Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for the Sunshine Coast. Tourism seasonality, rent benchmarks and competition scored.',

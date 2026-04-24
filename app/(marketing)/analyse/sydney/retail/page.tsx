@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const SCHEMAS = [
- { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Retail Store in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://www.locatalyze.com/analyse/sydney/retail' },
+ { '@context': 'https://schema.org', '@type': 'Article', headline: 'Best Suburbs to Open a Retail Store in Sydney (2026)', author: { '@type': 'Organization', name: 'Locatalyze' }, datePublished: '2026-03-01', url: 'https://locatalyze.com/analyse/sydney/retail' },
  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
   { '@type': 'Question', name: 'What is the best suburb for retail in Sydney?', acceptedAnswer: { '@type': 'Answer', text: 'Paddington (Oxford Street) scores 85/100 for boutique retail. Strong foot traffic, high discretionary income ($102,000 median), and a retail culture that supports independent stores over chains. Mosman and Balmain are strong alternatives.' } },
   { '@type': 'Question', name: 'Is retail still viable in Sydney in 2026?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, for the right product in the right location. Sydney retail has bifurcated: high street independents with strong concepts are thriving, while mid-market chain retail continues to contract. The key is choosing a location where your customer actually walks past and shops local.' } },

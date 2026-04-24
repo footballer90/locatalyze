@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: "Opening a Business in Glenelg North, Adelaide: 2026 Location Guide",
     description: "Glenelg North offers coastal proximity without Jetty Road rents — a lower-cost entry into the southern coastal corridor with a solid residential base and genuine competition gaps.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

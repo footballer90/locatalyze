@@ -18,13 +18,13 @@ export const metadata: Metadata = {
     'Newcastle business location guide',
     'Newcastle café competition',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/newcastle' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/newcastle' },
   openGraph: {
     title: 'Newcastle Business Location Guide — Best Suburbs, Rent & Foot Traffic (2026)',
     description:
       'Suburb-by-suburb location intelligence for Newcastle. Rent ranges, foot traffic, competition levels, and real insights for 20 suburbs — before you sign a lease.',
     type: 'article',
-    url: 'https://www.locatalyze.com/analyse/newcastle',
+    url: 'https://locatalyze.com/analyse/newcastle',
   },
 }
 

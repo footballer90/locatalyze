@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Ipswich — 2026 Location Guide',
   description:
     'Ipswich business location guide 2026. Suburbs scored by foot traffic, infrastructure growth, rent viability, and competition. Find the best Ipswich suburb for your café, restaurant, or retail business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/ipswich' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/ipswich' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Ipswich — 2026 Location Guide',
     description: 'Ipswich suburbs ranked and scored. Engine-derived GO/CAUTION/NO verdicts for cafés, restaurants, and retail operators.',
-    url: 'https://www.locatalyze.com/analyse/ipswich',
+    url: 'https://locatalyze.com/analyse/ipswich',
   },
 }
 
@@ -25,8 +25,8 @@ export default function IpswichPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Best Suburbs to Open a Business in Ipswich 2026',
         author: { '@type': 'Organization', name: 'Locatalyze' },
-        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
-        url: 'https://www.locatalyze.com/analyse/ipswich', dateModified: '2026-04-20',
+        publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
+        url: 'https://locatalyze.com/analyse/ipswich', dateModified: '2026-04-20',
       }) }} />
 
       <section style={{ background: 'linear-gradient(135deg, #44403C 0%, #78716C 50%, #57534E 100%)', color: '#FFFFFF', padding: '56px 24px 52px' }}>

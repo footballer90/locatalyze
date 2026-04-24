@@ -93,7 +93,7 @@ function SuburbSchema({ suburb }: { suburb: QldSuburb }) {
     headline: `${suburb.name} Brisbane Business Location Analysis — ${suburb.verdict} (${suburb.compositeScore}/100)`,
     description: `${suburb.name} scores ${suburb.compositeScore}/100 for Brisbane business suitability with a ${suburb.verdict} verdict for cafés, restaurants, and retail.`,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-04-20',
     about: {
       '@type': 'Place',
@@ -127,11 +127,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${data.name} Brisbane Business Analysis — ${data.verdict} (${data.compositeScore}/100)`,
     description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict. Engine-derived scores for cafés, restaurants, and retail operators considering ${data.name}, QLD.`,
-    alternates: { canonical: `https://www.locatalyze.com/analyse/brisbane/${data.slug}` },
+    alternates: { canonical: `https://locatalyze.com/analyse/brisbane/${data.slug}` },
     openGraph: {
       title: `${data.name} Brisbane Business Analysis`,
       description: `${data.name} scores ${data.compositeScore}/100 with a ${data.verdict} verdict — café ${data.cafe}, restaurant ${data.restaurant}, retail ${data.retail}.`,
-      url: `https://www.locatalyze.com/analyse/brisbane/${data.slug}`,
+      url: `https://locatalyze.com/analyse/brisbane/${data.slug}`,
       type: 'article',
     },
   }

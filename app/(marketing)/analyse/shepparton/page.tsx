@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Shepparton — 2026 Location Guide',
   description:
     'Shepparton business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Shepparton suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/shepparton' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/shepparton' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Shepparton — 2026 Location Guide',
     description: '8 Shepparton suburbs ranked and scored. Rent benchmarks, Goulburn Valley demographics, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/shepparton',
+    url: 'https://locatalyze.com/analyse/shepparton',
   },
 }
 

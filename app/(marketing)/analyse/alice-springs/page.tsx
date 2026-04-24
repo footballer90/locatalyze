@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Alice Springs — 2026 Location Guide',
   description:
     'Alice Springs business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Alice Springs suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/alice-springs' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/alice-springs' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Alice Springs — 2026 Location Guide',
     description: '7 Alice Springs suburbs ranked and scored. Rent benchmarks, foot traffic data, dry season tourism impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/alice-springs',
+    url: 'https://locatalyze.com/analyse/alice-springs',
   },
 }
 

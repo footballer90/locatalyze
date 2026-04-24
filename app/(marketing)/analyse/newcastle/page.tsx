@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Newcastle NSW — 2026 Location Guide',
   description:
     'Newcastle business location guide 2026. 20 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Newcastle suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/newcastle' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/newcastle' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Newcastle NSW — 2026 Location Guide',
     description: '20 Newcastle suburbs ranked and scored. Rent benchmarks, foot traffic data, best/worst business types per suburb, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/newcastle',
+    url: 'https://locatalyze.com/analyse/newcastle',
   },
 }
 

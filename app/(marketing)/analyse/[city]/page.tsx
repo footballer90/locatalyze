@@ -29,12 +29,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: data.metaTitle,
     description: data.metaDescription,
     alternates: {
-      canonical: `https://www.locatalyze.com/analyse/${city}`,
+      canonical: `https://locatalyze.com/analyse/${city}`,
     },
     openGraph: {
       title: data.metaTitle,
       description: data.metaDescription,
-      url: `https://www.locatalyze.com/analyse/${city}`,
+      url: `https://locatalyze.com/analyse/${city}`,
     },
   }
 }
@@ -53,7 +53,7 @@ export default async function CityPage({ params }: Props) {
     headline: data.metaTitle,
     description: data.metaDescription,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-03-01',
   }
 

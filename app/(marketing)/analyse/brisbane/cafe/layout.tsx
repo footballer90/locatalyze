@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'cafe feasibility Brisbane',
     'Brisbane coffee shop competition',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/brisbane/cafe' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/brisbane/cafe' },
   openGraph: {
     title: 'Best Suburbs to Open a Café in Brisbane (2026)',
     description: 'Suburb-by-suburb analysis of Brisbane\'s café market. Rent benchmarks, competition density and income data scored.',

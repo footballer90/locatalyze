@@ -33,7 +33,7 @@ import { getAliceSpringsSuburbSlugs } from '@/lib/analyse-data/alice-springs'
 import { getAllSuburbKeys } from '@/lib/analyse-data/suburbs'
 import { INSIGHTS } from '@/lib/insights-posts'
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.locatalyze.com'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://locatalyze.com'
 const NOW = new Date()
 
 function u(path: string, priority = 0.6, freq: MetadataRoute.Sitemap[number]['changeFrequency'] = 'monthly') {

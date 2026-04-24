@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'open a restaurant Queensland',
     'Sunshine Coast food business rent',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sunshine-coast/restaurant' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sunshine-coast/restaurant' },
   openGraph: {
     title: 'Best Suburbs to Open a Restaurant on the Sunshine Coast (2026)',
     description: 'Restaurant location analysis for the Sunshine Coast. Rent benchmarks, competition and tourist foot traffic scored.',

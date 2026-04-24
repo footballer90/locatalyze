@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Maitland retail location',
     'open a cafe Hunter Valley inland',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/maitland' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/maitland' },
   openGraph: {
     title: 'Maitland Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Maitland. Rent benchmarks, foot traffic and competition scored across the Hunter Valley inland region.',

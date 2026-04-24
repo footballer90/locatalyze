@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: 'Opening a Business in Elizabeth, Adelaide: 2026 Location Guide',
     description: "Elizabeth is South Australia\'s most challenged commercial market — a large but low-income northern catchment with intense chain competition. Only specific concept types are viable for independent operators.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Bendigo food business feasibility',
     'Bendigo retail location',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/bendigo' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/bendigo' },
   openGraph: {
     title: 'Bendigo Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Bendigo. Rent benchmarks, competition and demographics scored.',

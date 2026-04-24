@@ -26,12 +26,12 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Albury-Wodonga — 2026 Location Guide',
   description:
     'Albury-Wodonga business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Albury-Wodonga suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/albury-wodonga' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/albury-wodonga' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Albury-Wodonga — 2026 Location Guide',
     description:
       '8 Albury-Wodonga suburbs ranked and scored. Rent benchmarks, cross-border foot traffic data, snowfield gateway trade, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/albury-wodonga',
+    url: 'https://locatalyze.com/analyse/albury-wodonga',
   },
 }
 

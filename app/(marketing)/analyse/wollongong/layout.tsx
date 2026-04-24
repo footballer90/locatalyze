@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     'Data-backed analysis of the best suburbs to open a café, restaurant, or retail business in Wollongong NSW. Rent benchmarks, foot traffic, competition levels, and GO / CAUTION / NO verdicts for 20 suburbs.',
   alternates: {
-    canonical: 'https://www.locatalyze.com/analyse/wollongong',
+    canonical: 'https://locatalyze.com/analyse/wollongong',
   },
 }
 

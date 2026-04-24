@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Mildura retail location',
     'open a cafe Sunraysia',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/mildura' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/mildura' },
   openGraph: {
     title: 'Mildura Business Location Analysis — Cafe, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Mildura. Rent benchmarks, Murray River tourism and competition scored.',

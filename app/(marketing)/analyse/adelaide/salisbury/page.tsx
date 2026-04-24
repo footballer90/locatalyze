@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: 'Opening a Business in Salisbury, Adelaide: 2026 Location Guide',
     description: "Salisbury's northern metropolitan position offers volume potential from a large residential catchment but requires a value-oriented concept and strong operator discipline to overcome lower income demographics.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

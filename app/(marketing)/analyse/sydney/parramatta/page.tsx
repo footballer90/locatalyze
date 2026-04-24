@@ -20,11 +20,11 @@ export const metadata: Metadata = {
   title: 'Opening a Business in Parramatta Sydney — 2026 Location Analysis',
   description:
     'Parramatta scores 84/100 — best rent-to-foot-traffic ratio in Greater Sydney. Church Street rents, Parramatta Square demographic impact, best business models, revenue ranges, and who should not open here. Full 2026 analysis for NSW 2150.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/parramatta' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney/parramatta' },
   openGraph: {
     title: 'Opening a Business in Parramatta Sydney — 2026 Location Analysis',
     description: 'Parramatta scores 84/100. 40,000+ daily workers, 40% lower rents than inner Sydney. Full business location analysis with revenue ranges and break-even estimates.',
-    url: 'https://www.locatalyze.com/analyse/sydney/parramatta',
+    url: 'https://locatalyze.com/analyse/sydney/parramatta',
   },
 }
 

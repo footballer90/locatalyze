@@ -82,7 +82,7 @@ const SCHEMAS = [
     '@type': 'Article',
     headline: "Opening a Business in Hyde Park, Adelaide: 2026 Location Guide",
     description: "Hyde Park's King William Road section is one of Adelaide's quietest premium opportunities — strong demographics, growing foot traffic, and a residential community that actively supports quality independents.",
-    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organisation', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organisation', name: 'Locatalyze' },
     datePublished: '2026-01-01',
     dateModified: '2026-04-01',

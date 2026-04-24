@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     'Melbourne food business feasibility',
     'Fitzroy Brunswick Collingwood business',
   ],
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/melbourne' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/melbourne' },
   openGraph: {
     title: 'Melbourne Business Location Analysis — Café, Restaurant & Retail',
     description: 'Suburb-by-suburb business location analysis for Melbourne. Rent benchmarks, competition and demographics scored.',

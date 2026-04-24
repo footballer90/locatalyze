@@ -34,7 +34,7 @@ function getRetailVerdict(name: string): 'GO' | 'CAUTION' | 'NO' {
 //  title: 'Best Suburbs to Open a Retail Shop in Darwin (2026) — Location Analysis',
 //  description: 'Data-driven suburb guide for Darwin retail. Defence spending, wet season dynamics, foot traffic, commercial rent benchmarks. Based on NT government data and live competitor mapping.',
 //  keywords: ['best suburbs to open a retail shop in Darwin','Darwin retail location guide 2026','opening a shop Darwin NT','best suburbs Darwin small business','Darwin commercial rent retail','Casuarina Square retail opportunity','affordable retail location Darwin','Darwin foot traffic shopping areas','Mitchell Street Darwin retail','Darwin defence spending retail','hidden gem suburbs Darwin business'],
-//  alternates: { canonical: 'https://www.locatalyze.com/analyse/darwin/retail' },
+//  alternates: { canonical: 'https://locatalyze.com/analyse/darwin/retail' },
 //  openGraph: { title: 'Best Suburbs to Open a Retail Shop in Darwin (2026)', description: 'Suburb-by-suburb analysis of Darwin retail market. Defence housing, LNG sector, wet season strategies covered.', type: 'article' },
 // }
 
@@ -44,11 +44,11 @@ const SCHEMAS = [
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: 'Best Suburbs to Open a Retail Shop in Darwin (2026)',
-    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    author: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     publisher: { '@type': 'Organization', name: 'Locatalyze' },
     datePublished: '2026-03-01',
     dateModified: '2026-04-19',
-    url: 'https://www.locatalyze.com/analyse/darwin/retail',
+    url: 'https://locatalyze.com/analyse/darwin/retail',
   },
   {
     '@context': 'https://schema.org',

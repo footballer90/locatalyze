@@ -34,12 +34,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: data.metaTitle,
     description: data.metaDescription,
     alternates: {
-      canonical: `https://www.locatalyze.com/analyse/${city}/${suburb}`,
+      canonical: `https://locatalyze.com/analyse/${city}/${suburb}`,
     },
     openGraph: {
       title: data.metaTitle,
       description: data.metaDescription,
-      url: `https://www.locatalyze.com/analyse/${city}/${suburb}`,
+      url: `https://locatalyze.com/analyse/${city}/${suburb}`,
     },
   }
 }
@@ -58,7 +58,7 @@ export default async function SuburbPage({ params }: Props) {
     headline: data.metaTitle,
     description: data.metaDescription,
     author: { '@type': 'Organization', name: 'Locatalyze' },
-    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://www.locatalyze.com' },
+    publisher: { '@type': 'Organization', name: 'Locatalyze', url: 'https://locatalyze.com' },
     dateModified: '2026-03-01',
   }
 

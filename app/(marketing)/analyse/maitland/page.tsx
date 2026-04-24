@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Maitland NSW — 2026 Location Guide',
   description:
     'Maitland business location guide 2026. 8 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Maitland suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/maitland' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/maitland' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Maitland NSW — 2026 Location Guide',
     description: '8 Maitland suburbs ranked and scored. Rent benchmarks, foot traffic data, Hunter Valley wine adjacency, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/maitland',
+    url: 'https://locatalyze.com/analyse/maitland',
   },
 }
 

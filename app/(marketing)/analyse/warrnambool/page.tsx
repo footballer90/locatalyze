@@ -26,12 +26,12 @@ export const metadata: Metadata = {
   title: 'Best Suburbs to Open a Business in Warrnambool — 2026 Location Guide',
   description:
     'Warrnambool business location guide 2026. 7 suburbs scored by foot traffic, rent viability, demographics, and competition gap. Find the best Warrnambool suburb for your cafe, restaurant, retail or service business.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/warrnambool' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/warrnambool' },
   openGraph: {
     title: 'Best Suburbs to Open a Business in Warrnambool — 2026 Location Guide',
     description:
       '7 Warrnambool suburbs ranked and scored. Rent benchmarks, foot traffic data, whale watching season impact, and GO/CAUTION/NO verdicts.',
-    url: 'https://www.locatalyze.com/analyse/warrnambool',
+    url: 'https://locatalyze.com/analyse/warrnambool',
   },
 }
 

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: 'Opening a Business in Marrickville Sydney — Location Analysis 2026',
   description:
     'Marrickville business location analysis 2026. Score 80/100 — GO. Inner west gentrification opportunity, $78,000 median income, Illawarra Road rents from $4,500/month. Full rent guide, best business models, revenue ranges, and break-even analysis for Marrickville NSW 2204.',
-  alternates: { canonical: 'https://www.locatalyze.com/analyse/sydney/marrickville' },
+  alternates: { canonical: 'https://locatalyze.com/analyse/sydney/marrickville' },
   openGraph: {
     title: 'Opening a Business in Marrickville Sydney — 2026 Location Analysis',
     description: 'Marrickville scores 80/100 — GO. Mid-gentrification, independent food culture, 76 competition gap, rents 40-50% below Surry Hills, Wed-Sun strong. Full analysis inside.',
-    url: 'https://www.locatalyze.com/analyse/sydney/marrickville',
+    url: 'https://locatalyze.com/analyse/sydney/marrickville',
   },
 }
 
