@@ -2975,7 +2975,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   // ── Engine v2: computed_result is the authoritative financial source ──────────
   // If present, ALL financial and scoring values come exclusively from here.
   // The UI NEVER computes, falls back, patches, or re-derives anything.
-  const C: ComputedResult | null = assumptionPreview ?? report.computed_result ?? null
+  const C = (assumptionPreview ?? report.computed_result ?? null) as (ComputedResult & { benchmarkContext?: { benchmarkNarrative?: string | null; benchmarkRentRatio?: number | null; marketSentiment?: string; timingScore?: number | null } }) | null
   const hasComputed = C !== null
   const _engineDemandScore: number | null = C?.scores?.demand ?? null
 
