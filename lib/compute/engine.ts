@@ -421,6 +421,70 @@ function fmt(n: number): string {
   return '$' + Math.round(n).toLocaleString('en-AU')
 }
 
+function normalizeSentiment(raw: unknown): 'positive' | 'neutral' | 'negative' | 'unknown' {
+  const s = String(raw ?? '').toLowerCase().trim()
+  if (!s) return 'unknown'
+  if (s.includes('optimistic') || s.includes('positive') || s.includes('strong') || s.includes('growing') || s.includes('expanding')) return 'positive'
+  if (s.includes('pessimistic') || s.includes('negative') || s.includes('weak') || s.includes('declin')) return 'negative'
+  if (s.includes('stable') || s.includes('mixed') || s.includes('moderate') || s.includes('neutral') || s.includes('cautious')) return 'neutral'
+  return 'unknown'
+}
+
+function buildBenchmarkContext(args: {
+  benchmarkRentRatio: number | null
+  marketSentiment: 'positive' | 'neutral' | 'negative' | 'unknown'
+  timingScore: number | null
+  demandTrend: string | null
+  businessType: string
+}): ComputedResult['benchmarkContext'] {
+  const { benchmarkRentRatio, marketSentiment, timingScore, demandTrend, businessType } = args
+  const bt = (businessType || 'business').toLowerCase().replace(/_/g, ' ')
+  const ratioRounded = benchmarkRentRatio == null ? null : Math.round(benchmarkRentRatio)
+  const trendNorm = String(demandTrend ?? '').toLowerCase()
+
+  let rentClause = 'Rent pressure could not be benchmarked cleanly, so margin risk is uncertain.'
+  if (ratioRounded != null) {
+    if (ratioRounded >= 20) {
+      rentClause = `Rent is ~${ratioRounded}% of projected revenue, materially above the healthy band for ${bt}s; this location works only with premium pricing and strict cost control.`
+    } else if (ratioRounded >= 15) {
+      rentClause = `Rent is ~${ratioRounded}% of projected revenue, above ideal benchmarks; margins stay intact only if execution is disciplined.`
+    } else {
+      rentClause = `Rent is ~${ratioRounded}% of projected revenue, within a workable benchmark range for ${bt}s.`
+    }
+  }
+
+  const trendClause = trendNorm.includes('declin')
+    ? 'Local demand is declining; use shorter lease commitments or stronger downside protection.'
+    : trendNorm.includes('grow')
+      ? 'Local demand is growing; fast, high-quality execution can convert this into share gains.'
+      : trendNorm.includes('stable')
+        ? 'Local demand is stable but not growing; expect flat revenue unless differentiation is clearly above local average.'
+        : 'Demand trend is unclear; validate on-ground before committing capital.'
+
+  const macroClause = marketSentiment === 'positive'
+    ? 'Macro sentiment is supportive.'
+    : marketSentiment === 'negative'
+      ? 'Macro sentiment is cautious, so underwrite slower ramp-up and tighter cash buffer.'
+      : marketSentiment === 'neutral'
+        ? 'Macro sentiment is mixed, so base case assumptions should stay conservative.'
+        : 'Macro sentiment signal is limited.'
+
+  const timingClause = timingScore == null
+    ? 'Timing signal is unavailable; avoid aggressive assumptions.'
+    : timingScore >= 70
+      ? `Timing score ${timingScore}/100 indicates a favorable entry window.`
+      : timingScore >= 45
+        ? `Timing score ${timingScore}/100 indicates a selective entry window; pricing and launch quality must be above average.`
+        : `Timing score ${timingScore}/100 indicates a weak entry window; wait or negotiate materially better terms.`
+
+  return {
+    benchmarkRentRatio,
+    marketSentiment,
+    timingScore,
+    benchmarkNarrative: [rentClause, trendClause, macroClause, timingClause].filter(Boolean).join(' '),
+  }
+}
+
 // ── Revenue channel generator ─────────────────────────────────────────────────
 
 function buildRevenueChannels(
@@ -559,7 +623,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
   const bizKey  = resolveBizKey(input.businessType)
   const bm      = BIZ_BENCHMARKS[bizKey] ?? BIZ_BENCHMARKS['other']
 
-  const { a1 = {}, a2 = {}, a3 = {}, a4 = {}, a5 = {}, a6 = {} } =
+  const { a1 = {}, a2 = {}, a3 = {}, a4 = {}, a5 = {}, a6 = {}, a7 = {}, a8 = {} } =
     input.agentOutputs as Record<string, Record<string, any>>
 
   // ── Agent availability detection ─────────────────────────────────────────
@@ -1190,6 +1254,24 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     rawDemandScore != null,
   )
 
+  // ── STEP 14b: Benchmark + macro context normalization (A7/A8 aware) ───────
+  const a7out = (a7?.outputs || a7) as Record<string, any>
+  const a8out = (a8?.outputs || a8) as Record<string, any>
+  const benchmarkRentRatioRaw = parseMoney(a7out?.rent_burden_pct)
+    ?? (revenue > 0 ? Math.round((rent / revenue) * 1000) / 10 : null)
+  const marketSentiment = normalizeSentiment(
+    a8out?.consumer_sentiment_label ?? a8out?.economic_verdict ?? marketSignals.demandTrend
+  )
+  const timingScoreRaw = parseMoney(a8out?.timing_score ?? a8out?.economic_health_score ?? a7out?.benchmark_score)
+  const timingScore = timingScoreRaw == null ? null : clamp(Math.round(timingScoreRaw), 0, 100)
+  const benchmarkContext = buildBenchmarkContext({
+    benchmarkRentRatio: benchmarkRentRatioRaw,
+    marketSentiment,
+    timingScore,
+    demandTrend: marketSignals.demandTrend,
+    businessType: input.businessType,
+  })
+
   // ── STEP 15: Seal the log ────────────────────────────────────────────────
   logger.setCompetitorMeta(uniqueRaw.length, validCompetitorCount, competitorDataQuality)
   const computeLog = logger.seal()
@@ -1263,6 +1345,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
     },
     dataCompleteness: completeness,
     modelConfidence,
+    benchmarkContext,
     meta: {
       engineVersion:    ENGINE_VERSION,
       benchmarkVersion: BENCHMARK_VERSION,
@@ -1379,6 +1462,7 @@ export function computeEngine(input: ComputeInput): ComputedResult {
 
     dataCompleteness: completeness,
     modelConfidence,
+    benchmarkContext,
 
     // ── Trust layer (v3.2) ────────────────────────────────────────────────
     sectionConfidence,
