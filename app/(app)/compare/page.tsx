@@ -340,7 +340,7 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
 }
 
 // ── Insight row — highlights which report wins on a metric ───────────────────
-function WinnerRow({ label, reports, getValue, higherIsBetter = true }: {
+function WinnerRow({ label, reports, getValue, higherIsBetter = true, formatValue }: {
   label: string
   reports: (ReportSummary | null)[]
   getValue: (r: ReportSummary) => number | null
