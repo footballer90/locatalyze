@@ -15,6 +15,21 @@ import { getSunshineCoastSuburbSlugs } from '@/lib/analyse-data/sunshine-coast'
 import { getHerveyBaySuburbSlugs } from '@/lib/analyse-data/hervey-bay'
 import { getMackaySuburbSlugs } from '@/lib/analyse-data/mackay'
 import { getRockhamptonSuburbSlugs } from '@/lib/analyse-data/rockhampton'
+import { getCoffsHarbourSuburbSlugs } from '@/lib/analyse-data/coffs-harbour'
+import { getPortMacquarieSuburbSlugs } from '@/lib/analyse-data/port-macquarie'
+import { getMaitlandSuburbSlugs } from '@/lib/analyse-data/maitland'
+import { getWaggaWaggaSuburbSlugs } from '@/lib/analyse-data/wagga-wagga'
+import { getAlburyWodongaSuburbSlugs } from '@/lib/analyse-data/albury-wodonga'
+import { getOrangeSuburbSlugs } from '@/lib/analyse-data/orange'
+import { getMandurahSuburbSlugs } from '@/lib/analyse-data/mandurah'
+import { getBunburySuburbSlugs } from '@/lib/analyse-data/bunbury'
+import { getGeraldtonSuburbSlugs } from '@/lib/analyse-data/geraldton'
+import { getSheppartonSuburbSlugs } from '@/lib/analyse-data/shepparton'
+import { getMilduraSuburbSlugs } from '@/lib/analyse-data/mildura'
+import { getWarrnamboolSuburbSlugs } from '@/lib/analyse-data/warrnambool'
+import { getDevonportSuburbSlugs } from '@/lib/analyse-data/devonport'
+import { getMountGambierSuburbSlugs } from '@/lib/analyse-data/mount-gambier'
+import { getAliceSpringsSuburbSlugs } from '@/lib/analyse-data/alice-springs'
 import { getAllSuburbKeys } from '@/lib/analyse-data/suburbs'
 import { INSIGHTS } from '@/lib/insights-posts'
 
@@ -83,6 +98,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     u('/analyse/hervey-bay', 0.60, 'monthly'),
     u('/analyse/mackay', 0.60, 'monthly'),
     u('/analyse/rockhampton', 0.60, 'monthly'),
+    u('/analyse/coffs-harbour', 0.60, 'monthly'),
+    u('/analyse/port-macquarie', 0.60, 'monthly'),
+    u('/analyse/maitland', 0.60, 'monthly'),
+    u('/analyse/wagga-wagga', 0.60, 'monthly'),
+    u('/analyse/albury-wodonga', 0.60, 'monthly'),
+    u('/analyse/orange', 0.58, 'monthly'),
+    u('/analyse/mandurah', 0.60, 'monthly'),
+    u('/analyse/bunbury', 0.60, 'monthly'),
+    u('/analyse/geraldton', 0.58, 'monthly'),
+    u('/analyse/shepparton', 0.58, 'monthly'),
+    u('/analyse/mildura', 0.58, 'monthly'),
+    u('/analyse/warrnambool', 0.58, 'monthly'),
+    u('/analyse/devonport', 0.58, 'monthly'),
+    u('/analyse/mount-gambier', 0.58, 'monthly'),
+    u('/analyse/alice-springs', 0.58, 'monthly'),
 
     // ── Sydney suburb + business-type pages ─────────────────────────────────────
     u('/analyse/sydney/surry-hills', 0.80),
@@ -182,6 +212,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...suburbUrls('hervey-bay', getHerveyBaySuburbSlugs(), 0.55),
     ...suburbUrls('mackay', getMackaySuburbSlugs(), 0.55),
     ...suburbUrls('rockhampton', getRockhamptonSuburbSlugs(), 0.55),
+    ...suburbUrls('coffs-harbour', getCoffsHarbourSuburbSlugs(), 0.55),
+    ...suburbUrls('port-macquarie', getPortMacquarieSuburbSlugs(), 0.55),
+    ...suburbUrls('maitland', getMaitlandSuburbSlugs(), 0.55),
+    ...suburbUrls('wagga-wagga', getWaggaWaggaSuburbSlugs(), 0.55),
+    ...suburbUrls('albury-wodonga', getAlburyWodongaSuburbSlugs(), 0.55),
+    ...suburbUrls('orange', getOrangeSuburbSlugs(), 0.53),
+    ...suburbUrls('mandurah', getMandurahSuburbSlugs(), 0.55),
+    ...suburbUrls('bunbury', getBunburySuburbSlugs(), 0.55),
+    ...suburbUrls('geraldton', getGeraldtonSuburbSlugs(), 0.53),
+    ...suburbUrls('shepparton', getSheppartonSuburbSlugs(), 0.53),
+    ...suburbUrls('mildura', getMilduraSuburbSlugs(), 0.53),
+    ...suburbUrls('warrnambool', getWarrnamboolSuburbSlugs(), 0.53),
+    ...suburbUrls('devonport', getDevonportSuburbSlugs(), 0.53),
+    ...suburbUrls('mount-gambier', getMountGambierSuburbSlugs(), 0.53),
+    ...suburbUrls('alice-springs', getAliceSpringsSuburbSlugs(), 0.53),
 
     // ── Dynamic city/suburb pages from suburbs.ts ────────────────────────────────
     ...dynamicSuburbs,

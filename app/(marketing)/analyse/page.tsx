@@ -191,6 +191,21 @@ const REGIONAL_CITIES = [
   { name: 'Hervey Bay', slug: 'hervey-bay', state: 'QLD', suburbs: 7, color: '#0891B2' },
   { name: 'Mackay', slug: 'mackay', state: 'QLD', suburbs: 8, color: '#7C3AED' },
   { name: 'Rockhampton', slug: 'rockhampton', state: 'QLD', suburbs: 8, color: '#B45309' },
+  { name: 'Coffs Harbour', slug: 'coffs-harbour', state: 'NSW', suburbs: 8, color: '#15803D' },
+  { name: 'Port Macquarie', slug: 'port-macquarie', state: 'NSW', suburbs: 8, color: '#0284C7' },
+  { name: 'Maitland', slug: 'maitland', state: 'NSW', suburbs: 8, color: '#C2410C' },
+  { name: 'Wagga Wagga', slug: 'wagga-wagga', state: 'NSW', suburbs: 8, color: '#B45309' },
+  { name: 'Albury-Wodonga', slug: 'albury-wodonga', state: 'NSW/VIC', suburbs: 8, color: '#0891B2' },
+  { name: 'Orange', slug: 'orange', state: 'NSW', suburbs: 7, color: '#EA580C' },
+  { name: 'Mandurah', slug: 'mandurah', state: 'WA', suburbs: 8, color: '#0D9488' },
+  { name: 'Bunbury', slug: 'bunbury', state: 'WA', suburbs: 8, color: '#2563EB' },
+  { name: 'Geraldton', slug: 'geraldton', state: 'WA', suburbs: 7, color: '#F97316' },
+  { name: 'Shepparton', slug: 'shepparton', state: 'VIC', suburbs: 8, color: '#16A34A' },
+  { name: 'Mildura', slug: 'mildura', state: 'VIC', suburbs: 8, color: '#D97706' },
+  { name: 'Warrnambool', slug: 'warrnambool', state: 'VIC', suburbs: 7, color: '#1D4ED8' },
+  { name: 'Devonport', slug: 'devonport', state: 'TAS', suburbs: 7, color: '#10B981' },
+  { name: 'Mount Gambier', slug: 'mount-gambier', state: 'SA', suburbs: 7, color: '#3B82F6' },
+  { name: 'Alice Springs', slug: 'alice-springs', state: 'NT', suburbs: 7, color: '#DC2626' },
 ]
 
 const POPULAR_SEARCHES = [
@@ -221,6 +236,21 @@ const POPULAR_SEARCHES = [
   { label: 'Hervey Bay business location scores 2026', href: '/analyse/hervey-bay', tag: 'Hervey Bay' },
   { label: 'Mackay suburb guide for cafés and retail', href: '/analyse/mackay', tag: 'Mackay' },
   { label: 'Rockhampton business location analysis', href: '/analyse/rockhampton', tag: 'Rockhampton' },
+  { label: 'Coffs Harbour suburb scores for cafes and retail', href: '/analyse/coffs-harbour', tag: 'Coffs Harbour' },
+  { label: 'Port Macquarie business location guide 2026', href: '/analyse/port-macquarie', tag: 'Port Macquarie' },
+  { label: 'Maitland business suburb analysis — Hunter Valley', href: '/analyse/maitland', tag: 'Maitland' },
+  { label: 'Wagga Wagga cafe and restaurant location scores', href: '/analyse/wagga-wagga', tag: 'Wagga Wagga' },
+  { label: 'Albury-Wodonga cross-border business guide 2026', href: '/analyse/albury-wodonga', tag: 'Albury-Wodonga' },
+  { label: 'Orange NSW food tourism business locations', href: '/analyse/orange', tag: 'Orange' },
+  { label: 'Mandurah suburb scores for cafes and dining', href: '/analyse/mandurah', tag: 'Mandurah' },
+  { label: 'Bunbury business location analysis 2026', href: '/analyse/bunbury', tag: 'Bunbury' },
+  { label: 'Geraldton business location guide — WA Midwest', href: '/analyse/geraldton', tag: 'Geraldton' },
+  { label: 'Shepparton cafe and retail suburb scores', href: '/analyse/shepparton', tag: 'Shepparton' },
+  { label: 'Mildura business locations — Murray River region', href: '/analyse/mildura', tag: 'Mildura' },
+  { label: 'Warrnambool business suburb guide 2026', href: '/analyse/warrnambool', tag: 'Warrnambool' },
+  { label: 'Devonport business location scores — TAS', href: '/analyse/devonport', tag: 'Devonport' },
+  { label: 'Mount Gambier cafe and restaurant analysis', href: '/analyse/mount-gambier', tag: 'Mount Gambier' },
+  { label: 'Alice Springs business location guide 2026', href: '/analyse/alice-springs', tag: 'Alice Springs' },
 ]
 
 const HOW_IT_WORKS = [
