@@ -9,7 +9,7 @@
  *       All values arrive pre-computed and sealed.
  */
 
-export const ENGINE_VERSION    = '3.4.0' as const   // bumped: pipeline-level agent coverage tracking + benchmark revenue gate
+export const ENGINE_VERSION    = '3.5.0' as const   // bumped: normalized benchmarkContext for A7/A8 storytelling
 export const BENCHMARK_VERSION = '2026-04' as const
 
 // ── Confidence ────────────────────────────────────────────────────────────────
@@ -70,6 +70,18 @@ export interface RevenueRange {
   uncertainty: number   // ±% (e.g. 30 means ±30%)
   source:      string   // which source produced the mid value
   note:        string   // human-readable explanation
+}
+
+/**
+ * Normalized benchmark + macro context for UI storytelling.
+ * This keeps A7/A8-style intelligence in the sealed compute contract so all
+ * surfaces (dashboard/share/compare) can render the same message.
+ */
+export interface BenchmarkContext {
+  benchmarkRentRatio: number | null      // rent as % of revenue (0-100)
+  marketSentiment: 'positive' | 'neutral' | 'negative' | 'unknown'
+  timingScore: number | null             // 0-100 (higher = better entry window)
+  benchmarkNarrative: string             // short, opinionated advisor line
 }
 
 /** 0–1 weight on agent value (1 = full agent, 0 = full benchmark) */
@@ -319,6 +331,11 @@ export interface ComputedResult {
    * UI should show "~$35k–$55k/month" instead of "$47,200/month".
    */
   revenueRange: RevenueRange
+
+  /**
+   * Unified benchmark + market context for "advisor-style" messaging.
+   */
+  benchmarkContext: BenchmarkContext
 
   /**
    * Contradictions detected between data points in this report.
