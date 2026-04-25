@@ -29,7 +29,9 @@ export async function GET(req: NextRequest) {
     )
     if (!res.ok) return NextResponse.json([])
     const data = await res.json()
-    return NextResponse.json(data)
+    const geocodeRes = NextResponse.json(data)
+    geocodeRes.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+    return geocodeRes
   } catch {
     return NextResponse.json([])
   }

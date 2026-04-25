@@ -572,7 +572,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(responseBody)
+    const gymResponse = NextResponse.json(responseBody)
+    gymResponse.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return gymResponse
     } // end else (at least one key present)
   }   // end gymMode block — falls through to Geoapify when no keys at all
 
@@ -837,7 +839,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(responseBody)
+    const stdResponse = NextResponse.json(responseBody)
+    stdResponse.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return stdResponse
 
   } catch (err) {
     console.error('[nearby-places] Error:', err)

@@ -29,7 +29,9 @@ export async function GET(req: NextRequest) {
     )
     if (!res.ok) return NextResponse.json([])
     const data = await res.json()
-    return NextResponse.json(Array.isArray(data) ? data : [])
+    const autocompleteRes = NextResponse.json(Array.isArray(data) ? data : [])
+    autocompleteRes.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return autocompleteRes
   } catch {
     return NextResponse.json([])
   }

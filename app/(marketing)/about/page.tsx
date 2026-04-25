@@ -1,7 +1,5 @@
 // Save to: app/(marketing)/about/page.tsx
 
-export const dynamic = 'force-dynamic'
-
 export const metadata = {
   title: 'About Locatalyze — Built by Perth Founders',
   description:
