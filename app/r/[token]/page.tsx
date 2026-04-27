@@ -112,9 +112,9 @@ function ScoreBar({ label, score, weight }: { label: string; score: number; weig
   )
 }
 
-export default async function PublicReportPage({ params }: { params: { token: string } }) {
+export default async function PublicReportPage({ params }: { params: Promise<{ token: string }> }) {
 const supabase = await createClient()
-  const rawToken = params.token
+  const { token: rawToken } = await params
   const tokenParts = rawToken.split('.')
   const tokenHasExpiry = tokenParts.length === 2 && /^\d+$/.test(tokenParts[1] || '')
   if (tokenHasExpiry) {
@@ -168,6 +168,7 @@ const supabase = await createClient()
     validCompetitorCount: computed?.validCompetitorCount ?? null,
     businessType: report.business_type,
   })
+  const scenarioNote = typeof rd?.scenario_note === 'string' ? rd.scenario_note : null
 
   // Parse SWOT safely
   function parseSwot(raw: string | null) {
@@ -273,6 +274,14 @@ const supabase = await createClient()
             {realityCheck && (
               <div style={{ marginTop: 10, padding: '11px 13px', background: '#F8FAFC', borderRadius: 10, border: `1px solid ${S.n200}` }}>
                 <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6, fontWeight: 600 }}>{realityCheck}</p>
+              </div>
+            )}
+            {scenarioNote && (
+              <div style={{ marginTop: 10, padding: '11px 13px', background: '#EFF6FF', borderRadius: 10, border: `1px solid #BFDBFE` }}>
+                <p style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>
+                  Scenario Note
+                </p>
+                <p style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.6 }}>{scenarioNote}</p>
               </div>
             )}
           </div>
