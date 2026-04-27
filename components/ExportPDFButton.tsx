@@ -22,6 +22,21 @@ interface ReportData {
   monthly_rent?: number | null
   created_at?: string
   result_data?: any
+  simulation_inputs?: {
+    lease?: {
+      uncappedCpiPct: number
+      cappedCpiPct: number
+      revenueGrowthPct: number
+      years: number
+    }
+    ramp?: {
+      earlyDemandPct: number
+      growthDemandPct: number
+      earlyMonths: number
+      growthMonths: number
+      bufferMonths: number
+    }
+  }
 }
 
 // ─── Lazy-load the PDF generator (client-only, heavy bundle) ─────────────────
@@ -42,6 +57,6 @@ const PDFDownloadButton = dynamic(() => import('./PDFDownloadButton'), {
   ),
 })
 
-export default function ExportPDFButton({ report }: { report: ReportData }) {
-  return <PDFDownloadButton report={report} />
+export default function ExportPDFButton({ report, onExport }: { report: ReportData; onExport?: () => void }) {
+  return <PDFDownloadButton report={report} onExport={onExport} />
 }

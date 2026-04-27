@@ -3577,7 +3577,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   // ── Engine v2: computed_result is the authoritative financial source ──────────
   // If present, ALL financial and scoring values come exclusively from here.
   // The UI NEVER computes, falls back, patches, or re-derives anything.
-  const C = (assumptionPreview ?? report.computed_result ?? null) as (ComputedResult & { benchmarkContext?: { benchmarkNarrative?: string | null; benchmarkRentRatio?: number | null; marketSentiment?: string; timingScore?: number | null } }) | null
+  const C = (assumptionPreview ?? report.computed_result ?? null) as any
   const hasComputed = C !== null
   const _engineDemandScore: number | null = C?.scores?.demand ?? null
 
@@ -3983,7 +3983,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 report_id: report.report_id ?? report.id,
                 business_type: report.business_type ?? null,
                 verdict: report.verdict ?? null,
-                data_mode: C?.dataMode ?? null,
+                data_mode: (C as any)?.dataMode ?? null,
                 confidence_score: C?.dataCompleteness ?? null,
               })
               router.push('/compare')
@@ -4064,7 +4064,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     report_id: report.report_id ?? report.id,
                     business_type: report.business_type ?? null,
                     verdict: report.verdict ?? null,
-                    data_mode: C?.dataMode ?? null,
+                    data_mode: (C as any)?.dataMode ?? null,
                     confidence_score: C?.dataCompleteness ?? null,
                     from_compare: searchParams.get('ref') === 'compare',
                   })
@@ -4191,7 +4191,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   {_revenueRange ? `${formatMoneyK(_revenueRange.low)} - ${formatMoneyK(_revenueRange.high)}` : _dRevenue.display}
                 </p>
                 <p style={{ fontSize: 12, color: S.n500, marginTop: 6 }}>
-                  {_revenueRange ? `P10: ${formatMoneyK(_revenueRange.p10)} · P50: ${formatMoneyK(_revenueRange.p50)} · P90: ${formatMoneyK(_revenueRange.p90)}` : 'Revenue range unavailable'}
+                  {_revenueRange ? `P10: ${formatMoneyK((_revenueRange as any).p10)} · P50: ${formatMoneyK((_revenueRange as any).p50)} · P90: ${formatMoneyK((_revenueRange as any).p90)}` : 'Revenue range unavailable'}
                 </p>
                 <p style={{ fontSize: 12, color: S.n700, marginTop: 8, fontWeight: 700 }}>
                   Confidence Score: {confidenceScore}% ({String(confidence.level).charAt(0).toUpperCase() + String(confidence.level).slice(1)})
@@ -4216,7 +4216,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                       {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
                     </p>
                     <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
-                      P10: {formatMoneyK(_revenueRange.p10)} · P50: {formatMoneyK(_revenueRange.p50)} · P90: {formatMoneyK(_revenueRange.p90)}
+                      P10: {formatMoneyK((_revenueRange as any).p10)} · P50: {formatMoneyK((_revenueRange as any).p50)} · P90: {formatMoneyK((_revenueRange as any).p90)}
                     </p>
                   </>
                 ) : (
@@ -4807,7 +4807,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                           {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
                         </p>
                         <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
-                          P10: {formatMoneyK(_revenueRange.p10)} · P50: {formatMoneyK(_revenueRange.p50)} · P90: {formatMoneyK(_revenueRange.p90)}
+                          P10: {formatMoneyK((_revenueRange as any).p10)} · P50: {formatMoneyK((_revenueRange as any).p50)} · P90: {formatMoneyK((_revenueRange as any).p90)}
                         </p>
                         {report.monthly_rent != null && _revenueRange.low > 0 && (() => {
                           const downsideRentRatio = (Number(report.monthly_rent) / _revenueRange.low) * 100
