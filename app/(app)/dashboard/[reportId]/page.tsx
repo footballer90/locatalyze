@@ -3726,7 +3726,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const competitorDataQuality   = competitors?.dataQuality   || null
   const demographicsDataQuality = demographics?.dataQuality  || null
   const confidence = confidenceLevel(report, C)
-  const confidenceScore = Math.round(C?.confidenceScore ?? C?.dataCompleteness ?? confidence.pct ?? 0)
+  const confidenceScore = Math.round((C as any)?.confidenceScore ?? C?.dataCompleteness ?? confidence.pct ?? 0)
   const rawA7 = (_rd?.a7?.outputs || _rd?.a7 || _rd?.a7_data?.outputs || _rd?.a7_data || null) as any
   const rawA8 = (_rd?.a8?.outputs || _rd?.a8 || _rd?.a8_data?.outputs || _rd?.a8_data || null) as any
 
