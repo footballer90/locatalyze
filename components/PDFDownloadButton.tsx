@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer'
 
 const C = {
   brand: '#0F766E',
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
   page: { backgroundColor: C.white, paddingTop: 30, paddingBottom: 56, paddingHorizontal: 34, fontFamily: 'Helvetica', fontSize: 9, color: C.n800 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: C.n200 },
   brandLockup: { flexDirection: 'row', alignItems: 'center' },
+  logoImage: { width: 92, height: 20, marginRight: 8, objectFit: 'contain' },
   logoBox: { width: 18, height: 18, borderRadius: 4, backgroundColor: C.brand, alignItems: 'center', justifyContent: 'center', marginRight: 6 },
   logoChar: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: C.white, marginTop: -0.5 },
   brand: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.n900 },
@@ -231,6 +232,9 @@ function ReportPDF({ report }: { report: any }) {
   const goIf = toLines(computed?.decisionContract?.goIf, 5)
   const noGoIf = toLines(computed?.decisionContract?.noGoIf, 5)
   const rerunIf = toLines(computed?.decisionContract?.rerunIf, 5)
+  const logoSrc = typeof window !== 'undefined'
+    ? `${window.location.origin}/locatalyze-without-BG.svg`
+    : '/locatalyze-without-BG.svg'
 
   return (
     <Document title={`Locatalyze Decision Report — ${businessType}`} author="Locatalyze">
@@ -238,6 +242,7 @@ function ReportPDF({ report }: { report: any }) {
         <View style={styles.header} fixed>
           <View>
             <View style={styles.brandLockup}>
+              <Image src={logoSrc} style={styles.logoImage} />
               <View style={styles.logoBox}><Text style={styles.logoChar}>L</Text></View>
               <Text style={styles.brand}>Locatalyze Decision Report</Text>
             </View>
@@ -338,6 +343,7 @@ function ReportPDF({ report }: { report: any }) {
         <View style={styles.header} fixed>
           <View>
             <View style={styles.brandLockup}>
+              <Image src={logoSrc} style={styles.logoImage} />
               <View style={styles.logoBox}><Text style={styles.logoChar}>L</Text></View>
               <Text style={styles.brand}>Competition and Demand</Text>
             </View>
@@ -408,6 +414,7 @@ function ReportPDF({ report }: { report: any }) {
         <View style={styles.header} fixed>
           <View>
             <View style={styles.brandLockup}>
+              <Image src={logoSrc} style={styles.logoImage} />
               <View style={styles.logoBox}><Text style={styles.logoChar}>L</Text></View>
               <Text style={styles.brand}>Financial Model and Decision Contract</Text>
             </View>
