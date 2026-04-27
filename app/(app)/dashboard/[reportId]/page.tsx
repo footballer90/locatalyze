@@ -3639,7 +3639,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       projection:           C.projection,       // engine 3-year: { year1, year2|null, year3|null, suppressed }
       riskScenarios:        {},
       breakEvenMonths:      C.breakEvenMonths,
-      paybackMonths:        C.breakEvenMonthsRealistic ?? C.breakEvenMonths,  // prefer persisted realistic payback
+      paybackMonths:        (C as any).breakEvenMonthsRealistic ?? C.breakEvenMonths,  // prefer persisted realistic payback
       costOptimisationTips: [],
       customerVolume:       { daily_customers_needed_breakeven: C.breakEvenDaily },
       monthlyCostBreakdown: null,
