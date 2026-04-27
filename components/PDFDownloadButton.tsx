@@ -1,695 +1,497 @@
 'use client'
 import { useState } from 'react'
-import {
-  Document, Page, Text, View, StyleSheet, pdf, Font
-} from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
 
-// ─── Colours ──────────────────────────────────────────────────────────────────
 const C = {
-  brand:       '#0F766E',
-  brandLight:  '#14B8A6',
-  white:       '#FFFFFF',
-  n50:         '#FAFAF9',
-  n100:        '#F5F5F4',
-  n200:        '#E7E5E4',
-  n400:        '#A8A29E',
-  n500:        '#78716C',
-  n700:        '#44403C',
-  n800:        '#292524',
-  n900:        '#1C1917',
-  emerald:     '#059669',
-  emeraldBg:   '#ECFDF5',
-  emeraldBdr:  '#A7F3D0',
-  amber:       '#D97706',
-  amberBg:     '#FFFBEB',
-  amberBdr:    '#FDE68A',
-  red:         '#DC2626',
-  redBg:       '#FEF2F2',
-  redBdr:      '#FECACA',
-  blue:        '#2563EB',
-  blueBg:      '#EFF6FF',
-  blueBdr:     '#BFDBFE',
+  brand: '#0F766E',
+  white: '#FFFFFF',
+  n50: '#FAFAF9',
+  n100: '#F5F5F4',
+  n200: '#E7E5E4',
+  n400: '#A8A29E',
+  n500: '#78716C',
+  n700: '#44403C',
+  n800: '#292524',
+  n900: '#1C1917',
+  emerald: '#059669',
+  emeraldBg: '#ECFDF5',
+  emeraldBdr: '#A7F3D0',
+  amber: '#D97706',
+  amberBg: '#FFFBEB',
+  amberBdr: '#FDE68A',
+  red: '#DC2626',
+  redBg: '#FEF2F2',
+  redBdr: '#FECACA',
+  blue: '#2563EB',
+  blueBg: '#EFF6FF',
+  blueBdr: '#BFDBFE',
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function verdictColors(v: string | null) {
-  if (v === 'GO')      return { bg: C.emeraldBg, text: C.emerald, border: C.emeraldBdr }
-  if (v === 'CAUTION') return { bg: C.amberBg,   text: C.amber,   border: C.amberBdr   }
-  return                      { bg: C.redBg,     text: C.red,     border: C.redBdr     }
-}
-
-function scoreColor(s: number) {
-  if (s >= 70) return C.emerald
-  if (s >= 45) return C.amber
-  return C.red
-}
-
-// Parse money strings like "A$60,000", "AUD46,068", "-A$14,400" → number
 function parseMoney(v: any): number | null {
   if (v == null) return null
-  if (typeof v === 'number') return v
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null
   const n = parseFloat(String(v).replace(/[^0-9.-]/g, ''))
-  return isNaN(n) ? null : n
+  return Number.isFinite(n) ? n : null
 }
 
-function fmt(n: number | null | undefined) {
-  if (n == null) return '—'
-  const abs = Math.abs(n)
-  const str = '$' + abs.toLocaleString('en-AU', { maximumFractionDigits: 0 })
-  return n < 0 ? `−${str}` : str
+function safeResultData(rd: any): any {
+  if (!rd) return {}
+  if (typeof rd === 'string') {
+    try {
+      return JSON.parse(rd)
+    } catch {
+      return {}
+    }
+  }
+  return rd
 }
 
-// Parse SWOT from the swot_analysis string, stripping ** markdown markers
+function normalizeVerdict(v: string | null | undefined): 'GO' | 'CAUTION' | 'NO GO' {
+  const x = String(v || '').toUpperCase()
+  if (x.includes('NO')) return 'NO GO'
+  if (x.includes('CAUTION') || x.includes('CONDITIONAL')) return 'CAUTION'
+  return 'GO'
+}
+
+function verdictColors(v: 'GO' | 'CAUTION' | 'NO GO') {
+  if (v === 'GO') return { bg: C.emeraldBg, text: C.emerald, border: C.emeraldBdr }
+  if (v === 'CAUTION') return { bg: C.amberBg, text: C.amber, border: C.amberBdr }
+  return { bg: C.redBg, text: C.red, border: C.redBdr }
+}
+
+function fmtMoney(n: number | null | undefined) {
+  if (n == null) return 'N/A'
+  const abs = Math.abs(Math.round(n))
+  const text = '$' + abs.toLocaleString('en-AU')
+  return n < 0 ? `-${text}` : text
+}
+
+function fmtPct(n: number | null | undefined) {
+  if (n == null || !Number.isFinite(n)) return 'N/A'
+  return `${n.toFixed(1)}%`
+}
+
+function toLines(input: any, limit = 4): string[] {
+  if (!input) return []
+  if (Array.isArray(input)) {
+    return input
+      .map((v) => String(v || '').trim())
+      .filter(Boolean)
+      .slice(0, limit)
+  }
+  return String(input)
+    .split(/\n|[•·]/)
+    .map((v) => v.replace(/^\s*[-–]\s*/, '').trim())
+    .filter((v) => v.length > 4)
+    .slice(0, limit)
+}
+
 function parseSwot(raw: string | null): Record<string, string[]> {
   if (!raw) return {}
   const keys = ['STRENGTHS', 'WEAKNESSES', 'OPPORTUNITIES', 'THREATS']
   const result: Record<string, string[]> = {}
-  keys.forEach((key, idx) => {
-    const next = keys[idx + 1]
+  keys.forEach((key, i) => {
+    const next = keys[i + 1]
     const pattern = next ? `${key}:\\s*(.*?)(?=${next}:)` : `${key}:\\s*(.*?)$`
     const match = raw.match(new RegExp(pattern, 'is'))
-    if (match) {
-      result[key] = match[1]
-        .split(/[,.\n·]/)
-        .map(s => s.replace(/\*+/g, '').replace(/^\s*[-–]\s*/, '').trim())
-        .filter(s => s.length > 5)
-        .slice(0, 3)
-    }
+    if (!match) return
+    result[key] = match[1]
+      .split(/[\n,.•·]/)
+      .map((s) => s.replace(/\*+/g, '').replace(/^\s*[-–]\s*/, '').trim())
+      .filter((s) => s.length > 4)
+      .slice(0, 4)
   })
   return result
 }
 
-// Normalise result_data from n8n a1-a8 format into a unified financials object
-function safeResultData(rd: any): any {
-  if (!rd) return {}
-  let parsed: any = rd
-  if (typeof rd === 'string') {
-    try { parsed = JSON.parse(rd) } catch { return {} }
-  }
-
-  // Already has 'financials' key (old format) — pass through
-  if (parsed.financials || parsed.score) return parsed
-
-  // n8n multi-agent format: keys a1…a8
-  if (parsed.a1 !== undefined || parsed.agent_statuses !== undefined) {
-    const a1out = (parsed.a1?.outputs || parsed.a1) ?? {}
-    const a2out = (parsed.a2?.outputs || parsed.a2) ?? {}
-    const a3out = (parsed.a3?.outputs || parsed.a3) ?? {}
-    const a4out = (parsed.a4?.outputs || parsed.a4) ?? {}
-    const a5out = (parsed.a5?.outputs || parsed.a5) ?? {}
-    const a6out = (parsed.a6?.outputs || parsed.a6) ?? {}
-
-    const monthlyRevenue   = parseMoney(a5out.monthly_revenue ?? a5out.projected_monthly_revenue
-      ?? a5out.revenue_range?.monthly_base) || null
-    const monthlyNetProfit = parseMoney(a5out.net_profit ?? a5out.monthly_profit ?? a5out.monthly_net_profit
-      ?? a5out.sensitivity_analysis?.base_case?.monthly_profit_loss) || null
-    const totalCosts       = parseMoney(a4out.total_monthly_costs ?? a4out.monthly_total
-      ?? a4out.monthly_operating_cost?.total_monthly) || null
-    const labour           = parseMoney(a4out.monthly_labour ?? a4out.monthly_staff_cost
-      ?? a4out.monthly_operating_cost?.staff_salaries?.amount) || null
-    const cogs             = parseMoney(a4out.cogs ?? a4out.monthly_cogs
-      ?? a4out.monthly_operating_cost?.consumables_inventory?.amount) || null
-    const utilities        = parseMoney(a4out.monthly_operating_cost?.utilities?.amount) || null
-
-    // Sensitivity scenarios from A5
-    const sens = a5out.sensitivity_analysis ?? {}
-    const riskScenarios = {
-      best:  { monthlyRevenue: parseMoney(sens.best_case?.monthly_revenue),  monthlyNet: parseMoney(sens.best_case?.monthly_profit_loss)  },
-      base:  { monthlyRevenue: parseMoney(sens.base_case?.monthly_revenue),  monthlyNet: parseMoney(sens.base_case?.monthly_profit_loss)  },
-      worst: { monthlyRevenue: parseMoney(sens.worst_case?.monthly_revenue), monthlyNet: parseMoney(sens.worst_case?.monthly_profit_loss) },
-    }
-
-    // Year ramp from A5 (months 1, 6, 12 as proxies for Y1)
-    const ramp = a5out.year1_monthly_ramp ?? []
-    const y1rev = parseMoney(ramp[11]?.revenue) || parseMoney(a5out.revenue_range?.monthly_base)
-    const projections = {
-      year1: y1rev ? { revenue: y1rev, netProfit: monthlyNetProfit } : null,
-      year2: y1rev ? { revenue: Math.round((y1rev || 0) * 1.05), netProfit: monthlyNetProfit ? Math.round(monthlyNetProfit * 1.1) : null } : null,
-      year3: y1rev ? { revenue: Math.round((y1rev || 0) * 1.05 * 1.05), netProfit: monthlyNetProfit ? Math.round(monthlyNetProfit * 1.21) : null } : null,
-    }
-
-    // Revenue channels from A5
-    const revenueChannels: Array<{ channel: string; monthly_revenue: string; revenue_split_pct: number }> =
-      a5out.revenue_channels ?? []
-
-    // Recommended pricing strategy from A5
-    const recommendedPricing = (a5out.pricing_strategies ?? []).find((s: any) => s.recommended) ?? null
-
-    // Competitor profiles from A1 (from competitor_businesses on A3 if A1 is empty)
-    const competitorBiz = (parsed.a3?.competitor_businesses ?? []).slice(0, 5)
-
-    // Opportunity gaps from A1
-    const opportunityGaps: string[] = a1out.opportunity_gaps ?? []
-    const diffSuggestions: string[] = a1out.differentiation_suggestions ?? []
-
-    // Setup cost from A4
-    const setupCostRec = parseMoney(a4out.setup_cost_estimate?.recommended) || null
-    const setupCostMin = parseMoney(a4out.setup_cost_estimate?.total_min) || null
-    const setupCostMax = parseMoney(a4out.setup_cost_estimate?.total_max) || null
-    const breakEvenMonthsA5 = Number(a5out.break_even_months ?? 0) || null
-
-    // Regulatory flags from A3
-    const regulatoryFlags: Array<{ license_name: string; estimated_cost: string; processing_time: string }> =
-      a3out.regulatory_flags ?? []
-
-    // Market demand from A3
-    const demandTrend = a3out.demand_trend ?? null
-    const marketVerdict = a3out.overall_market_verdict ?? null
-    const topOpportunities: string[] = a3out.top_opportunities ?? []
-
-    return {
-      ...parsed,
-      competitors: {
-        count:            Number(a1out.competitors_within_500m ?? a1out.total_competitors_found ?? 0),
-        saturationLevel:  (a1out.saturation_level ?? 'unknown').toLowerCase(),
-        nearbyBusinesses: competitorBiz,
-        opportunity_gaps: opportunityGaps,
-        differentiation_suggestions: diffSuggestions,
-        threat_summary:   a1out.threat_summary ?? null,
-        locality_context: a1out.locality_context ?? null,
-      },
-      financials: {
-        monthlyRevenue,
-        totalMonthlyCosts: totalCosts,
-        monthlyNetProfit,
-        labour,
-        cogs,
-        utilities,
-        avgTicketSize:     parseMoney(a5out.avg_ticket_size ?? a5out.avg_ticket_validation?.market_benchmark) || null,
-        baselineCustomers: Number(a5out.daily_customers ?? a5out.baseline_customers ?? a5out.customer_volume?.daily_customers_base ?? 0) || null,
-        rent: { amount: Number(a2out.median_rent?.monthly ?? 0) || null },
-        projections,
-        riskScenarios,
-        revenueChannels,
-        recommendedPricing,
-        setupCostRec,
-        setupCostMin,
-        setupCostMax,
-        breakEvenMonthsA5,
-        regulatoryFlags,
-        demandTrend,
-        marketVerdict,
-        topOpportunities,
-      },
-    }
-  }
-
-  return parsed
+function paragraph(input: any, fallback: string) {
+  const text = String(input || '').replace(/\s+/g, ' ').trim()
+  return text || fallback
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  page: {
-    fontFamily: 'Helvetica',
-    backgroundColor: C.white,
-    padding: '32 36',
-    fontSize: 9,
-    color: C.n800,
-  },
-
-  // Header
-  header:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: C.n200 },
-  logoBox:     { width: 28, height: 28, backgroundColor: C.brand, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
-  logoText:    { color: C.white, fontSize: 14, fontFamily: 'Helvetica-Bold' },
-  brandName:   { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.n900, marginLeft: 6 },
-  headerMeta:  { fontSize: 7.5, color: C.n400, textAlign: 'right' },
-
-  // Hero card
-  heroCard:      { backgroundColor: C.n50, borderRadius: 10, padding: '14 16', marginBottom: 12, borderWidth: 1, borderColor: C.n200, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  locationLabel: { fontSize: 7.5, color: C.n400, marginBottom: 3 },
-  bizName:       { fontSize: 16, fontFamily: 'Helvetica-Bold', color: C.n900, marginBottom: 4 },
-  verdictPill:   { borderRadius: 100, paddingVertical: 3, paddingHorizontal: 10, marginBottom: 6, alignSelf: 'flex-start' },
-  verdictText:   { fontSize: 8, fontFamily: 'Helvetica-Bold' },
-  scoreNumber:   { fontSize: 32, fontFamily: 'Helvetica-Bold' },
-  scoreDenom:    { fontSize: 9, color: C.n400 },
-
-  // Recommendation
-  recBox:  { borderRadius: 8, padding: '10 12', marginBottom: 12, borderWidth: 1 },
-  recText: { fontSize: 8.5, lineHeight: 1.6 },
-
-  // Metrics strip
-  metricsRow:   { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  metricCard:   { flex: 1, backgroundColor: C.n50, borderRadius: 8, padding: '10 10', borderWidth: 1, borderColor: C.n200 },
-  metricLabel:  { fontSize: 6.5, color: C.n400, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4, fontFamily: 'Helvetica-Bold' },
-  metricValue:  { fontSize: 12, fontFamily: 'Helvetica-Bold', color: C.n800 },
-  metricSub:    { fontSize: 6.5, color: C.n400, marginTop: 2 },
-
-  // Section
-  sectionTitle: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.brand, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
-  card:         { backgroundColor: C.white, borderRadius: 8, padding: '12 14', marginBottom: 10, borderWidth: 1, borderColor: C.n200 },
-  cardTitle:    { fontSize: 9, fontFamily: 'Helvetica-Bold', color: C.n800, marginBottom: 8 },
-
-  // Score bars
-  scoreRow:    { flexDirection: 'row', alignItems: 'center', marginBottom: 7 },
-  scoreLabel:  { width: 110, fontSize: 8, color: C.n700 },
-  scoreWeight: { width: 28, fontSize: 7, color: C.n400, textAlign: 'right' },
-  scoreBarBg:  { flex: 1, height: 5, backgroundColor: C.n100, borderRadius: 100, marginHorizontal: 6, overflow: 'hidden' },
-  scoreBarFill: { height: 5, borderRadius: 100 },
-  scoreVal:    { width: 20, fontSize: 8, fontFamily: 'Helvetica-Bold', textAlign: 'right' },
-
-  // SWOT
-  swotGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  swotCell:  { width: '48.5%', borderRadius: 7, padding: '9 10', borderWidth: 1 },
-  swotTitle: { fontSize: 7.5, fontFamily: 'Helvetica-Bold', marginBottom: 5 },
-  swotItem:  { fontSize: 7.5, lineHeight: 1.55, marginBottom: 2 },
-
-  // Analysis text
-  analysisText: { fontSize: 8.5, color: C.n500 as any, lineHeight: 1.65 },
-
-  // P&L
-  plRow:   { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: C.n100 },
-  plLabel: { fontSize: 8.5, color: C.n500 as any },
-  plValue: { fontSize: 8.5, fontFamily: 'Helvetica-Bold' },
-
-  // Footer
-  footer:     { position: 'absolute', bottom: 24, left: 36, right: 36, flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: C.n200, paddingTop: 8 },
+  page: { backgroundColor: C.white, paddingTop: 30, paddingBottom: 56, paddingHorizontal: 34, fontFamily: 'Helvetica', fontSize: 9, color: C.n800 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: C.n200 },
+  brandLockup: { flexDirection: 'row', alignItems: 'center' },
+  logoBox: { width: 18, height: 18, borderRadius: 4, backgroundColor: C.brand, alignItems: 'center', justifyContent: 'center', marginRight: 6 },
+  logoChar: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: C.white, marginTop: -0.5 },
+  brand: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.n900 },
+  meta: { fontSize: 7.5, color: C.n500, textAlign: 'right' },
+  coverStripe: { borderRadius: 10, backgroundColor: C.brand, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 8 },
+  coverStripeText: { fontSize: 7.8, color: C.white, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.7 },
+  hero: { borderWidth: 1, borderColor: C.n200, backgroundColor: C.n50, borderRadius: 10, padding: 16, marginBottom: 12 },
+  row: { flexDirection: 'row' },
+  grow: { flex: 1 },
+  label: { fontSize: 7, color: C.n400, textTransform: 'uppercase', marginBottom: 3 },
+  business: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.n900, marginBottom: 2 },
+  address: { fontSize: 9, color: C.n700, lineHeight: 1.4 },
+  verdictBadge: { borderRadius: 100, paddingVertical: 4, paddingHorizontal: 12, borderWidth: 1, alignSelf: 'flex-start', marginTop: 8 },
+  verdictText: { fontSize: 8, fontFamily: 'Helvetica-Bold' },
+  score: { fontSize: 32, fontFamily: 'Helvetica-Bold' },
+  scoreSub: { fontSize: 8, color: C.n400, textAlign: 'right' },
+  section: { marginBottom: 12 },
+  sectionDivider: { height: 1, backgroundColor: C.n100, marginBottom: 10 },
+  sectionTitle: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: C.brand, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
+  card: { borderWidth: 1, borderColor: C.n200, borderRadius: 8, padding: 11, marginBottom: 8, backgroundColor: C.white },
+  cardTitle: { fontSize: 9.4, fontFamily: 'Helvetica-Bold', color: C.n800, marginBottom: 5 },
+  body: { fontSize: 8.8, color: C.n700, lineHeight: 1.56 },
+  bullet: { fontSize: 8.5, color: C.n700, lineHeight: 1.5, marginBottom: 3 },
+  metricsWrap: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -4 },
+  metric: { width: '50%', paddingHorizontal: 4, marginBottom: 8 },
+  metricCard: { borderWidth: 1, borderColor: C.n200, borderRadius: 8, backgroundColor: C.n50, padding: 8 },
+  metricLabel: { fontSize: 6.8, color: C.n400, textTransform: 'uppercase', marginBottom: 3, letterSpacing: 0.4 },
+  metricValue: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: C.n900 },
+  metricSub: { fontSize: 7, color: C.n500, marginTop: 2 },
+  split: { flexDirection: 'row', marginHorizontal: -4 },
+  col: { width: '50%', paddingHorizontal: 4 },
+  warning: { borderRadius: 8, borderWidth: 1.2, padding: 10, marginBottom: 8 },
+  warningTitle: { fontSize: 8.2, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', marginBottom: 4 },
+  tableHead: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: C.n200, paddingBottom: 5, marginBottom: 4 },
+  tableHeadTxt: { fontSize: 7.2, color: C.n500, fontFamily: 'Helvetica-Bold' },
+  tableRow: { flexDirection: 'row', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: C.n100 },
+  tableRowMuted: { backgroundColor: C.n50 },
+  tableTxt: { fontSize: 8, color: C.n700 },
+  footer: { position: 'absolute', left: 34, right: 34, bottom: 22, flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: C.n200, paddingTop: 8 },
   footerText: { fontSize: 7, color: C.n400 },
-
-  // Two col layout
-  twoCol:   { flexDirection: 'row', gap: 10, marginBottom: 10 },
-  colLeft:  { flex: 1 },
-  colRight: { flex: 1 },
-
-  // Risk scenarios
-  scenarioRow:   { flexDirection: 'row', gap: 6, marginBottom: 10 },
-  scenarioCard:  { flex: 1, borderRadius: 7, padding: '9 10', borderWidth: 1 },
-  scenarioLabel: { fontSize: 7, fontFamily: 'Helvetica-Bold', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.4 },
-  scenarioVal:   { fontSize: 11, fontFamily: 'Helvetica-Bold', marginBottom: 2 },
-  scenarioSub:   { fontSize: 7, color: C.n400 },
-
-  // Revenue channels
-  channelRow:   { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
-  channelBar:   { height: 6, borderRadius: 3, marginRight: 8 },
-  channelLabel: { fontSize: 7.5, color: C.n700, flex: 1 },
-  channelPct:   { fontSize: 7.5, fontFamily: 'Helvetica-Bold', color: C.brand, width: 30, textAlign: 'right' },
-  channelAmt:   { fontSize: 7.5, color: C.n500, width: 55, textAlign: 'right' },
-
-  // Bullet list
-  bulletItem: { fontSize: 8, color: C.n500, lineHeight: 1.5, marginBottom: 2 },
-
-  // Competitor row
-  compRow:    { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: C.n100 },
-  compName:   { fontSize: 8, color: C.n800, flex: 1 },
-  compRating: { fontSize: 7.5, color: C.amber, width: 36, textAlign: 'right' },
-  compAddr:   { fontSize: 7, color: C.n400, marginTop: 1 },
-
-  // Setup cost bar
-  setupRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 3 },
-  setupLabel: { fontSize: 8, color: C.n700, flex: 1 },
-  setupVal:   { fontSize: 8, fontFamily: 'Helvetica-Bold', color: C.n800 },
-
-  // Tag pill
-  tagPill:  { borderRadius: 20, paddingVertical: 2, paddingHorizontal: 7, borderWidth: 1, marginRight: 4, marginBottom: 3 },
-  tagText:  { fontSize: 7, fontFamily: 'Helvetica-Bold' },
+  watermark: { position: 'absolute', right: 34, bottom: 36, fontSize: 28, color: '#F5F5F4', fontFamily: 'Helvetica-Bold' },
 })
 
-// ─── PDF Document ─────────────────────────────────────────────────────────────
 function ReportPDF({ report }: { report: any }) {
-  const vc = verdictColors(report.verdict)
-
-  // ── ENGINE V2: prefer computed_result (sealed, deterministic) ────────────
-  const CR = report.computed_result ?? null
-
-  // Legacy fallback — only used for old reports without computed_result
-  const rd  = safeResultData(report.result_data)
-  const fin = rd.financials || {}
-
-  // Financial figures — V2 takes precedence
-  const displayRevenue    = CR?.revenue    ?? fin.monthlyRevenue    ?? null
-  const displayNetProfit  = CR?.netProfit  ?? fin.monthlyNetProfit  ?? null
-  const breakEvenMonths   = CR?.breakEvenMonths ?? fin.breakEvenMonthsA5 ?? report.breakeven_months ?? null
-
-  // Scenario rows — V2 structure is { worst, base, best } each with revenue/netProfit/label
-  const riskScenarios = CR ? {
-    worst: { monthlyRevenue: CR.scenarios?.worst?.revenue, monthlyNet: CR.scenarios?.worst?.netProfit },
-    base:  { monthlyRevenue: CR.scenarios?.base?.revenue,  monthlyNet: CR.scenarios?.base?.netProfit  },
-    best:  { monthlyRevenue: CR.scenarios?.best?.revenue,  monthlyNet: CR.scenarios?.best?.netProfit  },
-  } : (fin.riskScenarios || {})
-
-  // Projections — V2 stores annual revenue directly
-  const projections = CR ? {
-    year1: CR.projection?.year1 ? { revenue: CR.projection.year1, netProfit: CR.netProfit } : null,
-    year2: CR.projection?.year2 ? { revenue: CR.projection.year2, netProfit: Math.round((CR.netProfit ?? 0) * 1.1) } : null,
-    year3: CR.projection?.year3 ? { revenue: CR.projection.year3, netProfit: Math.round((CR.netProfit ?? 0) * 1.21) } : null,
-  } : (fin.projections || {})
-
-  const swot = parseSwot(report.swot_analysis)
+  const rd = safeResultData(report.result_data)
+  const computed = report.computed_result ?? null
+  const a3 = rd?.a3?.outputs || rd?.a3 || {}
+  const a4 = rd?.a4?.outputs || rd?.a4 || {}
+  const a5 = rd?.a5?.outputs || rd?.a5 || {}
+  const a6 = rd?.a6?.outputs || rd?.a6 || {}
+  const verdict = normalizeVerdict(computed?.verdict ?? report.verdict)
+  const vc = verdictColors(verdict)
   const generatedDate = new Date(report.created_at || Date.now()).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })
+  const address = report.address || report.input_data?.address || report.location_name || 'Address not provided'
+  const businessType = report.business_type || 'Business'
+  const score = computed?.scores?.overall ?? report.overall_score ?? null
 
-  // Best display address
-  const displayAddress = report.address || report.input_data?.address || report.location_name || '—'
+  const revenue = computed?.revenue ?? parseMoney(a5.monthly_revenue ?? a5.projected_monthly_revenue) ?? null
+  const netProfit = computed?.netProfit ?? parseMoney(a5.net_profit ?? a5.monthly_profit ?? a5.monthly_net_profit) ?? null
+  const rent = parseMoney(computed?.costBreakdown?.rent ?? report.monthly_rent ?? a4.monthly_rent ?? a4.rent) ?? null
+  const breakEvenDaily = computed?.breakEvenDaily ?? report.breakeven_daily ?? parseMoney(a5.break_even_daily_customers) ?? null
+  const rentToRevenue = rent && revenue ? (rent / revenue) * 100 : null
+  const conservativeProfit = parseMoney(computed?.scenarios?.worst?.monthly_profit ?? computed?.scenarios?.worst?.netProfit ?? a5?.sensitivity_analysis?.worst_case?.monthly_profit_loss)
+  const baseProfit = parseMoney(computed?.scenarios?.base?.monthly_profit ?? computed?.scenarios?.base?.netProfit ?? a5?.sensitivity_analysis?.base_case?.monthly_profit_loss) ?? netProfit
+  const optimisticProfit = parseMoney(computed?.scenarios?.best?.monthly_profit ?? computed?.scenarios?.best?.netProfit ?? a5?.sensitivity_analysis?.best_case?.monthly_profit_loss)
+  const competitors = computed?.competitors ?? []
+  const competitorCount = computed?.validCompetitorCount ?? competitors.length ?? parseMoney(a3.total_competitors_found) ?? 0
+  const demandTrend = computed?.marketSignals?.demandTrend ?? a3.demand_trend ?? 'Not available'
+  const demandScore = computed?.marketSignals?.demandScore ?? a3.demand_score ?? null
+  const marketFit = computed?.marketIntelligence?.opportunityLevel ?? a3.overall_market_verdict ?? 'Unclear'
+  const incomeInsight = paragraph(a6?.income_insight ?? a6?.income_summary ?? a6?.summary, 'Income insight was not returned by the demand pipeline for this report.')
 
-  const scoreFields = [
-    { label: 'Rent Affordability', key: 'score_rent',          weight: '30%' },
-    { label: 'Profitability',      key: 'score_profitability', weight: '25%' },
-    { label: 'Competition',        key: 'score_competition',   weight: '25%' },
-    { label: 'Demographics',       key: 'score_demand',        weight: '20%' },
+  const verdictSummary = paragraph(
+    computed?.decisionExplanation?.summary ?? report.recommendation,
+    verdict === 'GO'
+      ? 'This location appears viable under current assumptions and model constraints.'
+      : verdict === 'CAUTION'
+        ? 'This location can work only with strict execution and threshold discipline.'
+        : 'This location is currently not viable under the validated assumptions.'
+  )
+
+  const keySignals = [
+    rentToRevenue != null ? `Rent burden is ${fmtPct(rentToRevenue)} of projected monthly revenue.` : 'Rent burden could not be calculated from current data.',
+    `${competitorCount} competitors were detected within the modeled radius, indicating ${competitorCount >= 10 ? 'high' : competitorCount >= 6 ? 'moderate' : 'low to moderate'} competitive pressure.`,
+    `Demand trend is ${String(demandTrend).toLowerCase()}${demandScore != null ? ` with a demand score of ${Math.round(Number(demandScore))}/100` : ''}.`,
   ]
 
-  const swotConfig: Record<string, { bg: string; border: string; text: string }> = {
-    STRENGTHS:     { bg: C.emeraldBg, border: C.emeraldBdr, text: '#065F46' },
-    WEAKNESSES:    { bg: C.amberBg,   border: C.amberBdr,   text: '#92400E' },
-    OPPORTUNITIES: { bg: C.blueBg,    border: C.blueBdr,    text: '#1D4ED8' },
-    THREATS:       { bg: C.redBg,     border: C.redBdr,     text: '#991B1B' },
-  }
+  const reasons = (computed?.verdictReasons ?? []).slice(0, 4)
+  const risks = (computed?.verdictFailureModes ?? []).slice(0, 4)
+  const conditions = (computed?.verdictConditions ?? []).slice(0, 4)
+  const swot = parseSwot(report.swot_analysis)
+  const strengths = swot.STRENGTHS?.length ? swot.STRENGTHS.slice(0, 4) : toLines(computed?.marketIntelligence?.marketGapNote, 3)
+
+  const killSwitch = paragraph(
+    computed?.decisionExplanation?.killSwitch,
+    computed?.verdictGateTriggered ? `Kill switch triggered: ${computed.verdictGateTriggered}` : ''
+  )
+  const showKillSwitch = Boolean(killSwitch)
+
+  const topCompetitors = competitors.slice(0, 5)
+
+  const cogs = parseMoney(computed?.costBreakdown?.cogs ?? a4.cogs ?? a4.monthly_cogs)
+  const staff = parseMoney(computed?.costBreakdown?.staff ?? a4.monthly_staff_cost ?? a4.monthly_labour)
+  const otherCosts = parseMoney(computed?.costBreakdown?.other)
+  const totalCosts = parseMoney(computed?.totalCosts ?? a4.total_monthly_costs ?? a4.monthly_total)
+
+  const financialDriverText = paragraph(
+    computed?.decisionExplanation?.rentLogic?.summary,
+    'Profit is driven by the spread between daily customer throughput x average ticket and fixed monthly cost load (rent + staff + operating costs).'
+  )
+  const dependencyText = paragraph(
+    computed?.decisionExplanation?.rentLogic?.criticalDependency,
+    'The model is most sensitive to conversion into paying customers during the first operating months.'
+  )
+
+  const goIf = toLines(computed?.decisionContract?.goIf, 5)
+  const noGoIf = toLines(computed?.decisionContract?.noGoIf, 5)
+  const rerunIf = toLines(computed?.decisionContract?.rerunIf, 5)
 
   return (
-    <Document title={`Locatalyze — ${report.business_type} · ${displayAddress}`} author="Locatalyze">
-
-      {/* ── PAGE 1: Overview ── */}
+    <Document title={`Locatalyze Decision Report — ${businessType}`} author="Locatalyze">
       <Page size="A4" style={styles.page}>
-
-        {/* Header */}
         <View style={styles.header} fixed>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={styles.logoBox}><Text style={styles.logoText}>L</Text></View>
-            <Text style={styles.brandName}>Locatalyze</Text>
+          <View>
+            <View style={styles.brandLockup}>
+              <View style={styles.logoBox}><Text style={styles.logoChar}>L</Text></View>
+              <Text style={styles.brand}>Locatalyze Decision Report</Text>
+            </View>
+            <Text style={styles.meta}>Decision-grade export</Text>
           </View>
           <View>
-            <Text style={styles.headerMeta}>Location Feasibility Report</Text>
-            <Text style={styles.headerMeta}>{generatedDate}</Text>
+            <Text style={styles.meta}>Generated: {generatedDate}</Text>
+            <Text style={styles.meta}>Report ID: {report.report_id ?? report.id ?? 'N/A'}</Text>
           </View>
         </View>
 
-        {/* Hero */}
-        <View style={styles.heroCard}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.locationLabel}>{displayAddress}</Text>
-            <Text style={styles.bizName}>{report.business_type || '—'}</Text>
-            <View style={[styles.verdictPill, { backgroundColor: vc.bg, borderWidth: 1, borderColor: vc.border }]}>
-              <Text style={[styles.verdictText, { color: vc.text }]}>{report.verdict || '—'}</Text>
-            </View>
-          </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text style={[styles.scoreNumber, { color: vc.text }]}>{report.overall_score ?? '—'}</Text>
-            <Text style={styles.scoreDenom}>/100</Text>
-          </View>
+        <View style={styles.coverStripe}>
+          <Text style={styles.coverStripeText}>Prepared for business decision and stakeholder review</Text>
         </View>
 
-        {/* Recommendation */}
-        {report.recommendation && (
-          <View style={[styles.recBox, { backgroundColor: vc.bg, borderColor: vc.border }]}>
-            <Text style={[styles.recText, { color: vc.text }]}>{report.recommendation}</Text>
-          </View>
-        )}
-
-        {/* Key Metrics */}
-        <View style={styles.metricsRow}>
-          {[
-            { l: 'Monthly Revenue',    v: displayRevenue ? fmt(displayRevenue) : '—',       s: 'A5 agent estimate' },
-            { l: 'Monthly Net Profit', v: displayNetProfit ? fmt(displayNetProfit) : '—',   s: displayRevenue && report.monthly_rent ? `${Math.round((report.monthly_rent / displayRevenue) * 100)}% rent ratio` : '' },
-            { l: 'Break-even / Day',   v: report.breakeven_daily ? `${report.breakeven_daily} cust.` : '—', s: 'customers needed' },
-            { l: 'Payback Period',     v: !breakEvenMonths || breakEvenMonths === 999 || breakEvenMonths === 0 ? 'Not viable' : `${breakEvenMonths} mo`, s: 'from setup cost' },
-          ].map(m => (
-            <View key={m.l} style={styles.metricCard}>
-              <Text style={styles.metricLabel}>{m.l}</Text>
-              <Text style={styles.metricValue}>{m.v}</Text>
-              {!!m.s && <Text style={styles.metricSub}>{m.s}</Text>}
-            </View>
-          ))}
-        </View>
-
-        {/* Score breakdown */}
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Score Breakdown</Text>
-          {scoreFields.map(f => {
-            const score = (report[f.key as keyof typeof report] as number) || 0
-            const color = scoreColor(score)
-            return (
-              <View key={f.label} style={styles.scoreRow}>
-                <Text style={styles.scoreLabel}>{f.label}</Text>
-                <Text style={styles.scoreWeight}>{f.weight}</Text>
-                <View style={styles.scoreBarBg}>
-                  <View style={[styles.scoreBarFill, { width: `${score}%` as any, backgroundColor: color }]} />
-                </View>
-                <Text style={[styles.scoreVal, { color }]}>{score}</Text>
+        <View style={styles.hero} wrap={false}>
+          <View style={styles.row}>
+            <View style={styles.grow}>
+              <Text style={styles.label}>Business Type</Text>
+              <Text style={styles.business}>{businessType}</Text>
+              <Text style={styles.address}>{address}</Text>
+              <View style={[styles.verdictBadge, { backgroundColor: vc.bg, borderColor: vc.border }]}>
+                <Text style={[styles.verdictText, { color: vc.text }]}>{verdict}</Text>
               </View>
-            )
-          })}
-        </View>
-
-        {/* SWOT */}
-        {Object.keys(swot).length > 0 && (
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>SWOT Analysis</Text>
-            <View style={styles.swotGrid}>
-              {Object.entries(swot).map(([key, items]) => {
-                const cfg = swotConfig[key]
-                if (!cfg || !items.length) return null
-                return (
-                  <View key={key} style={[styles.swotCell, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
-                    <Text style={[styles.swotTitle, { color: cfg.text }]}>{key}</Text>
-                    {items.map((item, i) => (
-                      <Text key={i} style={[styles.swotItem, { color: cfg.text }]}>· {item}</Text>
-                    ))}
-                  </View>
-                )
-              })}
+            </View>
+            <View>
+              <Text style={[styles.score, { color: vc.text }]}>{score != null ? Math.round(Number(score)) : 'N/A'}</Text>
+              <Text style={styles.scoreSub}>overall score</Text>
             </View>
           </View>
-        )}
+        </View>
+        <View style={styles.sectionDivider} />
 
-        {/* Footer */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Executive Summary</Text>
+          <View style={styles.card} wrap={false}>
+            <Text style={[styles.body, { fontFamily: 'Helvetica-Bold', color: vc.text, marginBottom: 6 }]}>
+              Final verdict: {verdict}. {verdictSummary}
+            </Text>
+            {keySignals.map((x, i) => (
+              <Text key={i} style={styles.bullet}>- {x}</Text>
+            ))}
+          </View>
+          {showKillSwitch && (
+            <View style={[styles.warning, { borderColor: C.redBdr, backgroundColor: C.redBg }]} wrap={false}>
+              <Text style={[styles.warningTitle, { color: C.red }]}>Kill Switch Warning</Text>
+              <Text style={[styles.body, { color: '#991B1B', fontFamily: 'Helvetica-Bold' }]}>{killSwitch}</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.sectionDivider} />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Core Metrics</Text>
+          <View style={styles.metricsWrap} wrap={false}>
+            <View style={styles.metric}><View style={styles.metricCard}><Text style={styles.metricLabel}>Rent to Revenue Ratio</Text><Text style={styles.metricValue}>{fmtPct(rentToRevenue)}</Text><Text style={styles.metricSub}>Monthly rent as % of projected revenue</Text></View></View>
+            <View style={styles.metric}><View style={styles.metricCard}><Text style={styles.metricLabel}>Break-even Customers / Day</Text><Text style={styles.metricValue}>{breakEvenDaily != null ? Math.round(Number(breakEvenDaily)).toString() : 'N/A'}</Text><Text style={styles.metricSub}>Minimum daily throughput needed</Text></View></View>
+            <View style={styles.metric}><View style={styles.metricCard}><Text style={styles.metricLabel}>Estimated Monthly Revenue</Text><Text style={styles.metricValue}>{fmtMoney(revenue)}</Text><Text style={styles.metricSub}>Engine-calculated monthly estimate</Text></View></View>
+            <View style={styles.metric}><View style={styles.metricCard}><Text style={styles.metricLabel}>Profit Range</Text><Text style={styles.metricValue}>{`${fmtMoney(conservativeProfit)} / ${fmtMoney(baseProfit)} / ${fmtMoney(optimisticProfit)}`}</Text><Text style={styles.metricSub}>Conservative / Base / Optimistic</Text></View></View>
+          </View>
+        </View>
+        <View style={styles.sectionDivider} />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Decision Explanation</Text>
+          <View style={styles.split}>
+            <View style={styles.col}>
+              <View style={styles.card} wrap={false}>
+                <Text style={styles.cardTitle}>Why this {verdict}</Text>
+                {(reasons.length ? reasons : [verdictSummary]).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+              </View>
+              <View style={styles.card} wrap={false}>
+                <Text style={styles.cardTitle}>Key Advantages</Text>
+                {(strengths.length ? strengths : ['No specific advantage signals were returned by the upstream model.']).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+              </View>
+            </View>
+            <View style={styles.col}>
+              <View style={styles.card} wrap={false}>
+                <Text style={styles.cardTitle}>Key Risks</Text>
+                {(risks.length ? risks : ['No explicit failure modes were returned for this report.']).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+              </View>
+              <View style={styles.card} wrap={false}>
+                <Text style={styles.cardTitle}>What Must Be True</Text>
+                {(conditions.length ? conditions : ['Critical conditions were not returned by the engine. Re-run may be required.']).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+              </View>
+            </View>
+          </View>
+        </View>
+
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Locatalyze · locatalyze.com</Text>
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
+        <Text style={styles.watermark}>LOCATALYZE</Text>
       </Page>
 
-      {/* ── PAGE 2: Financials ── */}
       <Page size="A4" style={styles.page}>
-
         <View style={styles.header} fixed>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={styles.logoBox}><Text style={styles.logoText}>L</Text></View>
-            <Text style={styles.brandName}>Locatalyze</Text>
-          </View>
-          <Text style={styles.headerMeta}>{report.business_type} · {displayAddress}</Text>
-        </View>
-
-        {/* P&L Summary */}
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Monthly P&L Summary</Text>
-          {[
-            { l: 'Monthly Revenue',        v: fmt(displayRevenue),             c: C.emerald,  neg: false },
-            { l: 'Cost of Goods (est.)',   v: fin.cogs     ? `−${fmt(fin.cogs)}`     : '—', c: fin.cogs ? C.red : C.n400, neg: true },
-            { l: 'Labour (est.)',          v: fin.labour   ? `−${fmt(fin.labour)}`   : '—', c: fin.labour ? C.red : C.n400, neg: true },
-            { l: 'Monthly Rent',           v: report.monthly_rent ? `−${fmt(report.monthly_rent)}` : '—', c: report.monthly_rent ? C.red : C.n400, neg: true },
-            { l: 'Utilities (est.)',       v: fin.utilities ? `−${fmt(fin.utilities)}` : '—', c: fin.utilities ? C.red : C.n400, neg: true },
-          ].map(r => (
-            <View key={r.l} style={styles.plRow}>
-              <Text style={styles.plLabel}>{r.l}</Text>
-              <Text style={[styles.plValue, { color: r.c }]}>{r.v}</Text>
+          <View>
+            <View style={styles.brandLockup}>
+              <View style={styles.logoBox}><Text style={styles.logoChar}>L</Text></View>
+              <Text style={styles.brand}>Competition and Demand</Text>
             </View>
-          ))}
-          <View style={[styles.plRow, { borderBottomWidth: 0, paddingTop: 8 }]}>
-            <Text style={[styles.plLabel, { fontFamily: 'Helvetica-Bold', color: C.n900 }]}>Net Profit</Text>
-            <Text style={[styles.plValue, { fontSize: 11, color: (displayNetProfit ?? 0) >= 0 ? C.emerald : C.red }]}>{fmt(displayNetProfit)}</Text>
+            <Text style={styles.meta}>{businessType}</Text>
           </View>
+          <Text style={styles.meta}>{address}</Text>
         </View>
 
-        {/* Revenue Channels (from A5) */}
-        {fin.revenueChannels?.length > 0 && (
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Revenue Channels</Text>
-            {fin.revenueChannels.map((ch: any, i: number) => (
-              <View key={i} style={styles.channelRow}>
-                <View style={[styles.channelBar, { width: `${(ch.revenue_split_pct ?? 0) * 0.4}%` as any, backgroundColor: C.brand }]} />
-                <Text style={styles.channelLabel}>{ch.channel}</Text>
-                <Text style={styles.channelPct}>{ch.revenue_split_pct ?? 0}%</Text>
-                <Text style={styles.channelAmt}>{ch.monthly_revenue ?? ''}</Text>
-              </View>
-            ))}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Competition Analysis</Text>
+          <View style={styles.card} wrap={false}>
+            <Text style={styles.body}>
+              {competitorCount} competitors identified within the modeled area.
+              {' '}This indicates {competitorCount >= 10 ? 'high saturation and margin pressure.' : competitorCount >= 6 ? 'moderate saturation where differentiation decides outcomes.' : 'limited direct saturation, which can be opportunity or weaker demand.'}
+            </Text>
+            {report.competitor_analysis ? <Text style={[styles.body, { marginTop: 7 }]}>{paragraph(report.competitor_analysis, '')}</Text> : null}
           </View>
-        )}
-
-        {/* Sensitivity Scenarios */}
-        {riskScenarios.base && (
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Sensitivity Analysis</Text>
-            <View style={styles.scenarioRow}>
-              {[
-                { key: 'worst', label: 'Worst Case', pct: '60% demand', bg: C.redBg,     border: C.redBdr,     text: C.red     },
-                { key: 'base',  label: 'Base Case',  pct: '100% demand', bg: C.blueBg,   border: C.blueBdr,    text: C.blue    },
-                { key: 'best',  label: 'Best Case',  pct: '140% demand', bg: C.emeraldBg, border: C.emeraldBdr, text: C.emerald },
-              ].map(s => {
-                const sc = riskScenarios[s.key] || {}
-                return (
-                  <View key={s.key} style={[styles.scenarioCard, { backgroundColor: s.bg, borderColor: s.border }]}>
-                    <Text style={[styles.scenarioLabel, { color: s.text }]}>{s.label}</Text>
-                    <Text style={[styles.scenarioVal, { color: s.text }]}>{fmt(sc.monthlyRevenue)}</Text>
-                    <Text style={styles.scenarioSub}>Revenue / mo</Text>
-                    <Text style={[styles.scenarioVal, { color: s.text, marginTop: 4, fontSize: 9 }]}>{fmt(sc.monthlyNet)}</Text>
-                    <Text style={styles.scenarioSub}>Net Profit / mo</Text>
+          <View style={styles.card} wrap={false}>
+            <Text style={styles.cardTitle}>Strength Indicators (Ratings and Proximity)</Text>
+            {topCompetitors.length ? (
+              <>
+                <View style={styles.tableHead}>
+                  <Text style={[styles.tableHeadTxt, { width: '54%' }]}>Competitor</Text>
+                  <Text style={[styles.tableHeadTxt, { width: '20%' }]}>Rating</Text>
+                  <Text style={[styles.tableHeadTxt, { width: '26%', textAlign: 'right' }]}>Distance</Text>
+                </View>
+                {topCompetitors.map((c: any, i: number) => (
+                  <View key={i} style={[styles.tableRow, ...(i % 2 === 1 ? [styles.tableRowMuted] : [])]}>
+                    <Text style={[styles.tableTxt, { width: '54%' }]}>{c.name ?? 'Unnamed competitor'}</Text>
+                    <Text style={[styles.tableTxt, { width: '20%' }]}>{c.rating ?? 'N/A'}</Text>
+                    <Text style={[styles.tableTxt, { width: '26%', textAlign: 'right' }]}>{c.distance != null ? `${Math.round(Number(c.distance))}m` : 'N/A'}</Text>
                   </View>
-                )
-              })}
-            </View>
+                ))}
+              </>
+            ) : (
+              <Text style={styles.body}>Named competitor records were not returned by this pipeline run.</Text>
+            )}
           </View>
-        )}
+        </View>
 
-        {/* 3-year projection */}
-        {projections.year1 && (
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>3-Year Projection (estimated)</Text>
-            <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: C.n200, paddingBottom: 5, marginBottom: 6 }}>
-              {['', 'Year 1', 'Year 2', 'Year 3'].map((h, i) => (
-                <Text key={i} style={{ flex: i === 0 ? 1.2 : 1, fontSize: 7.5, fontFamily: 'Helvetica-Bold', color: C.n500, textAlign: i === 0 ? 'left' : 'right' }}>{h}</Text>
-              ))}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Demographics and Demand</Text>
+          <View style={styles.card} wrap={false}>
+            <Text style={styles.cardTitle}>Income Insights</Text>
+            <Text style={styles.body}>{incomeInsight}</Text>
+          </View>
+          <View style={styles.card} wrap={false}>
+            <Text style={styles.cardTitle}>Local Demand and Business-Type Fit</Text>
+            <Text style={styles.body}>
+              Demand trend: {String(demandTrend)}. Market fit level: {String(marketFit)}.
+              {' '}For a {String(businessType).toLowerCase()} concept, this means execution quality must align with local customer behavior and spending pattern, not just headline rent.
+            </Text>
+            <Text style={[styles.body, { marginTop: 6 }]}>
+              {paragraph(report.market_demand, 'No dedicated market demand narrative was returned by this run.')}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.sectionDivider} />
+
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Report ID: {report.report_id ?? report.id ?? 'N/A'} · Locatalyze</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+        </View>
+        <Text style={styles.watermark}>LOCATALYZE</Text>
+      </Page>
+
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header} fixed>
+          <View>
+            <View style={styles.brandLockup}>
+              <View style={styles.logoBox}><Text style={styles.logoChar}>L</Text></View>
+              <Text style={styles.brand}>Financial Model and Decision Contract</Text>
+            </View>
+            <Text style={styles.meta}>{businessType}</Text>
+          </View>
+          <Text style={styles.meta}>Decision checklist aligned to engine output</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Financial Model Breakdown</Text>
+          <View style={styles.card} wrap={false}>
+            <View style={styles.tableHead}>
+              <Text style={[styles.tableHeadTxt, { width: '60%' }]}>Line Item</Text>
+              <Text style={[styles.tableHeadTxt, { width: '40%', textAlign: 'right' }]}>Monthly Value</Text>
             </View>
             {[
-              { label: 'Revenue',    key: 'revenue',    color: C.n800   },
-              { label: 'Net Profit', key: 'netProfit',  color: C.emerald },
-            ].map(row => (
-              <View key={row.key} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: C.n100 }}>
-                <Text style={{ flex: 1.2, fontSize: 8, color: C.n500 as any }}>{row.label}</Text>
-                {['year1', 'year2', 'year3'].map(y => (
-                  <Text key={y} style={{ flex: 1, fontSize: 8, fontFamily: 'Helvetica-Bold', color: row.color, textAlign: 'right' }}>
-                    {fmt(projections[y]?.[row.key])}
-                  </Text>
-                ))}
+              ['Revenue', revenue],
+              ['Rent', rent],
+              ['Staff', staff],
+              ['COGS', cogs],
+              ['Other operating costs', otherCosts],
+              ['Total costs', totalCosts],
+              ['Net profit', netProfit],
+            ].map((row, i) => (
+              <View key={i} style={[styles.tableRow, ...(i % 2 === 1 ? [styles.tableRowMuted] : [])]}>
+                <Text style={[styles.tableTxt, { width: '60%' }]}>{row[0]}</Text>
+                <Text style={[styles.tableTxt, { width: '40%', textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>{fmtMoney(row[1] as number | null)}</Text>
               </View>
             ))}
           </View>
-        )}
-
-        {/* Footer */}
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Report ID: {report.id} · Locatalyze · locatalyze.com</Text>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
-        </View>
-      </Page>
-
-      {/* ── PAGE 3: Competitive & Market Intelligence ── */}
-      <Page size="A4" style={styles.page}>
-
-        <View style={styles.header} fixed>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={styles.logoBox}><Text style={styles.logoText}>L</Text></View>
-            <Text style={styles.brandName}>Locatalyze</Text>
-          </View>
-          <Text style={styles.headerMeta}>{report.business_type} · Market Intelligence</Text>
-        </View>
-
-        <View style={styles.twoCol}>
-          {/* Competition */}
-          <View style={styles.colLeft}>
-            {report.competitor_analysis && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Competition Analysis</Text>
-                <Text style={styles.analysisText}>{report.competitor_analysis}</Text>
-              </View>
-            )}
-
-            {/* Opportunity Gaps */}
-            {rd.competitors?.opportunity_gaps?.length > 0 && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Opportunity Gaps</Text>
-                {rd.competitors.opportunity_gaps.map((g: string, i: number) => (
-                  <Text key={i} style={styles.bulletItem}>· {g}</Text>
-                ))}
-              </View>
-            )}
-
-            {/* Recommended Pricing */}
-            {fin.recommendedPricing && (
-              <View style={[styles.card, { backgroundColor: C.brandLight + '18', borderColor: C.brand }]}>
-                <Text style={[styles.cardTitle, { color: C.brand }]}>Recommended Pricing Strategy</Text>
-                <Text style={[styles.metricValue, { color: C.brand, marginBottom: 4 }]}>{fin.recommendedPricing.strategy} — {fin.recommendedPricing.avg_ticket}/visit</Text>
-                <Text style={styles.analysisText}>{fin.recommendedPricing.pros}</Text>
-                <View style={{ flexDirection: 'row', marginTop: 6, gap: 8 }}>
-                  <View>
-                    <Text style={{ fontSize: 6.5, color: C.n400, textTransform: 'uppercase' }}>Monthly Revenue</Text>
-                    <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: C.n800 }}>{fin.recommendedPricing.monthly_revenue ?? '—'}</Text>
-                  </View>
-                  <View>
-                    <Text style={{ fontSize: 6.5, color: C.n400, textTransform: 'uppercase' }}>Monthly Profit</Text>
-                    <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: C.emerald }}>{fin.recommendedPricing.monthly_profit ?? '—'}</Text>
-                  </View>
-                  <View>
-                    <Text style={{ fontSize: 6.5, color: C.n400, textTransform: 'uppercase' }}>Customers/day</Text>
-                    <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: C.n800 }}>{fin.recommendedPricing.daily_customers_needed ?? '—'}</Text>
-                  </View>
-                </View>
-              </View>
-            )}
-          </View>
-
-          {/* Market & Demand */}
-          <View style={styles.colRight}>
-            {report.market_demand && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Market Demand</Text>
-                <Text style={styles.analysisText}>{report.market_demand}</Text>
-                {fin.demandTrend && (
-                  <View style={{ marginTop: 6, flexDirection: 'row', gap: 6 }}>
-                    <View style={[styles.tagPill, { backgroundColor: fin.demandTrend === 'Rising' ? C.emeraldBg : C.amberBg, borderColor: fin.demandTrend === 'Rising' ? C.emeraldBdr : C.amberBdr }]}>
-                      <Text style={[styles.tagText, { color: fin.demandTrend === 'Rising' ? C.emerald : C.amber }]}>Demand: {fin.demandTrend}</Text>
-                    </View>
-                    {fin.marketVerdict && (
-                      <View style={[styles.tagPill, { backgroundColor: C.blueBg, borderColor: C.blueBdr }]}>
-                        <Text style={[styles.tagText, { color: C.blue }]}>{fin.marketVerdict}</Text>
-                      </View>
-                    )}
-                  </View>
-                )}
-              </View>
-            )}
-
-            {/* Rent Analysis */}
-            {report.rent_analysis && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Rent Analysis</Text>
-                <Text style={styles.analysisText}>{report.rent_analysis}</Text>
-              </View>
-            )}
-
-            {/* Regulatory flags */}
-            {fin.regulatoryFlags?.length > 0 && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Regulatory Requirements</Text>
-                {fin.regulatoryFlags.slice(0, 3).map((f: any, i: number) => (
-                  <View key={i} style={{ marginBottom: 5 }}>
-                    <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: C.n800 }}>{f.license_name}</Text>
-                    <Text style={{ fontSize: 7.5, color: C.n500 }}>Est. cost: {f.estimated_cost} · Processing: {f.processing_time}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Nearby Competitor Businesses */}
-        {rd.competitors?.nearbyBusinesses?.length > 0 && (
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Nearby Competitor Businesses (Sample)</Text>
-            <View style={{ flexDirection: 'row', paddingBottom: 5, marginBottom: 4, borderBottomWidth: 1, borderBottomColor: C.n200 }}>
-              <Text style={{ flex: 1, fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.n400 }}>Business</Text>
-              <Text style={{ width: 80, fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.n400 }}>Location</Text>
-              <Text style={{ width: 40, fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.n400, textAlign: 'right' }}>Rating</Text>
-            </View>
-            {rd.competitors.nearbyBusinesses.slice(0, 6).map((c: any, i: number) => (
-              <View key={i} style={styles.compRow}>
-                <Text style={styles.compName}>{c.name}</Text>
-                <Text style={{ width: 80, fontSize: 7.5, color: C.n500 }}>{(c.address || '').split(',').slice(-2).join(',').trim()}</Text>
-                <Text style={styles.compRating}> {c.rating ?? '—'}</Text>
-              </View>
-            ))}
+            <Text style={styles.cardTitle}>What Drives Profit and Loss</Text>
+            <Text style={styles.body}>{financialDriverText}</Text>
+            <Text style={[styles.body, { marginTop: 6, color: '#92400E', fontFamily: 'Helvetica-Bold' }]}>
+              Critical dependency: {dependencyText}
+            </Text>
           </View>
-        )}
+        </View>
 
-        {/* Footer */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Kill Switch</Text>
+          <View style={[styles.warning, { borderColor: showKillSwitch ? C.redBdr : C.amberBdr, backgroundColor: showKillSwitch ? C.redBg : C.amberBg }]} wrap={false}>
+            <Text style={[styles.warningTitle, { color: showKillSwitch ? C.red : C.amber }]}>
+              {showKillSwitch ? 'Serious Stop Condition' : 'No Active Hard Stop Returned'}
+            </Text>
+            <Text style={[styles.body, { color: showKillSwitch ? '#991B1B' : '#92400E', fontFamily: 'Helvetica-Bold' }]}>
+              {showKillSwitch ? killSwitch : 'No explicit kill-switch trigger was returned. Continue only if all decision-contract checks are validated on-site.'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Decision Contract</Text>
+          <View style={styles.split} wrap={false}>
+            <View style={styles.col}>
+              <View style={[styles.card, { backgroundColor: C.emeraldBg, borderColor: C.emeraldBdr }]} wrap={false}>
+                <Text style={[styles.cardTitle, { color: C.emerald }]}>GO If</Text>
+                {(goIf.length ? goIf : ['No GO rules returned by engine.']).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+              </View>
+            </View>
+            <View style={styles.col}>
+              <View style={[styles.card, { backgroundColor: C.redBg, borderColor: C.redBdr }]} wrap={false}>
+                <Text style={[styles.cardTitle, { color: C.red }]}>NO GO If</Text>
+                {(noGoIf.length ? noGoIf : ['No NO-GO rules returned by engine.']).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+              </View>
+            </View>
+          </View>
+          <View style={[styles.card, { backgroundColor: C.amberBg, borderColor: C.amberBdr }]} wrap={false}>
+            <Text style={[styles.cardTitle, { color: C.amber }]}>Re-run Required If</Text>
+            {(rerunIf.length ? rerunIf : ['No re-run conditions returned by engine.']).map((x: string, i: number) => <Text key={i} style={styles.bullet}>- {x}</Text>)}
+          </View>
+        </View>
+
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Report ID: {report.id} · Locatalyze · locatalyze.com</Text>
+          <Text style={styles.footerText}>Locatalyze · Decision-grade report export</Text>
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>
+        <Text style={styles.watermark}>LOCATALYZE</Text>
       </Page>
     </Document>
   )
 }
 
-// ─── Download Button ──────────────────────────────────────────────────────────
-export default function PDFDownloadButton({ report }: { report: any }) {
+export default function PDFDownloadButton({ report, onExport }: { report: any; onExport?: () => void }) {
   const [loading, setLoading] = useState(false)
 
   async function handleDownload() {
@@ -702,6 +504,7 @@ export default function PDFDownloadButton({ report }: { report: any }) {
       a.download = `locatalyze-${report.business_type?.toLowerCase().replace(/\s+/g, '-') || 'report'}-${(report.address || report.location_name || 'report').toLowerCase().replace(/[\s,]+/g, '-').slice(0, 40)}.pdf`
       a.click()
       URL.revokeObjectURL(url)
+      onExport?.()
     } catch (err) {
       console.error('PDF generation failed:', err)
       alert('PDF generation failed. Please try again.')
@@ -715,18 +518,23 @@ export default function PDFDownloadButton({ report }: { report: any }) {
       onClick={handleDownload}
       disabled={loading}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        padding: '9px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '9px 16px',
+        borderRadius: 10,
+        fontSize: 13,
+        fontWeight: 600,
         background: loading ? '#F5F5F4' : '#FFFFFF',
         color: loading ? '#A8A29E' : '#44403C',
-        border: `1.5px solid ${loading ? '#E7E5E4' : '#E7E5E4'}`,
+        border: '1.5px solid #E7E5E4',
         cursor: loading ? 'wait' : 'pointer',
         fontFamily: 'inherit',
         transition: 'all 0.15s',
       }}
     >
       <span>{loading ? '' : '⬇'}</span>
-      {loading ? 'Generating PDF...' : 'Download PDF'}
+      {loading ? 'Generating report PDF...' : 'Export report PDF'}
     </button>
   )
 }

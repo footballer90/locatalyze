@@ -11,8 +11,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import type { ComputedResult } from '@/types/computed'
+import { DECISION_EVENTS } from '@/lib/analytics/decision'
 import { displayMoney, displayPercent, displayCustomers, getConfidenceTier, shouldSuppressFinancials, type ConfidenceTier, type DisplayNumber } from '@/lib/compute/display-discipline'
 import { Logo } from '@/components/Logo'
+
+const ADMIN_BYPASS_EMAILS = new Set(['pg4441@gmail.com'])
 
 const MapboxMap = dynamic(() => import('@/components/MapboxMap'), { ssr: false })
 const MapInsightPanel = dynamic(() => import('@/components/MapInsightPanel'), { ssr: false })
@@ -136,6 +139,64 @@ function fmtRange(base: number | null | undefined, prefix = '$', variance = 0.2)
   return `${prefix}${lo.toLocaleString('en-AU')} – ${prefix}${hi.toLocaleString('en-AU')}`
 }
 
+function formatSydneyDate(value: string | number | Date, opts?: Intl.DateTimeFormatOptions) {
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return 'N/A'
+  return d.toLocaleDateString('en-AU', {
+    timeZone: 'Australia/Sydney',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    ...(opts ?? {}),
+  })
+}
+
+function formatSydneyDateTime(value: string | number | Date, opts?: Intl.DateTimeFormatOptions) {
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return 'N/A'
+  return d.toLocaleString('en-AU', {
+    timeZone: 'Australia/Sydney',
+    dateStyle: 'short',
+    timeStyle: 'short',
+    ...(opts ?? {}),
+  })
+}
+
+function trackReportEvent(event: string, properties: Record<string, any> = {}) {
+  if (typeof window === 'undefined') return
+  const posthog = (window as any).posthog
+  if (!posthog || typeof posthog.capture !== 'function') return
+  try {
+    posthog.capture(event, properties)
+  } catch {
+    // analytics should never break UX
+  }
+}
+
+function buildScenarioNote(args: {
+  lease: { uncappedCpiPct: number; cappedCpiPct: number; revenueGrowthPct: number; years: number }
+  ramp: { earlyDemandPct: number; growthDemandPct: number; earlyMonths: number; growthMonths: number; bufferMonths: number }
+  monthlyRent: number | null
+  monthlyRevenue: number | null
+}): string {
+  const years = Math.max(1, Math.min(5, Math.round(args.lease.years)))
+  const rev = args.monthlyRevenue ?? 0
+  const rent = args.monthlyRent ?? 0
+  const finalRevenue = rev > 0 ? Math.round(rev * Math.pow(1 + Math.max(-10, args.lease.revenueGrowthPct) / 100, years - 1)) : null
+  const finalUncappedRent = rent > 0 ? Math.round(rent * Math.pow(1 + Math.max(0, args.lease.uncappedCpiPct) / 100, years - 1)) : null
+  const finalCappedRent = rent > 0 ? Math.round(rent * Math.pow(1 + Math.max(0, args.lease.cappedCpiPct) / 100, years - 1)) : null
+  const finalUncappedRatio = (finalRevenue && finalUncappedRent) ? (finalUncappedRent / finalRevenue) * 100 : null
+  const leaseBand = finalUncappedRatio == null ? 'N/A' : finalUncappedRatio >= 20 ? 'NO' : finalUncappedRatio >= 14 ? 'CAUTION' : 'GO'
+
+  const lines = [
+    'Scenario assumptions:',
+    `Lease: uncapped CPI ${args.lease.uncappedCpiPct.toFixed(1)}%, capped CPI ${args.lease.cappedCpiPct.toFixed(1)}%, revenue growth ${args.lease.revenueGrowthPct.toFixed(1)}%, horizon ${years}y.`,
+    `Lease impact: year-${years} uncapped rent ${fmt(finalUncappedRent)} vs capped ${fmt(finalCappedRent)}${finalUncappedRatio != null ? `; uncapped rent/revenue ${finalUncappedRatio.toFixed(1)}% (${leaseBand}).` : '.'}`,
+    `Ramp-up: ${args.ramp.earlyDemandPct}% for ${args.ramp.earlyMonths}mo, then ${args.ramp.growthDemandPct}% for ${args.ramp.growthMonths}mo, with ${args.ramp.bufferMonths}mo fixed-cost cash buffer.`,
+  ]
+  return lines.join(' ')
+}
+
 function formatMoneyK(n: number | null | undefined): string {
   if (n == null || !Number.isFinite(n)) return 'N/A'
   if (Math.abs(n) >= 1000000) return `$${(n / 1000000).toFixed(1)}M`
@@ -211,9 +272,8 @@ function rentRatioColor(ratio: number) {
 function confidenceLevel(report: Report, computed: ComputedResult | null): { level: 'low' | 'medium' | 'high'; pct: number; reasons: string[] } {
   // ── ENGINE V2 PATH — use sealed compute metadata ──────────────────────────
   if (computed) {
-    const lvl = computed.modelConfidence === 'high' ? 'high'
-              : computed.modelConfidence === 'medium' ? 'medium'
-              : 'low'
+    const pct = Math.round(computed.dataCompleteness ?? 0)
+    const lvl = pct >= 75 ? 'high' : pct >= 46 ? 'medium' : 'low'
     const reasons: string[] = []
     const log = computed.meta?.computeLog
     if (log?.revenueSource) reasons.push(`Revenue source: ${log.revenueSource}`)
@@ -228,7 +288,7 @@ function confidenceLevel(report: Report, computed: ComputedResult | null): { lev
     else if (cdq === 'live_verified')
       reasons.push(`${computed.validCompetitorCount} competitor(s) confirmed within ${computed.competitorRadius}m`)
     if (reasons.length === 0) reasons.push('Computed from verified benchmark data')
-    return { level: lvl, pct: computed.dataCompleteness, reasons }
+    return { level: lvl, pct, reasons }
   }
 
   // ── LEGACY V1 PATH ────────────────────────────────────────────────────────
@@ -525,7 +585,7 @@ function SectionConfBadge({ section }: { section: import('@/types/computed').Sec
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: bg, border: `1px solid ${bdr}`, borderRadius: 20, marginBottom: 16 }}>
       <div style={{ width: 5, height: 5, borderRadius: '50%', background: color }} />
       <span style={{ fontSize: 11, fontWeight: 700, color }}>
-        {section.label.toUpperCase()} DATA — {section.score}% complete
+        {section.label.toUpperCase()} CONFIDENCE — {section.score}% score
         {section.gaps.length > 0 ? ` · missing: ${section.gaps.slice(0, 2).join(', ')}` : ''}
       </span>
     </div>
@@ -722,7 +782,7 @@ function DataQualityHeader({ computed, report }: {
               <p style={{ fontSize: 11, fontWeight: 700, color: '#EA580C', marginBottom: 4 }}>Verdict was downgraded by the trust layer</p>
               <p style={{ fontSize: 12, color: '#7C2D12', lineHeight: 1.6 }}>
                 {gate === 'benchmark_default_confidence' && 'All financial data is based on industry benchmarks — no live revenue or cost data was available. A GO verdict requires at minimum one verified data source.'}
-                {gate === 'insufficient_data_completeness' && `Data completeness is ${complete}% — below the 25% threshold required for a confident forward-looking verdict.`}
+                {gate === 'insufficient_data_completeness' && `Data completeness is ${complete}% — below the 46% threshold required for a confident GO verdict.`}
                 {gate === 'declining_demand' && 'Market demand trend is declining. Entering a contracting market requires demonstrated differentiation — the engine conservatively downgrades GO verdicts under declining demand.'}
                 {gate === 'no_competitor_data' && 'Competitor data was unavailable. Without knowing the competitive landscape, a GO verdict cannot be validated.'}
                 {!['benchmark_default_confidence','insufficient_data_completeness','declining_demand','no_competitor_data'].includes(gate) && gate}
@@ -731,7 +791,7 @@ function DataQualityHeader({ computed, report }: {
           )}
 
           <p style={{ fontSize: 11, color: '#A8A29E', marginTop: 4, lineHeight: 1.5 }}>
-            Locatalyze Engine v{C.meta.engineVersion} · Scoring v{(C.meta as { scoringVersion?: string }).scoringVersion ?? 'n/a'} · Computed {new Date(C.meta.computedAt).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'short', timeStyle: 'short' })} · <a href="/methodology#scoring-changelog" style={{ color: '#A8A29E' }}>methodology changelog</a>
+            Locatalyze Engine v{C.meta.engineVersion} · Scoring v{(C.meta as { scoringVersion?: string }).scoringVersion ?? 'n/a'} · Computed {formatSydneyDateTime(C.meta.computedAt)} · <a href="/methodology#scoring-changelog" style={{ color: '#A8A29E' }}>methodology changelog</a>
           </p>
         </div>
       )}
@@ -1052,6 +1112,188 @@ function FinancialTrust({ computed, fin, report }: {
           </div>
         </div>
       </div>
+    </Card>
+  )
+}
+
+function RampUpAndWorkingCapital({ computed, persistKey, rampInputs, onRampInputsChange }: {
+  computed: import('@/types/computed').ComputedResult | null
+  persistKey: string
+  rampInputs: {
+    earlyDemandPct: number
+    growthDemandPct: number
+    earlyMonths: number
+    growthMonths: number
+    bufferMonths: number
+  }
+  onRampInputsChange: React.Dispatch<React.SetStateAction<{
+    earlyDemandPct: number
+    growthDemandPct: number
+    earlyMonths: number
+    growthMonths: number
+    bufferMonths: number
+  }>>
+}) {
+  const C = computed
+  if (!C) return null
+  const storageKey = `ramp_wc_sim_${persistKey}`
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      onRampInputsChange((prev) => ({
+        ...prev,
+        earlyDemandPct: Number(parsed?.earlyDemandPct ?? prev.earlyDemandPct),
+        growthDemandPct: Number(parsed?.growthDemandPct ?? prev.growthDemandPct),
+        earlyMonths: Number(parsed?.earlyMonths ?? prev.earlyMonths),
+        growthMonths: Number(parsed?.growthMonths ?? prev.growthMonths),
+        bufferMonths: Number(parsed?.bufferMonths ?? prev.bufferMonths),
+      }))
+    } catch {
+      // ignore localStorage issues
+    }
+  }, [storageKey, onRampInputsChange])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(rampInputs))
+    } catch {
+      // ignore localStorage issues
+    }
+  }, [storageKey, rampInputs])
+
+  const baseRevenue = C.revenue ?? 0
+  const baseProfit = C.netProfit ?? 0
+  const totalCosts = C.totalCosts ?? 0
+  if (baseRevenue <= 0 || totalCosts <= 0) return null
+
+  const variableCosts = (C.costBreakdown?.cogs ?? 0) + (C.costBreakdown?.other ?? 0)
+  const fixedCosts = Math.max(0, totalCosts - variableCosts)
+  const contributionMarginPct = baseRevenue > 0 ? Math.max(0.05, (baseRevenue - variableCosts) / baseRevenue) : 0.05
+
+  const earlyFactor = Math.max(0.25, Math.min(1.2, rampInputs.earlyDemandPct / 100))
+  const growthFactor = Math.max(0.25, Math.min(1.2, rampInputs.growthDemandPct / 100))
+  const earlyMonths = Math.max(1, Math.min(12, rampInputs.earlyMonths))
+  const growthMonths = Math.max(1, Math.min(12, rampInputs.growthMonths))
+  const bufferMonths = Math.max(1, Math.min(6, rampInputs.bufferMonths))
+
+  const stages = [
+    { label: `Months 1-${earlyMonths} (Ramp-up)`, factor: earlyFactor, months: earlyMonths },
+    { label: `Months ${earlyMonths + 1}-${earlyMonths + growthMonths} (Growth)`, factor: growthFactor, months: growthMonths },
+    { label: 'Month 12+ (Steady-state)', factor: 1.00, months: 1 },
+  ].map((s) => {
+    const revenue = Math.round(baseRevenue * s.factor)
+    const variableAtStage = Math.round(variableCosts * s.factor)
+    const totalAtStage = fixedCosts + variableAtStage
+    const net = revenue - totalAtStage
+    const rentPct = revenue > 0 ? (C.costBreakdown.rent / revenue) * 100 : null
+    return { ...s, revenue, totalAtStage, net, rentPct }
+  })
+
+  const sixMonthDeficit = stages
+    .filter((s) => s.label !== 'Month 12+ (Steady-state)')
+    .reduce((sum, s) => sum + Math.max(0, -s.net) * s.months, 0)
+  const oneMonthBuffer = Math.round(fixedCosts * bufferMonths)
+  const minimumWorkingCapital = Math.round(sixMonthDeficit + oneMonthBuffer)
+  const rampWarning = growthFactor < earlyFactor
+    ? 'Growth demand is lower than early demand. This implies a contraction after launch and may overstate cash risk.'
+    : null
+
+  return (
+    <Card>
+      <SectionHeading sub="Survival in months 1-6 is usually a cashflow problem, not a margin problem.">
+        Ramp-up and Working Capital
+      </SectionHeading>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginBottom: 14 }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Early demand %</span>
+          <input type="number" min={25} max={120} value={rampInputs.earlyDemandPct}
+            onChange={(e) => onRampInputsChange((p) => ({ ...p, earlyDemandPct: Number(e.target.value || 50) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }} />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Growth demand %</span>
+          <input type="number" min={25} max={120} value={rampInputs.growthDemandPct}
+            onChange={(e) => onRampInputsChange((p) => ({ ...p, growthDemandPct: Number(e.target.value || 75) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }} />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Early months</span>
+          <input type="number" min={1} max={12} value={rampInputs.earlyMonths}
+            onChange={(e) => onRampInputsChange((p) => ({ ...p, earlyMonths: Number(e.target.value || 3) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }} />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Growth months</span>
+          <input type="number" min={1} max={12} value={rampInputs.growthMonths}
+            onChange={(e) => onRampInputsChange((p) => ({ ...p, growthMonths: Number(e.target.value || 3) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }} />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Buffer months</span>
+          <input type="number" min={1} max={6} value={rampInputs.bufferMonths}
+            onChange={(e) => onRampInputsChange((p) => ({ ...p, bufferMonths: Number(e.target.value || 1) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }} />
+        </label>
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' as const }}>
+        <button
+          onClick={() => onRampInputsChange({ earlyDemandPct: 50, growthDemandPct: 75, earlyMonths: 3, growthMonths: 3, bufferMonths: 1 })}
+          style={{ border: `1px solid ${S.n200}`, background: S.white, color: S.n700, borderRadius: 8, padding: '6px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+        >
+          Reset Defaults
+        </button>
+        <button
+          onClick={() => {
+            onRampInputsChange({ earlyDemandPct: 45, growthDemandPct: 70, earlyMonths: 4, growthMonths: 4, bufferMonths: 2 })
+            trackReportEvent('report_ramp_preset_applied', { preset: 'conservative' })
+          }}
+          style={{ border: `1px solid ${S.amberBdr}`, background: S.amberBg, color: '#92400E', borderRadius: 8, padding: '6px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+        >
+          Conservative Preset
+        </button>
+        {rampWarning && (
+          <span style={{ fontSize: 11, color: '#92400E', fontWeight: 700 }}>{rampWarning}</span>
+        )}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
+        <Tile label="Base-case Revenue" value={displayMoney(baseRevenue, 'high').display} mono sub="monthly at steady state" />
+        <Tile label="Contribution Margin" value={`${Math.round(contributionMarginPct * 100)}%`} mono sub="after COGS + variable ops" color={S.brand} />
+        <Tile label="Fixed Costs / Month" value={displayMoney(fixedCosts, 'high').display} mono sub="rent + staff + fixed overheads" />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+        {stages.map((s) => (
+          <div key={s.label} style={{ border: `1px solid ${S.n200}`, borderRadius: 10, padding: '11px 12px', background: S.n50 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: S.n800 }}>{s.label}</p>
+              <span style={{ fontSize: 10, fontWeight: 700, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                {Math.round(s.factor * 100)}% demand
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginTop: 8 }}>
+              <p style={{ fontSize: 12, color: S.n500 }}>Revenue: <strong style={{ color: S.n800, fontFamily: S.mono }}>{fmt(s.revenue)}</strong></p>
+              <p style={{ fontSize: 12, color: S.n500 }}>Net: <strong style={{ color: s.net >= 0 ? S.emerald : S.red, fontFamily: S.mono }}>{fmt(s.net)}</strong></p>
+              <p style={{ fontSize: 12, color: S.n500 }}>Rent ratio: <strong style={{ color: (s.rentPct ?? 0) >= 14 ? S.amber : S.n800, fontFamily: S.mono }}>{s.rentPct != null ? `${s.rentPct.toFixed(1)}%` : 'N/A'}</strong></p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${S.amberBdr}`, background: S.amberBg, marginBottom: 10 }}>
+        <p style={{ fontSize: 12, fontWeight: 800, color: '#92400E', marginBottom: 4 }}>Minimum working capital beyond fit-out</p>
+        <p style={{ fontSize: 18, fontWeight: 900, color: '#92400E', fontFamily: S.mono, lineHeight: 1 }}>{fmt(minimumWorkingCapital)}</p>
+        <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.5, marginTop: 4 }}>
+          Estimate = ramp-period cash deficits ({fmt(sixMonthDeficit)}) + {bufferMonths} month fixed-cost buffer ({fmt(oneMonthBuffer)}).
+        </p>
+      </div>
+
+      <p style={{ fontSize: 11, color: S.n500, lineHeight: 1.55 }}>
+        This model is deterministic and directional. Adjust with your real opening plan (trading days, roster, owner draw, and launch budget) before signing.
+      </p>
     </Card>
   )
 }
@@ -1419,6 +1661,198 @@ function RentRatioPanel({ rent, revenue }: { rent: number | null; revenue: numbe
   )
 }
 
+function LeaseClauseImpactSimulator({
+  rent,
+  baseRevenue,
+  leaseInputs,
+  onLeaseInputsChange,
+}: {
+  rent: number | null
+  baseRevenue: number | null
+  leaseInputs: {
+    uncappedCpiPct: number
+    cappedCpiPct: number
+    revenueGrowthPct: number
+    years: number
+  }
+  onLeaseInputsChange: React.Dispatch<React.SetStateAction<{
+    uncappedCpiPct: number
+    cappedCpiPct: number
+    revenueGrowthPct: number
+    years: number
+  }>>
+}) {
+  if (!rent || !baseRevenue || baseRevenue <= 0) return null
+
+  const years = Math.max(1, Math.min(5, Math.round(leaseInputs.years)))
+  const uncappedRate = Math.max(0, leaseInputs.uncappedCpiPct) / 100
+  const cappedRate = Math.max(0, leaseInputs.cappedCpiPct) / 100
+  const revenueGrowth = Math.max(-10, leaseInputs.revenueGrowthPct) / 100
+
+  const rows = Array.from({ length: years }, (_, i) => {
+    const year = i + 1
+    const rev = Math.round(baseRevenue * Math.pow(1 + revenueGrowth, i))
+    const rentUncapped = Math.round(rent * Math.pow(1 + uncappedRate, i))
+    const rentCapped = Math.round(rent * Math.pow(1 + cappedRate, i))
+    const ratioUncapped = rev > 0 ? (rentUncapped / rev) * 100 : null
+    const ratioCapped = rev > 0 ? (rentCapped / rev) * 100 : null
+    return { year, rev, rentUncapped, rentCapped, ratioUncapped, ratioCapped }
+  })
+
+  const classifyRatio = (ratioPct: number | null) => {
+    if (ratioPct == null) return { label: 'N/A', color: S.n400, bg: S.n100, border: S.n200 }
+    const cfg = rentRatioColor(ratioPct / 100)
+    return { label: cfg.label, color: cfg.text, bg: cfg.bg, border: cfg.border }
+  }
+
+  const last = rows[rows.length - 1]
+  const uncappedDelta = last.rentUncapped - rent
+  const cappedDelta = last.rentCapped - rent
+  const finalUncappedRatioCfg = classifyRatio(last.ratioUncapped)
+  const scoreAwareWarning = last.ratioUncapped != null && last.ratioUncapped >= 20
+    ? `Uncapped review drifts to ${last.ratioUncapped.toFixed(1)}% by year ${years} (NO zone).`
+    : last.ratioUncapped != null && last.ratioUncapped >= 14
+      ? `Uncapped review drifts to ${last.ratioUncapped.toFixed(1)}% by year ${years} (CAUTION boundary or worse).`
+      : null
+  const leaseInputWarning = leaseInputs.cappedCpiPct > leaseInputs.uncappedCpiPct
+    ? 'Capped CPI is higher than uncapped CPI. Swap values or reset defaults.'
+    : leaseInputs.revenueGrowthPct < -5
+      ? 'Revenue decline below -5%/yr is extreme. Treat this as stress-test only.'
+      : null
+
+  return (
+    <Card>
+      <SectionHeading sub="Compare uncapped rent reviews against CPI-capped clauses before signing.">
+        Lease Clause Impact Simulator
+      </SectionHeading>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 14 }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Uncapped CPI %</span>
+          <input
+            type="number"
+            min={0}
+            max={15}
+            step={0.1}
+            value={leaseInputs.uncappedCpiPct}
+            onChange={(e) => onLeaseInputsChange((p) => ({ ...p, uncappedCpiPct: Number(e.target.value || 0) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }}
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Capped CPI %</span>
+          <input
+            type="number"
+            min={0}
+            max={10}
+            step={0.1}
+            value={leaseInputs.cappedCpiPct}
+            onChange={(e) => onLeaseInputsChange((p) => ({ ...p, cappedCpiPct: Number(e.target.value || 0) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }}
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Revenue growth %</span>
+          <input
+            type="number"
+            min={-10}
+            max={20}
+            step={0.1}
+            value={leaseInputs.revenueGrowthPct}
+            onChange={(e) => onLeaseInputsChange((p) => ({ ...p, revenueGrowthPct: Number(e.target.value || 0) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }}
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, color: S.n500, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Years</span>
+          <input
+            type="number"
+            min={1}
+            max={5}
+            value={leaseInputs.years}
+            onChange={(e) => onLeaseInputsChange((p) => ({ ...p, years: Number(e.target.value || 3) }))}
+            style={{ border: `1px solid ${S.n200}`, borderRadius: 8, padding: '7px 8px', fontSize: 12, fontFamily: S.mono }}
+          />
+        </label>
+      </div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' as const }}>
+        <button
+          onClick={() => onLeaseInputsChange({ uncappedCpiPct: 4.0, cappedCpiPct: 2.0, revenueGrowthPct: 3.0, years: 3 })}
+          style={{ border: `1px solid ${S.n200}`, background: S.white, color: S.n700, borderRadius: 8, padding: '6px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+        >
+          Reset Defaults
+        </button>
+        <button
+          onClick={() => {
+            onLeaseInputsChange({ uncappedCpiPct: 5.0, cappedCpiPct: 2.5, revenueGrowthPct: 1.0, years: 3 })
+            trackReportEvent('report_lease_preset_applied', { preset: 'conservative' })
+          }}
+          style={{ border: `1px solid ${S.amberBdr}`, background: S.amberBg, color: '#92400E', borderRadius: 8, padding: '6px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+        >
+          Conservative Preset
+        </button>
+        {leaseInputWarning && (
+          <span style={{ fontSize: 11, color: '#92400E', fontWeight: 700 }}>{leaseInputWarning}</span>
+        )}
+      </div>
+
+      <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr', background: S.n100, borderBottom: `1px solid ${S.n200}` }}>
+          <p style={{ fontSize: 10, fontWeight: 800, color: S.n500, padding: '8px 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Year</p>
+          <p style={{ fontSize: 10, fontWeight: 800, color: S.n500, padding: '8px 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Uncapped clause</p>
+          <p style={{ fontSize: 10, fontWeight: 800, color: S.n500, padding: '8px 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CPI-capped clause</p>
+        </div>
+        {rows.map((r) => {
+          const uncappedVerdict = classifyRatio(r.ratioUncapped)
+          const cappedVerdict = classifyRatio(r.ratioCapped)
+          return (
+            <div key={r.year} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr', borderTop: `1px solid ${S.n100}` }}>
+              <div style={{ padding: '10px' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: S.n700 }}>Y{r.year}</p>
+                <p style={{ fontSize: 10, color: S.n400, fontFamily: S.mono }}>{fmt(r.rev)} rev</p>
+              </div>
+              <div style={{ padding: '10px', borderLeft: `1px solid ${S.n100}` }}>
+                <p style={{ fontSize: 12, color: S.n700 }}>
+                  Rent <strong style={{ fontFamily: S.mono, color: S.n800 }}>{fmt(r.rentUncapped)}</strong>
+                </p>
+                <p style={{ fontSize: 11, color: uncappedVerdict.color, fontFamily: S.mono }}>
+                  {r.ratioUncapped != null ? `${r.ratioUncapped.toFixed(1)}%` : 'N/A'} {' '}
+                  <span style={{ padding: '1px 6px', borderRadius: 10, background: uncappedVerdict.bg, border: `1px solid ${uncappedVerdict.border}`, fontWeight: 700 }}>{uncappedVerdict.label}</span>
+                </p>
+              </div>
+              <div style={{ padding: '10px', borderLeft: `1px solid ${S.n100}` }}>
+                <p style={{ fontSize: 12, color: S.n700 }}>
+                  Rent <strong style={{ fontFamily: S.mono, color: S.n800 }}>{fmt(r.rentCapped)}</strong>
+                </p>
+                <p style={{ fontSize: 11, color: cappedVerdict.color, fontFamily: S.mono }}>
+                  {r.ratioCapped != null ? `${r.ratioCapped.toFixed(1)}%` : 'N/A'} {' '}
+                  <span style={{ padding: '1px 6px', borderRadius: 10, background: cappedVerdict.bg, border: `1px solid ${cappedVerdict.border}`, fontWeight: 700 }}>{cappedVerdict.label}</span>
+                </p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {scoreAwareWarning && (
+        <div style={{ padding: '10px 12px', borderRadius: 10, border: `1px solid ${finalUncappedRatioCfg.border}`, background: finalUncappedRatioCfg.bg, marginBottom: 10 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: finalUncappedRatioCfg.color, lineHeight: 1.5 }}>
+            Score-aware warning: {scoreAwareWarning}
+          </p>
+        </div>
+      )}
+
+      <div style={{ padding: '10px 12px', borderRadius: 10, border: `1px solid ${S.blueBdr}`, background: S.blueBg }}>
+        <p style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.55 }}>
+          By year {years}, uncapped clause adds <strong style={{ fontFamily: S.mono }}>{fmt(uncappedDelta)}</strong>/month vs today.
+          Capped clause adds <strong style={{ fontFamily: S.mono }}>{fmt(cappedDelta)}</strong>/month.
+          Difference preserved by capping: <strong style={{ fontFamily: S.mono }}>{fmt(Math.max(0, uncappedDelta - cappedDelta))}</strong>/month.
+        </p>
+      </div>
+    </Card>
+  )
+}
+
 // ─── Radar chart ──────────────────────────────────────────────────────────────
 function RadarChart({ scores, color }: { scores: { label: string; value: number }[]; color: string }) {
   const cx = 120, cy = 120, r = 90
@@ -1700,7 +2134,7 @@ function AssumptionsPanel({ report }: { report: Report }) {
     { label: 'Competitor data', value: `OpenStreetMap Overpass API – ${(report as any).computed_result?.competitorRadius ?? 500}m radius` },
     { label: 'Demographics source', value: demoSource },
     { label: 'Geocoding source', value: 'OpenStreetMap Nominatim' },
-    { label: 'Report generated', value: new Date(report.created_at).toLocaleString('en-AU') },
+    { label: 'Report generated', value: formatSydneyDateTime(report.created_at) },
   ]
 
   return (
@@ -2026,19 +2460,28 @@ function useUserPlan(reportUnlocked?: boolean) {
   const [plan, setPlan]     = useState<string>('free')
   const [used, setUsed]     = useState<number>(0)
   const [credits, setCredits] = useState<number>(0)
+  const [isAdminBypass, setIsAdminBypass] = useState<boolean>(false)
   const FREE_LIMIT          = 1
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
+      const email = String(user.email ?? '').toLowerCase()
+      if (ADMIN_BYPASS_EMAILS.has(email)) setIsAdminBypass(true)
       supabase.from('profiles').select('plan,total_analyses_used,report_credits').eq('id', user.id).maybeSingle()
         .then(({ data }) => {
           if (data) {
+            if (String(data.plan ?? '').toLowerCase() === 'admin') setIsAdminBypass(true)
             setPlan(data.plan ?? 'free')
             setUsed(data.total_analyses_used ?? 0)
             setCredits(data.report_credits ?? 0)
           }
+        })
+      // Backward-compat fallback: some environments store admin plan in user_profiles.
+      supabase.from('user_profiles').select('plan').eq('user_id', user.id).maybeSingle()
+        .then(({ data }) => {
+          if (String(data?.plan ?? '').toLowerCase() === 'admin') setIsAdminBypass(true)
         })
     })
   }, [])
@@ -2048,8 +2491,8 @@ function useUserPlan(reportUnlocked?: boolean) {
   const usedDisplay  = Math.min(used, FREE_LIMIT)
   // Report is "free" (locked) if: user is on free plan AND this report hasn't been individually unlocked AND they have no credits
   // Paid plan users or individually unlocked reports always see full content
-  const isFree       = isFreePlan && !reportUnlocked && credits <= 0
-  return { plan, used: usedDisplay, remaining, isFree, FREE_LIMIT, credits, isFreePlan }
+  const isFree       = !isAdminBypass && isFreePlan && !reportUnlocked && credits <= 0
+  return { plan, used: usedDisplay, remaining, isFree, FREE_LIMIT, credits, isFreePlan, isAdminBypass }
 }
 
 // ─── Paywall gate — blurs premium content for free/locked reports ────────────
@@ -2078,7 +2521,7 @@ function PaywallGate({ locked, label, reportId, children }: {
           <div style={{ fontSize: 24, marginBottom: 10 }}>Locked</div>
           <p style={{ fontSize: 14, fontWeight: 800, color: '#1C1917', marginBottom: 6 }}>{label}</p>
           <p style={{ fontSize: 12, color: '#78716C', lineHeight: 1.6, marginBottom: 14 }}>
-            Unlock the full financial model, break-even analysis, revenue projections, SWOT insights, and PDF export for this location.
+            Unlock the full financial model, break-even analysis, revenue projections, SWOT insights, and one-page decision summary export for this location.
           </p>
           <a href={upgradeUrl} style={{
             display: 'inline-block', padding: '10px 24px', borderRadius: 8,
@@ -2115,7 +2558,7 @@ function UpgradeNudge({ plan, used, remaining, FREE_LIMIT, reportId }: {
             Unlock the full financial model for this location
           </p>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
-            Get the complete break-even analysis, revenue projections, SWOT insights, and downloadable PDF for $29.
+            Get the complete break-even analysis, revenue projections, SWOT insights, and a one-page decision summary export for $29.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
@@ -2480,6 +2923,21 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const [assumptionPreview, setAssumptionPreview] = useState<ComputedResult | null>(null)
   const [assumptionLoading, setAssumptionLoading] = useState(false)
   const [assumptionError, setAssumptionError] = useState<string | null>(null)
+  const [scenarioNoteSaving, setScenarioNoteSaving] = useState(false)
+  const [scenarioNoteSavedAt, setScenarioNoteSavedAt] = useState<string | null>(null)
+  const [leaseSimInputs, setLeaseSimInputs] = useState({
+    uncappedCpiPct: 4.0,
+    cappedCpiPct: 2.0,
+    revenueGrowthPct: 3.0,
+    years: 3,
+  })
+  const [rampSimInputs, setRampSimInputs] = useState({
+    earlyDemandPct: 50,
+    growthDemandPct: 75,
+    earlyMonths: 3,
+    growthMonths: 3,
+    bufferMonths: 1,
+  })
   const [assumptionInputs, setAssumptionInputs] = useState({ rent: '', ticket: '', staffing: '100' })
 
   // ── Save & Track state ─────────────────────────────────────────────────────
@@ -2487,6 +2945,87 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const [locationStatus, setLocationStatus] = useState<string>('researching')
   const [saveLoading, setSaveLoading]       = useState(false)
   const [showStatusMenu, setShowStatusMenu] = useState(false)
+  const [nowMs, setNowMs] = useState<number | null>(null)
+  const reportViewedTracked = useRef(false)
+  const verdictViewedTracked = useRef(false)
+
+  useEffect(() => {
+    setNowMs(Date.now())
+  }, [])
+
+  useEffect(() => {
+    if (!report || reportViewedTracked.current) return
+    const computed = report.computed_result as ComputedResult | null
+    trackReportEvent(DECISION_EVENTS.reportViewed, {
+      report_id: report.report_id ?? report.id,
+      business_type: report.business_type ?? null,
+      verdict: report.verdict ?? null,
+      data_mode: computed?.dataMode ?? null,
+      confidence_score: computed?.dataCompleteness ?? null,
+    })
+    reportViewedTracked.current = true
+  }, [report])
+
+  useEffect(() => {
+    if (!report?.verdict || verdictViewedTracked.current) return
+    const computed = report.computed_result as ComputedResult | null
+    trackReportEvent(DECISION_EVENTS.verdictViewed, {
+      report_id: report.report_id ?? report.id,
+      business_type: report.business_type ?? null,
+      verdict: report.verdict ?? null,
+      data_mode: computed?.dataMode ?? null,
+      confidence_score: computed?.dataCompleteness ?? null,
+    })
+    verdictViewedTracked.current = true
+  }, [report?.verdict, report?.report_id, report?.id, report?.business_type, report?.computed_result, report])
+
+  // Persist lease simulator settings per report so assumptions survive refresh.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(`lease_sim_${reportId}`)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      setLeaseSimInputs((prev) => ({
+        ...prev,
+        uncappedCpiPct: Number(parsed?.uncappedCpiPct ?? prev.uncappedCpiPct),
+        cappedCpiPct: Number(parsed?.cappedCpiPct ?? prev.cappedCpiPct),
+        revenueGrowthPct: Number(parsed?.revenueGrowthPct ?? prev.revenueGrowthPct),
+        years: Number(parsed?.years ?? prev.years),
+      }))
+    } catch {
+      // ignore storage parse/access issues
+    }
+  }, [reportId])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(`lease_sim_${reportId}`, JSON.stringify(leaseSimInputs))
+    } catch {
+      // ignore storage write issues
+    }
+  }, [reportId, leaseSimInputs])
+
+  useEffect(() => {
+    const years = Math.max(1, Math.min(5, Math.round(leaseSimInputs.years)))
+    const revGrowth = Math.max(-10, leaseSimInputs.revenueGrowthPct) / 100
+    const monthlyRevenueForWarning =
+      assumptionPreview?.revenue
+      ?? report?.computed_result?.revenue
+      ?? safeResultData(report?.result_data)?.financials?.monthlyRevenue
+      ?? null
+    if (!report?.monthly_rent || !monthlyRevenueForWarning) return
+    const finalRevenue = Math.round(monthlyRevenueForWarning * Math.pow(1 + revGrowth, years - 1))
+    const finalUncappedRent = Math.round(report.monthly_rent * Math.pow(1 + Math.max(0, leaseSimInputs.uncappedCpiPct) / 100, years - 1))
+    const finalRatio = finalRevenue > 0 ? (finalUncappedRent / finalRevenue) * 100 : null
+    if (finalRatio != null && finalRatio >= 14) {
+      trackReportEvent('report_lease_warning_shown', {
+        report_id: report.report_id ?? report.id,
+        horizon_years: years,
+        uncapped_ratio_pct: Number(finalRatio.toFixed(1)),
+        band: finalRatio >= 20 ? 'no' : 'caution',
+      })
+    }
+  }, [leaseSimInputs, report?.monthly_rent, report?.report_id, report?.id, report?.computed_result, report?.result_data, assumptionPreview?.revenue])
 
   // Sync from report once loaded
   useEffect(() => {
@@ -2531,6 +3070,40 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     })
   }
 
+  const saveScenarioNote = async () => {
+    if (!report || scenarioNoteSaving) return
+    const note = buildScenarioNote({
+      lease: leaseSimInputs,
+      ramp: rampSimInputs,
+      monthlyRent: report.monthly_rent ?? null,
+      monthlyRevenue: displayRevenue,
+    })
+    setScenarioNoteSaving(true)
+    try {
+      const res = await fetch(`/api/reports/${report.report_id ?? report.id}/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          saved: Boolean(isSaved),
+          status: locationStatus,
+          scenario_note: note,
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to save scenario note')
+      await navigator.clipboard?.writeText(note)
+      setScenarioNoteSavedAt(new Date().toISOString())
+      trackReportEvent('report_scenario_note_embedded', {
+        report_id: report.report_id ?? report.id,
+        lease_years: leaseSimInputs.years,
+        ramp_early_months: rampSimInputs.earlyMonths,
+      })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setScenarioNoteSaving(false)
+    }
+  }
+
   // ── Feedback state ─────────────────────────────────────────────────────────
   const [feedbackDismissed, setFeedbackDismissed] = useState(false)
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
@@ -2572,15 +3145,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     })
   }
 
-  const runAssumptionPreview = async () => {
+  const runAssumptionPreview = async (overrides?: { rent?: number; avgTicketSize?: number; staffingPercent?: number }) => {
     if (!report || assumptionLoading) return
     setAssumptionLoading(true)
     setAssumptionError(null)
     try {
       const payload = {
-        rent: Number(assumptionInputs.rent),
-        avgTicketSize: Number(assumptionInputs.ticket),
-        staffingPercent: Number(assumptionInputs.staffing || '100'),
+        rent: Number(overrides?.rent ?? assumptionInputs.rent),
+        avgTicketSize: Number(overrides?.avgTicketSize ?? assumptionInputs.ticket),
+        staffingPercent: Number((overrides?.staffingPercent ?? assumptionInputs.staffing) || '100'),
       }
       const res = await fetch(`/api/reports/${report.report_id ?? report.id}/assumptions`, {
         method: 'POST',
@@ -2598,6 +3171,54 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     } finally {
       setAssumptionLoading(false)
     }
+  }
+
+  const applySimulatorsToEnginePreview = async () => {
+    if (!report || assumptionLoading) return
+    const inputData = safeInputData(report.input_data)
+    const baseRent = Number(report.monthly_rent ?? inputData.monthlyRent ?? inputData.monthly_rent ?? 0)
+    const baseTicket = Number(assumptionInputs.ticket || inputData.avgTicketSize || inputData.avg_ticket_size || 0)
+    const baseStaffing = Number(assumptionInputs.staffing || '100')
+    if (!baseRent || !baseTicket) {
+      setAssumptionError('Cannot apply simulator assumptions: base rent or ticket size is missing.')
+      return
+    }
+
+    // Map simulator assumptions into conservative engine-preview knobs.
+    // - Rent: one-year blended CPI lift from uncapped/capped mix
+    // - Ticket: weighted ramp demand factor
+    // - Staffing: slight uplift when lease/ramp risk is high
+    const blendedCpiPct = Math.max(0, (leaseSimInputs.uncappedCpiPct + leaseSimInputs.cappedCpiPct) / 2)
+    const weightedRampPct =
+      ((rampSimInputs.earlyDemandPct * rampSimInputs.earlyMonths) + (rampSimInputs.growthDemandPct * rampSimInputs.growthMonths))
+      / Math.max(1, (rampSimInputs.earlyMonths + rampSimInputs.growthMonths))
+    const demandFactor = Math.max(0.6, Math.min(1.2, weightedRampPct / 100))
+    const riskLoading = blendedCpiPct > 3 || weightedRampPct < 80 ? 8 : 0
+
+    const previewRent = Math.round(baseRent * (1 + blendedCpiPct / 100))
+    const previewTicket = Math.max(1, Math.round((baseTicket * demandFactor) * 100) / 100)
+    const previewStaffing = Math.min(140, Math.max(70, Math.round(baseStaffing + riskLoading)))
+
+    setAssumptionInputs({
+      rent: String(previewRent),
+      ticket: String(previewTicket),
+      staffing: String(previewStaffing),
+    })
+
+    trackReportEvent('report_simulators_applied_to_engine_preview', {
+      report_id: report.report_id ?? report.id,
+      blended_cpi_pct: Number(blendedCpiPct.toFixed(1)),
+      weighted_ramp_pct: Number(weightedRampPct.toFixed(1)),
+      preview_rent: previewRent,
+      preview_ticket: previewTicket,
+      preview_staffing_pct: previewStaffing,
+    })
+
+    await runAssumptionPreview({
+      rent: previewRent,
+      avgTicketSize: previewTicket,
+      staffingPercent: previewStaffing,
+    })
   }
 
   const resetAssumptionPreview = () => {
@@ -2936,26 +3557,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
     )
   }
 
-  if (!report.computed_result) {
-    return (
-      <div style={{ minHeight: '100vh', background: S.n50, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: S.font }}>
-        <div style={{ maxWidth: 620, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 16, padding: '28px 30px', boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: S.n900, marginBottom: 8 }}>Compute engine data required</h2>
-          <p style={{ fontSize: 14, color: S.n500, lineHeight: 1.7, marginBottom: 16 }}>
-            This report was generated before strict compute authority enforcement. To prevent UI-side or API-side number drift,
-            final financial values are shown only when `computed_result` exists.
-          </p>
-          <p style={{ fontSize: 13, color: S.n700, marginBottom: 20 }}>
-            Re-run this location analysis to generate an engine-authoritative report.
-          </p>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => router.push('/onboarding')} style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '10px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: S.font }}>Run analysis again</button>
-            <button onClick={() => router.push('/dashboard')} style={{ background: S.white, color: S.n700, border: `1px solid ${S.n200}`, borderRadius: 10, padding: '10px 16px', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: S.font }}>Back to Dashboard</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const isLegacyReport = !report.computed_result
 
   // ─── REPORT DATA ────────────────────────────────────────────────────────────
   const vc = verdictCfg(report.verdict)
@@ -3037,7 +3639,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       projection:           C.projection,       // engine 3-year: { year1, year2|null, year3|null, suppressed }
       riskScenarios:        {},
       breakEvenMonths:      C.breakEvenMonths,
-      paybackMonths:        C.breakEvenMonths,  // months to recoup setup budget (null = estimated budget)
+      paybackMonths:        C.breakEvenMonthsRealistic ?? C.breakEvenMonths,  // prefer persisted realistic payback
       costOptimisationTips: [],
       customerVolume:       { daily_customers_needed_breakeven: C.breakEvenDaily },
       monthlyCostBreakdown: null,
@@ -3124,6 +3726,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const competitorDataQuality   = competitors?.dataQuality   || null
   const demographicsDataQuality = demographics?.dataQuality  || null
   const confidence = confidenceLevel(report, C)
+  const confidenceScore = Math.round(C?.confidenceScore ?? C?.dataCompleteness ?? confidence.pct ?? 0)
   const rawA7 = (_rd?.a7?.outputs || _rd?.a7 || _rd?.a7_data?.outputs || _rd?.a7_data || null) as any
   const rawA8 = (_rd?.a8?.outputs || _rd?.a8 || _rd?.a8_data?.outputs || _rd?.a8_data || null) as any
 
@@ -3186,14 +3789,34 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   // Raw values (for calculations/comparisons — NOT for rendering to user)
   const displayRevenue:      number | null = fin.monthlyRevenue    ?? null
   const displayNetProfit:    number | null = fin.monthlyNetProfit  ?? null
-  const displayProfitMargin: string | null = fin.profitMargin ? `${fin.profitMargin}%` : null
+  // Single-source margin pipeline:
+  // Gross = revenue - COGS; Contribution = gross - variable ops; Net = all costs.
+  const grossMarginPct: number | null = (() => {
+    if (C?.grossMarginPct != null && Number.isFinite(Number(C.grossMarginPct))) return Number(C.grossMarginPct)
+    if (fin.monthlyRevenue != null && fin.monthlyRevenue > 0 && fin.cogs != null) {
+      return ((fin.monthlyRevenue - fin.cogs) / fin.monthlyRevenue) * 100
+    }
+    return null
+  })()
 
   // Confidence-aware formatted values (for rendering to user)
   const _dRevenue   = displayMoney(displayRevenue, _confidenceTier)
   const _dNetProfit = displayMoney(displayNetProfit, _confidenceTier)
-  const _dMargin    = displayPercent(fin.profitMargin ? parseFloat(fin.profitMargin) : null, _confidenceTier)
+  const _dGrossMargin = displayPercent(grossMarginPct, _confidenceTier)
+  const _dNetMargin   = displayPercent(fin.profitMargin ? parseFloat(fin.profitMargin) : null, _confidenceTier)
   const _dCustomers = displayCustomers(fin.baselineCustomers, _confidenceTier)
   const _revenueRange = C?.revenueRange ?? null
+  const _rentRevenuePercentDisplay: string = (() => {
+    const rent = report.monthly_rent ?? fin?.rent?.submitted ?? null
+    if (rent == null || rent <= 0) return 'Not available'
+    if (_revenueRange?.low && _revenueRange?.high) {
+      const hiPct = (rent / _revenueRange.low) * 100
+      const loPct = (rent / _revenueRange.high) * 100
+      return `${Math.round(loPct * 10) / 10}-${Math.round(hiPct * 10) / 10}%`
+    }
+    if (fin.rent?.toRevenuePercent != null) return displayPercent(fin.rent.toRevenuePercent, _confidenceTier).display
+    return 'Not available'
+  })()
   const _benchmarkContext = C?.benchmarkContext ?? null
   const _heroAdvisorLine = firstSentence(_benchmarkContext?.benchmarkNarrative)
   const _heroRentRatioPct = _benchmarkContext?.benchmarkRentRatio ?? fin?.rent?.toRevenuePercent ?? null
@@ -3205,7 +3828,14 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   })
 
   // Profitability score — from computed_result.scores when available, else derived
-  const computedScoreProfitability: number = C
+  const demandScore = C?.scores?.demand ?? report.score_demand ?? null
+  const demandDataWeak =
+    demandScore == null
+    || demandScore <= 0
+    || _confidenceTier === 'benchmark_default'
+    || _confidenceTier === 'low'
+    || (C?.provenance?.demandScore?.isBenchmark === true)
+  const rawProfitabilityScore: number = C
     ? C.scores.profitability
     : (() => {
         if (displayNetProfit == null)  return report.score_profitability ?? 50
@@ -3214,6 +3844,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         if (displayNetProfit > 0)      return 50
         return 15
       })()
+  const computedScoreProfitability: number = demandDataWeak
+    ? Math.min(rawProfitabilityScore, 70)
+    : rawProfitabilityScore
 
   // Break-even gauge values
   const _beDailyForGauge:       number | null = _beDaily ?? report.breakeven_daily ?? null
@@ -3227,6 +3860,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const _canonicalBEM: number | null = (() => {
     const bm = fin.breakEvenMonths ?? report.breakeven_months ?? null
     return bm && bm !== 999 && bm !== 0 ? Number(bm) : null
+  })()
+  const _realisticPaybackMonths: number | null = (() => {
+    if (_canonicalBEM == null) return null
+    const weightedRampPct =
+      ((rampSimInputs.earlyDemandPct * rampSimInputs.earlyMonths) + (rampSimInputs.growthDemandPct * rampSimInputs.growthMonths))
+      / Math.max(1, (rampSimInputs.earlyMonths + rampSimInputs.growthMonths))
+    const rampPenaltyMonths = Math.max(0, (100 - weightedRampPct) / 20)
+    const bufferPenaltyMonths = Math.max(0, rampSimInputs.bufferMonths - 1) * 0.5
+    return Math.round((_canonicalBEM + rampPenaltyMonths + bufferPenaltyMonths) * 10) / 10
   })()
 
   const tabs = [
@@ -3333,16 +3975,25 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <Logo variant="dark" size="md" />
             </button>
             <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>&#8250;</span>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Location Report</span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Decision Report</span>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' as const }}>
-            <button onClick={() => router.push('/compare')} style={{
+            <button onClick={() => {
+              trackReportEvent(DECISION_EVENTS.locationCompareUsed, {
+                report_id: report.report_id ?? report.id,
+                business_type: report.business_type ?? null,
+                verdict: report.verdict ?? null,
+                data_mode: C?.dataMode ?? null,
+                confidence_score: C?.dataCompleteness ?? null,
+              })
+              router.push('/compare')
+            }} style={{
               display: 'flex', alignItems: 'center', gap: 5,
               background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
               color: '#E2E8F0', borderRadius: 10, padding: '7px 14px',
               fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: S.font,
             }}>
-              Compare
+              Compare locations
             </button>
 
             {/* ── Save / Track button ── */}
@@ -3399,26 +4050,65 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )}
             </div>
 
-            {!userPlan.isFree && <ExportPDFButton report={report} />}
+            {!userPlan.isFree && (
+              <ExportPDFButton
+                report={{
+                  ...report,
+                  simulation_inputs: {
+                    lease: leaseSimInputs,
+                    ramp: rampSimInputs,
+                  },
+                }}
+                onExport={() => {
+                  trackReportEvent(DECISION_EVENTS.decisionSummaryExported, {
+                    report_id: report.report_id ?? report.id,
+                    business_type: report.business_type ?? null,
+                    verdict: report.verdict ?? null,
+                    data_mode: C?.dataMode ?? null,
+                    confidence_score: C?.dataCompleteness ?? null,
+                    from_compare: searchParams.get('ref') === 'compare',
+                  })
+                }}
+              />
+            )}
+            <button
+              onClick={saveScenarioNote}
+              disabled={scenarioNoteSaving}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 12px',
+                fontSize: 12, fontWeight: 700, color: scenarioNoteSaving ? S.n400 : S.n700,
+                background: S.white, border: `1px solid ${S.n200}`, borderRadius: 10,
+                cursor: scenarioNoteSaving ? 'wait' : 'pointer', fontFamily: S.font,
+              }}
+              title="Save scenario assumptions into report notes and copy for CRM"
+            >
+              {scenarioNoteSaving ? 'Saving note...' : 'Embed Scenario Note'}
+            </button>
             {userPlan.isFree && (
               <button
                 onClick={() => router.push(`/upgrade?report=${report.report_id ?? report.id}`)}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', fontSize: 12, fontWeight: 700, color: S.n400, background: S.n100, border: `1px solid ${S.n200}`, borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit' }}
-                title="Unlock to export PDF"
+                title="Unlock one-page decision summary export"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                Export PDF
+                Export summary
               </button>
             )}
             <ShareButton reportId={report.report_id ?? report.id} initialIsPublic={report.is_public ?? false} initialToken={report.public_token ?? null} />
+            {scenarioNoteSavedAt && (
+              <span style={{ fontSize: 11, color: S.emerald, fontWeight: 700 }}>
+                Scenario note saved and copied
+              </span>
+            )}
           </div>
         </nav>
       </div>
 
       {/* ── Outcomes feedback banner ─────────────────────────────────────────── */}
       {(() => {
-        const reportAgeDays = report ? (Date.now() - new Date(report.created_at).getTime()) / 86400000 : 0
-        const showFeedback  = reportAgeDays >= 60
+        const reportAgeDays = report && nowMs != null ? (nowMs - new Date(report.created_at).getTime()) / 86400000 : 0
+        const showFeedback  = nowMs != null
+          && reportAgeDays >= 60
           && !report?.outcome_feedback
           && !report?.feedback_dismissed_at
           && !feedbackDismissed
@@ -3491,7 +4181,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 {report.location_name ?? report.address ?? 'Location report'}
               </h1>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6 }}>
-                {(report.business_type ?? 'Business')} feasibility report · Updated {new Date(report.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                {(report.business_type ?? 'Business')} feasibility report - Updated {formatSydneyDate(report.created_at, { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
               <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 12, border: `1px solid ${verdictCfg(report.verdict).border}`, background: verdictCfg(report.verdict).bg }}>
                 <p style={{ fontSize: 22, fontWeight: 900, color: verdictCfg(report.verdict).text, lineHeight: 1.15, letterSpacing: '-0.02em' }}>
@@ -3501,10 +4191,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   {_revenueRange ? `${formatMoneyK(_revenueRange.low)} - ${formatMoneyK(_revenueRange.high)}` : _dRevenue.display}
                 </p>
                 <p style={{ fontSize: 12, color: S.n500, marginTop: 6 }}>
-                  {_revenueRange ? `Most likely: ${formatMoneyK(_revenueRange.mid)}` : 'Revenue range unavailable'}
+                  {_revenueRange ? `P10: ${formatMoneyK(_revenueRange.p10)} · P50: ${formatMoneyK(_revenueRange.p50)} · P90: ${formatMoneyK(_revenueRange.p90)}` : 'Revenue range unavailable'}
                 </p>
                 <p style={{ fontSize: 12, color: S.n700, marginTop: 8, fontWeight: 700 }}>
-                  Confidence: {String(confidence.level).charAt(0).toUpperCase() + String(confidence.level).slice(1)} {C?.dataCompleteness != null ? `(${Math.round(C.dataCompleteness)}%)` : ''}
+                  Confidence Score: {confidenceScore}% ({String(confidence.level).charAt(0).toUpperCase() + String(confidence.level).slice(1)})
                 </p>
               </div>
             </div>
@@ -3514,11 +4204,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 <p style={{ fontSize: 16, fontWeight: 900, color: verdictCfg(report.verdict).text }}>{verdictCfg(report.verdict).label}</p>
               </div>
               <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Confidence</p>
-                <p style={{ fontSize: 16, fontWeight: 900, color: S.n900 }}>{String(confidence.level).toUpperCase()}</p>
-                {C?.dataCompleteness != null && (
-                  <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>{C.dataCompleteness}% data</p>
-                )}
+                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Confidence Score</p>
+                <p style={{ fontSize: 16, fontWeight: 900, color: S.n900 }}>{confidenceScore}%</p>
+                <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>{String(confidence.level).toUpperCase()}</p>
               </div>
               <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
                 <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Revenue Range</p>
@@ -3527,7 +4215,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>
                       {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
                     </p>
-                    <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>Most likely: {formatMoneyK(_revenueRange.mid)}</p>
+                    <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
+                      P10: {formatMoneyK(_revenueRange.p10)} · P50: {formatMoneyK(_revenueRange.p50)} · P90: {formatMoneyK(_revenueRange.p90)}
+                    </p>
                   </>
                 ) : (
                   <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{_dRevenue.display}</p>
@@ -3553,6 +4243,30 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           )}
         </div>
 
+        {isLegacyReport && (
+          <Card style={{ marginBottom: 18, border: `1px solid ${S.amberBdr}`, background: S.amberBg }}>
+            <p style={{ fontSize: 14, fontWeight: 800, color: '#92400E', marginBottom: 6 }}>Legacy report mode (pre-compute-engine)</p>
+            <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6, marginBottom: 10 }}>
+              This report predates strict compute authority. You can still review and export the full narrative report, but
+              financial numbers are treated as legacy estimates until the report is re-run with `computed_result`.
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => router.push('/onboarding')}
+                style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 8, padding: '8px 12px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: S.font }}
+              >
+                Re-run with compute engine
+              </button>
+              <button
+                onClick={() => router.push('/dashboard')}
+                style={{ background: S.white, color: S.n700, border: `1px solid ${S.n200}`, borderRadius: 8, padding: '8px 12px', fontWeight: 600, fontSize: 12, cursor: 'pointer', fontFamily: S.font }}
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          </Card>
+        )}
+
         {/* ═══ SECTION 1: DECISION-FIRST LAYER ═══ */}
         <div style={{ marginBottom: 34 }}>
           <Card style={{ marginBottom: 18, border: `1px solid ${verdictCfg(report.verdict).border}`, background: `linear-gradient(180deg, ${verdictCfg(report.verdict).bg} 0%, #FFFFFF 100%)` }}>
@@ -3562,44 +4276,79 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               const medianRent = C?.locationSignals?.medianRent ?? areaContext?.medianRent?.monthly ?? null
               const targetRent = medianRent ? Math.round(Number(medianRent) * 0.9) : null
               const beDaily = _beDaily ?? (fin as any).breakEvenDailyEst ?? null
+              const beDailyDisplay = beDaily != null ? displayCustomers(beDaily, _confidenceTier).display : 'N/A'
               const projectedDaily = _currentDailyCustomers ?? null
               const compCount = C?.validCompetitorCount ?? competitors?.count ?? 0
-              const margin = C?.grossMarginPct ?? fin?.grossMarginPct ?? null
+              const margin = grossMarginPct
+              const leaseDeltaPerMonth = (() => {
+                if (!report.monthly_rent || !displayRevenue) return null
+                const years = Math.max(1, Math.min(5, Math.round(leaseSimInputs.years)))
+                const revGrowth = Math.max(-10, leaseSimInputs.revenueGrowthPct) / 100
+                const uncappedRate = Math.max(0, leaseSimInputs.uncappedCpiPct) / 100
+                const cappedRate = Math.max(0, leaseSimInputs.cappedCpiPct) / 100
+                const projectedRev = Math.round(displayRevenue * Math.pow(1 + revGrowth, years - 1))
+                const uncappedRent = Math.round(report.monthly_rent * Math.pow(1 + uncappedRate, years - 1))
+                const cappedRent = Math.round(report.monthly_rent * Math.pow(1 + cappedRate, years - 1))
+                const rentRatioUncapped = projectedRev > 0 ? (uncappedRent / projectedRev) * 100 : null
+                return {
+                  delta: Math.max(0, uncappedRent - cappedRent),
+                  years,
+                  rentRatioUncapped,
+                }
+              })()
               const action = nv === 'NO'
                 ? (targetRent
                   ? `Do not sign unless rent drops below A$${targetRent.toLocaleString('en-AU')}/month.`
                   : 'Do not sign at current terms.')
                 : nv === 'CAUTION'
                 ? (targetRent
-                  ? `Proceed only if rent is capped near A$${targetRent.toLocaleString('en-AU')}/month and break-even stays under ${beDaily ?? 'N/A'} customers/day.`
-                  : `Proceed only if break-even stays under ${beDaily ?? 'N/A'} customers/day.`)
-                : `Proceed now, but keep rent below 12% of monthly revenue and hold break-even near ${beDaily ?? 'N/A'} customers/day.`
+                  ? `Proceed only if rent is capped near A$${targetRent.toLocaleString('en-AU')}/month and break-even stays under ${beDailyDisplay} customers/day.`
+                  : `Proceed only if break-even stays under ${beDailyDisplay} customers/day.`)
+                : `Proceed now, but keep rent below 12% of monthly revenue and hold break-even near ${beDailyDisplay} customers/day.`
+              const leaseAction = leaseDeltaPerMonth && leaseDeltaPerMonth.delta > 0
+                ? `Under current lease assumptions, uncapped reviews add ~A$${leaseDeltaPerMonth.delta.toLocaleString('en-AU')}/month by year ${leaseDeltaPerMonth.years}${leaseDeltaPerMonth.rentRatioUncapped != null ? ` and push rent-to-revenue to ${leaseDeltaPerMonth.rentRatioUncapped.toFixed(1)}%` : ''}.`
+                : null
 
               const reasons = [
                 report.monthly_rent && medianRent
                   ? `Rent is ${Math.round(((report.monthly_rent - Number(medianRent)) / Number(medianRent)) * 100)}% vs local median.`
                   : null,
                 compCount ? `${compCount} competitors detected within analysis radius.` : null,
-                margin != null ? `Gross margin tracks at ${Math.round(Number(margin))}%.` : null,
-                _dNetProfit.display ? `Projected net is ${_dNetProfit.display} per month.` : null,
+                margin != null ? `Gross margin (revenue minus COGS) tracks at ${displayPercent(margin, _confidenceTier).display}.` : null,
+                (confidenceScore >= 46 && _dNetProfit.display) ? `Projected net is ${_dNetProfit.display} per month.` : 'Projected net is highly uncertain until local demand is verified.',
               ].filter(Boolean).slice(0, 3) as string[]
 
               const oneLine = nv === 'NO'
-                ? 'Current economics are not viable under this lease setup.'
+                ? 'NO GO: Current economics are not viable under this lease setup.'
                 : nv === 'CAUTION'
-                ? 'This site is viable only if key conditions are tightened before signing.'
-                : 'This site is viable under the current assumptions.'
+                ? 'CAUTION: Viable only if key conditions are tightened before signing.'
+                : 'GO: Viable under current assumptions.'
 
               return (
                 <>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 10, flexWrap: 'wrap' as const }}>
                     <p style={{ fontSize: 11, fontWeight: 800, color: vc.text, letterSpacing: '0.09em', textTransform: 'uppercase' }}>
-                      {nv === 'GO' ? 'OPEN' : nv === 'NO' ? 'DO NOT OPEN' : 'CAUTION'}
+                      {nv === 'GO' ? 'GO' : nv === 'NO' ? 'NO GO' : 'CAUTION'}
                     </p>
-                    <span style={{ fontSize: 11, color: S.n500, fontWeight: 700 }}>Confidence: {String(confidence.level).toUpperCase()}</span>
+                    <span style={{ fontSize: 11, color: S.n500, fontWeight: 700 }}>Decision confidence: {confidenceScore}%</span>
                   </div>
                   <p style={{ fontSize: 16, color: S.n900, fontWeight: 800, marginBottom: 8 }}>{oneLine}</p>
-                  <p style={{ fontSize: 14, color: vc.text, fontWeight: 800, marginBottom: 10 }}>{action}</p>
+                  {confidenceScore < 46 && (
+                    <p style={{ fontSize: 12, color: '#92400E', fontWeight: 700, marginBottom: 8, lineHeight: 1.5 }}>
+                      Low confidence mode is active: deterministic claims are suppressed; treat all economics as directional ranges.
+                    </p>
+                  )}
+                  {C?.dataQuality === 'INSUFFICIENT_LIVE_DATA' && (
+                    <p style={{ fontSize: 12, color: '#991B1B', fontWeight: 700, marginBottom: 8, lineHeight: 1.5 }}>
+                      This report is based on benchmarks only. Local demand and revenue signals are unavailable.
+                    </p>
+                  )}
+                  <p style={{ fontSize: 14, color: vc.text, fontWeight: 800, marginBottom: 8 }}>{action}</p>
+                  {leaseAction && (
+                    <p style={{ fontSize: 12, color: '#92400E', fontWeight: 700, marginBottom: 10, lineHeight: 1.5 }}>
+                      {leaseAction}
+                    </p>
+                  )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                     {reasons.map((r, i) => (
                       <p key={i} style={{ fontSize: 12, color: S.n700, lineHeight: 1.55 }}>
@@ -3611,35 +4360,249 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               )
             })()}
           </Card>
-          {(C?.verdictReasons?.length || C?.verdictFailureModes?.length || C?.verdictConditions?.length) ? (
-            <Card style={{ marginBottom: 18 }}>
-              <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
-                Advisor Decision Logic
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
-                <div style={{ border: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 10, padding: '10px 12px', minHeight: 150 }}>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, marginBottom: 8 }}>Why this works</p>
-                  <p style={{ fontSize: 10, color: S.emerald, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Checklist</p>
-                  {(C?.verdictReasons ?? []).slice(0, 2).map((txt: string, i: number) => (
-                    <p key={i} style={{ fontSize: 12, color: '#065F46', lineHeight: 1.5, marginBottom: 6 }}>✔ {txt}</p>
-                  ))}
+          {C ? (
+            <>
+              <Card style={{ marginBottom: 18 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+                  Why this verdict
+                </p>
+                {(() => {
+                  const v = String(C.verdict ?? '').toUpperCase()
+                  const vc = v.includes('NO')
+                      ? { icon: '🔴', text: S.red, bg: S.redBg, bdr: S.redBdr }
+                      : v.includes('GO')
+                        ? { icon: '🟢', text: S.emerald, bg: S.emeraldBg, bdr: S.emeraldBdr }
+                      : { icon: '🟠', text: S.amber, bg: S.amberBg, bdr: S.amberBdr }
+                  const ex = C.decisionExplanation
+                  return (
+                    <div>
+                      <div style={{ border: `1px solid ${vc.bdr}`, background: vc.bg, borderRadius: 10, padding: '10px 12px', marginBottom: 10 }}>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: vc.text, marginBottom: 6 }}>{vc.icon} {v}</p>
+                        <p style={{ fontSize: 13, color: S.n800, fontWeight: 700, lineHeight: 1.55, marginBottom: 6 }}>{ex?.summary ?? 'Decision summary is unavailable.'}</p>
+                        <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, fontWeight: 700 }}>Biggest uncertainty: {ex?.uncertainty ?? 'Unknown uncertainty.'}</p>
+                        <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, marginTop: 4 }}>
+                          Action: {ex?.uncertaintyAction ?? 'No action guidance available.'}
+                        </p>
+                        <p style={{ fontSize: 12, color: '#991B1B', fontWeight: 800, lineHeight: 1.5, marginTop: 6 }}>
+                          ❌ {ex?.killSwitch ?? 'DO NOT PROCEED if critical thresholds are breached.'}
+                        </p>
+                        <p style={{ fontSize: 12, color: S.n700, marginTop: 6 }}>
+                          Decision confidence driven by: <strong>{ex?.strengthIndicator?.strongSignals ?? 0} strong</strong> signals, <strong>{ex?.strengthIndicator?.weakSignals ?? 0} weak</strong> signals, <strong>{ex?.strengthIndicator?.unknownSignals ?? 0} unknown</strong>.
+                        </p>
+                      </div>
+
+                      <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, overflow: 'hidden', marginBottom: 10 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 80px 110px', background: S.n50, borderBottom: `1px solid ${S.n200}` }}>
+                          <p style={{ padding: '8px 10px', fontSize: 11, fontWeight: 800, color: S.n700 }}>Claim</p>
+                          <p style={{ padding: '8px 10px', fontSize: 11, fontWeight: 800, color: S.n700 }}>Source</p>
+                          <p style={{ padding: '8px 10px', fontSize: 11, fontWeight: 800, color: S.n700 }}>Confidence</p>
+                          <p style={{ padding: '8px 10px', fontSize: 11, fontWeight: 800, color: S.n700 }}>Impact</p>
+                          <p style={{ padding: '8px 10px', fontSize: 11, fontWeight: 800, color: S.n700 }}>Weight</p>
+                        </div>
+                        {(ex?.evidence ?? []).slice(0, 3).map((row: any, i: number) => (
+                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 80px 110px', borderBottom: i < 2 ? `1px solid ${S.n100}` : 'none' }}>
+                            <p style={{ padding: '8px 10px', fontSize: 12, color: S.n800 }}>{row.claim}</p>
+                            <p style={{ padding: '8px 10px', fontSize: 12, color: S.n700 }}>{row.source}</p>
+                            <p style={{ padding: '8px 10px', fontSize: 12, color: S.n700 }}>{row.confidence}</p>
+                            <p style={{ padding: '8px 10px', fontSize: 12, color: row.verdictImpact === '+' ? S.emerald : S.red, fontWeight: 800 }}>{row.verdictImpact}</p>
+                            <p style={{ padding: '8px 10px', fontSize: 12, color: S.n700, fontWeight: 800, textTransform: 'uppercase' }}>{row.decisionWeight ?? 'low'}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+                        <div style={{ border: `1px solid ${S.n200}`, background: S.n50, borderRadius: 10, padding: '10px 12px' }}>
+                          <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 8 }}>Competitor Proof</p>
+                          {(ex?.competitors ?? []).slice(0, 3).map((c: any, i: number) => (
+                            <p key={i} style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 6 }}>
+                              <strong style={{ color: S.n800 }}>{c.name}</strong> - {c.signal}. {c.whyItMatters}
+                            </p>
+                          ))}
+                          {(ex?.competitors ?? []).length === 0 ? (
+                            <p style={{ fontSize: 12, color: S.n500 }}>No verified competitor records available for proof rendering.</p>
+                          ) : null}
+                        </div>
+                        <div style={{ border: `1px solid ${S.n200}`, background: S.n50, borderRadius: 10, padding: '10px 12px' }}>
+                          <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 8 }}>Rent vs Demand Logic</p>
+                          <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 6 }}>{ex?.rentLogic?.summary ?? 'Rent logic unavailable.'}</p>
+                          <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, fontWeight: 700 }}>{ex?.rentLogic?.criticalDependency ?? 'Critical dependency unavailable.'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </Card>
+              <Card style={{ marginBottom: 18 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+                  Local Reality
+                </p>
+                {(() => {
+                  const compCount = C.validCompetitorCount ?? 0
+                  const radius = C.competitorRadius ?? 500
+                  const topNames = (C.marketIntelligence?.topThreats ?? C.competitors ?? []).slice(0, 3).map((c: any) => c?.name).filter(Boolean)
+                  const ft = String(C.locationSignals?.footfallSignal ?? '').toLowerCase()
+                  const transit = String(C.locationSignals?.transitSignal ?? '').toLowerCase()
+                  const demandType =
+                    ft.includes('commuter') || transit.includes('station') || transit.includes('rail')
+                      ? 'Commuter-led'
+                      : ft.includes('weekend')
+                        ? 'Weekend-heavy'
+                        : ft.includes('residential') || ft.includes('local')
+                          ? 'Residential repeat'
+                          : 'Mixed / unverified'
+                  const competitionImpact =
+                    compCount >= 10
+                      ? `You are entering a high-density ${String(report.business_type ?? 'business').toLowerCase()} cluster (${compCount} within ${radius}m) — expect price pressure and thinner margins unless differentiated.`
+                      : compCount >= 6
+                        ? `Competition is moderate (${compCount} within ${radius}m) — execution quality and product differentiation will determine share capture.`
+                        : `Competition is relatively light (${compCount} within ${radius}m), but low density can also mean weaker demand pockets — verify before committing.`
+                  const demandImpact =
+                    demandType === 'Commuter-led'
+                      ? 'Revenue depends on strong morning throughput and fast service conversion during peak windows.'
+                      : demandType === 'Weekend-heavy'
+                        ? 'Revenue will be volatile across weekdays; weekend conversion and average ticket must carry the model.'
+                        : demandType === 'Residential repeat'
+                          ? 'Revenue depends on repeat local customers; retention and consistency matter more than one-off spikes.'
+                          : 'Demand signals are weak or mixed; revenue assumptions remain directional until on-ground validation.'
+                  const failureSentence =
+                    demandType === 'Commuter-led'
+                      ? 'This location fails if you cannot capture commuter morning traffic within the first 3 months.'
+                      : demandType === 'Weekend-heavy'
+                        ? 'This location fails if weekday demand cannot support fixed costs outside weekend peaks.'
+                        : 'This location fails if repeat local demand is not proven quickly after launch.'
+                  return (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+                      <div style={{ border: `1px solid ${S.n200}`, background: S.n50, borderRadius: 10, padding: '10px 12px' }}>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 8 }}>Competition Reality</p>
+                        <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 6 }}>
+                          {C.marketIntelligence?.competitionSentence
+                            ? C.marketIntelligence.competitionSentence
+                            : topNames.length > 0
+                              ? `Top nearby: ${topNames.join(', ')}`
+                              : 'Top nearby competitors are unverified.'}
+                        </p>
+                        <p style={{ fontSize: 12, color: '#92400E', lineHeight: 1.55, fontWeight: 700 }}>{competitionImpact}</p>
+                      </div>
+                      <div style={{ border: `1px solid ${S.n200}`, background: S.n50, borderRadius: 10, padding: '10px 12px' }}>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 8 }}>Demand Reality</p>
+                        <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 6 }}>Footfall type: <strong>{demandType}</strong></p>
+                        <p style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.55, fontWeight: 700 }}>{demandImpact}</p>
+                      </div>
+                      <div style={{ border: `1px solid ${S.redBdr}`, background: S.redBg, borderRadius: 10, padding: '10px 12px' }}>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: S.red, marginBottom: 8 }}>Failure Risk (Location-Specific)</p>
+                        <p style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.6, fontWeight: 800 }}>{failureSentence}</p>
+                      </div>
+                    </div>
+                  )
+                })()}
+              </Card>
+
+              <Card style={{ marginBottom: 18 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+                  Decision Contract
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+                  <div style={{ border: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, marginBottom: 8 }}>GO ONLY IF</p>
+                    {(C.decisionContract?.goIf ?? []).map((txt: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: '#065F46', lineHeight: 1.5, marginBottom: 6 }}>✅ {txt}</p>
+                    ))}
+                  </div>
+                  <div style={{ border: `1px solid ${S.redBdr}`, background: S.redBg, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.red, marginBottom: 8 }}>NO GO IF</p>
+                    {(C.decisionContract?.noGoIf ?? []).map((txt: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.5, marginBottom: 6 }}>❌ {txt}</p>
+                    ))}
+                  </div>
+                  <div style={{ border: `1px solid ${S.amberBdr}`, background: S.amberBg, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.amber, marginBottom: 8 }}>RE-RUN REQUIRED IF</p>
+                    {(C.decisionContract?.rerunIf ?? []).map((txt: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, marginBottom: 6 }}>🔁 {txt}</p>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ border: `1px solid ${S.amberBdr}`, background: S.amberBg, borderRadius: 10, padding: '10px 12px', minHeight: 150 }}>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: S.amber, marginBottom: 8 }}>What could go wrong</p>
-                  <p style={{ fontSize: 10, color: S.amber, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Risk Triggers</p>
-                  {(C?.verdictFailureModes ?? []).slice(0, 2).map((txt: string, i: number) => (
-                    <p key={i} style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, marginBottom: 6 }}>⚠ {txt}</p>
-                  ))}
+                <p style={{ fontSize: 12, color: S.n700, marginTop: 10, lineHeight: 1.5 }}>
+                  {(() => {
+                    const ratio = C.dailyCustomers > 0 && C.decisionContract?.thresholds?.minCustomersPerDay
+                      ? C.dailyCustomers / C.decisionContract.thresholds.minCustomersPerDay
+                      : 0
+                    const v = (C.verdict ?? '').toLowerCase()
+                    if (v.includes('no')) return 'Contract and verdict are aligned: current assumptions fail non-negotiable validation conditions.'
+                    if (v.includes('caution')) return ratio >= 0.95
+                      ? 'Contract is achievable but fragile — CAUTION reflects dependency and uncertainty risk, not just headline profit.'
+                      : 'Contract is currently hard to satisfy — CAUTION reflects both threshold pressure and uncertainty.'
+                    return 'Contract and verdict are aligned: current assumptions clear the minimum decision thresholds.'
+                  })()}
+                </p>
+                {C.validationDifficulty ? (
+                  <div style={{ marginTop: 10, border: `1px solid ${S.n200}`, background: S.n50, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 6 }}>
+                      Validation difficulty: {String(C.validationDifficulty.level || 'unknown').toUpperCase()}
+                    </p>
+                    <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 6 }}>{C.validationDifficulty.implication}</p>
+                    {(C.validationDifficulty.reasons ?? []).slice(0, 2).map((txt: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 4 }}>- {txt}</p>
+                    ))}
+                  </div>
+                ) : null}
+                {C.modelDependencies ? (
+                  <div style={{ marginTop: 10, border: `1px solid ${S.n200}`, background: S.white, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 6 }}>Model dependencies</p>
+                    <p style={{ fontSize: 12, color: S.n700, fontWeight: 700, marginBottom: 4 }}>What this relies on</p>
+                    {(C.modelDependencies.reliesOn ?? []).slice(0, 3).map((txt: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: S.n700, lineHeight: 1.5, marginBottom: 4 }}>- {txt}</p>
+                    ))}
+                    {(C.modelDependencies.missing ?? []).length > 0 ? (
+                      <>
+                        <p style={{ fontSize: 12, color: '#92400E', fontWeight: 700, marginTop: 6, marginBottom: 4 }}>What is missing</p>
+                        {(C.modelDependencies.missing ?? []).slice(0, 3).map((txt: string, i: number) => (
+                          <p key={i} style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5, marginBottom: 4 }}>- {txt}</p>
+                        ))}
+                      </>
+                    ) : null}
+                  </div>
+                ) : null}
+              </Card>
+
+              <Card style={{ marginBottom: 18 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+                  Downside Snapshot
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+                  {(C.downside?.scenarios ?? []).slice(0, 3).map((s: any, i: number) => {
+                    const v = Number(s.profit ?? 0)
+                    const tone = v > 0 ? S.emerald : v > -3000 ? S.amber : S.red
+                    const bg = v > 0 ? S.emeraldBg : v > -3000 ? S.amberBg : S.redBg
+                    const bdr = v > 0 ? S.emeraldBdr : v > -3000 ? S.amberBdr : S.redBdr
+                    return (
+                      <div key={i} style={{ border: `1px solid ${bdr}`, background: bg, borderRadius: 10, padding: '10px 12px' }}>
+                        <p style={{ fontSize: 12, fontWeight: 800, color: tone, marginBottom: 6 }}>{String(s.label ?? 'Scenario')}</p>
+                        <p style={{ fontSize: 12, color: tone, lineHeight: 1.5, fontWeight: 700 }}>Profit = {fmt(v)}/month</p>
+                        {s.note ? <p style={{ fontSize: 11, color: S.n700, lineHeight: 1.4, marginTop: 4 }}>{String(s.note)}</p> : null}
+                      </div>
+                    )
+                  })}
                 </div>
-                <div style={{ border: `1px solid ${S.blueBdr}`, background: S.blueBg, borderRadius: 10, padding: '10px 12px', minHeight: 150 }}>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: S.blue, marginBottom: 8 }}>What must be true</p>
-                  <p style={{ fontSize: 10, color: S.blue, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>Non-Negotiables</p>
-                  {(C?.verdictConditions ?? []).slice(0, 2).map((txt: string, i: number) => (
-                    <p key={i} style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.5, marginBottom: 6 }}>📌 {txt}</p>
-                  ))}
-                </div>
-              </div>
-            </Card>
+              </Card>
+
+              <Card style={{ marginBottom: 18 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+                  Location Verdict (Human Language)
+                </p>
+                <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.6, fontWeight: 600 }}>
+                  {(() => {
+                    if (C.marketIntelligence?.localSummary) return C.marketIntelligence.localSummary
+                    const bt = String(report.business_type ?? 'business').toLowerCase()
+                    const comp = C.validCompetitorCount ?? 0
+                    const ft = String(C.locationSignals?.footfallSignal ?? '').toLowerCase()
+                    const hasStrongFlow = ft.includes('high') || ft.includes('strong') || ft.includes('commuter')
+                    const flowPhrase = hasStrongFlow ? 'solid traffic flow' : 'uncertain traffic flow'
+                    const compPhrase = comp >= 10 ? 'high competition pressure' : comp >= 6 ? 'moderate competition pressure' : 'lower immediate competition pressure'
+                    return `This location can work for a ${bt} with ${flowPhrase}, but ${compPhrase} means success depends on clear differentiation and early traffic capture discipline.`
+                  })()}
+                </p>
+              </Card>
+            </>
           ) : null}
           <KeyDriversGrid
             drivers={[
@@ -3764,7 +4727,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' as const }}>
               <button
-                onClick={runAssumptionPreview}
+                onClick={() => runAssumptionPreview()}
                 disabled={assumptionLoading}
                 style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 8, padding: '9px 14px', fontSize: 12, fontWeight: 700, cursor: assumptionLoading ? 'wait' : 'pointer' }}
               >
@@ -3792,7 +4755,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               {/* Monthly financials hero */}
               <Card style={{ padding: '24px 28px' }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
-                  <ExplainLabel label="Net profit / month" help="Net profit is what remains each month after rent, staff, COGS, and operating costs." />
+                  <ExplainLabel label="Net operating profit / month" help="Operating profit is what remains after rent, staff, COGS, and operating costs. It excludes any owner salary draw." />
                   {_dNetProfit.qualifier && <span style={{ marginLeft: 8, fontSize: 10, color: S.amber, fontWeight: 600 }}>({_dNetProfit.qualifier})</span>}
                 </p>
                 {_financialsSuppressed.suppress ? (
@@ -3824,6 +4787,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                         ? 'Limited live data — treat range as directional, verify locally'
                         : 'Based on market demand analysis for this location'}
                     </p>
+                    <p style={{ fontSize: 11, color: S.n500, marginTop: 6, fontWeight: 600 }}>
+                      Excludes owner salary draw.
+                    </p>
                     {_confidenceTier === 'low' && (
                       <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', background: S.amberBg, border: `1px solid ${S.amberBdr}`, borderRadius: 20 }}>
                         <div style={{ width: 5, height: 5, borderRadius: '50%', background: S.amber }} />
@@ -3841,8 +4807,17 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                           {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
                         </p>
                         <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
-                          Most likely: {formatMoneyK(_revenueRange.mid)}
+                          P10: {formatMoneyK(_revenueRange.p10)} · P50: {formatMoneyK(_revenueRange.p50)} · P90: {formatMoneyK(_revenueRange.p90)}
                         </p>
+                        {report.monthly_rent != null && _revenueRange.low > 0 && (() => {
+                          const downsideRentRatio = (Number(report.monthly_rent) / _revenueRange.low) * 100
+                          if (downsideRentRatio < 14) return null
+                          return (
+                            <p style={{ fontSize: 11, color: '#92400E', marginTop: 5, lineHeight: 1.45 }}>
+                              At the downside revenue bound, rent-to-revenue reaches {downsideRentRatio.toFixed(1)}%, near or above the 14% caution line.
+                            </p>
+                          )
+                        })()}
                       </>
                     ) : (
                       <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>{_dRevenue.display}</p>
@@ -3850,17 +4825,17 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                      <ExplainLabel label="Break-even" help="Break-even is the point where revenue covers all monthly costs, so profit is zero." />
+                      <ExplainLabel label="Break-even / Day" help="Daily break-even is the number of customers needed per day for monthly revenue to cover monthly costs." />
                     </p>
                     <p style={{ fontSize: 16, fontWeight: 900, color: S.n800, fontFamily: S.mono }}>
-                      {(() => { const bm = _canonicalBEM; return bm && bm !== 999 ? `${bm} mo` : 'N/A' })()}
+                      {_beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} cust.` : 'N/A'}
                     </p>
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                      <ExplainLabel label="Gross margin" help="Gross margin shows how much of each dollar of sales remains after direct product costs." />
+                      <ExplainLabel label="Gross margin" help="Gross margin is strictly (Revenue - COGS) / Revenue. Contribution and net margins are shown separately." />
                     </p>
-                    <p style={{ fontSize: 16, fontWeight: 900, color: S.emerald, fontFamily: S.mono }}>{_dMargin.display}</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: S.emerald, fontFamily: S.mono }}>{_dGrossMargin.display}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: 10, color: S.n400, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
@@ -3885,6 +4860,21 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     )}
                   </div>
                 )}
+                {C?.provenance && (
+                  <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 10, background: S.n50, border: `1px solid ${S.n200}` }}>
+                    {(() => {
+                      const entries = Object.values(C.provenance || {})
+                      const known = entries.filter((p: any) => p && !p.isBenchmark && (p.confidence ?? 0) >= 75).length
+                      const assumed = entries.filter((p: any) => p && ((p.isBenchmark) || ((p.confidence ?? 0) >= 35 && (p.confidence ?? 0) < 75))).length
+                      const unknown = entries.filter((p: any) => p && (p.confidence ?? 0) < 35).length
+                      return (
+                        <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.55 }}>
+                          <strong>Known:</strong> {known} · <strong>Assumed:</strong> {assumed} · <strong>Unknown:</strong> {unknown}
+                        </p>
+                      )
+                    })()}
+                  </div>
+                )}
               </Card>
 
               {/* Critical risks (merged): top risks + contradictions + hidden traps */}
@@ -3900,8 +4890,15 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     ...contradictionReasons,
                     hiddenRisk,
                   ].filter(Boolean).slice(0, 5)
+                  const isLowConfidenceRiskUnknown = confidenceScore < 46 || _confidenceTier === 'benchmark_default' || _confidenceTier === 'low'
                   if (mergedRisks.length === 0) {
-                    return <p style={{ fontSize: 13, color: S.n400 }}>No critical risks detected from current data.</p>
+                    return (
+                      <p style={{ fontSize: 13, color: isLowConfidenceRiskUnknown ? '#92400E' : S.n400 }}>
+                        {isLowConfidenceRiskUnknown
+                          ? 'Risk level is UNKNOWN until validated local data exists. Critical unknowns remain.'
+                          : 'No critical risks detected from current data.'}
+                      </p>
+                    )
                   }
                   return (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -4069,8 +5066,10 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     estimatedReason={_engineDemandScore == null ? 'No demand data returned by A3 agent — score is unavailable' : 'Market demand data is from area averages — not verified against this specific location'}
                   />
                   <ScoreBar label="Profitability" score={computedScoreProfitability} weight="25%"
-                    estimated={_confidenceTier === 'benchmark_default'}
-                    estimatedReason="Revenue is from industry benchmarks — not verified against this address"
+                    estimated={_confidenceTier === 'benchmark_default' || demandDataWeak}
+                    estimatedReason={demandDataWeak
+                      ? 'Profitability score is capped because demand confidence is low/missing.'
+                      : 'Revenue is from industry benchmarks — not verified against this address'}
                   />
                   <ScoreBar label="Location Quality" score={report.score_cost ?? 0} weight="10%"
                     estimated={!_rd.location?.footfallSignal}
@@ -4816,6 +5815,30 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <PaywallGate locked={userPlan.isFree} label="Full Financial Model" reportId={report.report_id ?? report.id}>
           <div style={{ animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', gap: 20 }}>
             {C?.sectionConfidence?.financials && <SectionConfBadge section={C.sectionConfidence.financials} />}
+            <Card style={{ padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' as const }}>
+                <p style={{ fontSize: 12, color: S.n700, fontWeight: 700 }}>
+                  Apply current lease+ramp simulator assumptions to engine preview
+                </p>
+                <button
+                  onClick={applySimulatorsToEnginePreview}
+                  disabled={assumptionLoading}
+                  style={{
+                    border: `1px solid ${S.brandBorder}`,
+                    background: S.brandFaded,
+                    color: S.brand,
+                    borderRadius: 8,
+                    padding: '7px 11px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: assumptionLoading ? 'wait' : 'pointer',
+                    fontFamily: S.font,
+                  }}
+                >
+                  {assumptionLoading ? 'Applying...' : 'Apply to Engine Preview'}
+                </button>
+              </div>
+            </Card>
             {/* Agent-failure gate: if financials cannot be computed, show CTA instead of broken data */}
             {_financialsSuppressed.suppress ? (
               <Card style={{ padding: '32px 28px', textAlign: 'center' as const }}>
@@ -4830,6 +5853,18 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
             {/* Financial Trust — assumptions, what must be true, failure modes */}
             <FinancialTrust computed={C} fin={fin} report={report} />
+            <RampUpAndWorkingCapital
+              computed={C}
+              persistKey={String(report.report_id ?? report.id ?? reportId)}
+              rampInputs={rampSimInputs}
+              onRampInputsChange={setRampSimInputs}
+            />
+            <LeaseClauseImpactSimulator
+              rent={report.monthly_rent ?? null}
+              baseRevenue={displayRevenue}
+              leaseInputs={leaseSimInputs}
+              onLeaseInputsChange={setLeaseSimInputs}
+            />
 
             <RentRatioPanel rent={report.monthly_rent ?? areaContext?.medianRent?.monthly} revenue={displayRevenue} />
 
@@ -4849,11 +5884,11 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <Tile label="Net Profit / Mo"
                 value={_dNetProfit.display}
                 mono color={(displayNetProfit ?? 0) >= 0 ? S.emerald : S.red}
-                sub={_dNetProfit.qualifier ?? ((fin as any).isEstimated ? 'industry benchmark' : 'financial model')}
+                sub={_dNetMargin.qualifier ?? _dNetProfit.qualifier ?? ((fin as any).isEstimated ? 'industry benchmark net margin model' : 'net = revenue - all costs')}
               />
               <Tile label="Gross Margin"
-                value={_dMargin.display}
-                sub={_dMargin.qualifier ?? undefined}
+                value={_dGrossMargin.display}
+                sub={_dGrossMargin.qualifier ?? 'gross = revenue - COGS'}
                 color={S.brand}
               />
             </div>
@@ -5242,7 +6277,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <SectionHeading>Rent Breakdown</SectionHeading>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 16 }}>
                 <Tile label="Monthly Rent" value={fmt(report.monthly_rent)} mono />
-                <Tile label="% of Revenue" value={fin.rent?.toRevenuePercent != null ? displayPercent(fin.rent.toRevenuePercent, _confidenceTier).display : 'Not available'} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
+                <Tile label="% of Revenue" value={_rentRevenuePercentDisplay} color={fin.rent?.toRevenuePercent == null ? S.n400 : (fin.rent.toRevenuePercent <= 12 ? S.emerald : fin.rent.toRevenuePercent <= 20 ? S.amber : S.red)} mono />
                 <Tile label="Rating" value={fin.rent?.label ?? 'N/A'} color={fin.rent?.label === 'EXCELLENT' ? S.emerald : fin.rent?.label === 'GOOD' ? S.blue : fin.rent?.label === 'MARGINAL' ? S.amber : fin.rent?.label ? S.red : S.n400} />
               </div>
               <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.75 }}>{report.rent_analysis}</p>
@@ -5277,13 +6312,29 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 12 }}>
                 <Tile label="Revenue / Month to Break-even" value={_beMonthly != null ? displayMoney(_beMonthly, _confidenceTier).display : 'Not available'} mono sub="estimated break-even revenue" />
                 <Tile
-                  label="Setup Payback"
+                  label="Theoretical Payback"
                   value={fin.paybackMonths != null ? `${fin.paybackMonths} mo` : fin.breakEvenMonths != null ? `${fin.breakEvenMonths} mo` : _inputData?.setupBudgetIsEstimated ? 'Est. budget' : 'Not available'}
                   mono
-                  sub={fin.paybackMonths != null || fin.breakEvenMonths != null ? 'months to recoup setup cost' : _inputData?.setupBudgetIsEstimated ? 'payback suppressed — setup budget was estimated' : 'setup budget not provided'}
+                  sub={fin.paybackMonths != null || fin.breakEvenMonths != null ? 'months to recoup setup cost (excl. ramp-up)' : _inputData?.setupBudgetIsEstimated ? 'payback suppressed — setup budget was estimated' : 'setup budget not provided'}
                   color={fin.paybackMonths != null ? (fin.paybackMonths <= 18 ? S.emerald : fin.paybackMonths <= 36 ? S.amber : S.red) : S.n400}
                 />
               </div>
+              {_realisticPaybackMonths != null && (
+                <div style={{ marginBottom: 12 }}>
+                  <Tile
+                    label="Realistic Payback (Ramp-adjusted)"
+                    value={`${_realisticPaybackMonths} mo`}
+                    mono
+                    sub="includes ramp-up drag + working-capital buffer penalty"
+                    color={_realisticPaybackMonths <= 18 ? S.emerald : _realisticPaybackMonths <= 36 ? S.amber : S.red}
+                  />
+                </div>
+              )}
+              {(fin.paybackMonths != null || fin.breakEvenMonths != null) && (
+                <p style={{ fontSize: 11, color: '#92400E', lineHeight: 1.55, marginBottom: 12 }}>
+                  Payback assumes base-case trading pace from day one. Real openings usually ramp over 3-6 months, which can extend payback materially.
+                </p>
+              )}
               <p style={{ fontSize: 12, fontWeight: 700, color: S.n700, marginBottom: 8 }}>Financial Verdict</p>
               <div style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${(displayNetProfit ?? 0) >= 0 ? S.emeraldBdr : S.redBdr}`, background: (displayNetProfit ?? 0) >= 0 ? S.emeraldBg : S.redBg, marginBottom: 14 }}>
                 <p style={{ fontSize: 13, color: (displayNetProfit ?? 0) >= 0 ? '#065F46' : '#991B1B', lineHeight: 1.6 }}>
@@ -5700,7 +6751,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
         <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${S.n200}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <p style={{ fontSize: 11, color: S.n400, fontFamily: S.mono }}>Report {report.report_id ?? report.id}</p>
-            <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>{new Date(report.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p style={{ fontSize: 11, color: S.n400, marginTop: 2 }}>{formatSydneyDate(report.created_at, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
           </div>
           <button onClick={() => router.push('/onboarding')}
             style={{ background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '11px 22px', fontWeight: 700, fontSize: 13, boxShadow: '0 2px 8px rgba(15,118,110,0.2)', fontFamily: S.font }}>
