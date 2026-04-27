@@ -2960,7 +2960,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       report_id: report.report_id ?? report.id,
       business_type: report.business_type ?? null,
       verdict: report.verdict ?? null,
-      data_mode: computed?.dataMode ?? null,
+      data_mode: (computed as any)?.dataMode ?? null,
       confidence_score: computed?.dataCompleteness ?? null,
     })
     reportViewedTracked.current = true
@@ -2973,7 +2973,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       report_id: report.report_id ?? report.id,
       business_type: report.business_type ?? null,
       verdict: report.verdict ?? null,
-      data_mode: computed?.dataMode ?? null,
+      data_mode: (computed as any)?.dataMode ?? null,
       confidence_score: computed?.dataCompleteness ?? null,
     })
     verdictViewedTracked.current = true
