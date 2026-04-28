@@ -73,7 +73,7 @@ export async function POST(req: Request) {
   if (reportId) metadata.report_id = reportId
 
   const successUrl = reportId
-    ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/${reportId}?unlocked=true`
+    ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/${reportId}?unlocked=true&tab=decision`
     : `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true&plan=${plan}`
 
   const session = await stripe.checkout.sessions.create({

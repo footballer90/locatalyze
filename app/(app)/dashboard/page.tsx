@@ -694,7 +694,7 @@ export default function DashboardPage() {
                             onClick={() => {
                               if (isConfirmingDelete || isRenaming) return
                               if (isMenuOpen) { setMenuOpenId(null); return }
-                              compareMode ? toggleSelect(r.id) : router.push(`/dashboard/${rId}`)
+                              compareMode ? toggleSelect(r.id) : router.push(`/dashboard/${rId}?tab=decision`)
                             }}
                             style={{
                               background: S.white,
@@ -804,7 +804,7 @@ export default function DashboardPage() {
                                       onClick={e => e.stopPropagation()}
                                       style={{ position: 'absolute', right: 0, top: 30, zIndex: 30, background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 160, overflow: 'hidden' }}
                                     >
-                                      <button onClick={() => { router.push(`/dashboard/${rId}`); setMenuOpenId(null) }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', padding: '10px 14px', fontSize: 13, color: S.n800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                      <button onClick={() => { router.push(`/dashboard/${rId}?tab=decision`); setMenuOpenId(null) }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', padding: '10px 14px', fontSize: 13, color: S.n800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                                         View report
                                       </button>
                                       <button onClick={() => { setRenamingId(rId); setRenameValue(label || ''); setMenuOpenId(null) }} style={{ width: '100%', background: 'none', border: 'none', textAlign: 'left', padding: '10px 14px', fontSize: 13, color: S.n800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -897,7 +897,7 @@ export default function DashboardPage() {
                               </div>
                             ))}
                           </div>
-                          <button onClick={() => router.push(`/dashboard/${rId}`)} style={{ width: '100%', background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '9px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                          <button onClick={() => router.push(`/dashboard/${rId}?tab=decision`)} style={{ width: '100%', background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '9px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                             View full report 
                           </button>
                         </div>

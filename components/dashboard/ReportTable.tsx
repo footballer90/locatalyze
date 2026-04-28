@@ -52,7 +52,7 @@ export default function ReportTable({ reports }: Props) {
             >
               <td className="px-5 py-4">
                 <Link
-                  href={`/dashboard/${r.id}`}
+                  href={`/dashboard/${r.id}?tab=decision`}
                   className="text-sm font-medium text-slate-900 hover:underline"
                 >
                   {r.locationName}

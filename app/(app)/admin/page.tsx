@@ -383,7 +383,7 @@ export default function AdminDashboard() {
                   <tr><td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: S.n400, fontSize: 14 }}>No reports found.</td></tr>
         ) : reports.map((r, i) => (
                   <tr key={r.report_id} style={{ borderBottom: i < reports.length - 1 ? `1px solid ${S.n100}` : 'none', cursor: 'pointer' }}
-          onClick={() => router.push(`/dashboard/${r.report_id}`)}>
+          onClick={() => router.push(`/dashboard/${r.report_id}?tab=decision`)}>
                     <td style={{ padding: '12px 16px' }}>
            <p style={{ fontSize: 13, fontWeight: 600, color: S.n800 }}>{r.location_name?.split(',')[0] || 'Unknown'}</p>
            <p style={{ fontSize: 11, color: S.n400 }}>{r.location_name?.split(',').slice(1).join(',').trim() || ''}</p>

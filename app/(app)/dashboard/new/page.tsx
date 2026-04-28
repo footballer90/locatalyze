@@ -346,7 +346,7 @@ export default function OnboardingPage() {
    const reportId = data.report?.report_id || data.reportId || data.report?.reportId
       if (reportId) {
         await supabase.from('reports').update({ user_id: user.id, business_type: biz.label, address: form.address.trim(), monthly_rent: monthlyRent }).eq('report_id', reportId)
-    router.push(`/dashboard/${reportId}`)
+    router.push(`/dashboard/${reportId}?tab=decision`)
       } else { router.push('/dashboard') }
   } catch {
       setError('Network error. Please check your connection and try again.')

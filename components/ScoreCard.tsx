@@ -66,7 +66,7 @@ export default function ScoreCard({
       <div className="flex items-center justify-between pt-1 border-t border-gray-50">
         <span className={cls}>{label}</span>
         {/* Links to your existing dynamic route /dashboard/[id] */}
-        <Link href={`/dashboard/${id}`}
+        <Link href={`/dashboard/${id}?tab=decision`}
           className="text-[12.5px] font-semibold text-gray-500 hover:text-gray-900
                      transition-colors flex items-center gap-1">
           View report

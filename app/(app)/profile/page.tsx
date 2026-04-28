@@ -270,7 +270,7 @@ export default function ProfilePage() {
       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 20, lineHeight: 1.6 }}>or $49 once-off lifetime</p>
       {[
               'Unlimited location reports',
-       'PDF export for every report',
+       'Decision summary PDF export for every report',
        'Compare up to 5 locations',
        'Priority analysis speed',
        'Data export (CSV)',
@@ -299,7 +299,7 @@ export default function ProfilePage() {
         {reports.slice(0, 5).map(r => (
                   <div
                     key={r.id}
-                    onClick={() => router.push(`/dashboard/${r.report_id || r.id}`)}
+                    onClick={() => router.push(`/dashboard/${r.report_id || r.id}?tab=decision`)}
                     style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', background: S.n50, borderRadius: 12, border: `1px solid ${S.n200}`, cursor: 'pointer', transition: 'border-color 0.15s' }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = S.brandBorder)}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = S.n200)}

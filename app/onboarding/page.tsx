@@ -281,8 +281,17 @@ export default function OnboardingPage() {
         }),
       })
 
-      const data = await res.json()
-      const reportId = data.report?.report_id || data.reportId || data.report?.reportId
+      const data = await res.json().catch(() => ({}))
+      const reportId =
+        data?.reportId ||
+        data?.report_id ||
+        data?.report?.report_id ||
+        data?.report?.reportId ||
+        null
+
+      if (!res.ok) {
+        throw new Error(data?.error?.message || 'Failed to start analysis')
+      }
 
       if (reportId) {
         await supabase.from('reports').update({
@@ -291,12 +300,12 @@ export default function OnboardingPage() {
           address: addr.trim(),
           monthly_rent: monthlyRentNum,
         }).eq('report_id', reportId)
-        router.push(`/dashboard/${reportId}`)
+        router.push(`/dashboard/${reportId}?tab=decision`)
       } else {
-        router.push('/dashboard')
+        throw new Error('Analysis started but report ID was missing in response')
       }
     } catch {
-      setAnalysisError('Something went wrong. Please check your connection and try again.')
+      setAnalysisError('Could not start your report. Please try again.')
       setAnalysing(false)
     }
   }, [businessType, address, monthlyRent, router, coords, operatingHours, seatingCapacity, businessMode, avgOrderValue, locationAccess])

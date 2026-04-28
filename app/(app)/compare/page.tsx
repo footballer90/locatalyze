@@ -4,10 +4,16 @@
 // Side-by-side verdict for up to 3 reports from the user's history.
 // Free users see the UI but get a paywall overlay on the second/third column.
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/Logo'
+import DecisionFrontPage from '@/components/dashboard/DecisionFrontPage'
+import { shouldSuppressFinancials } from '@/lib/compute/display-discipline'
+import type { ComputedResult } from '@/types/computed'
+import { DECISION_EVENTS } from '@/lib/analytics/decision'
+
+const ADMIN_BYPASS_EMAILS = new Set(['pg4441@gmail.com'])
 
 // ── Style constants (matches rest of app) ────────────────────────────────────
 const S = {
@@ -59,6 +65,17 @@ interface ReportSummary {
   result_data:     any | null
 }
 
+function trackCompareEvent(properties: Record<string, unknown>) {
+  if (typeof window === 'undefined') return
+  const posthog = (window as any).posthog
+  if (!posthog || typeof posthog.capture !== 'function') return
+  try {
+    posthog.capture(DECISION_EVENTS.locationCompareUsed, properties)
+  } catch {
+    // analytics should never break UX
+  }
+}
+
 function fmt(n: number | null | undefined) {
   if (n == null) return null
   return `A$${Math.abs(n).toLocaleString('en-AU')}`
@@ -77,18 +94,53 @@ function normalizeVerdict(v: string | null | undefined): 'GO' | 'CAUTION' | 'NO'
   return 'NO'
 }
 
-function heroVerdictLine(v: string | null | undefined, rentRatioPct: number | null): string {
+function verdictBadgeLabel(v: string | null | undefined): string {
+  const s = String(v ?? '').toLowerCase()
+  if (s.includes('conditional')) return 'CONDITIONAL GO'
   const n = normalizeVerdict(v)
-  if (n === 'NO') return 'NOT VIABLE - economics are currently too weak'
-  if (n === 'CAUTION') return 'VIABLE - but condition-sensitive'
-  if (rentRatioPct != null && rentRatioPct >= 15) return 'VIABLE - but margin-sensitive'
-  return 'VIABLE - economics are workable'
+  if (n === 'GO') return 'GO'
+  if (n === 'CAUTION') return 'CAUTION'
+  return 'NO GO'
 }
 
-function confidenceLabel(v: unknown): string {
-  const s = String(v ?? '').toLowerCase()
-  if (!s) return 'Unknown'
-  return s.charAt(0).toUpperCase() + s.slice(1)
+function decisionFrontOneLine(v: string | null | undefined): string {
+  const n = normalizeVerdict(v)
+  if (n === 'NO') return 'NO GO: Current economics are not viable under this lease setup.'
+  if (n === 'CAUTION') return 'CAUTION: Viable only if key conditions are tightened before signing.'
+  return 'GO: Viable under current assumptions.'
+}
+
+/** Verdict strip colors aligned with dashboard / share link */
+function verdictColorsDecisionFront(v: string | null | undefined): { text: string; bg: string; border: string } {
+  const n = normalizeVerdict(v)
+  const raw = String(v ?? '').toLowerCase()
+  if (raw.includes('conditional')) return { text: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr }
+  if (n === 'GO') return { text: S.emerald, bg: S.emeraldBg, border: S.emeraldBdr }
+  if (n === 'CAUTION') return { text: S.amber, bg: S.amberBg, border: S.amberBdr }
+  return { text: S.red, bg: S.redBg, border: S.redBdr }
+}
+
+function modelConfidenceLabelMc(mc: unknown): string {
+  const m = String(mc ?? '').toLowerCase()
+  if (!m || m === 'undefined') return 'Unknown'
+  if (m === 'benchmark_default') return 'Benchmark default'
+  if (m === 'low') return 'Low'
+  if (m === 'medium') return 'Medium'
+  if (m === 'high') return 'High'
+  return mc != null ? String(mc).charAt(0).toUpperCase() + String(mc).slice(1) : 'Unknown'
+}
+
+function formatReportDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString('en-AU', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'Australia/Sydney',
+    })
+  } catch {
+    return ''
+  }
 }
 
 function firstSentence(text: string | null | undefined): string | null {
@@ -173,16 +225,18 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
     )
   }
 
-  const C   = report.computed_result
-  const vc  = verdictCfg(report.verdict)
-  const np  = C?.netProfit ?? null
+  const C = report.computed_result as ComputedResult | null
+  const verdictV = C?.verdict ?? report.verdict
+  const vfront = verdictColorsDecisionFront(verdictV)
+  const finSup = shouldSuppressFinancials(C)
+  const np = C?.netProfit ?? null
   const rev = C?.revenue ?? null
-  const rr  = C?.revenueRange ?? null
+  const rr = C?.revenueRange ?? null
   const benchmark = C?.benchmarkContext ?? null
-  const heroRentRatio = benchmark?.benchmarkRentRatio ?? (C?.revenue && report.monthly_rent ? (Number(report.monthly_rent) / Number(C.revenue)) * 100 : null)
-  const heroLine = heroVerdictLine(C?.verdict ?? report.verdict, heroRentRatio != null ? Number(heroRentRatio) : null)
+  const heroRentRatio =
+    benchmark?.benchmarkRentRatio
+    ?? (C?.revenue && report.monthly_rent ? (Number(report.monthly_rent) / Number(C.revenue)) * 100 : null)
   const advisorLine = firstSentence(benchmark?.benchmarkNarrative) ?? C?.verdictReasons?.[0] ?? null
-  const confidence = confidenceLabel(C?.modelConfidence)
   const confidencePct = C?.dataCompleteness != null ? Math.round(Number(C.dataCompleteness)) : null
   const realityCheck = buildRealityCheck({
     rentRatioPct: heroRentRatio != null ? Number(heroRentRatio) : null,
@@ -190,9 +244,37 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
     businessType: report.business_type,
   })
 
+  const monthlyRentAmt = report.monthly_rent ?? C?.costBreakdown?.rent ?? null
+  const rentToRevenueDisplay = (() => {
+    if (monthlyRentAmt == null || monthlyRentAmt <= 0) return 'Not available'
+    if (rr && rr.low > 0 && rr.high > 0) {
+      const hi = (monthlyRentAmt / rr.low) * 100
+      const lo = (monthlyRentAmt / rr.high) * 100
+      return `${Math.round(lo * 10) / 10}-${Math.round(hi * 10) / 10}%`
+    }
+    if (rev != null && rev > 0) return `${Math.round(((monthlyRentAmt / rev) * 100) * 10) / 10}%`
+    return 'Not available'
+  })()
+
+  const beDailyStr =
+    C?.breakEvenDaily != null
+      ? `${Math.round(Number(C.breakEvenDaily))} customers / day`
+      : report.breakeven_daily != null
+        ? `${report.breakeven_daily} customers / day`
+        : 'Not available'
+
+  const revenueBand = rr ? `${fmtMoneyK(rr.low)} – ${fmtMoneyK(rr.high)}` : rev != null ? fmtMoneyK(rev) : 'Not available'
+  const revenueDetail =
+    rr && rr.p10 != null
+      ? `P10 ${fmtMoneyK(rr.p10)} · P50 ${fmtMoneyK(rr.p50)} · P90 ${fmtMoneyK(rr.p90)}`
+      : null
+
+  const netMonthlyStr =
+    finSup.suppress ? '—' : np != null ? (fmt(np) ?? 'Not available') : 'Not available'
+
   const content = (
     <div style={{
-      flex: 1, border: `2px solid ${isBest ? S.brand : vc.border}`,
+      flex: 1, border: `2px solid ${isBest ? S.brand : vfront.border}`,
       borderRadius: 16, overflow: 'hidden',
       background: isBest ? S.brandFaded : S.white,
       position: 'relative',
@@ -212,40 +294,86 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
         fontFamily: S.font,
       }}>X</button>
 
-      {/* Verdict */}
-      <div style={{ padding: '28px 22px 20px', borderBottom: `1px solid ${S.n100}` }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: vc.bg, border: `1px solid ${vc.border}`, borderRadius: 20, marginBottom: 12 }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: vc.color }} />
-          <span style={{ fontSize: 11, fontWeight: 800, color: vc.color, letterSpacing: '0.05em' }}>{vc.label}</span>
-          {report.overall_score != null && <span style={{ fontSize: 11, color: vc.color, opacity: 0.7 }}>{report.overall_score}/100</span>}
+      {/* Decision brief (same structure as share link + dashboard) */}
+      <div style={{ padding: '10px 10px 0', borderBottom: `1px solid ${S.n100}` }}>
+        <DecisionFrontPage
+          variant="public"
+          locationTitle={report.location_name ?? 'Unknown location'}
+          businessType={report.business_type ?? 'Business'}
+          reportDateLabel={`Updated ${formatReportDate(report.created_at)}`}
+          reportId={report.report_id ?? report.id ?? null}
+          verdictBadge={verdictBadgeLabel(verdictV)}
+          verdictColors={{ text: vfront.text, bg: vfront.bg, border: vfront.border }}
+          oneLine={decisionFrontOneLine(verdictV)}
+          advisorLine={advisorLine}
+          metrics={{
+            rentToRevenue: rentToRevenueDisplay,
+            breakEvenDaily: beDailyStr,
+            revenueRange: revenueBand,
+            revenueDetail,
+            netMonthly: netMonthlyStr,
+            netQualifier: null,
+          }}
+          killSwitch={C?.decisionExplanation?.killSwitch ?? null}
+          financialsBlocked={finSup.suppress}
+          financialsBlockedReason={finSup.reason ?? null}
+          dataCompletenessPct={confidencePct ?? 0}
+          modelConfidenceLabel={modelConfidenceLabelMc(C?.modelConfidence)}
+        />
+        <div style={{
+          margin: '0 4px 12px',
+          padding: '10px 12px',
+          borderRadius: 12,
+          border: `1px solid ${S.n200}`,
+          background: S.white,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap' as const,
+          gap: 8,
+        }}>
+          <span style={{ fontSize: 11, color: S.n500, fontWeight: 600 }}>Overall score</span>
+          <span style={{ fontSize: 24, fontWeight: 900, color: vfront.text, fontFamily: S.mono, letterSpacing: '-0.03em' }}>
+            {report.overall_score ?? '—'}
+            <span style={{ fontSize: 12, color: S.n400, fontWeight: 700 }}>/100</span>
+          </span>
         </div>
-        <p style={{ fontSize: 15, fontWeight: 800, color: S.n900, marginBottom: 4, lineHeight: 1.3 }}>{report.location_name ?? 'Unknown location'}</p>
-        <p style={{ fontSize: 12, color: S.n400 }}>{report.business_type}</p>
-        <div style={{ marginTop: 12, padding: '10px 11px', borderRadius: 10, background: vc.bg, border: `1px solid ${vc.border}` }}>
-          <p style={{ fontSize: 15, fontWeight: 900, color: vc.color, lineHeight: 1.2, marginBottom: 8 }}>
-            {normalizeVerdict(C?.verdict ?? report.verdict) === 'GO' ? 'GO: ' : normalizeVerdict(C?.verdict ?? report.verdict) === 'CAUTION' ? 'CAUTION: ' : 'NO-GO: '}
-            {heroLine}
-          </p>
-          <p style={{ fontSize: 18, fontWeight: 900, color: S.n900, letterSpacing: '-0.02em', fontFamily: S.mono }}>
-            {rr ? `${fmtMoneyK(rr.low)} - ${fmtMoneyK(rr.high)}` : (rev != null ? fmtMoneyK(rev) : '—')}
-          </p>
-          <p style={{ fontSize: 11, color: S.n500, marginTop: 4 }}>
-            {rr ? `Most likely: ${fmtMoneyK(rr.mid)}` : 'Revenue range unavailable'}
-          </p>
-          <p style={{ fontSize: 11, color: S.n700, marginTop: 6, fontWeight: 700 }}>
-            Confidence: {confidence}{confidencePct != null ? ` (${confidencePct}%)` : ''}
-          </p>
-        </div>
-        {advisorLine && (
-          <div style={{ marginTop: 10, padding: '9px 10px', borderRadius: 9, border: `1px solid ${S.n200}`, background: S.white }}>
-            <p style={{ fontSize: 12, color: S.n800, lineHeight: 1.5, fontWeight: 600 }}>{advisorLine}</p>
-          </div>
-        )}
         {realityCheck && (
-          <div style={{ marginTop: 8, padding: '8px 10px', borderRadius: 9, border: `1px solid ${S.n200}`, background: S.n50 }}>
+          <div style={{ margin: '0 4px 12px', padding: '8px 10px', borderRadius: 9, border: `1px solid ${S.n200}`, background: S.n50 }}>
             <p style={{ fontSize: 11, color: S.n700, lineHeight: 1.5, fontWeight: 600 }}>{realityCheck}</p>
           </div>
         )}
+
+        <div style={{ margin: '0 4px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <p style={{ fontSize: 10, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Why this verdict</p>
+          <div style={{ border: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 8, padding: '8px 10px' }}>
+            <p style={{ fontSize: 10, fontWeight: 800, color: S.emerald, marginBottom: 5 }}>A. Why it can work</p>
+            {(C?.verdictReasons ?? []).slice(0, 3).map((t: string, i: number) => (
+              <p key={`w-${i}`} style={{ fontSize: 10, color: '#065F46', lineHeight: 1.45, marginBottom: 3 }}>• {t}</p>
+            ))}
+            {(!C?.verdictReasons?.length) && (
+              <p style={{ fontSize: 10, color: S.n500, lineHeight: 1.4 }}>No upside bullets returned — open full report for detail.</p>
+            )}
+          </div>
+          <div style={{ border: `1px solid ${S.redBdr}`, background: S.redBg, borderRadius: 8, padding: '8px 10px' }}>
+            <p style={{ fontSize: 10, fontWeight: 800, color: S.red, marginBottom: 5 }}>B. Why it can fail</p>
+            {(C?.verdictFailureModes ?? []).slice(0, 3).map((t: string, i: number) => (
+              <p key={`f-${i}`} style={{ fontSize: 10, color: '#991B1B', lineHeight: 1.45, marginBottom: 3 }}>• {t}</p>
+            ))}
+            {(!C?.verdictFailureModes?.length) && (
+              <p style={{ fontSize: 10, color: S.n500, lineHeight: 1.4 }}>No failure modes listed — assume market and execution risk remain.</p>
+            )}
+          </div>
+          <div style={{ border: `1px solid ${S.blueBdr}`, background: S.blueBg, borderRadius: 8, padding: '8px 10px' }}>
+            <p style={{ fontSize: 10, fontWeight: 800, color: S.blue, marginBottom: 5 }}>C. What must be true</p>
+            {(C?.verdictConditions ?? []).slice(0, 3).map((t: string, i: number) => (
+              <p key={`c-${i}`} style={{ fontSize: 10, color: '#1E3A8A', lineHeight: 1.45, marginBottom: 3 }}>• {t}</p>
+            ))}
+            {(!C?.verdictConditions?.length) && (
+              <p style={{ fontSize: 10, color: S.n500, lineHeight: 1.4 }}>No non-negotiables listed — check Decision Contract on full report.</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Financial snapshot */}
@@ -255,7 +383,7 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
           { label: 'Net profit/mo',  value: np  != null ? fmt(np)  : null, positive: np != null && np >= 0 },
           { label: 'Revenue/mo',     value: rev != null ? fmt(rev) : null, positive: true },
           { label: 'Monthly rent',   value: report.monthly_rent != null ? fmt(report.monthly_rent) : null, positive: false },
-          { label: 'Break-even/day', value: report.breakeven_daily != null ? `${report.breakeven_daily} cust.` : null, positive: false },
+          { label: 'Break-even/day', value: (C?.breakEvenDaily != null || report.breakeven_daily != null) ? `${C?.breakEvenDaily != null ? Math.round(Number(C.breakEvenDaily)) : report.breakeven_daily} cust.` : null, positive: false },
         ].map(row => (
           <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
             <span style={{ fontSize: 12, color: S.n500 }}>{row.label}</span>
@@ -293,7 +421,7 @@ function CompareColumn({ report, isBest, isBlocked, onRemove, slot }: {
       {/* View full report */}
       <div style={{ padding: '14px 22px' }}>
         <button
-          onClick={() => router.push(`/dashboard/${report.report_id ?? report.id}`)}
+          onClick={() => router.push(`/dashboard/${report.report_id ?? report.id}?tab=decision`)}
           style={{
             width: '100%', padding: '9px 0', background: isBest ? S.brand : S.white,
             color: isBest ? S.white : S.brand, border: `1.5px solid ${S.brand}`,
@@ -378,16 +506,30 @@ export default function ComparePage() {
   const [reports, setReports]     = useState<ReportSummary[]>([])
   const [selected, setSelected]   = useState<(ReportSummary | null)[]>([null, null, null])
   const [plan, setPlan]           = useState<string>('free')
+  const [isAdminBypass, setIsAdminBypass] = useState<boolean>(false)
   const [loading, setLoading]     = useState(true)
+  const compareViewTracked = useRef(false)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth'); return }
+      const email = String(user.email ?? '').toLowerCase()
+      if (ADMIN_BYPASS_EMAILS.has(email)) setIsAdminBypass(true)
 
       // Load plan
       supabase.from('profiles').select('plan').eq('id', user.id).maybeSingle()
-        .then(({ data }) => { if (data) setPlan(data.plan ?? 'free') })
+        .then(({ data }) => {
+          if (data) {
+            if (String(data.plan ?? '').toLowerCase() === 'admin') setIsAdminBypass(true)
+            setPlan(data.plan ?? 'free')
+          }
+        })
+      // Backward-compat fallback: some environments store plan in user_profiles.
+      supabase.from('user_profiles').select('plan').eq('user_id', user.id).maybeSingle()
+        .then(({ data }) => {
+          if (String(data?.plan ?? '').toLowerCase() === 'admin') setIsAdminBypass(true)
+        })
 
       // Load completed reports
       void supabase.from('reports')
@@ -403,7 +545,7 @@ export default function ComparePage() {
     })
   }, [router])
 
-  const isFree = plan === 'free'
+  const isFree = plan === 'free' && !isAdminBypass
 
   // Auto-select first two reports
   useEffect(() => {
@@ -424,6 +566,14 @@ export default function ComparePage() {
 
   function selectReport(slot: number, report: ReportSummary) {
     setSelected(prev => prev.map((r, i) => i === slot ? report : r))
+    trackCompareEvent({
+      source: 'compare_select',
+      slot: slot + 1,
+      selected_report_id: report.report_id ?? report.id,
+      selected_verdict: report.verdict ?? null,
+      selected_business_type: report.business_type ?? null,
+      is_free_plan: isFree,
+    })
   }
 
   function removeSlot(slot: number) {
@@ -431,6 +581,16 @@ export default function ComparePage() {
   }
 
   const activeReports = selected.filter(Boolean)
+
+  useEffect(() => {
+    if (compareViewTracked.current) return
+    trackCompareEvent({
+      source: 'compare_page_view',
+      compared_count: activeReports.length,
+      is_free_plan: isFree,
+    })
+    compareViewTracked.current = true
+  }, [activeReports.length, isFree])
 
   return (
     <div style={{ minHeight: '100vh', background: S.n50, fontFamily: S.font }}>
@@ -458,7 +618,7 @@ export default function ComparePage() {
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 26, fontWeight: 900, color: S.n900, marginBottom: 6, letterSpacing: '-0.03em' }}>Compare Locations</h1>
           <p style={{ fontSize: 14, color: S.n500 }}>
-            Side-by-side analysis of your reports — see which location has the strongest verdict, best financials, and lowest risk.
+            Compare your top locations side by side before committing to a lease.
             {isFree && <span style={{ color: S.amber, fontWeight: 700 }}> Pro unlocks 3-way comparison.</span>}
           </p>
         </div>
@@ -560,7 +720,7 @@ export default function ComparePage() {
                         <p style={{ fontSize: 13, fontWeight: 700, color: S.n900, marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {(report.location_name ?? 'Unknown location').split(',').slice(0, 2).join(',')}
                         </p>
-                        <p style={{ fontSize: 11, color: S.n400 }}>{report.business_type} · {new Date(report.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}</p>
+                        <p style={{ fontSize: 11, color: S.n400 }}>{report.business_type} - {new Date(report.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}</p>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', background: vc.bg, border: `1px solid ${vc.border}`, borderRadius: 20, flexShrink: 0 }}>
                         <span style={{ fontSize: 10, fontWeight: 800, color: vc.color }}>{vc.label}</span>

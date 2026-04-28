@@ -101,7 +101,7 @@ function buildEmailHtml(opts: {
             </td></tr>
           </table>
           <p style="margin:0 0 12px;font-size:13px;color:#78716C;line-height:1.6;">
-            Your free report includes the verdict, competitor map, and score. Unlock the full financial model, break-even analysis, and PDF export for <strong style="color:#0F766E;">$29</strong>.
+            Your free report includes the verdict, competitor map, and score. Unlock the full financial model, break-even analysis, and decision summary PDF export for <strong style="color:#0F766E;">$29</strong>.
           </p>
         </td></tr>
 
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
 
     const baseUrl  = process.env.NEXT_PUBLIC_APP_URL ?? 'https://locatalyze.com'
     const reportId2 = report.report_id ?? reportId
-    const reportUrl = `${baseUrl}/dashboard/${reportId2}`
+    const reportUrl = `${baseUrl}/dashboard/${reportId2}?tab=decision`
 
     const html = buildEmailHtml({ verdict, score, location, businessType, netProfit, rent, reportUrl, isEstimated })
 

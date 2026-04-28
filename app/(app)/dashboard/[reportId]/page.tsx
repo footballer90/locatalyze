@@ -4,10 +4,11 @@ import dynamic from 'next/dynamic'
 import ShareButton from '@/components/ShareButton'
 import ExportPDFButton from '@/components/ExportPDFButton'
 import ReferralPrompt from '@/components/ReferralPrompt'
+import DecisionFrontPage from '@/components/dashboard/DecisionFrontPage'
 import DataQualitySummary from '@/components/DataQualitySummary'
 import CalibrationSummary from '@/components/CalibrationSummary'
 import { use, useCallback, useEffect, useMemo, useState, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { MapInsights, Competitor, Anchor } from '@/components/MapboxMap'
 import type { ComputedResult } from '@/types/computed'
@@ -221,14 +222,6 @@ function verdictCfg(v: string | null) {
   if (norm === 'GO')      return { label, desc: 'LOW RISK',    bg: S.emeraldBg, text: S.emerald, border: S.emeraldBdr, headerAccent: '#059669', headerText: '#ECFDF5' }
   if (norm === 'CAUTION') return { label, desc: 'MEDIUM RISK', bg: S.amberBg,   text: S.amber,   border: S.amberBdr,   headerAccent: '#D97706', headerText: '#FFFBEB' }
   return                         { label, desc: 'HIGH RISK',   bg: S.redBg,     text: S.red,     border: S.redBdr,     headerAccent: '#DC2626', headerText: '#FEF2F2' }
-}
-
-function heroVerdictLine(v: string | null, rentRatioPct: number | null): string {
-  const norm = normalizeVerdict(v)
-  if (norm === 'NO') return 'NOT VIABLE - economics are currently too weak'
-  if (norm === 'CAUTION') return 'VIABLE - but condition-sensitive'
-  if (rentRatioPct != null && rentRatioPct >= 15) return 'VIABLE - but margin-sensitive'
-  return 'VIABLE - economics are workable'
 }
 
 function buildRealityCheck(args: {
@@ -2909,16 +2902,50 @@ function safeResultData(rd: any): any {
   return parsed
 }
 
+const REPORT_TAB_IDS = ['decision', 'overview', 'suburb', 'competition', 'location', 'market', 'financials', 'map'] as const
+
+function parseReportTab(sp: URLSearchParams): string {
+  const raw = sp.get('tab')?.toLowerCase().trim() ?? ''
+  return (REPORT_TAB_IDS as readonly string[]).includes(raw) ? raw : 'decision'
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function ReportPage({ params }: { params: Promise<{ reportId: string }> }) {
   const { reportId } = use(params)
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const { report, loading, notFound, elapsedSeconds } = useReport(reportId)
   const userPlan = useUserPlan(report?.is_unlocked ?? undefined)
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(() => parseReportTab(searchParams))
+
+  useEffect(() => {
+    const next = parseReportTab(searchParams)
+    setActiveTab(next)
+    const raw = searchParams.get('tab')
+    if (raw != null && raw !== '') {
+      const normalized = raw.toLowerCase().trim()
+      if (!(REPORT_TAB_IDS as readonly string[]).includes(normalized)) {
+        const q = new URLSearchParams(searchParams.toString())
+        q.set('tab', next)
+        router.replace(`${pathname}?${q.toString()}`, { scroll: false })
+      }
+    }
+  }, [pathname, router, searchParams])
+
+  const setReportTab = useCallback(
+    (id: string) => {
+      const next = (REPORT_TAB_IDS as readonly string[]).includes(id) ? id : 'decision'
+      setActiveTab(next)
+      const q = new URLSearchParams(searchParams.toString())
+      q.set('tab', next)
+      router.replace(`${pathname}?${q.toString()}`, { scroll: false })
+    },
+    [pathname, router, searchParams],
+  )
+
   const debugDataSync = searchParams.get('debug') === '1'
   const [assumptionPreview, setAssumptionPreview] = useState<ComputedResult | null>(null)
   const [assumptionLoading, setAssumptionLoading] = useState(false)
@@ -2960,7 +2987,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       report_id: report.report_id ?? report.id,
       business_type: report.business_type ?? null,
       verdict: report.verdict ?? null,
-      data_mode: (computed as any)?.dataMode ?? null,
+      data_mode: computed?.dataMode ?? null,
       confidence_score: computed?.dataCompleteness ?? null,
     })
     reportViewedTracked.current = true
@@ -2973,7 +3000,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       report_id: report.report_id ?? report.id,
       business_type: report.business_type ?? null,
       verdict: report.verdict ?? null,
-      data_mode: (computed as any)?.dataMode ?? null,
+      data_mode: computed?.dataMode ?? null,
       confidence_score: computed?.dataCompleteness ?? null,
     })
     verdictViewedTracked.current = true
@@ -3577,7 +3604,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   // ── Engine v2: computed_result is the authoritative financial source ──────────
   // If present, ALL financial and scoring values come exclusively from here.
   // The UI NEVER computes, falls back, patches, or re-derives anything.
-  const C = (assumptionPreview ?? report.computed_result ?? null) as any
+  const C = (assumptionPreview ?? report.computed_result ?? null) as (ComputedResult & { benchmarkContext?: { benchmarkNarrative?: string | null; benchmarkRentRatio?: number | null; marketSentiment?: string; timingScore?: number | null } }) | null
   const hasComputed = C !== null
   const _engineDemandScore: number | null = C?.scores?.demand ?? null
 
@@ -3639,7 +3666,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       projection:           C.projection,       // engine 3-year: { year1, year2|null, year3|null, suppressed }
       riskScenarios:        {},
       breakEvenMonths:      C.breakEvenMonths,
-      paybackMonths:        (C as any).breakEvenMonthsRealistic ?? C.breakEvenMonths,  // prefer persisted realistic payback
+      paybackMonths:        C.breakEvenMonthsRealistic ?? C.breakEvenMonths,  // prefer persisted realistic payback
       costOptimisationTips: [],
       customerVolume:       { daily_customers_needed_breakeven: C.breakEvenDaily },
       monthlyCostBreakdown: null,
@@ -3726,7 +3753,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const competitorDataQuality   = competitors?.dataQuality   || null
   const demographicsDataQuality = demographics?.dataQuality  || null
   const confidence = confidenceLevel(report, C)
-  const confidenceScore = Math.round((C as any)?.confidenceScore ?? C?.dataCompleteness ?? confidence.pct ?? 0)
+  const confidenceScore = Math.round(C?.confidenceScore ?? C?.dataCompleteness ?? confidence.pct ?? 0)
   const rawA7 = (_rd?.a7?.outputs || _rd?.a7 || _rd?.a7_data?.outputs || _rd?.a7_data || null) as any
   const rawA8 = (_rd?.a8?.outputs || _rd?.a8 || _rd?.a8_data?.outputs || _rd?.a8_data || null) as any
 
@@ -3820,12 +3847,36 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   const _benchmarkContext = C?.benchmarkContext ?? null
   const _heroAdvisorLine = firstSentence(_benchmarkContext?.benchmarkNarrative)
   const _heroRentRatioPct = _benchmarkContext?.benchmarkRentRatio ?? fin?.rent?.toRevenuePercent ?? null
-  const _heroVerdictLine = heroVerdictLine(report.verdict, _heroRentRatioPct != null ? Number(_heroRentRatioPct) : null)
   const _realityCheck = buildRealityCheck({
     rentRatioPct: _heroRentRatioPct != null ? Number(_heroRentRatioPct) : null,
     validCompetitorCount: C?.validCompetitorCount ?? null,
     businessType: report.business_type ?? null,
   })
+
+  const _decisionFrontOneLine = (() => {
+    const nv = normalizeVerdict(report.verdict)
+    if (nv === 'NO') return 'NO GO: Current economics are not viable under this lease setup.'
+    if (nv === 'CAUTION') return 'CAUTION: Viable only if key conditions are tightened before signing.'
+    return 'GO: Viable under current assumptions.'
+  })()
+  const _modelConfidenceLabel = (() => {
+    const m = C?.modelConfidence
+    if (!m) {
+      const lv = confidence.level
+      return lv.charAt(0).toUpperCase() + lv.slice(1)
+    }
+    const map: Record<string, string> = {
+      benchmark_default: 'Benchmark default',
+      low: 'Low',
+      medium: 'Medium',
+      high: 'High',
+    }
+    return map[m] ?? String(m)
+  })()
+  const _decisionFrontAdvisor = _heroAdvisorLine ?? (C?.verdictReasons?.[0] ?? null)
+  const _revenueDetailFront = _revenueRange
+    ? `P10 ${formatMoneyK(_revenueRange.p10)} · P50 ${formatMoneyK(_revenueRange.p50)} · P90 ${formatMoneyK(_revenueRange.p90)}`
+    : null
 
   // Profitability score — from computed_result.scores when available, else derived
   const demandScore = C?.scores?.demand ?? report.score_demand ?? null
@@ -3856,6 +3907,9 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
       ? Math.round(_currentDailyCustomers - _beDailyForGauge)
       : null
 
+  const _beDailyFront =
+    _beDailyForGauge != null ? `${displayCustomers(_beDailyForGauge, _confidenceTier).display} customers / day` : 'Not available'
+
   // Canonical payback period
   const _canonicalBEM: number | null = (() => {
     const bm = fin.breakEvenMonths ?? report.breakeven_months ?? null
@@ -3872,6 +3926,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
   })()
 
   const tabs = [
+    { id: 'decision',    label: 'Decision' },
     { id: 'overview',    label: 'Overview' },
     { id: 'suburb',      label: 'Suburb Intel' },
     { id: 'competition', label: 'Competition' },
@@ -3983,7 +4038,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 report_id: report.report_id ?? report.id,
                 business_type: report.business_type ?? null,
                 verdict: report.verdict ?? null,
-                data_mode: (C as any)?.dataMode ?? null,
+                data_mode: C?.dataMode ?? null,
                 confidence_score: C?.dataCompleteness ?? null,
               })
               router.push('/compare')
@@ -4064,7 +4119,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     report_id: report.report_id ?? report.id,
                     business_type: report.business_type ?? null,
                     verdict: report.verdict ?? null,
-                    data_mode: (C as any)?.dataMode ?? null,
+                    data_mode: C?.dataMode ?? null,
                     confidence_score: C?.dataCompleteness ?? null,
                     from_compare: searchParams.get('ref') === 'compare',
                   })
@@ -4166,82 +4221,119 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
 
       {/* ── Main content ── */}
       <div style={{ maxWidth: 1120, margin: '0 auto', padding: '38px clamp(18px, 4vw, 40px) 96px' }}>
-        <div style={{
-          marginBottom: 24,
-          borderRadius: 18,
-          padding: '18px 20px',
-          background: 'linear-gradient(130deg, rgba(79,70,229,0.1) 0%, rgba(99,102,241,0.08) 45%, rgba(255,255,255,0.8) 100%)',
-          border: '1px solid rgba(99,102,241,0.22)',
-          boxShadow: '0 10px 28px rgba(79,70,229,0.1)',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' as const }}>
-            <div style={{ minWidth: 220, flex: 1 }}>
-              <p style={{ fontSize: 11, fontWeight: 800, color: '#4F46E5', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Locatalyze Intelligence Report</p>
-              <h1 style={{ fontSize: 'clamp(22px, 3.2vw, 32px)', fontWeight: 900, color: S.n900, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 8 }}>
-                {report.location_name ?? report.address ?? 'Location report'}
-              </h1>
-              <p style={{ fontSize: 13, color: S.n500, lineHeight: 1.6 }}>
-                {(report.business_type ?? 'Business')} feasibility report - Updated {formatSydneyDate(report.created_at, { day: 'numeric', month: 'short', year: 'numeric' })}
-              </p>
-              <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 12, border: `1px solid ${verdictCfg(report.verdict).border}`, background: verdictCfg(report.verdict).bg }}>
-                <p style={{ fontSize: 22, fontWeight: 900, color: verdictCfg(report.verdict).text, lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-                  {verdictCfg(report.verdict).label} - {_heroVerdictLine.replace(/^VIABLE - |^NOT VIABLE - /, '')}
-                </p>
-                <p style={{ fontSize: 28, fontWeight: 900, color: S.n900, lineHeight: 1, letterSpacing: '-0.03em', marginTop: 10, fontFamily: S.mono }}>
-                  {_revenueRange ? `${formatMoneyK(_revenueRange.low)} - ${formatMoneyK(_revenueRange.high)}` : _dRevenue.display}
-                </p>
-                <p style={{ fontSize: 12, color: S.n500, marginTop: 6 }}>
-                  {_revenueRange ? `P10: ${formatMoneyK((_revenueRange as any).p10)} · P50: ${formatMoneyK((_revenueRange as any).p50)} · P90: ${formatMoneyK((_revenueRange as any).p90)}` : 'Revenue range unavailable'}
-                </p>
-                <p style={{ fontSize: 12, color: S.n700, marginTop: 8, fontWeight: 700 }}>
-                  Confidence Score: {confidenceScore}% ({String(confidence.level).charAt(0).toUpperCase() + String(confidence.level).slice(1)})
-                </p>
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(120px,1fr))', gap: 10, minWidth: 290 }}>
-              <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Verdict</p>
-                <p style={{ fontSize: 16, fontWeight: 900, color: verdictCfg(report.verdict).text }}>{verdictCfg(report.verdict).label}</p>
-              </div>
-              <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Confidence Score</p>
-                <p style={{ fontSize: 16, fontWeight: 900, color: S.n900 }}>{confidenceScore}%</p>
-                <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>{String(confidence.level).toUpperCase()}</p>
-              </div>
-              <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Revenue Range</p>
-                {_revenueRange ? (
-                  <>
-                    <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>
-                      {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
-                    </p>
-                    <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
-                      P10: {formatMoneyK((_revenueRange as any).p10)} · P50: {formatMoneyK((_revenueRange as any).p50)} · P90: {formatMoneyK((_revenueRange as any).p90)}
-                    </p>
-                  </>
-                ) : (
-                  <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{_dRevenue.display}</p>
-                )}
-              </div>
-              <div style={{ background: S.white, border: `1px solid ${S.n200}`, borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: S.n400, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>Net / mo</p>
-                <p style={{ fontSize: 14, fontWeight: 900, color: S.n900, fontFamily: S.mono }}>{_dNetProfit.display}</p>
-              </div>
-            </div>
-          </div>
-          {(_heroAdvisorLine || C?.verdictReasons?.[0]) && (
-            <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 10, background: '#FFFFFFD9', border: '1px solid rgba(148,163,184,0.26)' }}>
-              <p style={{ fontSize: 13, color: S.n800, lineHeight: 1.55, fontWeight: 600 }}>
-                {_heroAdvisorLine ?? C?.verdictReasons?.[0]}
-              </p>
-            </div>
-          )}
-          {_realityCheck && (
-            <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 10, background: S.n50, border: `1px solid ${S.n200}` }}>
-              <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6, fontWeight: 600 }}>{_realityCheck}</p>
-            </div>
-          )}
+        <div style={{ marginBottom: 16 }}>
+          <ContradictionBanner computed={C} />
         </div>
+
+        {/* ═══ Report tabs ═══ */}
+        <div style={{
+          display: 'flex',
+          gap: 6,
+          background: 'rgba(255,255,255,0.9)',
+          border: '1px solid rgba(148,163,184,0.22)',
+          borderRadius: 14,
+          padding: 6,
+          marginBottom: 28,
+          boxShadow: '0 10px 24px rgba(15,23,42,0.08)',
+          position: 'sticky',
+          top: 78,
+          zIndex: 45,
+          backdropFilter: 'blur(8px)',
+        }}>
+          {tabs.map(t => (
+            <button key={t.id} type="button" onClick={() => setReportTab(t.id)}
+              style={{
+                flex: 1, padding: '10px 8px', borderRadius: 10, border: 'none',
+                background: activeTab === t.id ? 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)' : 'transparent',
+                color: activeTab === t.id ? S.white : S.n500,
+                fontSize: 13, fontWeight: 700, letterSpacing: '0.01em', transition: 'all 0.15s',
+                boxShadow: activeTab === t.id ? '0 8px 18px rgba(79,70,229,0.28)' : 'none',
+              }}
+            >{t.label}</button>
+          ))}
+        </div>
+
+        {activeTab !== 'decision' && (
+          <div style={{
+            marginBottom: 22,
+            padding: '14px 18px',
+            borderRadius: 14,
+            border: `1px solid ${S.n200}`,
+            background: S.white,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap' as const,
+            gap: 12,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ minWidth: 200 }}>
+              <p style={{ fontSize: 14, fontWeight: 800, color: S.n900, letterSpacing: '-0.02em' }}>
+                {report.location_name ?? report.address ?? 'Report'}
+              </p>
+              <p style={{ fontSize: 12, color: S.n500, marginTop: 4 }}>
+                <span style={{ fontWeight: 800, color: verdictCfg(report.verdict).text }}>{verdictCfg(report.verdict).label}</span>
+                {' · '}Hero metrics, evidence, and decision contract live on the Decision tab.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setReportTab('decision')}
+              style={{
+                background: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
+                color: S.white,
+                border: 'none',
+                borderRadius: 10,
+                padding: '10px 16px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: S.font,
+                boxShadow: '0 6px 16px rgba(79,70,229,0.25)',
+              }}
+            >
+              View decision brief
+            </button>
+          </div>
+        )}
+
+        {activeTab === 'decision' && (
+          <>
+        <DecisionFrontPage
+          locationTitle={report.location_name ?? report.address ?? 'Location report'}
+          businessType={report.business_type ?? 'Business'}
+          reportDateLabel={`Updated ${formatSydneyDate(report.created_at, { day: 'numeric', month: 'short', year: 'numeric' })}`}
+          reportId={report.report_id ?? report.id ?? null}
+          verdictBadge={verdictCfg(report.verdict).label}
+          verdictColors={{
+            text: verdictCfg(report.verdict).text,
+            bg: verdictCfg(report.verdict).bg,
+            border: verdictCfg(report.verdict).border,
+          }}
+          oneLine={_decisionFrontOneLine}
+          advisorLine={_decisionFrontAdvisor}
+          metrics={{
+            rentToRevenue: _rentRevenuePercentDisplay,
+            breakEvenDaily: _beDailyFront,
+            revenueRange: _revenueRange
+              ? `${formatMoneyK(_revenueRange.low)} – ${formatMoneyK(_revenueRange.high)}`
+              : _dRevenue.display,
+            revenueDetail: _revenueDetailFront,
+            netMonthly: _dNetProfit.display,
+            netQualifier: _dNetProfit.qualifier ?? null,
+          }}
+          killSwitch={C?.decisionExplanation?.killSwitch ?? null}
+          financialsBlocked={_financialsSuppressed.suppress}
+          financialsBlockedReason={_financialsSuppressed.reason ?? null}
+          dataCompletenessPct={Math.round(C?.dataCompleteness ?? confidenceScore)}
+          modelConfidenceLabel={_modelConfidenceLabel}
+          variant="dashboard"
+        />
+        {_realityCheck && (
+          <div style={{ marginBottom: 18, padding: '10px 14px', borderRadius: 10, background: S.n50, border: `1px solid ${S.n200}` }}>
+            <p style={{ fontSize: 12, color: S.n700, lineHeight: 1.6, fontWeight: 600 }}>{_realityCheck}</p>
+          </div>
+        )}
 
         {isLegacyReport && (
           <Card style={{ marginBottom: 18, border: `1px solid ${S.amberBdr}`, background: S.amberBg }}>
@@ -4366,6 +4458,35 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                 <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
                   Why this verdict
                 </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, marginBottom: 14 }}>
+                  <div style={{ border: `1px solid ${S.emeraldBdr}`, background: S.emeraldBg, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.emerald, marginBottom: 8 }}>A. Why it can work</p>
+                    {(C.verdictReasons ?? []).slice(0, 5).map((t: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: '#065F46', lineHeight: 1.5, marginBottom: 6 }}>• {t}</p>
+                    ))}
+                    {(!C.verdictReasons || C.verdictReasons.length === 0) && (
+                      <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>No ranked upside bullets returned — see summary and evidence below.</p>
+                    )}
+                  </div>
+                  <div style={{ border: `1px solid ${S.redBdr}`, background: S.redBg, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.red, marginBottom: 8 }}>B. Why it can fail</p>
+                    {(C.verdictFailureModes ?? []).slice(0, 5).map((t: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.5, marginBottom: 6 }}>• {t}</p>
+                    ))}
+                    {(!C.verdictFailureModes || C.verdictFailureModes.length === 0) && (
+                      <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>No explicit failure modes listed — assume execution and demand risk remain.</p>
+                    )}
+                  </div>
+                  <div style={{ border: `1px solid ${S.blueBdr}`, background: S.blueBg, borderRadius: 10, padding: '10px 12px' }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: S.blue, marginBottom: 8 }}>C. What must be true</p>
+                    {(C.verdictConditions ?? []).slice(0, 5).map((t: string, i: number) => (
+                      <p key={i} style={{ fontSize: 12, color: '#1E3A8A', lineHeight: 1.5, marginBottom: 6 }}>• {t}</p>
+                    ))}
+                    {(!C.verdictConditions || C.verdictConditions.length === 0) && (
+                      <p style={{ fontSize: 12, color: S.n500, lineHeight: 1.5 }}>No non-negotiables returned — rely on Decision Contract and validation plan.</p>
+                    )}
+                  </div>
+                </div>
                 {(() => {
                   const v = String(C.verdict ?? '').toUpperCase()
                   const vc = v.includes('NO')
@@ -4521,6 +4642,40 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                     ))}
                   </div>
                 </div>
+                <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${S.n200}` }}>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: S.n500, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+                    Validation plan
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
+                    <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px', background: S.n50 }}>
+                      <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 8 }}>First 7 days</p>
+                      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: S.n700, lineHeight: 1.55 }}>
+                        <li style={{ marginBottom: 6 }}>
+                          {C.decisionExplanation?.uncertaintyAction ?? 'Walk the catchment at peak and off-peak hours; sanity-check footfall vs the model.'}
+                        </li>
+                        <li style={{ marginBottom: 6 }}>
+                          {C.decisionContract?.thresholds?.minCustomersPerDay != null
+                            ? `Pressure-test throughput: the model’s minimum bar is ${C.decisionContract.thresholds.minCustomersPerDay} customers per day when trading normally.`
+                            : _beDailyForGauge != null
+                              ? `Pressure-test throughput against break-even (${displayCustomers(_beDailyForGauge, _confidenceTier).display} customers/day).`
+                              : 'Pressure-test throughput with spot counts or a comparable venue nearby.'}
+                        </li>
+                        <li>Review the lease draft against the Financials tab (rent reviews, outgoings, make-good).</li>
+                      </ul>
+                    </div>
+                    <div style={{ border: `1px solid ${S.n200}`, borderRadius: 10, padding: '12px 14px', background: S.n50 }}>
+                      <p style={{ fontSize: 12, fontWeight: 800, color: S.n800, marginBottom: 8 }}>First 30 days</p>
+                      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: S.n700, lineHeight: 1.55 }}>
+                        <li style={{ marginBottom: 6 }}>Track revenue vs break-even weekly; if you are materially below for two consecutive weeks, pause signing or renegotiate.</li>
+                        <li style={{ marginBottom: 6 }}>Validate average ticket and repeat rate — adjust staffing and hours to actual demand curves.</li>
+                        <li>Re-run this report if rent, competition, or trading assumptions change.</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: 11, color: S.n500, marginTop: 10, lineHeight: 1.45 }}>
+                    Sign only when the GO ONLY IF conditions check out on the ground — not when the spreadsheet alone looks good.
+                  </p>
+                </div>
                 <p style={{ fontSize: 12, color: S.n700, marginTop: 10, lineHeight: 1.5 }}>
                   {(() => {
                     const ratio = C.dailyCustomers > 0 && C.decisionContract?.thresholds?.minCustomersPerDay
@@ -4615,10 +4770,8 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
           <ReferralPrompt reportScore={report.overall_score ?? 0} verdict={report.verdict ?? ''} />
 
         </div>
-
-        <div style={{ marginBottom: 16 }}>
-          <ContradictionBanner computed={C} />
-        </div>
+          </>
+        )}
 
         <details style={{ marginTop: 2, marginBottom: 26, background: S.white, border: '1px solid rgba(28,25,23,0.08)', borderRadius: 10, padding: '9px 11px' }}>
           <summary style={{ fontSize: 12, fontWeight: 700, color: S.n500, cursor: 'pointer' }}>Method, assumptions, and limitations</summary>
@@ -4660,34 +4813,6 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             </div>
           </details>
         )}
-
-        {/* ═══ SECTION 3: TABS ═══ */}
-        <div style={{
-          display: 'flex',
-          gap: 6,
-          background: 'rgba(255,255,255,0.9)',
-          border: '1px solid rgba(148,163,184,0.22)',
-          borderRadius: 14,
-          padding: 6,
-          marginBottom: 28,
-          boxShadow: '0 10px 24px rgba(15,23,42,0.08)',
-          position: 'sticky',
-          top: 78,
-          zIndex: 45,
-          backdropFilter: 'blur(8px)',
-        }}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
-              style={{
-                flex: 1, padding: '10px 8px', borderRadius: 10, border: 'none',
-                background: activeTab === t.id ? 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)' : 'transparent',
-                color: activeTab === t.id ? S.white : S.n500,
-                fontSize: 13, fontWeight: 700, letterSpacing: '0.01em', transition: 'all 0.15s',
-                boxShadow: activeTab === t.id ? '0 8px 18px rgba(79,70,229,0.28)' : 'none',
-              }}
-            >{t.label}</button>
-          ))}
-        </div>
 
         {/* ═══ ADJUST ASSUMPTIONS ═══ */}
         <div id="adjust-panel" style={{ marginBottom: 20 }}>
@@ -4807,7 +4932,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                           {formatMoneyK(_revenueRange.low)} – {formatMoneyK(_revenueRange.high)}
                         </p>
                         <p style={{ fontSize: 11, color: S.n500, marginTop: 2 }}>
-                          P10: {formatMoneyK((_revenueRange as any).p10)} · P50: {formatMoneyK((_revenueRange as any).p50)} · P90: {formatMoneyK((_revenueRange as any).p90)}
+                          P10: {formatMoneyK(_revenueRange.p10)} · P50: {formatMoneyK(_revenueRange.p50)} · P90: {formatMoneyK(_revenueRange.p90)}
                         </p>
                         {report.monthly_rent != null && _revenueRange.low > 0 && (() => {
                           const downsideRentRatio = (Number(report.monthly_rent) / _revenueRange.low) * 100
@@ -5030,7 +5155,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
             {/* CTA to Map tab */}
             {reportLat && reportLng && (
               <Card style={{ padding: '18px 24px' }}>
-                <button onClick={() => setActiveTab('map')} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'none', border: 'none', cursor: 'pointer', fontFamily: S.font, padding: 0 }}>
+                <button onClick={() => setReportTab('map')} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'none', border: 'none', cursor: 'pointer', fontFamily: S.font, padding: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: S.brandFaded, border: `1px solid ${S.brandBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={S.brand} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -5653,7 +5778,7 @@ export default function ReportPage({ params }: { params: Promise<{ reportId: str
                           and footfall data loaded from OpenStreetMap.
                         </p>
                       </div>
-                      <button onClick={() => setActiveTab('map')} style={{ alignSelf: 'flex-start', background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>
+                      <button onClick={() => setReportTab('map')} style={{ alignSelf: 'flex-start', background: S.brand, color: S.white, border: 'none', borderRadius: 10, padding: '8px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: S.font }}>
                         View Map for live signals →
                       </button>
                     </div>
