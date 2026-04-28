@@ -67,6 +67,9 @@ export interface RevenueRange {
   low:         number   // lower bound (e.g. -40% from mid for benchmark estimates)
   mid:         number   // central estimate (same as result.revenue)
   high:        number   // upper bound
+  p10?:        number   // optional percentile lower bound used by UI chips
+  p50?:        number   // optional percentile midpoint used by UI chips
+  p90?:        number   // optional percentile upper bound used by UI chips
   uncertainty: number   // ±% (e.g. 30 means ±30%)
   source:      string   // which source produced the mid value
   note:        string   // human-readable explanation
