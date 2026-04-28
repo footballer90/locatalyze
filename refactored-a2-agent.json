@@ -139,7 +139,7 @@
         }
       },
       "id": "ae051220-eee5-4f77-a051-82654e296a2c",
-      "name": "SerpApi \u2013 CRE Fitzroy listings",
+      "name": "SerpApi \u2013 CRE area listings",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -583,7 +583,7 @@
       "main": [
         [
           {
-            "node": "SerpApi \u2013 CRE Fitzroy listings",
+            "node": "SerpApi \u2013 CRE area listings",
             "type": "main",
             "index": 0
           },
@@ -630,7 +630,7 @@
         ]
       ]
     },
-    "SerpApi \u2013 CRE Fitzroy listings": {
+    "SerpApi \u2013 CRE area listings": {
       "main": [
         [
           {

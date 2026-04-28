@@ -142,7 +142,7 @@
         }
       },
       "id": "334d5572-aa04-461d-b314-1748f36e8e73",
-      "name": "Serper – CRE Fitzroy listings",
+      "name": "Serper – CRE area listings",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -548,7 +548,7 @@
             "index": 0
           },
           {
-            "node": "Serper – CRE Fitzroy listings",
+            "node": "Serper – CRE area listings",
             "type": "main",
             "index": 0
           },
@@ -728,7 +728,7 @@
         ]
       ]
     },
-    "Serper – CRE Fitzroy listings": {
+    "Serper – CRE area listings": {
       "main": [
         [
           {
