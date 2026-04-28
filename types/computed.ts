@@ -292,6 +292,8 @@ export interface ComputedResult {
     strongCount:       number
     moderateCount:     number
     weakCount:         number
+    competitionSentence?: string | null
+    localSummary?: string | null
   }
 
   // ─── Live competitor pressure (from multi-source density fetch) ──────────
@@ -312,6 +314,14 @@ export interface ComputedResult {
   // ─── Confidence ──────────────────────────────────────────────────────────
   dataCompleteness: number         // 0–100, how much live data was available
   modelConfidence:  ConfidenceLabel
+  confidenceScore?: number
+  dataMode?: string | null
+  dataQuality?: string | {
+    missingFields?: string[]
+    completeness?: number
+    mode?: string
+    [key: string]: any
+  }
 
   // ─── Trust layer (v3.2) — data transparency + contradiction detection ─────
   /**
@@ -353,6 +363,22 @@ export interface ComputedResult {
    * e.g. 'benchmark_default_confidence' | 'insufficient_data_completeness' | 'declining_demand'
    */
   verdictGateTriggered: string | null
+  decisionExplanation?: {
+    oneLine?: string | null
+    advisorLine?: string | null
+    killSwitch?: string | null
+    [key: string]: any
+  }
+  decisionContract?: {
+    mustHitFirst30Days?: string[]
+    mustNotIgnore?: string[]
+    commitNow?: string[]
+    [key: string]: any
+  }
+  validationDifficulty?: any
+  modelDependencies?: any
+  downside?: any
+  breakEvenMonthsRealistic?: number | null
 
   /**
    * Which pipeline agents returned usable data for this report.
@@ -377,6 +403,7 @@ export interface ComputedResult {
     computedAt:       string   // ISO-8601
     computeLog:       ComputeLog
   }
+  [key: string]: any
 }
 
 // ── Input type for computeEngine() ───────────────────────────────────────────
