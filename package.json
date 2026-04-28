@@ -9,6 +9,7 @@
     "lint": "tsc --noEmit",
     "check:scores": "npx ts-node --project tsconfig.json scripts/check-no-manual-scores.ts",
     "check:demo": "npx ts-node --project tsconfig.json scripts/check-demo-consistency.ts",
+    "check:a2-suburbs": "node scripts/check-a2-hardcoded-suburbs.mjs",
     "prepare": "node scripts/prepare.mjs"
   },
   "dependencies": {

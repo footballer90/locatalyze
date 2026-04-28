@@ -3,3 +3,4 @@
 # Any file NOT listed in .check-scores-ignore must not have hardcoded score/compositeScore literals.
 # Run `npm run check:scores` locally to verify before committing.
 npm run check:scores
+npm run check:a2-suburbs
