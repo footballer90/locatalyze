@@ -90,6 +90,82 @@ export interface BenchmarkContext {
 /** 0–1 weight on agent value (1 = full agent, 0 = full benchmark) */
 export type BlendWeight = number
 
+export interface DecisionRentLogic {
+  summary?: string | null
+  criticalDependency?: string | null
+}
+
+export interface DecisionExplanation {
+  summary?: string | null
+  oneLine?: string | null
+  advisorLine?: string | null
+  killSwitch?: string | null
+  uncertainty?: string | null
+  uncertaintyAction?: string | null
+  rentLogic?: DecisionRentLogic | null
+  strengthIndicator?: {
+    strongSignals?: number
+    weakSignals?: number
+    unknownSignals?: number
+  } | null
+  evidence?: Array<{
+    claim?: string
+    source?: string
+    value?: string | number | null
+    confidence?: string | number | null
+    weight?: string | number | null
+    [key: string]: unknown
+  }>
+  competitors?: Array<{
+    name?: string
+    signal?: string
+    whyItMatters?: string
+    [key: string]: unknown
+  }>
+  [key: string]: unknown
+}
+
+export interface DecisionThresholds {
+  minCustomersPerDay?: number | null
+}
+
+export interface DecisionContract {
+  goIf?: string[]
+  noGoIf?: string[]
+  rerunIf?: string[]
+  mustHitFirst30Days?: string[]
+  mustNotIgnore?: string[]
+  commitNow?: string[]
+  thresholds?: DecisionThresholds | null
+  [key: string]: unknown
+}
+
+export interface ValidationDifficulty {
+  level?: string | null
+  implication?: string | null
+  reasons?: string[]
+  [key: string]: unknown
+}
+
+export interface ModelDependencies {
+  reliesOn?: string[]
+  missing?: string[]
+  [key: string]: unknown
+}
+
+export interface DownsideScenario {
+  label?: string | null
+  profit?: number | null
+  note?: string | null
+}
+
+export interface DownsideSnapshot {
+  scenarios?: DownsideScenario[]
+  rentPct?: number | null
+  breakEvenDaily?: number | null
+  [key: string]: unknown
+}
+
 // ── Verdict ───────────────────────────────────────────────────────────────────
 
 export type VerdictValue = 'GO' | 'CAUTION' | 'NO'
@@ -320,7 +396,6 @@ export interface ComputedResult {
     missingFields?: string[]
     completeness?: number
     mode?: string
-    [key: string]: any
   }
 
   // ─── Trust layer (v3.2) — data transparency + contradiction detection ─────
@@ -363,21 +438,11 @@ export interface ComputedResult {
    * e.g. 'benchmark_default_confidence' | 'insufficient_data_completeness' | 'declining_demand'
    */
   verdictGateTriggered: string | null
-  decisionExplanation?: {
-    oneLine?: string | null
-    advisorLine?: string | null
-    killSwitch?: string | null
-    [key: string]: any
-  }
-  decisionContract?: {
-    mustHitFirst30Days?: string[]
-    mustNotIgnore?: string[]
-    commitNow?: string[]
-    [key: string]: any
-  }
-  validationDifficulty?: any
-  modelDependencies?: any
-  downside?: any
+  decisionExplanation?: DecisionExplanation
+  decisionContract?: DecisionContract
+  validationDifficulty?: ValidationDifficulty | null
+  modelDependencies?: ModelDependencies | null
+  downside?: DownsideSnapshot | null
   breakEvenMonthsRealistic?: number | null
 
   /**
@@ -403,7 +468,6 @@ export interface ComputedResult {
     computedAt:       string   // ISO-8601
     computeLog:       ComputeLog
   }
-  [key: string]: any
 }
 
 // ── Input type for computeEngine() ───────────────────────────────────────────
